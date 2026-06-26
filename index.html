@@ -4,289 +4,293 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Grei Show</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
 
     :root {
       --primary: #ff00aa;
       --accent: #00ffff;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
       background: #0a0a0a;
       color: white;
       overflow-x: hidden;
-      line-height: 1.6;
     }
 
-    header {
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 20px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: 0.4s;
+    }
+    nav.scrolled { background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); }
+
+    .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; letter-spacing: -2px; }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 2rem;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       position: relative;
-      background: radial-gradient(circle at center, #1a0033 0%, #0a0a0a 70%);
       overflow: hidden;
     }
-
-    header::before {
+    .hero::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('data:image/jpeg;base64,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') center/cover;
-      opacity: 0.15;
+      inset: 0;
+      background: linear-gradient(45deg, rgba(255,0,170,0.2), rgba(0,255,255,0.15));
       z-index: 1;
     }
-
-    .header-content {
+    .hero video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.4;
+    }
+    .hero-content {
       position: relative;
       z-index: 2;
-      max-width: 800px;
+      max-width: 900px;
       padding: 0 20px;
     }
-
     h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(4rem, 10vw, 7rem);
-      font-weight: 600;
-      letter-spacing: -4px;
-      margin-bottom: 16px;
+      font-size: clamp(5rem, 12vw, 8rem);
+      font-weight: 700;
+      letter-spacing: -6px;
       background: linear-gradient(90deg, #ff00aa, #00ffff, #ff00aa);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-size: 200% 200%;
-      animation: gradient 8s linear infinite;
+      background-size: 200%;
+      animation: gradient 10s linear infinite;
     }
-
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
     .tagline {
-      font-size: 1.5rem;
-      color: #ccc;
-      margin-bottom: 40px;
-      font-weight: 400;
+      font-size: 1.6rem;
+      margin: 20px 0 40px;
+      color: #ddd;
     }
-
-    .enter-btn {
-      display: inline-block;
-      padding: 16px 48px;
-      font-size: 1.2rem;
+    .cta {
+      padding: 18px 52px;
+      font-size: 1.3rem;
       font-weight: 600;
       background: transparent;
+      border: 3px solid var(--primary);
       color: white;
-      border: 2px solid var(--primary);
       border-radius: 50px;
-      text-decoration: none;
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-      position: relative;
-      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
+    }
+    .cta:hover {
+      background: var(--primary);
+      transform: scale(1.08);
+      box-shadow: 0 0 50px rgba(255,0,170,0.7);
     }
 
-    .enter-btn:hover {
-      background: var(--primary);
-      transform: scale(1.05) translateY(-4px);
-      box-shadow: 0 0 40px rgba(255, 0, 170, 0.6);
+    /* SECTIONS */
+    section { padding: 100px 5%; }
+    h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3.5rem;
+      text-align: center;
+      margin-bottom: 60px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
-      padding: 80px 40px;
-      max-width: 1200px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+      max-width: 1300px;
       margin: 0 auto;
     }
-
     .card {
       background: #111;
       border: 1px solid #222;
-      padding: 32px 24px;
-      border-radius: 20px;
+      border-radius: 24px;
+      padding: 36px 24px;
       text-align: center;
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      transition: all 0.5s ease;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
     }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 40%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: 0.7s;
-    }
-
-    .card:hover::before {
-      left: 300%;
-    }
-
     .card:hover {
-      transform: translateY(-12px) scale(1.03);
+      transform: translateY(-20px);
       border-color: var(--accent);
-      box-shadow: 0 30px 60px rgba(0, 255, 255, 0.15);
+      box-shadow: 0 30px 70px rgba(0,255,255,0.2);
+    }
+    .card-icon { font-size: 4.5rem; margin-bottom: 20px; }
+
+    /* MUSIC PLAYER */
+    .player {
+      background: #151515;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 700px;
+      margin: 40px auto;
+      text-align: center;
     }
 
-    .card-icon {
-      font-size: 3.5rem;
-      margin-bottom: 20px;
-      display: block;
-      transition: transform 0.4s ease;
+    /* CONTACT FORM */
+    form {
+      max-width: 600px;
+      margin: 0 auto;
     }
-
-    .card:hover .card-icon {
-      transform: scale(1.2) rotate(8deg);
+    input, textarea {
+      width: 100%;
+      padding: 16px;
+      margin: 12px 0;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 12px;
+      color: white;
     }
-
-    .card h3 {
-      font-size: 1.4rem;
-      margin-bottom: 12px;
+    button {
+      width: 100%;
+      padding: 18px;
+      background: var(--primary);
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
       font-weight: 600;
-    }
-
-    .card p {
-      color: #888;
-      font-size: 0.95rem;
+      cursor: pointer;
     }
 
     footer {
       text-align: center;
-      padding: 60px 20px 40px;
+      padding: 80px 20px 40px;
       color: #555;
-      font-size: 0.9rem;
-      border-top: 1px solid #222;
+      font-size: 0.95rem;
     }
 
-    .nav {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 1000;
-      transition: 0.3s;
-    }
-
-    .nav.scrolled {
-      background: rgba(10, 10, 10, 0.95);
-      backdrop-filter: blur(12px);
-    }
-
-    .logo {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: -1px;
-    }
+    @keyframes gradient { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
   </style>
 </head>
 <body>
-  <nav class="nav" id="nav">
+
+  <!-- NAV -->
+  <nav id="nav">
     <div class="logo">GREI</div>
+    <div class="nav-links">
+      <a href="#music">Music</a>
+      <a href="#projects">Worlds</a>
+      <a href="#visuals">Visuals</a>
+      <a href="#book">Book</a>
+    </div>
   </nav>
 
-  <header>
-    <div class="header-content">
+  <!-- HERO -->
+  <section class="hero">
+    <video autoplay loop muted playsinline>
+      <source src="https://assets.mixkit.co/videos/preview/12345/12345-large.mp4" type="video/mp4">
+    </video>
+    <div class="hero-content">
       <h1>THE GREI SHOW</h1>
       <p class="tagline">Artist • Producer • Creator • World Builder</p>
-      <a href="#explore" class="enter-btn">ENTER THE UNIVERSE</a>
-    </div>
-  </header>
-
-  <section id="explore" class="grid">
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">🎵</span>
-      <h3>Music</h3>
-      <p>Latest releases, albums &amp; sonic experiments</p>
-    </div>
-
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">🎥</span>
-      <h3>Aluminum TV</h3>
-      <p>Visuals, music videos &amp; surreal content</p>
-    </div>
-
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">🎚️</span>
-      <h3>Wheel It! Records</h3>
-      <p>Label • Collective • Sonic sanctuary</p>
-    </div>
-
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">🔊</span>
-      <h3>UGIS</h3>
-      <p>Audio universe &amp; sound design</p>
-    </div>
-
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">📚</span>
-      <h3>The Astral Thread</h3>
-      <p>Storyworld • Lore • Narrative</p>
-    </div>
-
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">🎮</span>
-      <h3>Arcade</h3>
-      <p>Games, interactive experiences &amp; worlds</p>
-    </div>
-
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">🛒</span>
-      <h3>Merch</h3>
-      <p>Apparel, objects &amp; limited drops</p>
-    </div>
-
-    <div class="card" onclick="window.location.href='#'">
-      <span class="card-icon">📅</span>
-      <h3>Bookings</h3>
-      <p>Live shows, performances &amp; appearances</p>
+      <button class="cta" onclick="document.getElementById('music').scrollIntoView({behavior:'smooth'})">
+        ENTER THE UNIVERSE
+      </button>
     </div>
   </section>
 
+  <!-- MUSIC -->
+  <section id="music">
+    <h2>Music</h2>
+    <div class="player">
+      <h3>Latest Drop</h3>
+      <p style="margin:15px 0; color:#aaa;">[Track Title] — Now Playing</p>
+      <audio controls style="width:100%; margin-top:15px;">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+      </audio>
+      <p style="margin-top:20px; font-size:0.9rem; color:#777;">
+        Full discography on <a href="#" style="color:var(--accent)">Spotify</a> • <a href="#" style="color:var(--accent)">Bandcamp</a> • <a href="#" style="color:var(--accent)">SoundCloud</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <h2>WORLDS</h2>
+    <div class="grid">
+      <div class="card"><span class="card-icon">🎵</span><h3>Music</h3><p>Sonic realities &amp; releases</p></div>
+      <div class="card"><span class="card-icon">🎥</span><h3>Aluminum TV</h3><p>Visuals &amp; surreal cinema</p></div>
+      <div class="card"><span class="card-icon">🎚️</span><h3>Wheel It! Records</h3><p>Label &amp; collective</p></div>
+      <div class="card"><span class="card-icon">🔊</span><h3>UGIS</h3><p>Sound design universe</p></div>
+      <div class="card"><span class="card-icon">📚</span><h3>The Astral Thread</h3><p>Lore &amp; narrative world</p></div>
+      <div class="card"><span class="card-icon">🎮</span><h3>Arcade</h3><p>Games &amp; interactive realms</p></div>
+    </div>
+  </section>
+
+  <!-- VISUALS -->
+  <section id="visuals" style="background:#050505;">
+    <h2>VISUALS</h2>
+    <div style="max-width:1000px; margin:0 auto; text-align:center;">
+      <iframe width="100%" height="500" src="https://www.youtube.com/embed/dQw4w9wgxcq" title="YouTube video player" frameborder="0" allowfullscreen style="border-radius:20px;"></iframe>
+    </div>
+  </section>
+
+  <!-- BOOKINGS -->
+  <section id="book">
+    <h2>BOOKINGS &amp; CONTACT</h2>
+    <form>
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Email" required>
+      <input type="text" placeholder="Event / Inquiry Type">
+      <textarea rows="6" placeholder="Tell me about the opportunity..."></textarea>
+      <button type="submit">SEND TRANSMISSION</button>
+    </form>
+  </section>
+
   <footer>
-    © 2026 The Grei Show Universe • All Rights Reserved<br>
-    <span style="opacity:0.5">Building realities since the glitch</span>
+    © 2026 The Grei Show Universe • Building realities since the glitch<br>
+    <a href="#" style="color:#888; margin:0 10px;">Instagram</a>
+    <a href="#" style="color:#888; margin:0 10px;">X / Twitter</a>
+    <a href="#" style="color:#888; margin:0 10px;">Bandcamp</a>
+    <a href="#" style="color:#888; margin:0 10px;">Spotify</a>
   </footer>
 
   <script>
-    // Navbar scroll effect
+    // Navbar scroll
     window.addEventListener('scroll', () => {
-      const nav = document.getElementById('nav');
-      if (window.scrollY > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
-      }
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // Keyboard shortcut: press "G" for fun easter egg
-    document.addEventListener('keydown', (e) => {
+    // Simple form submission feedback
+    document.querySelector('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert("🚀 Transmission received. Grei will get back to you soon.");
+      this.reset();
+    });
+
+    // Easter egg
+    document.addEventListener('keydown', e => {
       if (e.key.toLowerCase() === 'g') {
-        document.body.style.transition = 'filter 0.4s';
-        document.body.style.filter = 'hue-rotate(90deg) saturate(2)';
-        setTimeout(() => {
-          document.body.style.filter = 'none';
-        }, 800);
+        document.body.style.transition = 'filter 0.6s';
+        document.body.style.filter = 'hue-rotate(120deg) saturate(1.8)';
+        setTimeout(() => document.body.style.filter = '', 1200);
       }
     });
   </script>

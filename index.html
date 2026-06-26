@@ -2,94 +2,293 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>The Grei Show</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title>The Grei Show</title>
   <style>
-    body {
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap');
+
+    :root {
+      --primary: #ff00aa;
+      --accent: #00ffff;
+    }
+
+    * {
       margin: 0;
-      font-family: Arial, sans-serif;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
       background: #0a0a0a;
       color: white;
+      overflow-x: hidden;
+      line-height: 1.6;
     }
 
     header {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      padding: 80px 20px 40px;
+      position: relative;
+      background: radial-gradient(circle at center, #1a0033 0%, #0a0a0a 70%);
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://picsum.photos/id/1015/1920/1080') center/cover;
+      opacity: 0.15;
+      z-index: 1;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      padding: 0 20px;
     }
 
     h1 {
-      font-size: 50px;
-      margin: 0;
-      letter-spacing: 2px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 10vw, 7rem);
+      font-weight: 600;
+      letter-spacing: -4px;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, #ff00aa, #00ffff, #ff00aa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% 200%;
+      animation: gradient 8s linear infinite;
     }
 
-    p {
-      color: #aaa;
-      font-size: 18px;
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .tagline {
+      font-size: 1.5rem;
+      color: #ccc;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .enter-btn {
+      display: inline-block;
+      padding: 16px 48px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: transparent;
+      color: white;
+      border: 2px solid var(--primary);
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .enter-btn:hover {
+      background: var(--primary);
+      transform: scale(1.05) translateY(-4px);
+      box-shadow: 0 0 40px rgba(255, 0, 170, 0.6);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      padding: 40px;
-      max-width: 1000px;
-      margin: auto;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .card {
-      background: #151515;
-      padding: 25px;
-      border-radius: 12px;
+      background: #111;
+      border: 1px solid #222;
+      padding: 32px 24px;
+      border-radius: 20px;
       text-align: center;
-      transition: 0.3s;
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: 0.7s;
+    }
+
+    .card:hover::before {
+      left: 300%;
     }
 
     .card:hover {
-      background: #222;
-      transform: scale(1.05);
+      transform: translateY(-12px) scale(1.03);
+      border-color: var(--accent);
+      box-shadow: 0 30px 60px rgba(0, 255, 255, 0.15);
     }
 
-    a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
+    .card-icon {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-icon {
+      transform: scale(1.2) rotate(8deg);
+    }
+
+    .card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .card p {
+      color: #888;
+      font-size: 0.95rem;
     }
 
     footer {
       text-align: center;
-      padding: 40px;
+      padding: 60px 20px 40px;
       color: #555;
-      font-size: 12px;
+      font-size: 0.9rem;
+      border-top: 1px solid #222;
+    }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: 0.3s;
+    }
+
+    .nav.scrolled {
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -1px;
     }
   </style>
 </head>
-
 <body>
+  <nav class="nav" id="nav">
+    <div class="logo">GREI</div>
+  </nav>
 
-<header>
-  <h1>THE GREI SHOW</h1>
-  <p>Artist • Producer • Creator • World Builder</p>
-</header>
+  <header>
+    <div class="header-content">
+      <h1>THE GREI SHOW</h1>
+      <p class="tagline">Artist • Producer • Creator • World Builder</p>
+      <a href="#explore" class="enter-btn">ENTER THE UNIVERSE</a>
+    </div>
+  </header>
 
-<div class="grid">
+  <section id="explore" class="grid">
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">🎵</span>
+      <h3>Music</h3>
+      <p>Latest releases, albums &amp; sonic experiments</p>
+    </div>
 
-  <div class="card"><a href="#">🎵 Music</a></div>
-  <div class="card"><a href="#">🎥 Aluminum TV</a></div>
-  <div class="card"><a href="#">🎚️ Wheel It! Records</a></div>
-  <div class="card"><a href="#">🔊 UGIS</a></div>
-  <div class="card"><a href="#">📚 The Astral Thread</a></div>
-  <div class="card"><a href="#">🎮 Arcade</a></div>
-  <div class="card"><a href="#">🛒 Merch (Shopify)</a></div>
-  <div class="card"><a href="#">📅 Bookings</a></div>
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">🎥</span>
+      <h3>Aluminum TV</h3>
+      <p>Visuals, music videos &amp; surreal content</p>
+    </div>
 
-</div>
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">🎚️</span>
+      <h3>Wheel It! Records</h3>
+      <p>Label • Collective • Sonic sanctuary</p>
+    </div>
 
-<footer>
-  © The Grei Show Universe
-</footer>
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">🔊</span>
+      <h3>UGIS</h3>
+      <p>Audio universe &amp; sound design</p>
+    </div>
 
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">📚</span>
+      <h3>The Astral Thread</h3>
+      <p>Storyworld • Lore • Narrative</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">🎮</span>
+      <h3>Arcade</h3>
+      <p>Games, interactive experiences &amp; worlds</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">🛒</span>
+      <h3>Merch</h3>
+      <p>Apparel, objects &amp; limited drops</p>
+    </div>
+
+    <div class="card" onclick="window.location.href='#'">
+      <span class="card-icon">📅</span>
+      <h3>Bookings</h3>
+      <p>Live shows, performances &amp; appearances</p>
+    </div>
+  </section>
+
+  <footer>
+    © 2026 The Grei Show Universe • All Rights Reserved<br>
+    <span style="opacity:0.5">Building realities since the glitch</span>
+  </footer>
+
+  <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('nav');
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    // Keyboard shortcut: press "G" for fun easter egg
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'g') {
+        document.body.style.transition = 'filter 0.4s';
+        document.body.style.filter = 'hue-rotate(90deg) saturate(2)';
+        setTimeout(() => {
+          document.body.style.filter = 'none';
+        }, 800);
+      }
+    });
+  </script>
 </body>
 </html>

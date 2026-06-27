@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Grei Show • No Drama</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&display=swap');
 
@@ -12,21 +15,6 @@
       --accent: #00ffff;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #0a0a0a;
-      color: white;
-      line-height: 1.4;
-      overflow-x: hidden;
-    }
-
-    /* HERO */
     .hero {
       height: 100vh;
       display: flex;
@@ -101,120 +89,6 @@
       letter-spacing: 2px;
       opacity: 0.9;
     }
-
-    /* PLAYER */
-    .player-section {
-      padding: 140px 20px 120px;
-      background: #050505;
-      text-align: center;
-    }
-
-    .player-container {
-      max-width: 680px;
-      margin: 0 auto;
-    }
-
-    .player-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 2.8rem;
-      margin-bottom: 12px;
-    }
-
-    .player-meta {
-      color: #777;
-      font-size: 1.1rem;
-      margin-bottom: 40px;
-    }
-
-    audio {
-      width: 100%;
-      margin: 30px 0;
-      filter: brightness(1.1);
-    }
-
-    .description {
-      max-width: 520px;
-      margin: 60px auto 0;
-      font-size: 1.15rem;
-      color: #aaa;
-      line-height: 1.7;
-    }
-
-    /* VISUALS */
-    .visuals {
-      padding: 120px 20px;
-      text-align: center;
-      background: #0a0a0a;
-    }
-
-    .visuals iframe {
-      width: 100%;
-      max-width: 920px;
-      height: 480px;
-      border-radius: 16px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
-    }
-
-    /* CONTACT */
-    .contact {
-      padding: 140px 20px 100px;
-      background: #050505;
-      text-align: center;
-    }
-
-    .contact h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 3rem;
-      margin-bottom: 50px;
-    }
-
-    form {
-      max-width: 460px;
-      margin: 0 auto;
-    }
-
-    input, textarea {
-      width: 100%;
-      background: transparent;
-      border: 1px solid #333;
-      padding: 18px 20px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      color: white;
-      font-size: 1.05rem;
-    }
-
-    button {
-      width: 100%;
-      padding: 20px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      font-size: 1.15rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: all 0.4s ease;
-    }
-
-    button:hover {
-      background: white;
-      color: #000;
-      transform: scale(1.02);
-    }
-
-    footer {
-      text-align: center;
-      padding: 80px 20px 60px;
-      color: #444;
-      font-size: 0.95rem;
-    }
-
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
   </style>
 </head>
 <body>
@@ -234,61 +108,55 @@
 
   <!-- PLAYER -->
   <section class="player-section" id="listen">
-    <div class="player-container">
-      <div class="player-title">NO DRAMA</div>
-      <div class="player-meta">The Grei Show • Unreleased Masterpiece</div>
-      
-      <audio controls>
-        <source src="https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-      </audio>
+    <div class="container">
+      <div class="player-container">
+        <div class="player-title">NO DRAMA</div>
+        <div class="player-meta">The Grei Show • Unreleased Masterpiece</div>
+        
+        <audio controls>
+          <source src="https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
 
-      <div class="description">
-        A singular moment of clarity in the noise.<br>
-        Zero filler. Pure signal.<br><br>
-        This is not background music.<br>
-        This is the main event.
+        <div class="description">
+          A singular moment of clarity in the noise.<br>
+          Zero filler. Pure signal.<br><br>
+          This is not background music.<br>
+          This is the main event.
+        </div>
       </div>
     </div>
   </section>
 
   <!-- VISUALS -->
   <section class="visuals">
-    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.8rem; margin-bottom: 60px;">VISUAL TRANSMISSION</h2>
-    <iframe src="https://www.youtube.com/embed/dQw4w9wgxcq" title="No Drama Visuals" frameborder="0" allowfullscreen></iframe>
-    <p style="margin-top: 30px; color: #666; font-size: 1.05rem;">Official visuals coming soon</p>
+    <div class="container">
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.8rem; margin-bottom: 60px;">VISUAL TRANSMISSION</h2>
+      <iframe src="https://www.youtube.com/embed/dQw4w9wgxcq" title="No Drama Visuals" frameborder="0" allowfullscreen></iframe>
+      <p style="margin-top: 30px; color: #666; font-size: 1.05rem;">Official visuals coming soon</p>
+    </div>
   </section>
 
   <!-- CONTACT -->
   <section class="contact">
-    <h2>ENTER THE CONVERSATION</h2>
-    <form>
-      <input type="text" placeholder="NAME" required>
-      <input type="email" placeholder="EMAIL" required>
-      <textarea rows="5" placeholder="YOUR MESSAGE / INQUIRY" required></textarea>
-      <button type="submit">SEND TRANSMISSION</button>
-    </form>
+    <div class="container">
+      <h2>ENTER THE CONVERSATION</h2>
+      <form>
+        <input type="text" placeholder="NAME" required>
+        <input type="email" placeholder="EMAIL" required>
+        <textarea rows="5" placeholder="YOUR MESSAGE / INQUIRY" required></textarea>
+        <button type="submit">SEND TRANSMISSION</button>
+      </form>
+    </div>
   </section>
 
   <footer>
-    © THE GREI SHOW • NO DRAMA • 2026
+    <div class="container">
+      © THE GREI SHOW • NO DRAMA • 2026
+    </div>
   </footer>
 
-  <script>
-    // Form feedback
-    document.querySelector('form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert("Transmission received. The Grei Show will respond.");
-      this.reset();
-    });
-
-    // Subtle scroll effect on audio
-    window.addEventListener('scroll', () => {
-      const audio = document.querySelector('audio');
-      if (audio && window.scrollY > 300) {
-        audio.style.transition = 'all 0.6s';
-      }
-    });
-  </script>
+  <script src="assets/js/navigation.js"></script>
+  <script src="assets/js/main.js"></script>
 </body>
 </html>

@@ -1,44 +1,44 @@
-/* Reusable Layout Components */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-md);
-}
-
+/* Clean Layout System */
 header {
-  padding: var(--space-md) 0;
-  border-bottom: 1px solid #333;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
 }
 
 nav ul {
   display: flex;
   list-style: none;
-  gap: var(--space-md);
+  gap: 2.5rem;
   justify-content: center;
+  padding: 1.75rem 0;
 }
 
 nav a {
+  color: var(--text-light);
   text-decoration: none;
-  color: var(--text-color);
-  font-weight: bold;
-  transition: color 0.3s;
+  font-weight: 500;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5px;
 }
 
 nav a:hover {
-  color: var(--primary-color);
+  color: var(--primary);
+  letter-spacing: 1px;
+}
+
+main {
+  padding-top: 100px;
 }
 
 footer {
-  margin-top: var(--space-lg);
-  padding: var(--space-md) 0;
-  border-top: 1px solid #333;
+  background: var(--bg-light);
+  padding: var(--space-xl) 0 var(--space-lg);
   text-align: center;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  nav ul {
-    flex-direction: column;
-    align-items: center;
-  }
+  color: var(--text-light);
+  font-size: 0.95rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
 }

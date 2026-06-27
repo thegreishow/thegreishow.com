@@ -1,11 +1,11 @@
 # The Grei Show Website
 
-## Project Status
-Phase 1 — Foundation (Infrastructure First)
+Long-term digital ecosystem headquarters.
 
-## Architecture Decisions
-- Modular folder structure for scalability
-- Reusable CSS system matching existing design
-- Vanilla JS for core features
+## Architecture
+Modular, scalable foundation for all current and future projects.
 
-Last Updated: June 27, 2026
+## Phase 1 Goal
+Clean structure + reusable layout + navigation + routing.
+
+See PROJECT_STATE.md for current progress.

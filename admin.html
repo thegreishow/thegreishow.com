@@ -12,34 +12,85 @@
 
   <style>
     body { padding: 2rem; font-family: sans-serif; }
-    textarea { width: 100%; height: 70vh; background: #0b0b0f; color: #fff; padding: 1rem; border: 1px solid #333; }
-    button { margin-top: 1rem; padding: 1rem 2rem; }
+    textarea { width: 100%; height: 65vh; background: #0b0b0f; color: #fff; padding: 1rem; border: 1px solid #333; }
+    input { width: 100%; padding: 0.8rem; margin-top: 1rem; background:#111; color:#fff; border:1px solid #333; }
+    button { margin-top: 1rem; padding: 1rem 2rem; cursor:pointer; }
+    .status { margin-top: 1rem; color: #aaa; }
   </style>
 </head>
 <body>
 
-  <h1>CMS ADMIN PANEL</h1>
+  <h1>CMS ADMIN PANEL (LIVE SYNC)</h1>
 
-  <p>Edit your entire universe from one file:</p>
+  <p>Edit your entire universe and sync directly to GitHub:</p>
 
   <textarea id="cmsEditor"></textarea>
 
-  <button onclick="downloadCMS()">Download CMS Update</button>
+  <input id="token" type="password" placeholder="GitHub Personal Access Token" />
+
+  <button onclick="syncCMS()">SYNC TO GITHUB</button>
+  <button onclick="loadCMS()">Reload</button>
+
+  <div class="status" id="status"></div>
 
   <script>
+    const repo = "thegreishow/thegreishow.com";
+    const path = "assets/data/cms.json";
+
     async function loadCMS() {
       const res = await fetch('assets/data/cms.json');
       const data = await res.json();
       document.getElementById('cmsEditor').value = JSON.stringify(data, null, 2);
     }
 
-    function downloadCMS() {
-      const data = document.getElementById('cmsEditor').value;
-      const blob = new Blob([data], {type: 'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'cms.json';
-      a.click();
+    async function getFileSha(token) {
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      return data.sha;
+    }
+
+    async function syncCMS() {
+      const token = document.getElementById('token').value;
+      const status = document.getElementById('status');
+
+      if (!token) {
+        status.innerText = "Missing GitHub token";
+        return;
+      }
+
+      try {
+        status.innerText = "Getting file SHA...";
+        const sha = await getFileSha(token);
+
+        status.innerText = "Encoding CMS...";
+        const content = btoa(unescape(encodeURIComponent(document.getElementById('cmsEditor').value)));
+
+        status.innerText = "Pushing to GitHub...";
+
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: "Live CMS update",
+            content,
+            sha
+          })
+        });
+
+        if (res.ok) {
+          status.innerText = "SYNC SUCCESSFUL 🚀";
+        } else {
+          const err = await res.json();
+          status.innerText = "SYNC FAILED: " + JSON.stringify(err);
+        }
+      } catch (e) {
+        status.innerText = "ERROR: " + e.message;
+      }
     }
 
     loadCMS();

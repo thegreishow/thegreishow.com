@@ -31,12 +31,22 @@
       text-shadow: 0 0 25px rgba(120,80,255,0.4);
     }
 
-    .player {
+    .featured {
       margin-top: 2rem;
       text-align: center;
+      padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
     }
 
-    .player audio {
+    .featured h2 {
+      letter-spacing: 3px;
+      margin-bottom: 1rem;
+    }
+
+    .featured audio {
       width: 100%;
       max-width: 700px;
     }
@@ -110,20 +120,24 @@
 
     <div class="hero">
       <h1 id="music-title" data-reveal>MUSIC</h1>
-
-      <div class="player" data-reveal>
-        <audio controls>
-          <source src="https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3" type="audio/mpeg">
-        </audio>
-        <p style="color: var(--text-light);">Latest transmission</p>
-      </div>
+      <p style="color: var(--text-light); margin-top:1rem;" data-reveal>
+        A cinematic audio universe
+      </p>
     </div>
 
+    <!-- SINGLE FEATURED PLAYER (CMS DRIVEN) -->
+    <div class="featured" data-reveal>
+      <h2>FEATURED TRANSMISSION</h2>
+      <div id="featured-player"></div>
+    </div>
+
+    <!-- RELEASES -->
     <div class="releases">
-      <h2 data-reveal>RELEASES</h2>
+      <h2 data-reveal>ARCHIVE</h2>
       <div id="music-tracks"></div>
     </div>
 
+    <!-- STREAM LINKS -->
     <div class="links" data-reveal>
       <h2>STREAM MUSIC</h2>
 
@@ -142,5 +156,34 @@
 
   <script src="assets/js/app.js"></script>
   <script src="assets/js/motion.js"></script>
+
+  <script>
+    // Lightweight fallback renderer (if CMS not expanded yet)
+    async function loadFeatured() {
+      try {
+        const res = await fetch('assets/data/cms.json');
+        const cms = await res.json();
+
+        const container = document.getElementById('featured-player');
+        const track = cms?.music?.featured;
+
+        if (container && track) {
+          container.innerHTML = `
+            <audio controls autoplay style="width:100%;max-width:700px;">
+              <source src="${track.url}" type="audio/mpeg">
+            </audio>
+            <p style="margin-top:1rem;color:var(--text-light);">
+              ${track.name}
+            </p>
+          `;
+        }
+      } catch (e) {
+        console.error('Featured load failed', e);
+      }
+    }
+
+    loadFeatured();
+  </script>
+
 </body>
 </html>

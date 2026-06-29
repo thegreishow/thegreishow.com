@@ -1,30 +1,40 @@
-/* Portal Transition System */
+/* Portal Transition System v3.0 */
 
 .portal-overlay {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(20,20,40,0.9), rgba(0,0,0,1));
+  background: radial-gradient(circle at center, rgba(10,10,25,0.92), rgba(0,0,0,1));
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.45s ease;
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 9999;
+  transform: scale(1.02);
+  backdrop-filter: blur(6px);
 }
 
 .portal-overlay.active {
   opacity: 1;
   pointer-events: all;
+  transform: scale(1);
 }
 
-/* subtle cinematic glow pulse */
+/* cinematic depth layer */
 .portal-overlay::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(120,80,255,0.15), transparent 60%);
-  animation: pulse 2.5s ease-in-out infinite;
+  background: radial-gradient(circle at 50% 50%, rgba(138,125,255,0.18), transparent 65%);
+  animation: pulse 3s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%,100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.1); opacity: 0.9; }
+  0%,100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.9; }
+}
+
+/* optional global exit state hook */
+body.portal-out {
+  filter: blur(2px);
+  transform: scale(0.99);
+  transition: all 0.5s ease;
 }

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Videos | The Grei Show</title>
+
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <link rel="stylesheet" href="assets/css/portal.css">
+
+  <style>
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font-body);
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:60px 20px;
+    }
+
+    .nav a{
+      color:var(--text-dim);
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .nav a:hover{ color:var(--accent); }
+
+    h1{
+      text-align:center;
+      font-size:clamp(2.5rem,5vw,4rem);
+      text-shadow:var(--glow);
+      margin-bottom:20px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:16px;
+      overflow:hidden;
+      transition:0.3s ease;
+      text-decoration:none;
+      color:var(--text);
+    }
+
+    .card:hover{
+      transform:translateY(-6px);
+      box-shadow:var(--glow-strong);
+    }
+
+    .thumb{
+      width:100%;
+      aspect-ratio:16/9;
+      background:#111;
+    }
+
+    .content{
+      padding:15px;
+    }
+
+    .content h3{
+      margin:0 0 5px 0;
+    }
+
+    .content p{
+      color:var(--text-dim);
+      font-size:0.9rem;
+    }
+
+    footer{
+      text-align:center;
+      margin-top:60px;
+      color:var(--text-dim);
+      font-size:0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrap">
+
+    <div class="nav">
+      <a href="visuals.html">← Back to Visuals</a>
+    </div>
+
+    <h1>MUSIC VIDEOS</h1>
+
+    <div class="grid">
+      <a class="card" href="#">
+        <div class="thumb"></div>
+        <div class="content">
+          <h3>No Drama</h3>
+          <p>The Grei Show</p>
+        </div>
+      </a>
+    </div>
+
+    <footer>THE GREI SHOW • Visual Universe</footer>
+
+  </div>
+
+</body>
+</html>

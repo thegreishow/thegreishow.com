@@ -1,0 +1,30 @@
+/* Portal Transition System */
+
+.portal-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(20,20,40,0.9), rgba(0,0,0,1));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+  z-index: 9999;
+}
+
+.portal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* subtle cinematic glow pulse */
+.portal-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(120,80,255,0.15), transparent 60%);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 0.9; }
+}

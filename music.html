@@ -9,7 +9,79 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f0f1a, #07070b 70%);
+    }
+
+    .music-wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 2rem 0 3rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      letter-spacing: 6px;
+      text-shadow: 0 0 25px rgba(120,80,255,0.4);
+    }
+
+    .player {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .player audio {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .releases {
+      margin-top: 4rem;
+    }
+
+    .track-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease;
+    }
+
+    .track-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .links {
+      margin-top: 4rem;
+      text-align: center;
+    }
+
+    .links a {
+      display: inline-block;
+      margin: 0.5rem 1rem;
+      padding: 0.8rem 1.2rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      text-decoration: none;
+      color: #fff;
+      transition: 0.3s;
+    }
+
+    .links a:hover {
+      background: rgba(120,80,255,0.2);
+      box-shadow: 0 0 20px rgba(120,80,255,0.3);
+    }
+  </style>
 </head>
+
 <body>
 
   <div id="site-header"></div>
@@ -20,25 +92,33 @@
     </nav>
   </header>
 
-  <main class="section">
-    <div class="container">
-      <h1>MUSIC</h1>
+  <main class="section music-wrap">
 
-      <div style="margin-top:2rem; text-align:center;">
-        <audio controls style="width:100%; max-width:700px;">
+    <div class="hero">
+      <h1 id="music-title" data-reveal>MUSIC</h1>
+
+      <div class="player" data-reveal>
+        <audio controls>
           <source src="https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3" type="audio/mpeg">
         </audio>
-
-        <p style="margin-top:1rem; color: var(--text-light);">
-          Latest transmission
-        </p>
-      </div>
-
-      <div style="margin-top:4rem;">
-        <h2>RELEASES</h2>
-        <p>Future catalog system will live here (streaming embeds, drops, exclusives).</p>
+        <p style="color: var(--text-light);">Latest transmission</p>
       </div>
     </div>
+
+    <div class="releases">
+      <h2 data-reveal>RELEASES</h2>
+      <div id="music-tracks"></div>
+    </div>
+
+    <div class="links" data-reveal>
+      <h2>STREAM MUSIC</h2>
+
+      <a href="https://open.spotify.com" target="_blank">Spotify</a>
+      <a href="https://music.apple.com" target="_blank">Apple Music</a>
+      <a href="https://soundcloud.com" target="_blank">SoundCloud</a>
+      <a href="https://music.youtube.com" target="_blank">YouTube Music</a>
+    </div>
+
   </main>
 
   <script src="assets/js/app.js"></script>

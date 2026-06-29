@@ -83,7 +83,6 @@
       display: block;
     }
 
-    /* subtle floating animation */
     .card {
       animation: float 6s ease-in-out infinite;
     }
@@ -117,8 +116,8 @@
       </a>
 
       <a class="card" href="wheelit.html">
-        <span class="emoji">🌿</span>
-        WHEEL IT
+        <span class="emoji">💿</span>
+        WHEEL IT! RECORDS
       </a>
 
       <a class="card" href="astralthread.html">
@@ -131,10 +130,6 @@
         CONNECT
       </a>
 
-      <a class="card" href="epk.html">
-        <span class="emoji">📄</span>
-        EPK
-      </a>
     </div>
   </div>
 
@@ -144,7 +139,6 @@
   <script>
     const audio = document.getElementById('bg-music');
 
-    // attempt autoplay
     window.addEventListener('load', () => {
       audio.volume = 0.25;
       audio.play().catch(() => {
@@ -152,11 +146,8 @@
       });
     });
 
-    // fallback interaction trigger
     document.addEventListener('click', () => {
-      if (audio.paused) {
-        audio.play();
-      }
+      if (audio.paused) audio.play();
     }, { once: true });
   </script>
 

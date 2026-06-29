@@ -141,18 +141,14 @@
 
   </div>
 
-  <script>
-    const documentaries = [
-      {
-        title: "Behind The Grei Show",
-        description: "Creative process and studio life",
-        id: "iRzHXezaJ_E"
-      }
-    ];
+  <script src="assets/js/media-engine.js"></script>
 
+  <script>
     const grid = document.getElementById("docGrid");
 
     function render(){
+      const documentaries = MediaEngine.getAll('documentaries');
+
       grid.innerHTML = documentaries.map(d => `
         <div class="card">
           <div class="thumb">
@@ -163,7 +159,7 @@
           </div>
           <div class="content">
             <h3>${d.title}</h3>
-            <p>${d.description}</p>
+            <p>${d.description || ''}</p>
           </div>
         </div>
       `).join('');

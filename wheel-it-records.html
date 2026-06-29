@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wheel It! Records 💿 | Label Portal</title>
+
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+  <link rel="stylesheet" href="assets/css/portal.css" />
+
+  <style>
+    body{
+      margin:0;
+      background: radial-gradient(circle at top,#151525,#07070b 70%);
+      color:var(--text);
+      font-family:var(--font-body);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,200,80,0.10), transparent 55%),
+        radial-gradient(circle at 80% 60%, rgba(140,80,255,0.12), transparent 60%),
+        radial-gradient(circle at 50% 100%, rgba(0,200,255,0.08), transparent 60%);
+      pointer-events:none;
+      animation:drift 16s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift{
+      from{transform:scale(1)}
+      to{transform:scale(1.08)}
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:70px 20px;
+      position:relative;
+      z-index:2;
+    }
+
+    .back a{
+      color:var(--text-dim);
+      text-decoration:none;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:40px;
+    }
+
+    .hero h1{
+      font-size:3.2rem;
+      letter-spacing:4px;
+      margin:10px 0;
+      text-shadow:var(--glow-strong);
+    }
+
+    .hero p{
+      color:var(--text-dim);
+      max-width:600px;
+      margin:0 auto;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:15px;
+      margin:40px 0;
+    }
+
+    .stat{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px;
+      padding:20px;
+      text-align:center;
+      backdrop-filter:blur(10px);
+    }
+
+    .stat h2{
+      margin:0;
+      font-size:1.8rem;
+      color:var(--accent);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.10);
+      border-radius:16px;
+      overflow:hidden;
+      backdrop-filter:blur(12px);
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-6px);
+      box-shadow:var(--glow-strong);
+    }
+
+    iframe{
+      width:100%;
+      aspect-ratio:16/9;
+      border:none;
+    }
+
+    .content{
+      padding:15px;
+    }
+
+    .label-tag{
+      font-size:0.75rem;
+      opacity:0.7;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <div class="back"><a href="visuals.html">← Back to Visuals</a></div>
+
+  <div class="hero">
+    <h1>Wheel It! Records 💿</h1>
+    <p>Independent label ecosystem powered by The Grei Show. Releases, visuals, and future artists in one unified portal.</p>
+  </div>
+
+  <div class="stats" id="stats">
+    <div class="stat">
+      <h2 id="releaseCount">0</h2>
+      <p>Releases</p>
+    </div>
+    <div class="stat">
+      <h2>1</h2>
+      <p>Core Artist</p>
+    </div>
+    <div class="stat">
+      <h2>∞</h2>
+      <p>Future Growth</p>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+</div>
+
+<script src="assets/js/media-engine.js"></script>
+
+<script>
+  const grid = document.getElementById('grid');
+  const releaseCount = document.getElementById('releaseCount');
+
+  function render(){
+    const videos = MediaEngine.getAll('videos') || [];
+
+    const filtered = videos.filter(v => v.label === "Wheel It! Records");
+
+    releaseCount.innerText = filtered.length;
+
+    grid.innerHTML = filtered.map(v => `
+      <div class="card">
+        <iframe src="https://www.youtube.com/embed/${v.id}?rel=0"></iframe>
+        <div class="content">
+          <h3>${v.title}</h3>
+          <p>${v.artist || ''} <span class="label-tag">• ${v.label || ''}</span></p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  render();
+</script>
+
+</body>
+</html>

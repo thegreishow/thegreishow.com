@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Grei Show</title>
+
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
@@ -39,7 +41,7 @@
       font-size: clamp(4rem, 10vw, 7.5rem);
       line-height: 0.95;
       margin-bottom: 1rem;
-      color: white;
+      color: #fff;
     }
 
     .hero .tagline {
@@ -55,21 +57,47 @@
     }
 
     .section-title {
-      font-size: 2.8rem;
+      font-size: 2.6rem;
       text-align: center;
       margin-bottom: var(--space-lg);
       color: var(--primary);
     }
+
+    nav ul {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      justify-content: center;
+      padding: 1rem 0;
+      margin: 0;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      opacity: 0.85;
+      transition: 0.2s;
+    }
+
+    nav a:hover {
+      opacity: 1;
+    }
   </style>
 </head>
+
 <body>
+
   <header>
     <nav>
       <div class="container">
         <ul>
           <li><a href="index.html">Home</a></li>
-          <li><a href="#listen">Music</a></li>
+          <li><a href="#music">Music</a></li>
           <li><a href="#visuals">Visuals</a></li>
+          <li><a href="#arcade">Arcade</a></li>
+          <li><a href="#wheelit">Wheel It</a></li>
+          <li><a href="#astralthread">Astral Thread</a></li>
           <li><a href="#connect">Connect</a></li>
         </ul>
       </div>
@@ -85,17 +113,15 @@
   </section>
 
   <!-- MUSIC -->
-  <section class="section" id="listen" style="background: var(--bg-light);">
+  <section class="section" id="music" style="background: var(--bg-light);">
     <div class="container">
-      <h2 class="section-title">NO DRAMA</h2>
+      <h2 class="section-title">MUSIC</h2>
       <div style="max-width: 680px; margin: 0 auto; text-align: center;">
         <audio controls style="width: 100%; margin: 2rem 0;">
           <source src="https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3" type="audio/mpeg">
         </audio>
-        <p style="color: var(--text-light); font-size: 1.15rem;">
-          A singular moment of clarity.<br>
-          Pure signal. No filler.<br><br>
-          The main event.
+        <p style="color: var(--text-light); font-size: 1.1rem;">
+          Pure signal. No filler.
         </p>
       </div>
     </div>
@@ -106,31 +132,57 @@
     <div class="container">
       <h2 class="section-title">VISUAL TRANSMISSIONS</h2>
       <div style="max-width: 920px; margin: 0 auto;">
-        <iframe width="100%" height="520" src="https://www.youtube.com/embed/dQw4w9wgxcq" title="Visuals" frameborder="0" allowfullscreen style="border-radius: 12px;"></iframe>
+        <!-- Replace VIDEO_ID with actual YouTube video -->
+        <iframe width="100%" height="520" src="https://www.youtube.com/embed/VIDEO_ID" title="Visuals" frameborder="0" allowfullscreen style="border-radius: 12px;"></iframe>
       </div>
     </div>
   </section>
 
-  <!-- CONNECT -->
-  <section class="section" id="connect" style="background: var(--bg-light);">
+  <!-- ARCADE -->
+  <section class="section" id="arcade" style="background: var(--bg-light);">
     <div class="container">
-      <h2 class="section-title">ENTER THE CONVERSATION</h2>
+      <h2 class="section-title">ARCADE</h2>
+      <p style="text-align:center; color: var(--text-light);">Coming soon: interactive experiences and games.</p>
+    </div>
+  </section>
+
+  <!-- WHEEL IT -->
+  <section class="section" id="wheelit">
+    <div class="container">
+      <h2 class="section-title">WHEEL IT RECORDS</h2>
+      <p style="text-align:center; color: var(--text-light);">Label hub and releases coming soon.</p>
+    </div>
+  </section>
+
+  <!-- ASTRAL THREAD -->
+  <section class="section" id="astralthread" style="background: var(--bg-light);">
+    <div class="container">
+      <h2 class="section-title">THE ASTRAL THREAD</h2>
+      <p style="text-align:center; color: var(--text-light);">Storyverse portal in development.</p>
+    </div>
+  </section>
+
+  <!-- CONNECT -->
+  <section class="section" id="connect">
+    <div class="container">
+      <h2 class="section-title">CONNECT</h2>
       <form style="max-width: 520px; margin: 0 auto;">
-        <input type="text" placeholder="YOUR NAME" style="width:100%; padding:1rem; margin-bottom:1rem; background:var(--bg); border:1px solid #333; color:white;" required>
-        <input type="email" placeholder="EMAIL" style="width:100%; padding:1rem; margin-bottom:1rem; background:var(--bg); border:1px solid #333; color:white;" required>
-        <textarea rows="6" placeholder="YOUR MESSAGE" style="width:100%; padding:1rem; margin-bottom:1rem; background:var(--bg); border:1px solid #333; color:white;" required></textarea>
-        <button type="submit" style="width:100%; padding:1.25rem; background:var(--primary); color:#000; font-weight:600; border:none; cursor:pointer;">SEND TRANSMISSION</button>
+        <input type="text" placeholder="YOUR NAME" required style="width:100%; padding:1rem; margin-bottom:1rem;">
+        <input type="email" placeholder="EMAIL" required style="width:100%; padding:1rem; margin-bottom:1rem;">
+        <textarea rows="6" placeholder="YOUR MESSAGE" required style="width:100%; padding:1rem; margin-bottom:1rem;"></textarea>
+        <button type="submit" style="width:100%; padding:1.25rem; background: var(--primary); border:none; cursor:pointer;">SEND</button>
       </form>
     </div>
   </section>
 
   <footer>
     <div class="container">
-      <p>&copy; THE GREI SHOW • ESTABLISHED 2026</p>
+      <p>&copy; THE GREI SHOW</p>
     </div>
   </footer>
 
   <script src="assets/js/navigation.js"></script>
   <script src="assets/js/main.js"></script>
+
 </body>
 </html>

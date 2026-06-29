@@ -136,26 +136,20 @@
     <h1>LIVE SESSIONS</h1>
     <p class="subtitle">Raw performances, studio sessions and stripped-back transmissions</p>
 
-    <div class="grid" id="liveGrid"></div>
+    <div id="liveGrid" class="grid"></div>
 
     <footer>THE GREI SHOW • Visual Universe • Wheel It! Records 💿</footer>
 
   </div>
 
-  <script>
-    // CONTENT INJECTION LAYER
-    const sessions = [
-      {
-        title: "Studio Session 1",
-        artist: "The Grei Show",
-        id: "",
-        type: "live"
-      }
-    ];
+  <script src="assets/js/media-engine.js"></script>
 
+  <script>
     const grid = document.getElementById("liveGrid");
 
     function render(){
+      const sessions = MediaEngine.getAll('liveSessions');
+
       grid.innerHTML = sessions.map(s => `
         <div class="card">
           <div class="thumb">
@@ -165,7 +159,7 @@
           </div>
           <div class="content">
             <h3>${s.title}</h3>
-            <p>${s.artist}</p>
+            <p>${s.type || 'Live Session'}</p>
           </div>
         </div>
       `).join('');

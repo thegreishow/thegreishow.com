@@ -1,6 +1,10 @@
 {
   "music": {
     "title": "Music",
+    "featured": {
+      "name": "No Drama",
+      "url": "https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3"
+    },
     "tracks": [
       {
         "name": "No Drama",

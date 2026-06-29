@@ -14,15 +14,36 @@
   <style>
     body{
       margin:0;
-      background:var(--bg);
+      background: radial-gradient(circle at top,#151525,#07070b 70%);
       color:var(--text);
       font-family:var(--font-body);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(140,80,255,0.18), transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(0,200,255,0.12), transparent 60%),
+        radial-gradient(circle at 50% 100%, rgba(255,255,255,0.05), transparent 60%);
+      pointer-events:none;
+      animation:drift 14s ease-in-out infinite alternate;
+      z-index:0;
+    }
+
+    @keyframes drift{
+      from{transform:scale(1)}
+      to{transform:scale(1.12)}
     }
 
     .wrap{
-      max-width:1100px;
+      position:relative;
+      z-index:2;
+      max-width:1150px;
       margin:0 auto;
-      padding:60px 20px;
+      padding:70px 20px;
     }
 
     .nav a{
@@ -31,34 +52,79 @@
       font-weight:600;
     }
 
+    .nav a:hover{color:var(--accent)}
+
     h1{
       text-align:center;
-      font-size:clamp(2.5rem,5vw,4rem);
-      text-shadow:var(--glow);
+      font-size:clamp(2.8rem,5vw,4.2rem);
+      letter-spacing:6px;
+      text-shadow:var(--glow-strong);
+      margin-bottom:10px;
+      font-family:var(--font-heading);
+    }
+
+    .subtitle{
+      text-align:center;
+      color:var(--text-dim);
       margin-bottom:30px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:20px;
     }
 
     .card{
       background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.1);
-      border-radius:16px;
-      padding:20px;
-      margin-bottom:20px;
-      transition:0.3s ease;
+      border:1px solid rgba(255,255,255,0.10);
+      border-radius:18px;
+      overflow:hidden;
+      padding:0;
+      transition:0.35s ease;
+      backdrop-filter:blur(12px);
     }
 
     .card:hover{
-      transform:translateY(-6px);
+      transform:translateY(-8px);
       box-shadow:var(--glow-strong);
+    }
+
+    .thumb{
+      width:100%;
+      aspect-ratio:16/9;
+      background:#111;
+    }
+
+    .thumb iframe{
+      width:100%;
+      height:100%;
+      border:none;
+    }
+
+    .content{
+      padding:15px;
+    }
+
+    .content h3{
+      margin:0 0 5px 0;
+      font-family:var(--font-heading);
+    }
+
+    .content p{
+      color:var(--text-dim);
+      font-size:0.9rem;
     }
 
     footer{
       text-align:center;
-      margin-top:60px;
+      margin-top:70px;
       color:var(--text-dim);
+      font-size:0.85rem;
     }
   </style>
 </head>
+
 <body>
 
   <div class="wrap">
@@ -68,15 +134,45 @@
     </div>
 
     <h1>LIVE SESSIONS</h1>
+    <p class="subtitle">Raw performances, studio sessions and stripped-back transmissions</p>
 
-    <div class="card">
-      <h3>Studio Performances</h3>
-      <p>Live recordings and stripped-back performances coming soon.</p>
-    </div>
+    <div class="grid" id="liveGrid"></div>
 
-    <footer>THE GREI SHOW • Visual Universe</footer>
+    <footer>THE GREI SHOW • Visual Universe • Wheel It! Records 💿</footer>
 
   </div>
+
+  <script>
+    // CONTENT INJECTION LAYER
+    const sessions = [
+      {
+        title: "Studio Session 1",
+        artist: "The Grei Show",
+        id: "",
+        type: "live"
+      }
+    ];
+
+    const grid = document.getElementById("liveGrid");
+
+    function render(){
+      grid.innerHTML = sessions.map(s => `
+        <div class="card">
+          <div class="thumb">
+            ${s.id ? `
+              <iframe src="https://www.youtube.com/embed/${s.id}?autoplay=0&mute=1&rel=0" allowfullscreen></iframe>
+            ` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#777;">Coming Soon</div>`}
+          </div>
+          <div class="content">
+            <h3>${s.title}</h3>
+            <p>${s.artist}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    render();
+  </script>
 
 </body>
 </html>

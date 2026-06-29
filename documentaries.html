@@ -79,7 +79,7 @@
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.10);
       border-radius:18px;
-      padding:22px;
+      overflow:hidden;
       backdrop-filter:blur(12px);
       transition:0.35s ease;
     }
@@ -89,12 +89,28 @@
       box-shadow:var(--glow-strong);
     }
 
-    .card h3{
+    .thumb{
+      width:100%;
+      aspect-ratio:16/9;
+      background:#111;
+    }
+
+    .thumb iframe{
+      width:100%;
+      height:100%;
+      border:none;
+    }
+
+    .content{
+      padding:15px;
+    }
+
+    .content h3{
       margin:0 0 6px 0;
       font-family:var(--font-heading);
     }
 
-    .card p{
+    .content p{
       color:var(--text-dim);
       font-size:0.9rem;
     }
@@ -129,8 +145,8 @@
     const documentaries = [
       {
         title: "Behind The Grei Show",
-        description: "Creative process and studio life (coming soon)",
-        type: "archive"
+        description: "Creative process and studio life",
+        id: "iRzHXezaJ_E"
       }
     ];
 
@@ -139,8 +155,16 @@
     function render(){
       grid.innerHTML = documentaries.map(d => `
         <div class="card">
-          <h3>${d.title}</h3>
-          <p>${d.description}</p>
+          <div class="thumb">
+            <iframe 
+              src="https://www.youtube.com/embed/${d.id}?autoplay=0&mute=1&rel=0"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="content">
+            <h3>${d.title}</h3>
+            <p>${d.description}</p>
+          </div>
         </div>
       `).join('');
     }

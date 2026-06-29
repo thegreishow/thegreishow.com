@@ -4,44 +4,128 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Photography | The Grei Show</title>
-
-  <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/layout.css">
-  <link rel="stylesheet" href="assets/css/components.css">
-  <link rel="stylesheet" href="assets/css/theme.css">
-
   <style>
-    body{
-      background: radial-gradient(circle at top, #0f0f1a, #07070b 70%);
-      color:#fff;
-      font-family: var(--font-body);
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
     }
-
-    .wrap{
-      max-width:900px;
-      margin:0 auto;
-      padding:3rem 1.5rem;
-      text-align:center;
+    header {
+      background-color: #111;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #222;
     }
-
-    h1{
-      font-size:3rem;
-      letter-spacing:4px;
-      margin-bottom:1rem;
+    header h1 {
+      font-size: 1.5em;
+      margin: 0;
     }
-
-    .placeholder{
-      opacity:0.7;
-      margin-top:1rem;
+    nav a {
+      color: #ccc;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 1em;
+    }
+    nav a:hover {
+      color: #fff;
+    }
+    section {
+      padding: 60px;
+      text-align: left;
+    }
+    h1.section-title {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    p.subtitle {
+      color: #ccc;
+      margin-bottom: 40px;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 15px;
+      object-fit: cover;
+      background: #111;
+      transition: transform 0.3s ease;
+    }
+    .gallery img:hover {
+      transform: scale(1.03);
+    }
+    .about {
+      margin-top: 50px;
+      max-width: 700px;
+    }
+    footer {
+      text-align: center;
+      color: #666;
+      padding: 30px;
+      border-top: 1px solid #222;
+      font-size: 0.9em;
     }
   </style>
 </head>
 <body>
 
-  <div class="wrap">
-    <h1>PHOTOGRAPHY</h1>
-    <p class="placeholder">Visual archives coming soon. This space will host curated photo stories and creative visuals.</p>
-  </div>
+  <header>
+    <h1>The Grei Show</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="music.html">Music</a>
+      <a href="videos.html">Videos</a>
+      <a href="photography.html">Photography</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <section>
+    <h1 class="section-title">Photography</h1>
+    <p class="subtitle">Real Stories. Real People. Real Places.</p>
+
+    <div class="gallery">
+
+      <img src="http://thegreishow.xo.je/photos/jamaica1.jpg" alt="Meleku, son of Sizzla Kalonji" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica2.jpg" alt="Aftermath of Hurricane Melissa in Manchester" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica3.jpg" alt="Landscape" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica4.jpg" alt="Community" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica5.jpg" alt="Nature" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica6.jpg" alt="Street Life" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica7.jpg" alt="Cultural Expression" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica8.jpg" alt="Portrait of a Local" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica9.jpg" alt="Rural Jamaica" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica10.jpg" alt="Life in the Hills" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica11.jpg" alt="Rain After the Storm" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica12.jpg" alt="Fishermen on the Coast" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica13.jpg" alt="Childhood in the Countryside" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica14.jpg" alt="Market Day in Jamaica" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica15.jpg" alt="Evening Glow Over St. Elizabeth" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica16.jpg" alt="A Moment of Reflection" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica17.jpg" alt="Musician at Work" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica18.jpg" alt="Village Life" loading="lazy" onerror="this.style.display='none'">
+      <img src="http://thegreishow.xo.je/photos/jamaica19.jpg" alt="Road to the Coast" loading="lazy" onerror="this.style.display='none'">
+
+    </div>
+
+    <div class="about">
+      <h2>About the Photographer</h2>
+      <p style="color:#ccc;">
+        Gamel Reid (<b>The Grei Show</b>) is a multidisciplinary artist, storyteller, and producer from Jamaica. 
+        His photography blends journalistic honesty with cinematic style, capturing moments that speak to the soul.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 The Grei Show | Wheel It! Records | Aluminum TV
+  </footer>
 
 </body>
 </html>

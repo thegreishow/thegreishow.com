@@ -66,7 +66,6 @@
     .subtitle{
       text-align:center;
       color:var(--text-dim);
-      letter-spacing:2px;
       margin-bottom:30px;
     }
 
@@ -175,56 +174,14 @@
 
   </div>
 
-  <script>
-    // CONTENT INJECTION LAYER (UPDATED)
-    const videos = [
-      {
-        title: "Puff Puff Pass [Remix]",
-        artist: "The Grei Show, Bay-C",
-        id: "ZsoVettmghI",
-        type: "release"
-      },
-      {
-        title: "Puff Puff Pass",
-        artist: "The Grei Show",
-        id: "aGXBlYq3EbY",
-        type: "release"
-      },
-      {
-        title: "Choppa Talk",
-        artist: "The Grei Show",
-        id: "Ibd1_8niIhg",
-        type: "release"
-      },
-      {
-        title: "Loosen Up",
-        artist: "The Grei Show, Swnkah",
-        id: "xTqZHV_37Lo",
-        type: "release"
-      },
-      {
-        title: "The Vibe",
-        artist: "The Grei Show, Big Sugar, Canned Beets",
-        id: "jinbfL-dW7s",
-        type: "release"
-      },
-      {
-        title: "Joy",
-        artist: "The Grei Show",
-        id: "8HcD4kv-oAI",
-        type: "release"
-      },
-      {
-        title: "Blind Without Shades",
-        artist: "The Grei Show",
-        id: "dGydgjCmkb4",
-        type: "release"
-      }
-    ];
+  <script src="assets/js/media-engine.js"></script>
 
+  <script>
     const grid = document.getElementById("videoGrid");
 
     function render(){
+      const videos = MediaEngine.getAll('videos');
+
       grid.innerHTML = videos.map(v => `
         <div class="card">
           <div class="thumb">
@@ -235,7 +192,7 @@
           </div>
           <div class="content">
             <h3>${v.title}</h3>
-            <p>${v.artist}</p>
+            <p>The Grei Show</p>
           </div>
         </div>
       `).join('');

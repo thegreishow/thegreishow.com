@@ -4,50 +4,144 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About | The Grei Show</title>
-
-  <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/layout.css">
-  <link rel="stylesheet" href="assets/css/components.css">
-  <link rel="stylesheet" href="assets/css/theme.css">
-
+  <link rel="stylesheet" href="style.css">
   <style>
-    body{
-      background: radial-gradient(circle at top, #0f0f1a, #07070b 70%);
-      color:#fff;
-      font-family: var(--font-body);
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #121212;
+      color: #f5f5f5;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    .wrap{
-      max-width:900px;
-      margin:0 auto;
-      padding:3rem 1.5rem;
+    .about-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 2;
     }
 
-    h1{
-      text-align:center;
-      font-size:3rem;
-      letter-spacing:4px;
-      margin-bottom:2rem;
+    h1, h2 {
+      font-weight: 700;
+      background: linear-gradient(270deg, #FFD700, #1DB954, #FF4500, #FFD700);
+      background-size: 600% 600%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientAnimation 10s ease infinite;
     }
 
-    p{
-      line-height:1.7;
-      opacity:0.85;
-      margin-bottom:1rem;
+    @keyframes gradientAnimation {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-top: 40px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+    }
+
+    .intro img {
+      display: block;
+      max-width: 250px;
+      width: 100%;
+      border-radius: 50%;
+      margin: 20px auto;
+      border: 4px solid #FFD700;
+    }
+
+    .highlight {
+      color: #1DB954; /* subtle green accent */
+      font-weight: bold;
+    }
+
+    .section {
+      border-top: 1px solid #333;
+      padding-top: 30px;
+      margin-top: 30px;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s ease;
+    }
+
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* YouTube Background */
+    .youtube-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.3; /* adjust for visibility */
+    }
+
+    .youtube-background iframe {
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
 <body>
-
-  <div class="wrap">
-    <h1>ABOUT</h1>
-
-    <p>The Grei Show is a Jamaican creative artist blending music, visuals, and storytelling into a unified digital universe.</p>
-
-    <p>This platform serves as a living ecosystem for releases, visuals, and creative expression.</p>
-
-    <p>More detailed biography content will be added soon.</p>
+  <!-- YouTube Background -->
+  <div class="youtube-background">
+    <iframe src="https://www.youtube.com/embed/VFDRN575k68?autoplay=1&mute=1&loop=1&playlist=VFDRN575k68&controls=0&modestbranding=1&showinfo=0&rel=0" 
+      title="The Grei Show - Soul Stealer [Visualizer]" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
 
+  <main class="about-page">
+    <section class="intro">
+      <h1>About The Grei Show</h1>
+      <img src="https://resources.tidal.com/images/08c7da18/9bdc/4cb5/8165/db037f1f554b/750x750.jpg" alt="The Grei Show">
+      <p>Gamel Reid, known as <strong>The Grei Show</strong>, is a Jamaican recording artist and producer whose music flows between reggae, hip-hop, and modern beats. His sound carries the heartbeat of Jamaica while pushing boundaries with fresh ideas and storytelling.</p>
+    </section>
+
+    <section class="section career">
+      <h2>Music & Collaborations</h2>
+      <p>The Grei Show has made waves with his own releases and high-profile collaborations. He has produced and worked alongside notable artists like <span class="highlight">Protoje,</span> <span class="highlight">Bay-C,</span> <span class="highlight">Big Sugar,</span> <span class="highlight">Blvk H3ro,</span> and <span class="highlight">Supa Dups</span>, contributing to tracks that blend conscious reggae vibes with modern production.</p>
+      <p>He’s also known for embracing the culture around marijuana and the lifestyle it intersects with, reflecting this naturally in his music and brand identity. From beats to visuals, his work embodies a relaxed yet intentional energy that resonates with fans across genres.</p>
+    </section>
+
+    <section class="section vision">
+      <h2>Creative Vision</h2>
+      <p>The Grei Show is more than the music; it’s a creative universe where production, performance, and visual storytelling converge. Every project reflects a commitment to quality, authenticity, and a uniquely Jamaican perspective filtered through global sounds.</p>
+      <p> Whether in the studio, on stage, or through visuals, The Grei Show invites listeners to be part of a journey that blends culture, sound, and the future.</p>
+    </section>
+  </main>
+
+  <script>
+    // Smooth scroll fade-in for sections
+    const sections = document.querySelectorAll('.section');
+    const options = { threshold: 0.3 };
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, options);
+
+    sections.forEach(section => observer.observe(section));
+  </script>
 </body>
 </html>

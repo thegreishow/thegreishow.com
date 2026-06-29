@@ -1,0 +1,29 @@
+{
+  "music": {
+    "title": "Music",
+    "tracks": [
+      {
+        "name": "No Drama",
+        "url": "https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3"
+      }
+    ]
+  },
+  "visuals": {
+    "title": "Visual Transmissions",
+    "videos": [
+      {
+        "title": "Latest Visual",
+        "youtube": "VIDEO_ID"
+      }
+    ]
+  },
+  "epk": {
+    "artist_name": "The Grei Show",
+    "bio": "Jamaican creative artist blending music, visuals, and immersive storytelling into a unified digital universe.",
+    "genres": ["Reggae", "Trap", "Cinematic", "Experimental"]
+  },
+  "connect": {
+    "title": "Connect",
+    "purpose": "Booking, press, collaborations"
+  }
+}

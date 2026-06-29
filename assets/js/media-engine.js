@@ -7,13 +7,13 @@ window.MediaEngine = (function () {
 
   const state = {
     videos: [
-      { title: "No Drama", id: "ZsoVettmghI", type: "release" },
-      { title: "Video 2", id: "aGXBlYq3EbY", type: "release" },
-      { title: "Video 3", id: "Ibd1_8niIhg", type: "release" },
-      { title: "Video 4", id: "xTqZHV_37Lo", type: "release" },
-      { title: "Video 5", id: "jinbfL-dW7s", type: "release" },
-      { title: "Video 6", id: "8HcD4kv-oAI", type: "release" },
-      { title: "Video 7", id: "dGydgjCmkb4", type: "release" }
+      { title: "No Drama", id: "ZsoVettmghI", type: "release", artist: "The Grei Show" },
+      { title: "Video 2", id: "aGXBlYq3EbY", type: "release", artist: "The Grei Show" },
+      { title: "Video 3", id: "Ibd1_8niIhg", type: "release", artist: "The Grei Show" },
+      { title: "Video 4", id: "xTqZHV_37Lo", type: "release", artist: "The Grei Show" },
+      { title: "Video 5", id: "jinbfL-dW7s", type: "release", artist: "The Grei Show" },
+      { title: "Video 6", id: "8HcD4kv-oAI", type: "release", artist: "The Grei Show" },
+      { title: "Video 7", id: "dGydgjCmkb4", type: "release", artist: "The Grei Show" }
     ],
 
     documentaries: [

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Grei Show</title>
+  <title>The Grei Show | Portal</title>
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
@@ -13,169 +13,98 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
-    .hero {
-      height: 100vh;
+    body {
       display: flex;
       align-items: center;
       justify-content: center;
+      min-height: 100vh;
+    }
+
+    .portal {
+      width: 100%;
+      max-width: 1100px;
+      padding: 2rem;
+    }
+
+    .title {
       text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(15,15,15,0.6), rgba(15,15,15,0.9));
-      z-index: 1;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 860px;
-      padding: 0 var(--space-md);
-    }
-
-    .hero h1 {
-      font-size: clamp(4rem, 10vw, 7.5rem);
-      line-height: 0.95;
-      margin-bottom: 1rem;
-      color: #fff;
-    }
-
-    .hero .tagline {
-      font-size: 1.6rem;
-      color: var(--accent);
+      font-size: clamp(3rem, 6vw, 5rem);
       margin-bottom: 3rem;
-      font-weight: 400;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
     }
 
-    .section {
-      padding: var(--space-xl) 0;
-    }
-
-    nav ul {
-      display: flex;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1.5rem;
-      list-style: none;
-      justify-content: center;
-      padding: 1rem 0;
-      margin: 0;
     }
 
-    nav a {
-      color: #fff;
+    .card {
+      background: var(--bg-light);
+      padding: 2rem;
+      text-align: center;
+      border-radius: 12px;
       text-decoration: none;
-      font-weight: 500;
-      opacity: 0.85;
+      color: var(--primary);
+      transition: transform 0.2s ease, background 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.05);
     }
 
-    nav a:hover {
-      opacity: 1;
-      color: var(--accent);
+    .card:hover {
+      transform: translateY(-5px);
+      background: #1a1a28;
+    }
+
+    .emoji {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <nav>
-      <div class="container">
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="index.html#music">Music</a></li>
-          <li><a href="index.html#visuals">Visuals</a></li>
-          <li><a href="arcade.html">Arcade</a></li>
-          <li><a href="wheelit.html">Wheel It</a></li>
-          <li><a href="astralthread.html">Astral Thread</a></li>
-          <li><a href="index.html#connect">Connect</a></li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+  <div class="portal">
+    <h1 class="title">THE GREI SHOW</h1>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>THE GREI SHOW</h1>
-      <p class="tagline">TRANSMISSIONS FROM THE EDGE</p>
+    <div class="grid">
+      <a class="card" href="music.html">
+        <span class="emoji">🎵</span>
+        MUSIC
+      </a>
+
+      <a class="card" href="visuals.html">
+        <span class="emoji">📺</span>
+        VISUALS
+      </a>
+
+      <a class="card" href="arcade.html">
+        <span class="emoji">🎮</span>
+        ARCADE
+      </a>
+
+      <a class="card" href="wheelit.html">
+        <span class="emoji">🌿</span>
+        WHEEL IT
+      </a>
+
+      <a class="card" href="astralthread.html">
+        <span class="emoji">📚</span>
+        ASTRAL THREAD
+      </a>
+
+      <a class="card" href="connect.html">
+        <span class="emoji">📬</span>
+        CONNECT
+      </a>
+
+      <a class="card" href="epk.html">
+        <span class="emoji">📄</span>
+        EPK
+      </a>
     </div>
-  </section>
-
-  <!-- MUSIC -->
-  <section class="section" id="music" style="background: var(--bg-light);">
-    <div class="container">
-      <h2 class="section-title">MUSIC</h2>
-      <div style="max-width: 680px; margin: 0 auto; text-align: center;">
-        <audio controls style="width: 100%; margin: 2rem 0;">
-          <source src="https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3" type="audio/mpeg">
-        </audio>
-        <p style="color: var(--text-light); font-size: 1.1rem;">
-          Pure signal. No filler.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- VISUALS -->
-  <section class="section" id="visuals">
-    <div class="container">
-      <h2 class="section-title">VISUAL TRANSMISSIONS</h2>
-      <div style="max-width: 920px; margin: 0 auto;">
-        <iframe width="100%" height="520" src="https://www.youtube.com/embed/VIDEO_ID" title="Visuals" frameborder="0" allowfullscreen style="border-radius: 12px;"></iframe>
-      </div>
-    </div>
-  </section>
-
-  <!-- ARCADE -->
-  <section class="section" id="arcade" style="background: var(--bg-light);">
-    <div class="container">
-      <h2 class="section-title">ARCADE</h2>
-      <p style="text-align:center; color: var(--text-light);">Coming soon: interactive experiences and games.</p>
-    </div>
-  </section>
-
-  <!-- WHEEL IT -->
-  <section class="section" id="wheelit">
-    <div class="container">
-      <h2 class="section-title">WHEEL IT RECORDS</h2>
-      <p style="text-align:center; color: var(--text-light);">Label hub and releases coming soon.</p>
-    </div>
-  </section>
-
-  <!-- ASTRAL THREAD -->
-  <section class="section" id="astralthread" style="background: var(--bg-light);">
-    <div class="container">
-      <h2 class="section-title">THE ASTRAL THREAD</h2>
-      <p style="text-align:center; color: var(--text-light);">Storyverse portal in development.</p>
-    </div>
-  </section>
-
-  <!-- CONNECT -->
-  <section class="section" id="connect">
-    <div class="container">
-      <h2 class="section-title">CONNECT</h2>
-      <form style="max-width: 520px; margin: 0 auto;">
-        <input type="text" placeholder="YOUR NAME" required style="width:100%; padding:1rem; margin-bottom:1rem;">
-        <input type="email" placeholder="EMAIL" required style="width:100%; padding:1rem; margin-bottom:1rem;">
-        <textarea rows="6" placeholder="YOUR MESSAGE" required style="width:100%; padding:1rem; margin-bottom:1rem;"></textarea>
-        <button type="submit" style="width:100%; padding:1.25rem; background: var(--primary); border:none; cursor:pointer;">SEND</button>
-      </form>
-    </div>
-  </section>
-
-  <footer>
-    <div class="container">
-      <p>&copy; THE GREI SHOW</p>
-    </div>
-  </footer>
-
-  <script src="assets/js/navigation.js"></script>
-  <script src="assets/js/main.js"></script>
+  </div>
 
 </body>
 </html>

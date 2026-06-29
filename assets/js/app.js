@@ -13,6 +13,50 @@ async function loadHeader() {
   }
 }
 
+// =========================
+// CMS LAYER (NEW)
+// =========================
+
+async function loadCMS() {
+  try {
+    const res = await fetch('assets/data/cms.json');
+    return await res.json();
+  } catch (err) {
+    console.error('CMS load failed:', err);
+    return null;
+  }
+}
+
+function renderMusic(cms) {
+  if (!cms?.music) return;
+
+  const title = document.getElementById('music-title');
+  const container = document.getElementById('music-tracks');
+
+  if (title) title.textContent = cms.music.title;
+
+  if (container && cms.music.tracks) {
+    container.innerHTML = '';
+    cms.music.tracks.forEach(track => {
+      const el = document.createElement('div');
+      el.innerHTML = `
+        <p>${track.name}</p>
+        <audio controls src="${track.url}"></audio>
+      `;
+      container.appendChild(el);
+    });
+  }
+}
+
+async function initCMS() {
+  const cms = await loadCMS();
+  if (!cms) return;
+
+  renderMusic(cms);
+}
+
+// =========================
+
 function initPage() {
   document.body.classList.add('app-loaded');
 }
@@ -20,4 +64,5 @@ function initPage() {
 window.addEventListener('DOMContentLoaded', async () => {
   await loadHeader();
   initPage();
+  await initCMS();
 });

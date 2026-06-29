@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
+  <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
     body {
@@ -39,6 +40,8 @@
       border-radius: 16px;
       background: rgba(255,255,255,0.03);
       backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
     }
 
     .featured h2 {
@@ -49,6 +52,34 @@
     .featured audio {
       width: 100%;
       max-width: 700px;
+    }
+
+    /* waveform visual polish */
+    .wave-bars {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 1.2rem;
+      height: 30px;
+      align-items: flex-end;
+    }
+
+    .wave-bars span {
+      width: 4px;
+      height: 10px;
+      background: rgba(120,80,255,0.6);
+      animation: wave 1.2s infinite ease-in-out;
+      border-radius: 2px;
+    }
+
+    .wave-bars span:nth-child(2) { animation-delay: 0.1s; height: 18px; }
+    .wave-bars span:nth-child(3) { animation-delay: 0.2s; height: 25px; }
+    .wave-bars span:nth-child(4) { animation-delay: 0.3s; height: 14px; }
+    .wave-bars span:nth-child(5) { animation-delay: 0.4s; height: 22px; }
+
+    @keyframes wave {
+      0%,100% { transform: scaleY(0.6); opacity: 0.6; }
+      50% { transform: scaleY(1.2); opacity: 1; }
     }
 
     .links {
@@ -111,6 +142,9 @@
     <div class="featured" data-reveal>
       <h2>FEATURED TRANSMISSION</h2>
       <div id="featured-player"></div>
+      <div class="wave-bars">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
     </div>
 
     <!-- STREAM LINKS -->
@@ -132,6 +166,7 @@
 
   <script src="assets/js/app.js"></script>
   <script src="assets/js/motion.js"></script>
+  <script src="assets/js/portal.js"></script>
 
   <script>
     async function loadFeatured() {
@@ -148,7 +183,7 @@
               <source src="${track.url}" type="audio/mpeg">
             </audio>
             <p style="margin-top:1rem;color:var(--text-light);">
-              The Grei Show - No Drama
+              ${track.name}
             </p>
           `;
         }

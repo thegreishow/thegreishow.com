@@ -80,6 +80,8 @@
       padding: 18px;
       backdrop-filter: blur(10px);
       transition: 0.3s ease;
+      text-decoration:none;
+      color:var(--text);
     }
 
     .card:hover{
@@ -108,24 +110,28 @@
     <p class="subtitle">Cinematic worlds, performances, and creative transmissions</p>
 
     <div class="hero-video">
-      <iframe src="https://www.youtube.com/watch?v=ZsoVettmghI&list=PLHkIb6ZjlTbNLiBOk5GFii1iw2zU8PZlQ" allowfullscreen></iframe>
+      <iframe 
+        src="https://www.youtube.com/embed/ZsoVettmghI?autoplay=1&mute=1&playsinline=1&rel=0&list=PLHkIb6ZjlTbNLiBOk5GFii1iw2zU8PZlQ"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+      </iframe>
     </div>
 
     <div class="grid">
-      <div class="card">
+      <a class="card" href="music-videos.html">
         <h3>Music Videos</h3>
         <p>Official releases and visual storytelling</p>
-      </div>
+      </a>
 
-      <div class="card">
+      <a class="card" href="documentaries.html">
         <h3>Documentaries</h3>
         <p>Behind the scenes & creative process</p>
-      </div>
+      </a>
 
-      <div class="card">
+      <a class="card" href="live-sessions.html">
         <h3>Live Sessions</h3>
         <p>Performance and studio recordings</p>
-      </div>
+      </a>
     </div>
 
     <footer>THE GREI SHOW © 2026 • Wheel It! Records 💿</footer>

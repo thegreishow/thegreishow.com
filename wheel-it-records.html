@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wheel It! Records 💿 | Producer Showcase</title>
+  <title>Wheel It! Records 💿 | Producer Reel</title>
 
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/theme.css" />
@@ -36,7 +36,7 @@
     }
 
     .wrap{
-      max-width:1200px;
+      max-width:1100px;
       margin:0 auto;
       padding:70px 20px;
       position:relative;
@@ -46,7 +46,6 @@
     .back a{
       color:var(--text-dim);
       text-decoration:none;
-      transition:0.3s;
     }
 
     .back a:hover{
@@ -55,7 +54,7 @@
 
     .hero{
       text-align:center;
-      margin-bottom:20px;
+      margin-bottom:10px;
     }
 
     .hero h1{
@@ -68,24 +67,23 @@
 
     .hero p{
       color:var(--text-dim);
-      max-width:700px;
       margin:0 auto;
     }
 
-    .intro{
-      text-align:center;
-      margin:30px auto 50px;
-      max-width:800px;
-      padding:20px;
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:16px;
-      background:rgba(255,255,255,0.03);
-      backdrop-filter:blur(10px);
+    .featured{
+      margin:35px 0 50px;
     }
 
-    .grid{
+    .featured h2{
+      font-size:1rem;
+      letter-spacing:2px;
+      opacity:0.7;
+      margin-bottom:15px;
+    }
+
+    .featured-grid{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
       gap:20px;
     }
 
@@ -116,19 +114,14 @@
     }
 
     .meta{
-      font-size:0.8rem;
-      opacity:0.75;
-      margin-top:5px;
+      font-size:0.85rem;
+      opacity:0.8;
     }
 
-    .role{
-      display:inline-block;
-      margin-top:8px;
-      font-size:0.75rem;
-      padding:4px 8px;
-      border:1px solid rgba(255,255,255,0.15);
-      border-radius:999px;
-      opacity:0.8;
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
     }
 
   </style>
@@ -142,42 +135,59 @@
 
   <div class="hero">
     <h1>Wheel It! Records 💿</h1>
-    <p>Producer showcase portal — credits, collaborations, and music production archive</p>
+    <p>Producer reel — selected music production and collaborations</p>
   </div>
 
-  <div class="intro">
-    Wheel It! Records is a production identity focused on music creation, collaboration, and sonic development across artists.
+  <div class="featured">
+    <h2>FEATURED WORK</h2>
+    <div class="featured-grid" id="featured"></div>
   </div>
 
   <div class="grid" id="grid"></div>
 
 </div>
 
-<script src="assets/js/media-engine.js"></script>
-
 <script>
-  const grid = document.getElementById('grid');
+  const works = [
+    { title: "No Drama", artist: "The Grei Show", id: "ZsoVettmghI" },
+    { title: "Video 2", artist: "The Grei Show", id: "aGXBlYq3EbY" },
+    { title: "Video 3", artist: "Collaboration", id: "Ibd1_8niIhg" },
+    { title: "Video 4", artist: "Collaboration", id: "xTqZHV_37Lo" }
+  ];
 
   function thumb(id){
     return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
   }
 
-  function render(){
-    const videos = MediaEngine.getAll('videos') || [];
+  const featured = document.getElementById('featured');
+  const grid = document.getElementById('grid');
 
-    grid.innerHTML = videos.map(v => `
+  function renderFeatured(){
+    featured.innerHTML = works.slice(0,2).map(w => `
       <div class="card">
-        <div class="thumb" style="background-image:url('${thumb(v.id)}')"></div>
+        <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
         <div class="content">
-          <h3>${v.title}</h3>
-          <div class="meta">Artist: ${v.artist || 'Unknown'}</div>
-          <div class="role">Produced / Developed by Wheel It! Records</div>
+          <div><strong>${w.title}</strong></div>
+          <div class="meta">${w.artist}</div>
         </div>
       </div>
     `).join('');
   }
 
-  render();
+  function renderGrid(){
+    grid.innerHTML = works.map(w => `
+      <div class="card">
+        <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
+        <div class="content">
+          <div><strong>${w.title}</strong></div>
+          <div class="meta">${w.artist}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderFeatured();
+  renderGrid();
 </script>
 
 </body>

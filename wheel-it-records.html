@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Grei Show | Artist Showcase</title>
+  <title>Wheel It! Records 💿 | Producer Showcase</title>
 
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/theme.css" />
@@ -36,7 +36,7 @@
     }
 
     .wrap{
-      max-width:1100px;
+      max-width:1200px;
       margin:0 auto;
       padding:70px 20px;
       position:relative;
@@ -55,7 +55,7 @@
 
     .hero{
       text-align:center;
-      margin-bottom:25px;
+      margin-bottom:20px;
     }
 
     .hero h1{
@@ -68,35 +68,25 @@
 
     .hero p{
       color:var(--text-dim);
-      max-width:650px;
+      max-width:700px;
       margin:0 auto;
     }
 
-    .artist-block{
+    .intro{
       text-align:center;
-      margin:40px 0;
-      padding:25px;
+      margin:30px auto 50px;
+      max-width:800px;
+      padding:20px;
       border:1px solid rgba(255,255,255,0.08);
       border-radius:16px;
       background:rgba(255,255,255,0.03);
       backdrop-filter:blur(10px);
     }
 
-    .artist-name{
-      font-size:1.8rem;
-      margin-bottom:5px;
-    }
-
-    .tagline{
-      color:var(--text-dim);
-      font-size:0.9rem;
-    }
-
     .grid{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
       gap:20px;
-      margin-top:30px;
     }
 
     .card{
@@ -105,7 +95,7 @@
       border-radius:16px;
       overflow:hidden;
       backdrop-filter:blur(12px);
-      transition:0.3s;
+      transition:0.3s ease;
     }
 
     .card:hover{
@@ -113,15 +103,34 @@
       box-shadow:var(--glow-strong);
     }
 
-    iframe{
+    .thumb{
       width:100%;
       aspect-ratio:16/9;
-      border:none;
+      background:#000;
+      background-size:cover;
+      background-position:center;
     }
 
     .content{
-      padding:15px;
+      padding:14px;
     }
+
+    .meta{
+      font-size:0.8rem;
+      opacity:0.75;
+      margin-top:5px;
+    }
+
+    .role{
+      display:inline-block;
+      margin-top:8px;
+      font-size:0.75rem;
+      padding:4px 8px;
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:999px;
+      opacity:0.8;
+    }
+
   </style>
 </head>
 
@@ -129,16 +138,15 @@
 
 <div class="wrap">
 
-  <div class="back"><a href="visuals.html">← Back</a></div>
+  <div class="back"><a href="index.html">← Home</a></div>
 
   <div class="hero">
-    <h1>The Grei Show</h1>
-    <p>Artist showcase portal — visuals, releases, and creative identity archive</p>
+    <h1>Wheel It! Records 💿</h1>
+    <p>Producer showcase portal — credits, collaborations, and music production archive</p>
   </div>
 
-  <div class="artist-block">
-    <div class="artist-name">The Grei Show</div>
-    <div class="tagline">Independent artist | Jamaica | Visual + Music Universe</div>
+  <div class="intro">
+    Wheel It! Records is a production identity focused on music creation, collaboration, and sonic development across artists.
   </div>
 
   <div class="grid" id="grid"></div>
@@ -150,15 +158,20 @@
 <script>
   const grid = document.getElementById('grid');
 
+  function thumb(id){
+    return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+  }
+
   function render(){
     const videos = MediaEngine.getAll('videos') || [];
 
     grid.innerHTML = videos.map(v => `
       <div class="card">
-        <iframe src="https://www.youtube.com/embed/${v.id}?rel=0"></iframe>
+        <div class="thumb" style="background-image:url('${thumb(v.id)}')"></div>
         <div class="content">
           <h3>${v.title}</h3>
-          <p>${v.artist}</p>
+          <div class="meta">Artist: ${v.artist || 'Unknown'}</div>
+          <div class="role">Produced / Developed by Wheel It! Records</div>
         </div>
       </div>
     `).join('');

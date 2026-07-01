@@ -4,11 +4,14 @@
 let navInjected = false;
 
 function injectNav(html) {
-  if (navInjected) return;
-
-  // Prevent duplicates if script runs twice
   const existing = document.querySelector('.site-header');
-  if (existing) return;
+
+  // If another loader already rendered the nav, only apply page cleanup.
+  if (navInjected || existing) {
+    navInjected = true;
+    hideCurrentPageLink();
+    return;
+  }
 
   const mount = document.getElementById('site-header');
 
@@ -22,7 +25,6 @@ function injectNav(html) {
   }
 
   navInjected = true;
-
   hideCurrentPageLink();
 }
 
@@ -31,33 +33,49 @@ function getCurrentPage() {
   return path || 'index.html';
 }
 
+function getLinkPage(link) {
+  const href = link.getAttribute('href');
+  if (!href) return '';
+
+  const url = new URL(href, window.location.href);
+  const path = url.pathname.split('/').pop();
+  return path || 'index.html';
+}
+
 function hideCurrentPageLink() {
   try {
     const currentPage = getCurrentPage();
 
-    document.querySelectorAll('.site-nav a').forEach(a => {
-      const href = a.getAttribute('href');
+    document.querySelectorAll('.site-nav a').forEach(link => {
+      const isCurrentPage = getLinkPage(link) === currentPage;
 
-      if (href === currentPage) {
-        a.setAttribute('aria-current', 'page');
-        a.hidden = true;
-      }
+      link.hidden = isCurrentPage;
+      link.style.display = isCurrentPage ? 'none' : '';
+      link.toggleAttribute('aria-current', isCurrentPage);
     });
   } catch (e) {
     console.warn('Nav current-page cleanup failed', e);
   }
 }
 
+async function fetchNavHtml() {
+  const primary = await fetch('/shared/nav.html');
+  if (primary.ok) return primary.text();
+
+  const fallback = await fetch('shared/nav.html');
+  if (!fallback.ok) throw new Error('Shared navigation not found');
+
+  return fallback.text();
+}
+
 async function loadNav() {
   try {
-    const res = await fetch('/shared/nav.html');
-    const html = await res.text();
-
+    const html = await fetchNavHtml();
     injectNav(html);
-
   } catch (err) {
     console.error('[Nav Loader] Failed to load navigation:', err);
   }
 }
 
+window.hideCurrentPageLink = hideCurrentPageLink;
 document.addEventListener('DOMContentLoaded', loadNav);

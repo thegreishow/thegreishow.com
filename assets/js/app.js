@@ -5,7 +5,9 @@ async function loadHeader() {
   if (!mount) return;
 
   try {
-    const res = await fetch('assets/components/header.html');
+    const res = await fetch('shared/nav.html');
+    if (!res.ok) throw new Error('Shared navigation not found');
+
     const html = await res.text();
     mount.innerHTML = html;
   } catch (err) {

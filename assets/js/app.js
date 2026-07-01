@@ -1,11 +1,38 @@
 /* THE GREI SHOW - APP CORE LAYER */
 
+function getCurrentPage() {
+  const path = window.location.pathname.split('/').pop();
+  return path || 'index.html';
+}
+
+function getLinkPage(link) {
+  const href = link.getAttribute('href');
+  if (!href) return '';
+
+  const url = new URL(href, window.location.href);
+  const path = url.pathname.split('/').pop();
+  return path || 'index.html';
+}
+
+function hideCurrentPageLink() {
+  const currentPage = getCurrentPage();
+
+  document.querySelectorAll('.site-nav a').forEach(link => {
+    const isCurrentPage = getLinkPage(link) === currentPage;
+
+    link.hidden = isCurrentPage;
+    link.style.display = isCurrentPage ? 'none' : '';
+    link.toggleAttribute('aria-current', isCurrentPage);
+  });
+}
+
 async function loadHeader() {
   const mount = document.getElementById('site-header');
   if (!mount) return;
 
   if (document.querySelector('.site-header')) {
     window.hideCurrentPageLink?.();
+    hideCurrentPageLink();
     return;
   }
 
@@ -16,6 +43,7 @@ async function loadHeader() {
     const html = await res.text();
     mount.innerHTML = html;
     window.hideCurrentPageLink?.();
+    hideCurrentPageLink();
   } catch (err) {
     console.error('Header load failed:', err);
   }

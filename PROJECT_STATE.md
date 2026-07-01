@@ -11,12 +11,15 @@
 - Shared navigation aligned across legacy and current loaders
 - Current page link hidden in shared navigation, including after app-level nav loading
 - Arcade registry path repaired
+- Arcade lobby upgraded with search, filters, stats, and empty states
+- Signal Runner playable arcade prototype added
 - Arcade template game and thumbnail placeholders added
 
 ## Next
 - Full reusable layout components
 - Centralized navigation
 - All core pages with shared layout
-- Replace placeholder arcade content with playable experiences
+- Expand arcade with more playable experiences
+- Add arcade play-state polish such as sound, pause, and leaderboard hooks
 
 Last Updated: July 1, 2026

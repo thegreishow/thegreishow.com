@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Signal Runner thumbnail</title>
+  <desc id="desc">A neon arcade lane with blue signals and red static.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#07101a"/>
+      <stop offset="0.55" stop-color="#101a2a"/>
+      <stop offset="1" stop-color="#08101a"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <path d="M80 320 250 40M560 320 390 40" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="3"/>
+  <path d="M150 320 285 40M490 320 355 40" fill="none" stroke="rgba(0,200,255,0.24)" stroke-width="2"/>
+  <circle cx="260" cy="112" r="22" fill="#00c8ff" filter="url(#glow)"/>
+  <circle cx="380" cy="190" r="18" fill="#00c8ff" filter="url(#glow)"/>
+  <rect x="202" y="188" width="36" height="36" transform="rotate(45 220 206)" fill="#ff3d71" filter="url(#glow)"/>
+  <rect x="250" y="274" width="140" height="22" rx="6" fill="#ffffff" filter="url(#glow)"/>
+  <rect x="274" y="258" width="92" height="8" rx="4" fill="#00c8ff"/>
+  <text x="320" y="58" fill="#ffffff" font-family="Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle" letter-spacing="1">SIGNAL RUNNER</text>
+  <text x="320" y="326" fill="rgba(255,255,255,0.72)" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="3">CATCH THE CLEAN SIGNAL</text>
+</svg>

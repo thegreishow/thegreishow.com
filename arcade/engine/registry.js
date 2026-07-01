@@ -3,16 +3,17 @@
 
 export async function loadGameRegistry() {
   try {
-    const res = await fetch('./games/games.json');
+    const registryUrl = new URL('../games/games.json', import.meta.url);
+    const res = await fetch(registryUrl);
     if (!res.ok) throw new Error('Failed to load games.json');
 
     const games = await res.json();
 
     // Clean validation for scalability (future external dev support)
-    return games.filter(game => 
-      game && 
-      typeof game.id === 'string' && 
-      typeof game.title === 'string' && 
+    return games.filter(game =>
+      game &&
+      typeof game.id === 'string' &&
+      typeof game.title === 'string' &&
       typeof game.entry === 'string'
     );
 
@@ -27,7 +28,7 @@ export function getGameById(games, id) {
 }
 
 export function filterGamesByTag(games, tag) {
-  return games.filter(game => Array.isArray(game.tags) && game.tags.includes(tag));
+  return games.filter(game => Array.isArray(game.tags) && games.tags.includes(tag));
 }
 
 export function sortGamesByTitle(games) {

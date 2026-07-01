@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signal Runner | The Grei Show Arcade</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        linear-gradient(180deg, rgba(31,111,235,0.14), transparent 280px),
+        radial-gradient(circle at 70% 15%, rgba(0,200,255,0.16), transparent 320px),
+        #06090d;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .game-shell {
+      width: min(960px, calc(100vw - 24px));
+      display: grid;
+      gap: 14px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 7vw, 4.4rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .sub {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,0.68);
+      font-size: 14px;
+    }
+
+    .hud {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .hud-item {
+      min-width: 92px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      text-align: right;
+    }
+
+    .hud-item span {
+      display: block;
+      color: rgba(255,255,255,0.6);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hud-item strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .stage {
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #08101a;
+      box-shadow: 0 26px 90px rgba(0,0,0,0.38);
+    }
+
+    canvas {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: block;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.035), transparent),
+        #07101a;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(3,7,12,0.72);
+      text-align: center;
+    }
+
+    .overlay[hidden] { display: none; }
+
+    .panel {
+      width: min(520px, 100%);
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 8px;
+      background: rgba(12,20,31,0.88);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+    }
+
+    .panel p {
+      margin: 0 0 18px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 18px;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, #1f6feb, #00a6ff);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: rgba(255,255,255,0.64);
+      font-size: 13px;
+    }
+
+    .touch-controls {
+      display: none;
+      gap: 10px;
+    }
+
+    .touch-controls button {
+      width: 72px;
+      font-size: 20px;
+    }
+
+    @media (max-width: 720px) {
+      body { overflow: auto; }
+      .topbar { grid-template-columns: 1fr; }
+      .hud { justify-content: stretch; }
+      .hud-item { flex: 1; text-align: left; }
+      .controls { align-items: stretch; flex-direction: column; }
+      .touch-controls { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <main class="game-shell">
+    <section class="topbar" aria-label="Signal Runner score">
+      <div>
+        <h1>Signal Runner</h1>
+        <p class="sub">Catch clean signals. Dodge static. Keep the transmission alive.</p>
+      </div>
+      <div class="hud">
+        <div class="hud-item"><span>Score</span><strong id="score">0</strong></div>
+        <div class="hud-item"><span>Lives</span><strong id="lives">3</strong></div>
+        <div class="hud-item"><span>Best</span><strong id="best">0</strong></div>
+      </div>
+    </section>
+
+    <section class="stage" aria-label="Signal Runner game stage">
+      <canvas id="game" width="960" height="540"></canvas>
+      <div class="overlay" id="overlay">
+        <div class="panel">
+          <h2 id="overlay-title">Ready?</h2>
+          <p id="overlay-copy">Move with arrow keys or A/D. Collect blue signals and avoid red static.</p>
+          <button id="start-btn" type="button">Start Run</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Game controls">
+      <span>Keyboard: Left/Right or A/D. Press Space to start again.</span>
+      <div class="touch-controls">
+        <button id="left-btn" type="button" aria-label="Move left">&lt;</button>
+        <button id="right-btn" type="button" aria-label="Move right">&gt;</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const bestEl = document.getElementById('best');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const overlayCopy = document.getElementById('overlay-copy');
+    const startBtn = document.getElementById('start-btn');
+    const leftBtn = document.getElementById('left-btn');
+    const rightBtn = document.getElementById('right-btn');
+
+    const keys = new Set();
+    const bestKey = 'grei-signal-runner-best';
+
+    let best = Number(localStorage.getItem(bestKey) || 0);
+    let score = 0;
+    let lives = 3;
+    let running = false;
+    let lastTime = 0;
+    let spawnTimer = 0;
+    let speed = 170;
+    let items = [];
+
+    const player = {
+      x: canvas.width / 2,
+      y: canvas.height - 66,
+      width: 70,
+      height: 22,
+      speed: 420
+    };
+
+    bestEl.textContent = best;
+
+    function resetGame() {
+      score = 0;
+      lives = 3;
+      speed = 170;
+      items = [];
+      spawnTimer = 0;
+      player.x = canvas.width / 2;
+      updateHud();
+    }
+
+    function updateHud() {
+      scoreEl.textContent = score;
+      livesEl.textContent = lives;
+      bestEl.textContent = best;
+    }
+
+    function startGame() {
+      resetGame();
+      running = true;
+      lastTime = performance.now();
+      overlay.hidden = true;
+      requestAnimationFrame(loop);
+    }
+
+    function endGame() {
+      running = false;
+      best = Math.max(best, score);
+      localStorage.setItem(bestKey, String(best));
+      updateHud();
+      overlayTitle.textContent = 'Transmission Lost';
+      overlayCopy.textContent = `Final score: ${score}. Catch the blue signals and stay out of the red static.`;
+      startBtn.textContent = 'Run Again';
+      overlay.hidden = false;
+    }
+
+    function spawnItem() {
+      const isStatic = Math.random() < Math.min(0.34, 0.18 + score / 700);
+      items.push({
+        x: 34 + Math.random() * (canvas.width - 68),
+        y: -30,
+        size: isStatic ? 26 : 22,
+        type: isStatic ? 'static' : 'signal',
+        velocity: speed + Math.random() * 110
+      });
+    }
+
+    function updatePlayer(dt) {
+      let direction = 0;
+      if (keys.has('ArrowLeft') || keys.has('a')) direction -= 1;
+      if (keys.has('ArrowRight') || keys.has('d')) direction += 1;
+
+      player.x += direction * player.speed * dt;
+      player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
+    }
+
+    function rectsOverlap(item) {
+      const px = player.x - player.width / 2;
+      const py = player.y - player.height / 2;
+      const ix = item.x - item.size / 2;
+      const iy = item.y - item.size / 2;
+
+      return px < ix + item.size &&
+        px + player.width > ix &&
+        py < iy + item.size &&
+        py + player.height > iy;
+    }
+
+    function updateItems(dt) {
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        spawnItem();
+        spawnTimer = Math.max(0.28, 0.86 - score / 520);
+      }
+
+      items.forEach(item => {
+        item.y += item.velocity * dt;
+      });
+
+      items = items.filter(item => {
+        if (rectsOverlap(item)) {
+          if (item.type === 'signal') {
+            score += 10;
+            speed += 4;
+          } else {
+            lives -= 1;
+            if (lives <= 0) endGame();
+          }
+          updateHud();
+          return false;
+        }
+
+        if (item.y - item.size > canvas.height) {
+          if (item.type === 'signal') {
+            score = Math.max(0, score - 2);
+            updateHud();
+          }
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    function drawBackground() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#07101a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 48) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 48) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawPlayer() {
+      ctx.save();
+      ctx.translate(player.x, player.y);
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#00c8ff';
+      ctx.shadowBlur = 18;
+      ctx.fillRect(-player.width / 2, -player.height / 2, player.width, player.height);
+      ctx.fillStyle = '#00c8ff';
+      ctx.fillRect(-player.width / 2 + 8, -player.height / 2 - 8, player.width - 16, 6);
+      ctx.restore();
+    }
+
+    function drawItems() {
+      items.forEach(item => {
+        ctx.save();
+        ctx.translate(item.x, item.y);
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = item.type === 'signal' ? '#00c8ff' : '#ff3d71';
+        ctx.fillStyle = item.type === 'signal' ? '#00c8ff' : '#ff3d71';
+
+        if (item.type === 'signal') {
+          ctx.beginPath();
+          ctx.arc(0, 0, item.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(-2, -item.size / 3, 4, item.size * 0.66);
+        } else {
+          ctx.rotate(Math.PI / 4);
+          ctx.fillRect(-item.size / 2, -item.size / 2, item.size, item.size);
+        }
+
+        ctx.restore();
+      });
+    }
+
+    function loop(time) {
+      if (!running) return;
+
+      const dt = Math.min(0.033, (time - lastTime) / 1000);
+      lastTime = time;
+
+      updatePlayer(dt);
+      updateItems(dt);
+      drawBackground();
+      drawItems();
+      drawPlayer();
+
+      requestAnimationFrame(loop);
+    }
+
+    function setTouchKey(key, active) {
+      if (active) keys.add(key);
+      else keys.delete(key);
+    }
+
+    startBtn.addEventListener('click', startGame);
+
+    window.addEventListener('keydown', event => {
+      if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(event.key)) keys.add(event.key);
+      if (event.code === 'Space' && !running) startGame();
+    });
+
+    window.addEventListener('keyup', event => {
+      keys.delete(event.key);
+    });
+
+    leftBtn.addEventListener('pointerdown', () => setTouchKey('ArrowLeft', true));
+    leftBtn.addEventListener('pointerup', () => setTouchKey('ArrowLeft', false));
+    leftBtn.addEventListener('pointerleave', () => setTouchKey('ArrowLeft', false));
+    rightBtn.addEventListener('pointerdown', () => setTouchKey('ArrowRight', true));
+    rightBtn.addEventListener('pointerup', () => setTouchKey('ArrowRight', false));
+    rightBtn.addEventListener('pointerleave', () => setTouchKey('ArrowRight', false));
+
+    drawBackground();
+    drawPlayer();
+  </script>
+</body>
+</html>

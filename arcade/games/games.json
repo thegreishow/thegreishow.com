@@ -7,7 +7,7 @@
     "version": "0.1",
     "type": "native",
     "entry": "arcade/games/template-game/index.html",
-    "thumbnail": "arcade/assets/thumbnails/template.png",
+    "thumbnail": "arcade/assets/thumbnails/template.svg",
     "tags": ["template"]
   }
 ]

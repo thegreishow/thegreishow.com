@@ -46,14 +46,6 @@
       padding:70px 20px;
     }
 
-    .nav a{
-      color:var(--text-dim);
-      text-decoration:none;
-      font-weight:600;
-    }
-
-    .nav a:hover{color:var(--accent)}
-
     h1{
       text-align:center;
       font-size:clamp(2.8rem,5vw,4.2rem);
@@ -70,7 +62,6 @@
       margin-bottom:35px;
     }
 
-    /* HERO VIDEO */
     .hero-video{
       width:100%;
       aspect-ratio:16/9;
@@ -96,7 +87,6 @@
       border:none;
     }
 
-    /* GRID */
     .grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
@@ -134,7 +124,6 @@
       line-height:1.4;
     }
 
-    /* MINI NAV TABS */
     .tabs{
       display:flex;
       justify-content:center;
@@ -171,11 +160,11 @@
 
 <body>
 
-  <div class="wrap">
+  <!-- GLOBAL NAV -->
+  <div id="site-header"></div>
+  <script src="/shared/nav.js"></script>
 
-    <div class="nav">
-      <a href="index.html">← Portal</a>
-    </div>
+  <div class="wrap">
 
     <h1>VISUALS</h1>
     <p class="subtitle">Cinematic worlds, performances, and creative transmissions</p>
@@ -197,7 +186,7 @@
     <div class="grid">
       <a class="card" href="music-videos.html">
         <h3>🎬 Music Videos</h3>
-        <p>Official releases and cinematic visual storytelling</p>
+        <p>Official releases and cinematic storytelling</p>
       </a>
 
       <a class="card" href="documentaries.html">

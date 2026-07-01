@@ -2,6 +2,7 @@
 // Builds the Arcade interface dynamically from games.json
 
 import { loadGameRegistry } from './registry.js';
+import { openGameEmbed } from './embed.js';
 
 function createGameCard(game) {
   const card = document.createElement('div');
@@ -34,7 +35,17 @@ function attachGameEvents(container, games) {
 
       if (!game) return;
 
-      window.location.href = game.entry;
+      // 🧠 ENGINE ROUTING LOGIC
+      // External games -> embed modal
+      if (game.type === 'external') {
+        openGameEmbed(game);
+        return;
+      }
+
+      // Native games -> direct navigation
+      if (game.entry) {
+        window.location.href = game.entry;
+      }
     });
   });
 }

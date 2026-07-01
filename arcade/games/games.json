@@ -1,5 +1,16 @@
 [
   {
+    "id": "signal-runner",
+    "title": "Signal Runner",
+    "creator": "The Grei Show",
+    "description": "Catch clean signals, dodge static, and keep the transmission alive.",
+    "version": "0.1",
+    "type": "native",
+    "entry": "arcade/games/signal-runner/index.html",
+    "thumbnail": "arcade/assets/thumbnails/signal-runner.svg",
+    "tags": ["reflex", "music", "prototype"]
+  },
+  {
     "id": "template-game",
     "title": "Template Game",
     "creator": "The Grei Show",

@@ -4,12 +4,18 @@ async function loadHeader() {
   const mount = document.getElementById('site-header');
   if (!mount) return;
 
+  if (document.querySelector('.site-header')) {
+    window.hideCurrentPageLink?.();
+    return;
+  }
+
   try {
     const res = await fetch('shared/nav.html');
     if (!res.ok) throw new Error('Shared navigation not found');
 
     const html = await res.text();
     mount.innerHTML = html;
+    window.hideCurrentPageLink?.();
   } catch (err) {
     console.error('Header load failed:', err);
   }

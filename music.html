@@ -54,7 +54,6 @@
       max-width: 700px;
     }
 
-    /* waveform visual polish */
     .wave-bars {
       display: flex;
       justify-content: center;
@@ -121,13 +120,9 @@
 
 <body>
 
+  <!-- GLOBAL NAV -->
   <div id="site-header"></div>
-
-  <header>
-    <nav class="container">
-      <a href="index.html">← Portal</a>
-    </nav>
-  </header>
+  <script src="shared/nav.js"></script>
 
   <main class="section music-wrap">
 
@@ -138,7 +133,6 @@
       </p>
     </div>
 
-    <!-- SINGLE FEATURED PLAYER (CMS DRIVEN) -->
     <div class="featured" data-reveal>
       <h2>FEATURED TRANSMISSION</h2>
       <div id="featured-player"></div>
@@ -147,10 +141,8 @@
       </div>
     </div>
 
-    <!-- STREAM LINKS -->
     <div class="links" data-reveal>
       <h2>STREAM MUSIC</h2>
-
       <div class="links-grid">
         <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank">Spotify</a>
         <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank">Apple Music</a>
@@ -159,7 +151,6 @@
         <a href="https://tidal.com/artist/47307553/u" target="_blank">TIDAL</a>
         <a href="https://thegreishow.bandcamp.com" target="_blank">Bandcamp</a>
       </div>
-
     </div>
 
   </main>

@@ -9,6 +9,7 @@
 - Navigation skeleton
 - Multiple placeholder pages ready
 - Shared navigation aligned across legacy and current loaders
+- Current page link hidden in shared navigation
 - Arcade registry path repaired
 - Arcade template game and thumbnail placeholders added
 

@@ -8,10 +8,14 @@
 - Reusable CSS base & layout
 - Navigation skeleton
 - Multiple placeholder pages ready
+- Shared navigation aligned across legacy and current loaders
+- Arcade registry path repaired
+- Arcade template game and thumbnail placeholders added
 
 ## Next
 - Full reusable layout components
 - Centralized navigation
 - All core pages with shared layout
+- Replace placeholder arcade content with playable experiences
 
-Last Updated: June 27, 2026
+Last Updated: July 1, 2026

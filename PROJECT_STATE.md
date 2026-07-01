@@ -9,7 +9,7 @@
 - Navigation skeleton
 - Multiple placeholder pages ready
 - Shared navigation aligned across legacy and current loaders
-- Current page link hidden in shared navigation
+- Current page link hidden in shared navigation, including after app-level nav loading
 - Arcade registry path repaired
 - Arcade template game and thumbnail placeholders added
 

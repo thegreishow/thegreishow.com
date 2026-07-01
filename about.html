@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
-  <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
     body{
@@ -27,20 +26,6 @@
       padding:60px 20px;
     }
 
-    .nav{
-      padding:20px;
-    }
-
-    .nav a{
-      color: var(--text-dim);
-      text-decoration:none;
-      font-weight:600;
-    }
-
-    .nav a:hover{
-      color: var(--accent);
-    }
-
     h1,h2{
       font-family: var(--font-heading);
       letter-spacing:1px;
@@ -56,7 +41,6 @@
     h2{
       margin-top:40px;
       font-size:1.6rem;
-      color: var(--text);
     }
 
     p{
@@ -93,11 +77,12 @@
     }
   </style>
 </head>
+
 <body>
 
-  <div class="nav">
-    <a href="index.html">← Portal</a>
-  </div>
+  <!-- GLOBAL NAV -->
+  <div id="site-header"></div>
+  <script src="/shared/nav.js"></script>
 
   <main class="about-page">
 

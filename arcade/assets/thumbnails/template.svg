@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Template Game thumbnail</title>
+  <desc id="desc">A neon arcade placeholder for The Grei Show.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#18213a"/>
+      <stop offset="0.5" stop-color="#0b0f18"/>
+      <stop offset="1" stop-color="#1f2d46"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <circle cx="140" cy="92" r="88" fill="#8a7dff" opacity="0.18"/>
+  <circle cx="512" cy="284" r="118" fill="#00c8ff" opacity="0.14"/>
+  <rect x="170" y="92" width="300" height="176" rx="22" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.24)"/>
+  <path d="M272 180h96M320 132v96" stroke="#ffffff" stroke-width="18" stroke-linecap="round" filter="url(#glow)"/>
+  <text x="320" y="306" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" letter-spacing="3">ARCADE TEMPLATE</text>
+</svg>

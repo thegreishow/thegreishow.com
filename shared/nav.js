@@ -23,24 +23,28 @@ function injectNav(html) {
 
   navInjected = true;
 
-  highlightActiveLink();
+  hideCurrentPageLink();
 }
 
-function highlightActiveLink() {
+function getCurrentPage() {
+  const path = window.location.pathname.split('/').pop();
+  return path || 'index.html';
+}
+
+function hideCurrentPageLink() {
   try {
-    const path = window.location.pathname.split('/').pop();
+    const currentPage = getCurrentPage();
 
     document.querySelectorAll('.site-nav a').forEach(a => {
       const href = a.getAttribute('href');
 
-      if (href === path) {
-        a.style.background = 'rgba(31,111,235,0.2)';
-        a.style.borderColor = 'rgba(31,111,235,0.4)';
-        a.style.color = '#ffffff';
+      if (href === currentPage) {
+        a.setAttribute('aria-current', 'page');
+        a.hidden = true;
       }
     });
   } catch (e) {
-    console.warn('Nav highlight failed', e);
+    console.warn('Nav current-page cleanup failed', e);
   }
 }
 

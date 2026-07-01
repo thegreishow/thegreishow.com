@@ -28,7 +28,7 @@ export function getGameById(games, id) {
 }
 
 export function filterGamesByTag(games, tag) {
-  return games.filter(game => Array.isArray(game.tags) && games.tags.includes(tag));
+  return games.filter(game => Array.isArray(game.tags) && game.tags.includes(tag));
 }
 
 export function sortGamesByTitle(games) {

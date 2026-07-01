@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
-  <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
     body{
@@ -23,20 +22,6 @@
       max-width:1000px;
       margin:0 auto;
       padding:60px 20px;
-    }
-
-    .nav{
-      padding:20px;
-    }
-
-    .nav a{
-      color: var(--text-dim);
-      text-decoration:none;
-      font-weight:600;
-    }
-
-    .nav a:hover{
-      color: var(--accent);
     }
 
     h1{
@@ -80,11 +65,12 @@
     }
   </style>
 </head>
+
 <body>
 
-  <div class="nav">
-    <a href="index.html">← Portal</a>
-  </div>
+  <!-- GLOBAL NAV -->
+  <div id="site-header"></div>
+  <script src="/shared/nav.js"></script>
 
   <div class="wrap">
     <h1>PHOTOGRAPHY</h1>

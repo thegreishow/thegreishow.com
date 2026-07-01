@@ -43,15 +43,6 @@
       z-index:2;
     }
 
-    .back a{
-      color:var(--text-dim);
-      text-decoration:none;
-    }
-
-    .back a:hover{
-      color:var(--accent);
-    }
-
     .hero{
       text-align:center;
       margin-bottom:10px;
@@ -72,13 +63,6 @@
 
     .featured{
       margin:35px 0 50px;
-    }
-
-    .featured h2{
-      font-size:1rem;
-      letter-spacing:2px;
-      opacity:0.7;
-      margin-bottom:15px;
     }
 
     .featured-grid{
@@ -109,29 +93,25 @@
       background-position:center;
     }
 
-    .content{
-      padding:14px;
-    }
+    .content{ padding:14px; }
 
-    .meta{
-      font-size:0.85rem;
-      opacity:0.8;
-    }
+    .meta{ font-size:0.85rem; opacity:0.8; }
 
     .grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
       gap:18px;
     }
-
   </style>
 </head>
 
 <body>
 
-<div class="wrap">
+<!-- GLOBAL NAV -->
+<div id="site-header"></div>
+<script src="/shared/nav.js"></script>
 
-  <div class="back"><a href="index.html">← Home</a></div>
+<div class="wrap">
 
   <div class="hero">
     <h1>Wheel It! Records 💿</h1>
@@ -139,7 +119,6 @@
   </div>
 
   <div class="featured">
-    <h2>FEATURED WORK</h2>
     <div class="featured-grid" id="featured"></div>
   </div>
 
@@ -154,7 +133,7 @@
     { title: "Kush & Schweppes", artist: "Blvk H3ro", id: "Gc2dJmPcxOQ" },
     { title: "Weed & Ting", artist: "Protoje", id: "2SEYLu8qSNs" },
     { title: "Soundboii Freestyle", artist: "Fyah Roiall", id: "IhJmti8KkMQ" },
-     { title: "Dinero Code", artist: "Wiggward, Poseck Jr.", id: "Dd1zQvb29x4" }
+    { title: "Dinero Code", artist: "Wiggward, Poseck Jr.", id: "Dd1zQvb29x4" }
   ];
 
   function thumb(id){
@@ -164,32 +143,25 @@
   const featured = document.getElementById('featured');
   const grid = document.getElementById('grid');
 
-  function renderFeatured(){
-    featured.innerHTML = works.slice(0,2).map(w => `
-      <div class="card">
-        <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
-        <div class="content">
-          <div><strong>${w.title}</strong></div>
-          <div class="meta">${w.artist}</div>
-        </div>
+  featured.innerHTML = works.slice(0,2).map(w => `
+    <div class="card">
+      <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
+      <div class="content">
+        <div><strong>${w.title}</strong></div>
+        <div class="meta">${w.artist}</div>
       </div>
-    `).join('');
-  }
+    </div>
+  `).join('');
 
-  function renderGrid(){
-    grid.innerHTML = works.map(w => `
-      <div class="card">
-        <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
-        <div class="content">
-          <div><strong>${w.title}</strong></div>
-          <div class="meta">${w.artist}</div>
-        </div>
+  grid.innerHTML = works.map(w => `
+    <div class="card">
+      <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
+      <div class="content">
+        <div><strong>${w.title}</strong></div>
+        <div class="meta">${w.artist}</div>
       </div>
-    `).join('');
-  }
-
-  renderFeatured();
-  renderGrid();
+    </div>
+  `).join('');
 </script>
 
 </body>

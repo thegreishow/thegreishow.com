@@ -1,0 +1,13 @@
+[
+  {
+    "id": "template-game",
+    "title": "Template Game",
+    "creator": "The Grei Show",
+    "description": "Base structure for all arcade games",
+    "version": "0.1",
+    "type": "native",
+    "entry": "games/template-game/index.html",
+    "thumbnail": "assets/thumbnails/template.png",
+    "tags": ["template"]
+  }
+]

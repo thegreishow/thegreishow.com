@@ -19,8 +19,13 @@ window.MediaEngine = (function () {
       { title: "The Flame", id: "ONeDgOgU0EA", type: "release", artist: "The Grei Show" },
       { title: "Numb", id: "e5j3K8X9dp4", type: "release", artist: "The Grei Show" },
       { title: "Rage!", id: "B0SSbbLDbMw", type: "release", artist: "The Grei Show" },
-      { title: "Full Moon", id: "B0SSbbLDbMw", type: "release", artist: "The Grei Show" },
-      { title: "Upscale", id: "B0SSbbLDbMw", type: "release", artist: "The Grei Show" }  
+      { title: "Full Moon", id: "bXB2sF02eQI", type: "release", artist: "The Grei Show" },
+      { title: "Squad People", id: "XlvZEauADkw", type: "release", artist: "The Grei Show,Kione Zaire,Blvk Hero" },
+      { title: "Upscale [Vizualizer]", id: "AHolxZ4Nq0", type: "release", artist: "The Grei Show" },
+      { title: "Because I Miss You Too [Part II]", id: "FhXsTlSdsUo", type: "release", artist: "The Grei Show" },
+      { title: "Shutter Speed", id: "a1aJxmAypho", type: "release", artist: "The Grei Show" },
+      { title: "Soul Stealer [Visualizer]", id: "FhXsTlSdsUo", type: "release", artist: "The Grei Show" },
+      { title: "Because I Miss You Too [Part II]", id: "FhXsTlSdsUo", type: "release", artist: "The Grei Show" }  
     ],
 
     documentaries: [

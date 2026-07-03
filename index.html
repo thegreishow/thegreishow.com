@@ -89,7 +89,6 @@
       margin:30px 0 50px;
     }
 
-    /* DASHBOARD HOMEPAGE (no tiles) */
     .dashboard{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
@@ -142,7 +141,8 @@
 
 <body>
 
-  <!-- GLOBAL NAV AUTO-INJECTED -->
+  <!-- NAV MOUNT POINT (required for shared/nav.js injector) -->
+  <div id="site-header"></div>
 
   <div class="portal">
 

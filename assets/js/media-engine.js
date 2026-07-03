@@ -35,16 +35,16 @@ window.MediaEngine = (function () {
     ],
 
     liveSessions: [
-      { title: "Loosen Up | Nikki Z & Mr. Lexx", id: "1H8YqU0ajKI", type: "live" },
-      { title: "BoomBox Fridays | Sugar Minott Studio ", id: "l5-Ei1FjmD0", type: "live" },
-      { title: "Puff Puff Pass | Dubwise & Soulection", id: "6oIOOzyiISU", type: "live" },
-      { title: "Freestyle | Riddim All Night Long", id: "37uLIlT8AhQ", type: "live" },
-      { title: "Rub-a-Dub Tuesdays | Singer J & Ricky Trooper", id: "9kWiyU82HDA", type: "live" },
-      { title: "Studio Session 1", id: null, type: "live" },
-      { title: "Studio Session 1", id: null, type: "live" },
-      { title: "Studio Session 1", id: null, type: "live" },
-      { title: "Studio Session 1", id: null, type: "live" },
-      { title: "Studio Session 1", id: null, type: "live" }
+      { title: "Loosen Up | Nikki Z & Mr. Lexx", id: "1H8YqU0ajKI", type: "T.V." },
+      { title: "BoomBox Fridays | Sugar Minott Studio ", id: "l5-Ei1FjmD0", type: "Stage" },
+      { title: "Puff Puff Pass | Dubwise & Soulection", id: "6oIOOzyiISU", type: "Sound System" },
+      { title: "Freestyle | Riddim All Night Long", id: "37uLIlT8AhQ", type: "Sound System" },
+      { title: "Rub-a-Dub Tuesdays | Singer J & Ricky Trooper", id: "9kWiyU82HDA", type: "Sound System" },
+      { title: "Sankofa Sessions", id: "B-dIu2pG0lc", type: "Dj Set" },
+      { title: "Indie Dance | Stone's Throw Bar", id: "2aYYhbL8_bU", type: "Live Band" },
+      { title: "Full Moon | Dub School", id: "X5uIzcmdMnc", type: "Sound System" },
+      { title: "Another Price To Pay | SR Studios", id: "L7_O0Hk-eME", type: "Rehearsal Session" },
+      { title: "Puff Puff Pass | Dub School", id: "g9_MCzgW6zo", type: "Live Band" }
     ]
   };
 

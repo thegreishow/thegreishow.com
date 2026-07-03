@@ -49,18 +49,14 @@
     .portal{
       position:relative;
       z-index:2;
-      max-width:1200px;
+      max-width:1100px;
       margin:0 auto;
-      padding:40px 20px 70px;
-    }
-
-    #nav{
-      margin-bottom:20px;
+      padding:50px 20px 80px;
     }
 
     .hero{
       text-align:center;
-      margin:30px 0 40px;
+      margin:40px 0 50px;
       animation:fadeUp 1.1s ease;
     }
 
@@ -90,41 +86,53 @@
       padding:20px;
       text-align:center;
       color:var(--text-dim);
-      margin-bottom:25px;
+      margin:30px 0 50px;
     }
 
-    .grid{
+    /* DASHBOARD HOMEPAGE (no tiles) */
+    .dashboard{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:18px;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:20px;
     }
 
-    .card{
+    .panel{
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.10);
-      backdrop-filter:blur(14px);
-      padding:22px;
-      text-align:center;
       border-radius:18px;
+      padding:28px;
       text-decoration:none;
       color:var(--text);
       transition:0.35s ease;
+      backdrop-filter:blur(14px);
     }
 
-    .card:hover{
-      transform:translateY(-6px) scale(1.02);
+    .panel:hover{
+      transform:translateY(-6px);
       box-shadow:var(--glow-strong);
     }
 
-    .emoji{
+    .panel h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+      letter-spacing:2px;
+    }
+
+    .panel p{
+      margin:0;
+      color:var(--text-dim);
+      font-size:0.9rem;
+    }
+
+    .icon{
       font-size:2rem;
-      display:block;
       margin-bottom:10px;
+      display:block;
     }
 
     footer{
       text-align:center;
-      margin-top:60px;
+      margin-top:70px;
       color:var(--text-dim);
       font-size:0.85rem;
       letter-spacing:1px;
@@ -134,9 +142,7 @@
 
 <body>
 
-  <!-- GLOBAL NAV -->
-  <div id="nav"></div>
-  <script src="shared/nav.js"></script>
+  <!-- GLOBAL NAV AUTO-INJECTED -->
 
   <div class="portal">
 
@@ -145,26 +151,67 @@
       <p>ENTER THE CREATIVE UNIVERSE</p>
     </div>
 
-    <!-- REPURPOSED SPACE -->
     <div class="feature">
-      🎵 Music • 🎮 Arcade • 📚 Stories • 🛍️ Merch • 📺 Visuals — one expanding universe
+      Everything — music, visuals, arcade worlds, stories, merch — unified in one evolving system
     </div>
 
-    <div class="grid">
-      <a class="card" href="music.html"><span class="emoji">🎵</span>MUSIC</a>
-      <a class="card" href="visuals.html"><span class="emoji">📺</span>VISUALS</a>
-      <a class="card" href="wheel-it-records.html"><span class="emoji">💿</span>WHEEL IT! RECORDS</a>
-      <a class="card" href="photography.html"><span class="emoji">📷</span>PHOTOGRAPHY</a>
-      <a class="card" href="arcade.html"><span class="emoji">🎮</span>ARCADE</a>
-      <a class="card" href="merch.html"><span class="emoji">🛍️</span>MERCH</a>
-      <a class="card" href="astralthread.html"><span class="emoji">📚</span>ASTRAL THREAD</a>
-      <a class="card" href="connect.html"><span class="emoji">📬</span>CONNECT</a>
-      <a class="card" href="about.html"><span class="emoji">👤</span>ABOUT</a>
+    <div class="dashboard">
+
+      <a class="panel" href="music.html">
+        <span class="icon">🎵</span>
+        <h2>MUSIC</h2>
+        <p>Releases and catalog</p>
+      </a>
+
+      <a class="panel" href="visuals.html">
+        <span class="icon">📺</span>
+        <h2>VISUALS</h2>
+        <p>Videos and documentaries</p>
+      </a>
+
+      <a class="panel" href="arcade.html">
+        <span class="icon">🎮</span>
+        <h2>ARCADE</h2>
+        <p>Games and interactive worlds</p>
+      </a>
+
+      <a class="panel" href="astralthread.html">
+        <span class="icon">📚</span>
+        <h2>ASTRAL THREAD</h2>
+        <p>Stories and lore</p>
+      </a>
+
+      <a class="panel" href="wheel-it-records.html">
+        <span class="icon">💿</span>
+        <h2>WHEEL IT! RECORDS</h2>
+        <p>Label and releases</p>
+      </a>
+
+      <a class="panel" href="merch.html">
+        <span class="icon">🛍️</span>
+        <h2>MERCH</h2>
+        <p>Products and drops</p>
+      </a>
+
+      <a class="panel" href="photography.html">
+        <span class="icon">📷</span>
+        <h2>PHOTOGRAPHY</h2>
+        <p>Visual archive</p>
+      </a>
+
+      <a class="panel" href="connect.html">
+        <span class="icon">📬</span>
+        <h2>CONNECT</h2>
+        <p>Bookings and contact</p>
+      </a>
+
     </div>
 
     <footer>THE GREI SHOW © 2026</footer>
 
   </div>
+
+  <script src="shared/nav.js"></script>
 
 </body>
 </html>

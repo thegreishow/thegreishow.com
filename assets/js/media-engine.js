@@ -24,14 +24,19 @@ window.MediaEngine = (function () {
       { title: "Upscale", id: "_AHolxZ4Nq0", type: "release", artist: "The Grei Show" },
       { title: "Because I Miss You Too [Part II]", id: "FhXsTlSdsUo", type: "release", artist: "The Grei Show" },
       { title: "Shutter Speed", id: "a1aJxmAypho", type: "release", artist: "The Grei Show" },
-      { title: "Soul Stealer", id: "VFDRN575k68", type: "release", artist: "The Grei Show" } 
+      { title: "Soul Stealer", id: "VFDRN575k68", type: "release", artist: "The Grei Show" },
+      { title: "Connect", id: "jrh_1KPsHLQ", type: "release", artist: "The Grei Show" }
     ],
 
     documentaries: [
       { title: "A DEADLY Intro", id: "LQJH5apx5lg", type: "doc" },
-      { title: "Exclusive Interview With Daindra Harrison", id: "XDhLpxWwp5Y", type: "Interview" },
+      { title: "Interview With Daindra Harrison", id: "XDhLpxWwp5Y", type: "Interview" },
       { title: "In Search Of Lost Files | Protoje", id: "pnuf_wMKt-A", type: "doc" },
       { title: "How To Use A Steam Chalice", id: "OW8iHph6x_E", type: "doc" },
+      { title: "Behind The Scenes | Kabaka Pyramid & Jay Will", id: "NVoaBtN8cqY", type: "doc" },
+      { title: "In The Studio", id: "b-Re-AHuQ8o", type: "doc" },
+      { title: "Behind The Scenes | Loosen Up", id: "Ra2pKrTm3gQ", type: "doc" },
+      { title: "Downtown, Kingston | Aurora Wanderlust ", id: "GbhPhdhCnFM", type: "doc" },
       { title: "Exploring Local Dispensaries In Kingston With The Legandary Bay-C", id: "iRzHXezaJ_E", type: "doc" }
     ],
 
@@ -45,7 +50,9 @@ window.MediaEngine = (function () {
       { title: "Indie Dance | Stone's Throw Bar", id: "2aYYhbL8_bU", type: "Live Band" },
       { title: "Full Moon | Dub School", id: "X5uIzcmdMnc", type: "Sound System" },
       { title: "Another Price To Pay | SR Studios", id: "L7_O0Hk-eME", type: "Rehearsal Session" },
-      { title: "Puff Puff Pass | Dub School", id: "g9_MCzgW6zo", type: "Live Band" }
+      { title: "Puff Puff Pass | Dub School", id: "g9_MCzgW6zo", type: "Live Band" },
+      { title: "Papine Youth Festival", id: "H88YGi1zVC4", type: "Live Band" },
+      { title: "Dreaded Dread Head | Cosmic Rotation", id: "ySPTSkR8E5I", type: "Live Band" }
     ]
   };
 

@@ -13,7 +13,8 @@ window.MediaEngine = (function () {
       { title: "Loosen Up", id: "xTqZHV_37Lo", type: "release", artist: "The Grei Show, Swnkah" },
       { title: "The Vibe", id: "jinbfL-dW7s", type: "release", artist: "The Grei Show, Big Sugar, Canned Beets" },
       { title: "Joy", id: "8HcD4kv-oAI", type: "release", artist: "The Grei Show" },
-      { title: "Blind Without Shades", id: "dGydgjCmkb4", type: "release", artist: "The Grei Show" }
+      { title: "Blind Without Shades", id: "dGydgjCmkb4", type: "release", artist: "The Grei Show" },
+      { title: "Over The Horizon", id: "aRsYBWBUZWo", type: "release", artist: "The Grei Show" }
     ],
 
     documentaries: [

@@ -14,7 +14,13 @@ window.MediaEngine = (function () {
       { title: "The Vibe", id: "jinbfL-dW7s", type: "release", artist: "The Grei Show, Big Sugar, Canned Beets" },
       { title: "Joy", id: "8HcD4kv-oAI", type: "release", artist: "The Grei Show" },
       { title: "Blind Without Shades", id: "dGydgjCmkb4", type: "release", artist: "The Grei Show" },
-      { title: "Over The Horizon", id: "aRsYBWBUZWo", type: "release", artist: "The Grei Show" }
+      { title: "Over The Horizon", id: "aRsYBWBUZWo", type: "release", artist: "The Grei Show" },
+      { title: "Looking For Something", id: "hmZP_xA8R2g", type: "release", artist: "The Grei Show" },
+      { title: "The Flame", id: "ONeDgOgU0EA", type: "release", artist: "The Grei Show" },
+      { title: "Numb", id: "e5j3K8X9dp4", type: "release", artist: "The Grei Show" },
+      { title: "Rage!", id: "B0SSbbLDbMw", type: "release", artist: "The Grei Show" },
+      { title: "Full Moon", id: "B0SSbbLDbMw", type: "release", artist: "The Grei Show" },
+      { title: "Upscale", id: "B0SSbbLDbMw", type: "release", artist: "The Grei Show" }  
     ],
 
     documentaries: [

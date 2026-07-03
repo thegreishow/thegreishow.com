@@ -23,16 +23,23 @@
     body{
       margin:0;
       background: url("assets/img/home-bg.jpg") center/cover no-repeat fixed;
+      animation:bgSlowZoom 30s ease-in-out infinite alternate;
       color:var(--text);
       font-family:var(--font-body);
       overflow-x:hidden;
+    }
+
+    @keyframes bgSlowZoom{
+      from{transform:scale(1)}
+      to{transform:scale(1.06)}
     }
 
     body::before{
       content:"";
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,0.65);
+      background:radial-gradient(circle at center, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
+      backdrop-filter: blur(2px);
       z-index:0;
       animation:fadeIn 1.5s ease;
     }
@@ -80,6 +87,22 @@
       padding:50px 20px;
       text-align:center;
       animation:floatIn 1.5s ease;
+      position:relative;
+    }
+
+    .hero-feature::after{
+      content:"";
+      position:absolute;
+      inset:-30px;
+      background:radial-gradient(circle, rgba(124,58,237,0.18), transparent 70%);
+      animation:pulseGlow 4s ease-in-out infinite;
+      z-index:-1;
+    }
+
+    @keyframes pulseGlow{
+      0%{opacity:0.3; transform:scale(1)}
+      50%{opacity:0.7; transform:scale(1.05)}
+      100%{opacity:0.3; transform:scale(1)}
     }
 
     @keyframes floatIn{
@@ -124,7 +147,7 @@
       border-radius:18px;
       overflow:hidden;
       box-shadow:0 0 40px rgba(124,58,237,0.35);
-      animation:rotateIn 1.8s ease;
+      animation:floatArt 6s ease-in-out infinite;
     }
 
     .cover-art img{
@@ -133,9 +156,10 @@
       object-fit:cover;
     }
 
-    @keyframes rotateIn{
-      from{opacity:0; transform:rotate(-8deg) scale(0.9)}
-      to{opacity:1; transform:rotate(0) scale(1)}
+    @keyframes floatArt{
+      0%{transform:translateY(0px) rotate(0deg)}
+      50%{transform:translateY(-10px) rotate(1deg)}
+      100%{transform:translateY(0px) rotate(0deg)}
     }
 
     .cta-row{
@@ -174,8 +198,6 @@
       color:var(--text-dim);
       margin:40px 0 50px;
     }
-
-    /* Removed dashboard tiles intentionally for cleaner nav-driven UX */
 
     footer{
       text-align:center;
@@ -217,7 +239,7 @@
     </div>
 
     <div class="feature">
-      The Grei Show is a prominent Jamaican reggae fusion artist, record producer, and videographer based out of Kingston, Jamaica. Known for breaking traditional boundaries, they blend modern reggae, dub, and dancehall with unique creative arrangements. They have collaborated with several major platforms and global record companies, including Sony, Warner, and Dutty Rock.
+      The Grei Show is a Jamaican reggae fusion artist and creative producer based in Kingston, known for blending modern reggae, dub, and dancehall with cinematic production styles.
     </div>
 
     <footer>THE GREI SHOW © 2026</footer>

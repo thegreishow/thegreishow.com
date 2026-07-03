@@ -51,12 +51,16 @@
       z-index:2;
       max-width:1200px;
       margin:0 auto;
-      padding:70px 20px;
+      padding:40px 20px 70px;
+    }
+
+    #nav{
+      margin-bottom:20px;
     }
 
     .hero{
       text-align:center;
-      margin-bottom:70px;
+      margin:30px 0 40px;
       animation:fadeUp 1.1s ease;
     }
 
@@ -79,6 +83,16 @@
       text-transform:uppercase;
     }
 
+    .feature{
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:16px;
+      padding:20px;
+      text-align:center;
+      color:var(--text-dim);
+      margin-bottom:25px;
+    }
+
     .grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
@@ -86,7 +100,6 @@
     }
 
     .card{
-      position:relative;
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.10);
       backdrop-filter:blur(14px);
@@ -96,7 +109,6 @@
       text-decoration:none;
       color:var(--text);
       transition:0.35s ease;
-      overflow:hidden;
     }
 
     .card:hover{
@@ -112,7 +124,7 @@
 
     footer{
       text-align:center;
-      margin-top:70px;
+      margin-top:60px;
       color:var(--text-dim);
       font-size:0.85rem;
       letter-spacing:1px;
@@ -122,11 +134,20 @@
 
 <body>
 
+  <!-- GLOBAL NAV -->
+  <div id="nav"></div>
+  <script src="shared/nav.js"></script>
+
   <div class="portal">
 
     <div class="hero">
       <h1>THE GREI SHOW</h1>
       <p>ENTER THE CREATIVE UNIVERSE</p>
+    </div>
+
+    <!-- REPURPOSED SPACE -->
+    <div class="feature">
+      🎵 Music • 🎮 Arcade • 📚 Stories • 🛍️ Merch • 📺 Visuals — one expanding universe
     </div>
 
     <div class="grid">
@@ -144,14 +165,6 @@
     <footer>THE GREI SHOW © 2026</footer>
 
   </div>
-
-  <audio id="bg-music" src="https://parallel-pink-xmters8f.edgeone.dev/The%20Grei%20Show%20-%20No%20Drama%20[][][].mp3" loop></audio>
-
-  <script>
-    const audio=document.getElementById('bg-music');
-    window.addEventListener('load',()=>{audio.volume=0.25;audio.play().catch(()=>{})});
-    document.addEventListener('click',()=>{if(audio.paused)audio.play()},{once:true});
-  </script>
 
 </body>
 </html>

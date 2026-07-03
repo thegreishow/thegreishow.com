@@ -32,8 +32,14 @@
       content:"";
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,0.6);
+      background:rgba(0,0,0,0.65);
       z-index:0;
+      animation:fadeIn 1.5s ease;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0}
+      to{opacity:1}
     }
 
     .portal{
@@ -46,12 +52,12 @@
 
     .hero{
       text-align:center;
-      margin:40px 0 30px;
-      animation:fadeUp 1.1s ease;
+      margin:40px 0 20px;
+      animation:fadeUp 1.2s ease;
     }
 
     @keyframes fadeUp{
-      from{opacity:0; transform:translateY(20px)}
+      from{opacity:0; transform:translateY(30px)}
       to{opacity:1; transform:translateY(0)}
     }
 
@@ -70,31 +76,37 @@
     }
 
     .hero-feature{
-      margin-top:60px;
-      padding:60px 20px;
+      margin-top:40px;
+      padding:50px 20px;
       text-align:center;
+      animation:floatIn 1.5s ease;
+    }
+
+    @keyframes floatIn{
+      from{opacity:0; transform:scale(0.95)}
+      to{opacity:1; transform:scale(1)}
     }
 
     .release-tag{
       display:inline-block;
       padding:6px 14px;
-      border:1px solid rgba(255,255,255,0.2);
+      border:1px solid rgba(255,255,255,0.25);
       border-radius:50px;
       font-size:12px;
       letter-spacing:3px;
       color:var(--text-dim);
-      margin-bottom:20px;
+      margin-bottom:18px;
       animation:pulse 2s infinite;
     }
 
     @keyframes pulse{
-      0%{opacity:0.6}
-      50%{opacity:1}
-      100%{opacity:0.6}
+      0%{opacity:0.5; transform:scale(1)}
+      50%{opacity:1; transform:scale(1.05)}
+      100%{opacity:0.5; transform:scale(1)}
     }
 
     .hero-feature h1{
-      font-size:clamp(3.5rem,7vw,6rem);
+      font-size:clamp(3.8rem,8vw,6.5rem);
       letter-spacing:6px;
       margin:10px 0;
     }
@@ -102,7 +114,28 @@
     .subtitle{
       color:var(--text-dim);
       letter-spacing:4px;
-      margin-bottom:30px;
+      margin-bottom:25px;
+    }
+
+    .cover-art{
+      width:260px;
+      height:260px;
+      margin:25px auto;
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:0 0 40px rgba(124,58,237,0.35);
+      animation:rotateIn 1.8s ease;
+    }
+
+    .cover-art img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    @keyframes rotateIn{
+      from{opacity:0; transform:rotate(-8deg) scale(0.9)}
+      to{opacity:1; transform:rotate(0) scale(1)}
     }
 
     .cta-row{
@@ -116,7 +149,7 @@
     .cta{
       padding:12px 22px;
       border-radius:10px;
-      border:1px solid rgba(255,255,255,0.2);
+      border:1px solid rgba(255,255,255,0.25);
       text-decoration:none;
       color:var(--text);
       transition:0.3s ease;
@@ -125,11 +158,11 @@
     .cta.primary{
       background:linear-gradient(90deg,#7c3aed,#06b6d4);
       border:none;
-      box-shadow:0 0 25px rgba(124,58,237,0.4);
+      box-shadow:0 0 25px rgba(124,58,237,0.45);
     }
 
     .cta:hover{
-      transform:translateY(-3px);
+      transform:translateY(-4px) scale(1.03);
     }
 
     .feature{
@@ -139,48 +172,10 @@
       padding:20px;
       text-align:center;
       color:var(--text-dim);
-      margin:30px 0 50px;
+      margin:40px 0 50px;
     }
 
-    .dashboard{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-      gap:20px;
-    }
-
-    .panel{
-      background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:18px;
-      padding:28px;
-      text-decoration:none;
-      color:var(--text);
-      transition:0.35s ease;
-      backdrop-filter:blur(14px);
-    }
-
-    .panel:hover{
-      transform:translateY(-6px);
-      box-shadow:var(--glow-strong);
-    }
-
-    .panel h2{
-      margin:0 0 8px;
-      font-size:1.2rem;
-      letter-spacing:2px;
-    }
-
-    .panel p{
-      margin:0;
-      color:var(--text-dim);
-      font-size:0.9rem;
-    }
-
-    .icon{
-      font-size:2rem;
-      margin-bottom:10px;
-      display:block;
-    }
+    /* Removed dashboard tiles intentionally for cleaner nav-driven UX */
 
     footer{
       text-align:center;
@@ -188,6 +183,7 @@
       color:var(--text-dim);
       font-size:0.85rem;
       letter-spacing:1px;
+      animation:fadeUp 2s ease;
     }
   </style>
 </head>
@@ -206,9 +202,13 @@
     <div class="hero-feature">
       <p class="release-tag">NEW RELEASE</p>
 
-      <h1>YOUR SONG TITLE</h1>
+      <h1>NO DRAMA</h1>
 
       <p class="subtitle">OUT NOW — THE GREI SHOW</p>
+
+      <div class="cover-art">
+        <img src="assets/img/no-drama.jpg" alt="No Drama Cover Art">
+      </div>
 
       <div class="cta-row">
         <a class="cta primary" href="https://snd.click/qnbs" target="_blank">LISTEN NOW</a>
@@ -218,58 +218,6 @@
 
     <div class="feature">
       Everything — music, visuals, arcade worlds, stories, merch — unified in one evolving system
-    </div>
-
-    <div class="dashboard">
-
-      <a class="panel" href="music.html">
-        <span class="icon">🎵</span>
-        <h2>MUSIC</h2>
-        <p>Releases and catalog</p>
-      </a>
-
-      <a class="panel" href="visuals.html">
-        <span class="icon">📺</span>
-        <h2>VISUALS</h2>
-        <p>Videos and documentaries</p>
-      </a>
-
-      <a class="panel" href="arcade.html">
-        <span class="icon">🎮</span>
-        <h2>ARCADE</h2>
-        <p>Games and interactive worlds</p>
-      </a>
-
-      <a class="panel" href="astralthread.html">
-        <span class="icon">📚</span>
-        <h2>ASTRAL THREAD</h2>
-        <p>Stories and lore</p>
-      </a>
-
-      <a class="panel" href="wheel-it-records.html">
-        <span class="icon">💿</span>
-        <h2>WHEEL IT! RECORDS</h2>
-        <p>Label and releases</p>
-      </a>
-
-      <a class="panel" href="merch.html">
-        <span class="icon">🛍️</span>
-        <h2>MERCH</h2>
-        <p>Products and drops</p>
-      </a>
-
-      <a class="panel" href="photography.html">
-        <span class="icon">📷</span>
-        <h2>PHOTOGRAPHY</h2>
-        <p>Visual archive</p>
-      </a>
-
-      <a class="panel" href="connect.html">
-        <span class="icon">📬</span>
-        <h2>CONNECT</h2>
-        <p>Bookings and contact</p>
-      </a>
-
     </div>
 
     <footer>THE GREI SHOW © 2026</footer>

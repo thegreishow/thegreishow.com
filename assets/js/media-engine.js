@@ -29,8 +29,9 @@ window.MediaEngine = (function () {
 
     documentaries: [
       { title: "A DEADLY Intro", id: "LQJH5apx5lg", type: "doc" },
-      { title: "Exploring Local Dispensaries In Kingston With The Legandary Bay-C", id: "iRzHXezaJ_E", type: "doc" },
-      { title: "Exploring Local Dispensaries In Kingston With The Legandary Bay-C", id: "iRzHXezaJ_E", type: "doc" },
+      { title: "Exclusive Interview With Daindra Harrison", id: "XDhLpxWwp5Y", type: "Interview" },
+      { title: "In Search Of Lost Files | Protoje", id: "pnuf_wMKt-A", type: "doc" },
+      { title: "How To Use A Steam Chalice", id: "OW8iHph6x_E", type: "doc" },
       { title: "Exploring Local Dispensaries In Kingston With The Legandary Bay-C", id: "iRzHXezaJ_E", type: "doc" }
     ],
 

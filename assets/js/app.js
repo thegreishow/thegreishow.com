@@ -14,14 +14,11 @@ function getLinkPage(link) {
   return path || 'index.html';
 }
 
-function hideCurrentPageLink() {
+function markCurrentNavLink() {
   const currentPage = getCurrentPage();
 
   document.querySelectorAll('.site-nav a').forEach(link => {
     const isCurrentPage = getLinkPage(link) === currentPage;
-
-    link.hidden = isCurrentPage;
-    link.style.display = isCurrentPage ? 'none' : '';
     link.toggleAttribute('aria-current', isCurrentPage);
   });
 }
@@ -31,8 +28,8 @@ async function loadHeader() {
   if (!mount) return;
 
   if (document.querySelector('.site-header')) {
-    window.hideCurrentPageLink?.();
-    hideCurrentPageLink();
+    window.markCurrentNavLink?.();
+    markCurrentNavLink();
     return;
   }
 
@@ -42,15 +39,15 @@ async function loadHeader() {
 
     const html = await res.text();
     mount.innerHTML = html;
-    window.hideCurrentPageLink?.();
-    hideCurrentPageLink();
+    window.markCurrentNavLink?.();
+    markCurrentNavLink();
   } catch (err) {
     console.error('Header load failed:', err);
   }
 }
 
 // =========================
-// CMS LAYER (NEW)
+// CMS LAYER
 // =========================
 
 async function loadCMS() {
@@ -90,8 +87,6 @@ async function initCMS() {
 
   renderMusic(cms);
 }
-
-// =========================
 
 function initPage() {
   document.body.classList.add('app-loaded');

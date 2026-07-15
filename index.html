@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Grei Show | Portal</title>
+  <title>The Grei Show | Official Portal</title>
 
-  <meta name="description" content="The Grei Show official portal - music, visuals, arcade, merch and creative universe">
-  <meta property="og:title" content="The Grei Show | Portal">
-  <meta property="og:description" content="Enter the creative universe of The Grei Show">
+  <meta name="description" content="The official home of The Grei Show - music, visuals, arcade experiments, press, Wheel It! Records and the wider creative universe.">
+  <meta property="og:title" content="The Grei Show | Official Portal">
+  <meta property="og:description" content="Enter the creative universe of The Grei Show.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
 
@@ -18,194 +18,255 @@
   <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
 
-    body{
-      margin:0;
-      background: url("assets/img/home-bg.jpg") center/cover no-repeat fixed;
-      animation:bgSlowZoom 30s ease-in-out infinite alternate;
-      color:var(--text);
-      font-family:var(--font-body);
-      overflow-x:hidden;
+    body {
+      color: var(--text);
+      font-family: var(--font-body);
     }
 
-    @keyframes bgSlowZoom{
-      from{transform:scale(1)}
-      to{transform:scale(1.06)}
+    .home {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 44px 0 74px;
     }
 
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      background:radial-gradient(circle at center, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
-      backdrop-filter: blur(2px);
-      z-index:0;
-      animation:fadeIn 1.5s ease;
+    .home-hero {
+      min-height: calc(100vh - 118px);
+      display: grid;
+      place-items: center;
+      text-align: center;
     }
 
-    @keyframes fadeIn{
-      from{opacity:0}
-      to{opacity:1}
+    .home-hero-inner {
+      display: grid;
+      justify-items: center;
+      gap: 22px;
     }
 
-    .portal{
-      position:relative;
-      z-index:2;
-      max-width:1100px;
-      margin:0 auto;
-      padding:50px 20px 80px;
+    .home-kicker {
+      margin: 0;
+      color: var(--accent-2);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
     }
 
-    .hero{
-      text-align:center;
-      margin:40px 0 20px;
-      animation:fadeUp 1.2s ease;
+    .home-title {
+      margin: 0;
+      max-width: 980px;
+      font-family: var(--font-heading);
+      font-size: 5.8rem;
+      line-height: 0.92;
+      letter-spacing: 0;
+      text-shadow: var(--glow-strong);
     }
 
-    @keyframes fadeUp{
-      from{opacity:0; transform:translateY(30px)}
-      to{opacity:1; transform:translateY(0)}
+    .home-copy {
+      max-width: 760px;
+      margin: 0;
+      color: var(--text-dim);
+      font-size: 1.08rem;
+      line-height: 1.75;
     }
 
-    .hero h1{
-      font-family:var(--font-heading);
-      font-size:clamp(3rem,6vw,5rem);
-      letter-spacing:10px;
-      text-shadow:var(--glow-strong);
-      margin-bottom:8px;
+    .release-focus {
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+      margin-top: 8px;
     }
 
-    .hero p{
-      color:var(--text-dim);
-      letter-spacing:4px;
-      text-transform:uppercase;
+    .release-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(31,111,235,0.22);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
     }
 
-    .hero-feature{
-      margin-top:40px;
-      padding:50px 20px;
-      text-align:center;
-      animation:floatIn 1.5s ease;
-      position:relative;
+    .cover-art {
+      width: 260px;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 28px 90px rgba(0,0,0,0.42), 0 0 42px rgba(138,125,255,0.26);
+      animation: floatArt 7s ease-in-out infinite;
     }
 
-    .hero-feature::after{
-      content:"";
-      position:absolute;
-      inset:-30px;
-      background:radial-gradient(circle, rgba(124,58,237,0.18), transparent 70%);
-      animation:pulseGlow 4s ease-in-out infinite;
-      z-index:-1;
+    .cover-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
-    @keyframes pulseGlow{
-      0%{opacity:0.3; transform:scale(1)}
-      50%{opacity:0.7; transform:scale(1.05)}
-      100%{opacity:0.3; transform:scale(1)}
+    @keyframes floatArt {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
-    @keyframes floatIn{
-      from{opacity:0; transform:scale(0.95)}
-      to{opacity:1; transform:scale(1)}
+    .cta-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
     }
 
-    .release-tag{
-      display:inline-block;
-      padding:6px 14px;
-      border:1px solid rgba(255,255,255,0.25);
-      border-radius:50px;
-      font-size:12px;
-      letter-spacing:3px;
-      color:var(--text-dim);
-      margin-bottom:18px;
-      animation:pulse 2s infinite;
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 800;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
     }
 
-    @keyframes pulse{
-      0%{opacity:0.5; transform:scale(1)}
-      50%{opacity:1; transform:scale(1.05)}
-      100%{opacity:0.5; transform:scale(1)}
+    .cta.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, #1f6feb, #00a6ff);
+      box-shadow: 0 0 28px rgba(0,166,255,0.22);
     }
 
-    .hero-feature h1{
-      font-size:clamp(3.8rem,8vw,6.5rem);
-      letter-spacing:6px;
-      margin:10px 0;
+    .cta:hover,
+    .cta:focus-visible {
+      transform: translateY(-3px);
+      color: #fff;
+      outline: none;
     }
 
-    .subtitle{
-      color:var(--text-dim);
-      letter-spacing:4px;
-      margin-bottom:25px;
+    .home-sections {
+      display: grid;
+      gap: 18px;
+      margin-top: 28px;
     }
 
-    .cover-art{
-      width:260px;
-      height:260px;
-      margin:25px auto;
-      border-radius:18px;
-      overflow:hidden;
-      box-shadow:0 0 40px rgba(124,58,237,0.35);
-      animation:floatArt 6s ease-in-out infinite;
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
     }
 
-    .cover-art img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
+    .portal-card {
+      display: grid;
+      gap: 10px;
+      min-height: 150px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      background: rgba(255,255,255,0.045);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-sm);
     }
 
-    @keyframes floatArt{
-      0%{transform:translateY(0px) rotate(0deg)}
-      50%{transform:translateY(-10px) rotate(1deg)}
-      100%{transform:translateY(0px) rotate(0deg)}
+    .portal-card:hover,
+    .portal-card:focus-visible {
+      transform: translateY(-5px);
+      border-color: rgba(0,200,255,0.35);
+      color: #fff;
+      outline: none;
     }
 
-    .cta-row{
-      display:flex;
-      justify-content:center;
-      gap:15px;
-      flex-wrap:wrap;
-      margin-top:20px;
+    .portal-card span {
+      color: var(--accent-2);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
     }
 
-    .cta{
-      padding:12px 22px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,0.25);
-      text-decoration:none;
-      color:var(--text);
-      transition:0.3s ease;
+    .portal-card strong {
+      font-size: 1.18rem;
     }
 
-    .cta.primary{
-      background:linear-gradient(90deg,#7c3aed,#06b6d4);
-      border:none;
-      box-shadow:0 0 25px rgba(124,58,237,0.45);
+    .portal-card p {
+      margin: 0;
+      color: var(--text-dim);
+      font-size: 0.94rem;
+      line-height: 1.55;
     }
 
-    .cta:hover{
-      transform:translateY(-4px) scale(1.03);
+    .signal-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
     }
 
-    .feature{
-      background:rgba(255,255,255,0.03);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:16px;
-      padding:20px;
-      text-align:center;
-      color:var(--text-dim);
-      margin:40px 0 50px;
+    .signal {
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.24);
+      backdrop-filter: blur(12px);
     }
 
-    footer{
-      text-align:center;
-      margin-top:70px;
-      color:var(--text-dim);
-      font-size:0.85rem;
-      letter-spacing:1px;
-      animation:fadeUp 2s ease;
+    .signal h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .signal p {
+      margin: 0;
+      color: var(--text-dim);
+      font-size: 0.93rem;
+      line-height: 1.55;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 64px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 820px) {
+      .home {
+        width: min(100% - 24px, 1180px);
+        padding-top: 28px;
+      }
+
+      .home-hero {
+        min-height: auto;
+        padding: 52px 0 34px;
+      }
+
+      .home-title {
+        font-size: 3.4rem;
+      }
+
+      .cover-art {
+        width: 220px;
+      }
+
+      .signal-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .home-title {
+        font-size: 2.85rem;
+      }
     }
   </style>
 </head>
@@ -214,33 +275,79 @@
 
   <div id="site-header"></div>
 
-  <div class="portal">
+  <main class="home">
+    <section class="home-hero" aria-labelledby="home-title">
+      <div class="home-hero-inner">
+        <p class="home-kicker">Official Creative Portal</p>
+        <h1 id="home-title" class="home-title">THE GREI SHOW</h1>
+        <p class="home-copy">A digital home for the music, visuals, arcade experiments, press materials, production work, and story worlds connected to The Grei Show.</p>
 
-    <div class="hero">
-      <h1>THE GREI SHOW</h1>
-      <p>Wheel It!</p>
-    </div>
+        <div class="release-focus" aria-label="Featured release">
+          <span class="release-tag">New Music</span>
+          <div class="cover-art">
+            <img src="assets/img/no-drama.jpg" alt="No Drama cover art">
+          </div>
+          <div class="cta-row">
+            <a class="cta primary" href="https://snd.click/qnbs" target="_blank" rel="noopener">Listen Now</a>
+            <a class="cta" href="music.html">Explore Music</a>
+            <a class="cta" href="arcade.html">Enter Arcade</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="hero-feature">
-      <p class="release-tag">NEW MUSIC!</p>
-
-      <div class="cover-art">
-        <img src="assets/img/no-drama.jpg" alt="No Drama Cover Art">
+    <section class="home-sections" aria-label="Portal sections">
+      <div class="portal-grid">
+        <a class="portal-card" href="music.html">
+          <span>Audio</span>
+          <strong>Music</strong>
+          <p>Featured transmissions, streaming links, and release paths.</p>
+        </a>
+        <a class="portal-card" href="visuals.html">
+          <span>Visual World</span>
+          <strong>Visuals</strong>
+          <p>Music videos, documentaries, live sessions, and creative archives.</p>
+        </a>
+        <a class="portal-card" href="arcade.html">
+          <span>Interactive</span>
+          <strong>Arcade</strong>
+          <p>Playable prototypes and experiments from the digital universe.</p>
+        </a>
+        <a class="portal-card" href="wheel-it-records.html">
+          <span>Production</span>
+          <strong>Wheel It! Records</strong>
+          <p>Selected production work, collaborations, and showcase material.</p>
+        </a>
+        <a class="portal-card" href="press.html">
+          <span>Media</span>
+          <strong>Press</strong>
+          <p>Artist profile, news, career timeline, highlights, and media requests.</p>
+        </a>
+        <a class="portal-card" href="connect.html">
+          <span>Contact</span>
+          <strong>Connect</strong>
+          <p>Booking, press, collaborations, and official social links.</p>
+        </a>
       </div>
 
-      <div class="cta-row">
-        <a class="cta primary" href="https://snd.click/qnbs" target="_blank">LISTEN NOW</a>
-        <a class="cta" href="music.html">MORE MUSIC</a>
+      <div class="signal-row" aria-label="Latest site signals">
+        <article class="signal">
+          <h2>No Drama Out Now</h2>
+          <p>The homepage now centers the latest release and creates a clear path into the music catalog.</p>
+        </article>
+        <article class="signal">
+          <h2>Press Portal Live</h2>
+          <p>The press section now holds the artist profile, media kit placeholder, career notes, and contact path.</p>
+        </article>
+        <article class="signal">
+          <h2>Arcade Prototype</h2>
+          <p>Signal Runner is online as the first playable arcade experiment, with more room to build.</p>
+        </article>
       </div>
-    </div>
+    </section>
 
-    <div class="feature">
-      The Grei Show is a Jamaican reggae fusion artist and creative producer based in Kingston, known for blending modern reggae, dub, and dancehall with cinematic production styles.
-    </div>
-
-    <footer>THE GREI SHOW © 2026</footer>
-
-  </div>
+    <footer>THE GREI SHOW &copy; 2026</footer>
+  </main>
 
   <script src="shared/nav.js"></script>
 

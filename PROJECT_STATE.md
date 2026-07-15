@@ -11,9 +11,9 @@
 - Shared navigation rebuilt with readable markup, responsive styling, and active-page state
 - Legacy header component aligned with current navigation
 - Global navigation added to visual subpages
-- Homepage upgraded into a cleaner official portal with No Drama cover art, primary CTAs, portal cards, and latest site signals
-- Music page upgraded with release artwork, a cleaner audio player, and streaming links
-- Visuals landing page polished with cleaner category cards and a consistent featured-video frame
+- Homepage streamlined back to a minimal presentation: artist name, No Drama artwork, and one primary listen action
+- Music page retitled to AUDIO UNIVERSE and cleaned of behind-the-scenes explanatory copy
+- Visuals page retitled to VISUAL UNIVERSE with duplicate category links removed above the hero player
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
 - Wheel It! Records page refreshed with clickable producer-reel cards
 - Connect, Merch, Astral Thread, Photography, and Press pages refreshed to match the shared visual language

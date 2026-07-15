@@ -11,31 +11,29 @@
   <link rel="stylesheet" href="assets/css/theme.css">
 
   <style>
-    body{
-      margin:0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-    }
-
     .wrap{
+      position:relative;
+      z-index:1;
       max-width:1000px;
       margin:0 auto;
-      padding:60px 20px;
+      padding:70px 20px;
     }
 
     h1{
       text-align:center;
-      font-size:2.8rem;
-      letter-spacing:2px;
-      margin-bottom:10px;
+      font-size:3.4rem;
+      line-height:1;
+      letter-spacing:0;
+      margin:0 0 12px;
       text-shadow: var(--glow);
     }
 
     p.subtitle{
+      max-width:680px;
+      margin:0 auto 40px;
       text-align:center;
       color: var(--text-dim);
-      margin-bottom:40px;
+      line-height:1.7;
     }
 
     .gallery{
@@ -46,10 +44,13 @@
 
     .gallery img{
       width:100%;
-      border-radius:14px;
+      aspect-ratio:4/3;
+      border-radius:8px;
       object-fit:cover;
       transition:transform 0.3s ease, box-shadow 0.3s ease;
       box-shadow: var(--shadow-sm);
+      border:1px solid rgba(255,255,255,0.1);
+      background:rgba(255,255,255,0.04);
     }
 
     .gallery img:hover{
@@ -68,26 +69,24 @@
 
 <body>
 
-  <!-- GLOBAL NAV -->
   <div id="site-header"></div>
-  <script src="/shared/nav.js"></script>
+  <script src="shared/nav.js"></script>
 
-  <div class="wrap">
-    <h1>PHOTOGRAPHY</h1>
-    <p class="subtitle">Real Stories. Real People. Real Places.</p>
+  <main class="wrap">
+    <p class="eyebrow" style="text-align:center;">Visual Archive</p>
+    <h1>Photography</h1>
+    <p class="subtitle">Real stories, people, places, and fragments from the world surrounding the music.</p>
 
     <div class="gallery">
-      <img src="http://thegreishow.xo.je/photos/jamaica1.jpg" alt="Jamaica" loading="lazy">
-      <img src="http://thegreishow.xo.je/photos/jamaica2.jpg" alt="Jamaica" loading="lazy">
-      <img src="http://thegreishow.xo.je/photos/jamaica3.jpg" alt="Jamaica" loading="lazy">
-      <img src="http://thegreishow.xo.je/photos/jamaica4.jpg" alt="Jamaica" loading="lazy">
-      <img src="http://thegreishow.xo.je/photos/jamaica5.jpg" alt="Jamaica" loading="lazy">
+      <img src="https://thegreishow.xo.je/photos/jamaica1.jpg" alt="Jamaica street photography" loading="lazy">
+      <img src="https://thegreishow.xo.je/photos/jamaica2.jpg" alt="Jamaica landscape photography" loading="lazy">
+      <img src="https://thegreishow.xo.je/photos/jamaica3.jpg" alt="Jamaica documentary photography" loading="lazy">
+      <img src="https://thegreishow.xo.je/photos/jamaica4.jpg" alt="Jamaica visual archive" loading="lazy">
+      <img src="https://thegreishow.xo.je/photos/jamaica5.jpg" alt="Jamaica creative photography" loading="lazy">
     </div>
 
-    <footer>
-      © The Grei Show | Wheel It! Records 💿
-    </footer>
-  </div>
+    <footer>The Grei Show - Wheel It! Records</footer>
+  </main>
 
 </body>
 </html>

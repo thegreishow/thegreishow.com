@@ -8,20 +8,130 @@
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/layout.css" />
   <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/theme.css" />
+
+  <style>
+    .thread-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 70px 0;
+    }
+
+    .thread-hero {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .thread-hero h1 {
+      margin: 0 0 12px;
+      font-size: 4rem;
+      line-height: 1;
+      letter-spacing: 0;
+      text-shadow: var(--glow-strong);
+    }
+
+    .thread-hero p {
+      max-width: 740px;
+      margin: 0 auto;
+      color: var(--text-dim);
+      line-height: 1.75;
+    }
+
+    .thread-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .thread-card {
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.045);
+      backdrop-filter: blur(14px);
+    }
+
+    .thread-card span {
+      color: var(--accent-2);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .thread-card h2 {
+      margin: 10px 0 10px;
+      letter-spacing: 0;
+    }
+
+    .thread-card p {
+      margin: 0;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .thread-note {
+      margin-top: 18px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.24);
+      color: var(--text-dim);
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .thread-shell {
+        width: min(100% - 24px, 1080px);
+        padding: 48px 0;
+      }
+
+      .thread-hero h1 {
+        font-size: 2.8rem;
+      }
+
+      .thread-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- GLOBAL NAV -->
   <div id="site-header"></div>
-  <script src="/shared/nav.js"></script>
+  <script src="shared/nav.js"></script>
 
-  <section class="section">
-    <div class="container" style="text-align:center; padding:60px 20px;">
-      <h1>THE ASTRAL THREAD</h1>
-      <p>A cinematic story universe in development.</p>
-      <p>Where music, myth, and memory converge.</p>
+  <main class="thread-shell">
+    <section class="thread-hero">
+      <p class="eyebrow">Story Universe</p>
+      <h1>Astral Thread</h1>
+      <p>A cinematic story world in development, connecting music, myth, memory, and visual fragments into a long-form creative universe.</p>
+    </section>
+
+    <section class="thread-grid" aria-label="Astral Thread pillars">
+      <article class="thread-card">
+        <span>Myth</span>
+        <h2>The Signal</h2>
+        <p>A thread of hidden messages, dreams, and transmissions running beneath the surface of the music.</p>
+      </article>
+      <article class="thread-card">
+        <span>World</span>
+        <h2>The Archive</h2>
+        <p>Characters, places, symbols, and visual language built to expand across releases and films.</p>
+      </article>
+      <article class="thread-card">
+        <span>Format</span>
+        <h2>The Continuum</h2>
+        <p>A future home for chapters, artifacts, short films, soundtrack pieces, and interactive story moments.</p>
+      </article>
+    </section>
+
+    <div class="thread-note">
+      Astral Thread is still forming. This page now holds the doorway for the world as the story pieces come online.
     </div>
-  </section>
+  </main>
 
 </body>
 </html>

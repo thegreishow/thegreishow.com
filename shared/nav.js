@@ -4,9 +4,20 @@
 (function () {
   let navInjected = false;
 
-  function getCurrentPage() {
-    const path = window.location.pathname.split('/').pop();
+  const parentPages = {
+    'music-videos.html': 'visuals.html',
+    'documentaries.html': 'visuals.html',
+    'live-sessions.html': 'visuals.html'
+  };
+
+  function getPageFromPath(pathname) {
+    const path = pathname.split('/').pop();
     return path || 'index.html';
+  }
+
+  function getCurrentPage() {
+    const page = getPageFromPath(window.location.pathname);
+    return parentPages[page] || page;
   }
 
   function getLinkPage(link) {
@@ -14,8 +25,7 @@
     if (!href) return '';
 
     const url = new URL(href, window.location.href);
-    const path = url.pathname.split('/').pop();
-    return path || 'index.html';
+    return getPageFromPath(url.pathname);
   }
 
   function markCurrentNavLink() {

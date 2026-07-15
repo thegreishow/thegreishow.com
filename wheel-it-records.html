@@ -3,166 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wheel It! Records 💿 | Producer Reel</title>
+  <title>Wheel It! Records | Producer Reel</title>
 
   <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
   <link rel="stylesheet" href="assets/css/theme.css" />
   <link rel="stylesheet" href="assets/css/portal.css" />
 
   <style>
-    body{
-      margin:0;
-      background: radial-gradient(circle at top,#151525,#07070b 70%);
-      color:var(--text);
-      font-family:var(--font-body);
-      overflow-x:hidden;
+    .records-shell {
+      position: relative;
+      z-index: 1;
     }
 
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(140,80,255,0.14), transparent 55%),
-        radial-gradient(circle at 80% 70%, rgba(0,200,255,0.10), transparent 60%),
-        radial-gradient(circle at 50% 100%, rgba(255,255,255,0.05), transparent 60%);
-      pointer-events:none;
-      animation:drift 16s ease-in-out infinite alternate;
+    .reel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
     }
 
-    @keyframes drift{
-      from{transform:scale(1)}
-      to{transform:scale(1.08)}
+    .work-card {
+      display: grid;
+      overflow: hidden;
+      color: var(--text);
+      text-decoration: none;
     }
 
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:70px 20px;
-      position:relative;
-      z-index:2;
+    .work-card:hover,
+    .work-card:focus-visible {
+      transform: translateY(-5px);
+      border-color: rgba(0,200,255,0.35);
+      opacity: 1;
+      outline: none;
     }
 
-    .hero{
-      text-align:center;
-      margin-bottom:10px;
+    .work-thumb {
+      aspect-ratio: 16 / 9;
+      background: #050509;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
-    .hero h1{
-      font-size:3.6rem;
-      letter-spacing:4px;
-      margin:10px 0;
-      text-shadow:var(--glow-strong);
-      font-family:var(--font-heading);
+    .work-thumb img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
     }
 
-    .hero p{
-      color:var(--text-dim);
-      margin:0 auto;
+    .work-content {
+      padding: 15px;
     }
 
-    .featured{
-      margin:35px 0 50px;
+    .work-content h2 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
     }
 
-    .featured-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-      gap:20px;
+    .work-content p {
+      margin: 0;
+      color: var(--text-dim);
+      line-height: 1.5;
     }
 
-    .card{
-      background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:16px;
-      overflow:hidden;
-      backdrop-filter:blur(12px);
-      transition:0.3s ease;
+    .records-note {
+      margin-top: 18px;
+      padding: 20px;
+      text-align: center;
+      color: var(--text-dim);
+      line-height: 1.65;
     }
 
-    .card:hover{
-      transform:translateY(-6px);
-      box-shadow:var(--glow-strong);
-    }
-
-    .thumb{
-      width:100%;
-      aspect-ratio:16/9;
-      background:#000;
-      background-size:cover;
-      background-position:center;
-    }
-
-    .content{ padding:14px; }
-
-    .meta{ font-size:0.85rem; opacity:0.8; }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:18px;
+    .records-note a {
+      color: #fff;
+      font-weight: 800;
     }
   </style>
 </head>
 
 <body>
 
-<!-- GLOBAL NAV -->
-<div id="site-header"></div>
-<script src="/shared/nav.js"></script>
+  <div id="site-header"></div>
+  <script src="shared/nav.js"></script>
 
-<div class="wrap">
+  <main class="page-shell records-shell">
+    <section class="page-hero">
+      <p class="eyebrow">Production House</p>
+      <h1>Wheel It! Records</h1>
+      <p>Selected music production, collaborations, and creative work connected to The Grei Show.</p>
+    </section>
 
-  <div class="hero">
-    <h1>Wheel It! Records 💿</h1>
-    <p>Selected music production and collaborations</p>
-  </div>
+    <section class="reel-grid" id="reelGrid" aria-label="Producer reel"></section>
 
-  <div class="featured">
-    <div class="featured-grid" id="featured"></div>
-  </div>
+    <section class="section-panel records-note">
+      For production, sync, collaboration, or artist development inquiries, contact <a href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a>.
+    </section>
+  </main>
 
-  <div class="grid" id="grid"></div>
+  <script>
+    const works = [
+      { title: 'Cash Out', artist: 'Swnkah', id: '5V5TJFhyEU4' },
+      { title: 'Ultion', artist: 'Hink45', id: '1JVlmntajd0' },
+      { title: 'Kush & Schweppes', artist: 'Blvk H3ro', id: 'Gc2dJmPcxOQ' },
+      { title: 'Weed & Ting', artist: 'Protoje', id: '2SEYLu8qSNs' },
+      { title: 'Soundboii Freestyle', artist: 'Fyah Roiall', id: 'IhJmti8KkMQ' },
+      { title: 'Dinero Code', artist: 'Wiggward, Poseck Jr.', id: 'Dd1zQvb29x4' }
+    ];
 
-</div>
+    function thumb(id) {
+      return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    }
 
-<script>
-  const works = [
-    { title: "Cash Out", artist: "Swnkah", id: "5V5TJFhyEU4" },
-    { title: "Ultion", artist: "Hink45", id: "1JVlmntajd0" },
-    { title: "Kush & Schweppes", artist: "Blvk H3ro", id: "Gc2dJmPcxOQ" },
-    { title: "Weed & Ting", artist: "Protoje", id: "2SEYLu8qSNs" },
-    { title: "Soundboii Freestyle", artist: "Fyah Roiall", id: "IhJmti8KkMQ" },
-    { title: "Dinero Code", artist: "Wiggward, Poseck Jr.", id: "Dd1zQvb29x4" }
-  ];
-
-  function thumb(id){
-    return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-  }
-
-  const featured = document.getElementById('featured');
-  const grid = document.getElementById('grid');
-
-  featured.innerHTML = works.slice(0,2).map(w => `
-    <div class="card">
-      <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
-      <div class="content">
-        <div><strong>${w.title}</strong></div>
-        <div class="meta">${w.artist}</div>
-      </div>
-    </div>
-  `).join('');
-
-  grid.innerHTML = works.map(w => `
-    <div class="card">
-      <div class="thumb" style="background-image:url('${thumb(w.id)}')"></div>
-      <div class="content">
-        <div><strong>${w.title}</strong></div>
-        <div class="meta">${w.artist}</div>
-      </div>
-    </div>
-  `).join('');
-</script>
+    document.getElementById('reelGrid').innerHTML = works.map(work => `
+      <a class="section-panel work-card" href="https://www.youtube.com/watch?v=${work.id}" target="_blank" rel="noopener">
+        <span class="work-thumb">
+          <img src="${thumb(work.id)}" alt="${work.title} thumbnail" loading="lazy">
+        </span>
+        <span class="work-content">
+          <h2>${work.title}</h2>
+          <p>${work.artist}</p>
+        </span>
+      </a>
+    `).join('');
+  </script>
 
 </body>
 </html>

@@ -18,10 +18,11 @@
 - Books page added with a shelf intro, official ebook link, and a left/right chapter reader instead of stacked chapter scrolling
 - Books reader chapter data moved into assets/js/books-reader.js for easier chapter growth
 - Continued Books chapter data added in assets/js/books-chapters-continued.js and loaded by books.html
-- Chapter 01: The Quiet Strength Within added with AI narration preview and full narration link
-- Chapter 02: A Prelude to Serenity added with AI narration preview and full narration link
-- Chapter 03: The Symphony of Becoming added with AI narration preview and full narration link
-- Chapter 04: The Symphony of Dreams added with AI narration preview and full narration link
+- Opening Books narration links refreshed through assets/js/books-audio-overrides.js
+- Chapter 01: The Quiet Strength Within added with corrected AI narration preview and full narration link
+- Chapter 02: A Prelude to Serenity added with corrected AI narration preview and full narration link
+- Chapter 03: The Symphony of Becoming added with corrected AI narration preview and full narration link
+- Chapter 04: The Symphony of Dreams added with corrected AI narration preview and full narration link
 - Chapter 05: The Astral Thread renumbered with corrected AI narration preview and full narration link
 - Chapter 06: Beneath the Breadfruit Tree renumbered with corrected AI narration preview and full narration link
 - Chapter 07: A Garden of Two Worlds added with AI narration preview and full narration link
@@ -29,7 +30,7 @@
 - Chapter 09: The Garden of Forgotten Names added with AI narration preview and full narration link
 - Chapter 10: The Celestial Loom added with AI narration preview and full narration link
 - Chapter 11: Dreamweavers added with AI narration preview and full narration link
-- Books narration scripts now use word-form chapter numbers for new/renumbered chapters so the voiceover does not read leading zeroes aloud
+- Books narration scripts now use word-form chapter numbers for all currently loaded chapters so the voiceover does not read leading zeroes aloud
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling

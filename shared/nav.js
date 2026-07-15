@@ -1,81 +1,79 @@
-// Grei Site - Global Navigation Injector (Auto + Stable System)
-// Ensures navigation is consistent across ALL pages and subroutes
+// Grei Site - Global Navigation Injector
+// Loads the shared header and marks the current page consistently.
 
-let navInjected = false;
+(function () {
+  let navInjected = false;
 
-function injectNav(html) {
-  const existing = document.querySelector('.site-header');
-
-  // If another loader already rendered the nav, only apply page cleanup.
-  if (navInjected || existing) {
-    navInjected = true;
-    hideCurrentPageLink();
-    return;
+  function getCurrentPage() {
+    const path = window.location.pathname.split('/').pop();
+    return path || 'index.html';
   }
 
-  const mount = document.getElementById('site-header');
+  function getLinkPage(link) {
+    const href = link.getAttribute('href');
+    if (!href) return '';
 
-  if (mount) {
-    mount.innerHTML = html;
-  } else {
-    // AUTO-INJECT MODE (fallback for pages without mount)
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = html;
-    document.body.insertBefore(wrapper.firstElementChild, document.body.firstChild);
+    const url = new URL(href, window.location.href);
+    const path = url.pathname.split('/').pop();
+    return path || 'index.html';
   }
 
-  navInjected = true;
-  hideCurrentPageLink();
-}
-
-function getCurrentPage() {
-  const path = window.location.pathname.split('/').pop();
-  return path || 'index.html';
-}
-
-function getLinkPage(link) {
-  const href = link.getAttribute('href');
-  if (!href) return '';
-
-  const url = new URL(href, window.location.href);
-  const path = url.pathname.split('/').pop();
-  return path || 'index.html';
-}
-
-function hideCurrentPageLink() {
-  try {
+  function markCurrentNavLink() {
     const currentPage = getCurrentPage();
 
     document.querySelectorAll('.site-nav a').forEach(link => {
       const isCurrentPage = getLinkPage(link) === currentPage;
-
-      link.hidden = isCurrentPage;
-      link.style.display = isCurrentPage ? 'none' : '';
       link.toggleAttribute('aria-current', isCurrentPage);
     });
-  } catch (e) {
-    console.warn('Nav current-page cleanup failed', e);
   }
-}
 
-async function fetchNavHtml() {
-  const primary = await fetch('/shared/nav.html');
-  if (primary.ok) return primary.text();
+  function injectNav(html) {
+    const existing = document.querySelector('.site-header');
 
-  const fallback = await fetch('shared/nav.html');
-  if (!fallback.ok) throw new Error('Shared navigation not found');
+    if (navInjected || existing) {
+      navInjected = true;
+      markCurrentNavLink();
+      return;
+    }
 
-  return fallback.text();
-}
+    const mount = document.getElementById('site-header');
 
-async function loadNav() {
-  try {
-    const html = await fetchNavHtml();
-    injectNav(html);
-  } catch (err) {
-    console.error('[Nav Loader] Failed to load navigation:', err);
+    if (mount) {
+      mount.innerHTML = html;
+    } else {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+      document.body.insertBefore(wrapper.firstElementChild, document.body.firstChild);
+    }
+
+    navInjected = true;
+    markCurrentNavLink();
   }
-}
 
-window.hideCurrentPageLink = hideCurrentPageLink;
-document.addEventListener('DOMContentLoaded', loadNav);
+  async function fetchNavHtml() {
+    const paths = ['shared/nav.html', '/shared/nav.html'];
+
+    for (const path of paths) {
+      try {
+        const res = await fetch(path);
+        if (res.ok) return res.text();
+      } catch (err) {
+        // Try the next path before reporting failure.
+      }
+    }
+
+    throw new Error('Shared navigation not found');
+  }
+
+  async function loadNav() {
+    try {
+      const html = await fetchNavHtml();
+      injectNav(html);
+    } catch (err) {
+      console.error('[Nav Loader] Failed to load navigation:', err);
+    }
+  }
+
+  window.markCurrentNavLink = markCurrentNavLink;
+  document.addEventListener('DOMContentLoaded', loadNav);
+})();

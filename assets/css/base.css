@@ -1,14 +1,43 @@
-/* Phase 1 — Minimal Design System (Aligned with Theme System v2) */
+/* Phase 1 - Minimal Design System (Aligned with Theme System v2) */
 
 :root {
-  /* Keep only legacy-safe fonts (theme.css controls visuals) */
   --font-heading: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
+  --site-bg-fallback: #07070b;
+  --site-bg-image: url('../img/home-bg.jpg');
+}
+
+html {
+  min-height: 100%;
+  background: var(--site-bg-fallback);
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
   font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,0.10), transparent 22rem),
+    radial-gradient(circle at 20% 25%, rgba(138,125,255,0.22), transparent 28rem),
+    radial-gradient(circle at 86% 68%, rgba(0,200,255,0.16), transparent 30rem),
+    linear-gradient(180deg, rgba(0,0,0,0.48), rgba(0,0,0,0.78)),
+    var(--site-bg-image) center / cover fixed no-repeat !important;
+  color: var(--text, #ffffff);
+  overflow-x: hidden;
+}
+
+body::before {
+  display: none !important;
+}
+
+img,
+iframe,
+video {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll !important;
+  }
 }

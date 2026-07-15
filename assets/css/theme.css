@@ -1,4 +1,4 @@
-/* THE GREI SHOW - CINEMATIC DESIGN SYSTEM v2 (GLOBAL POLISH PASS) */
+/* THE GREI SHOW - CINEMATIC DESIGN SYSTEM v2 */
 
 :root {
   /* Core palette */
@@ -29,11 +29,11 @@
 
   /* Radius */
   --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 28px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
 
-  /* Shadows & glow */
+  /* Shadows and glow */
   --shadow-sm: 0 2px 10px rgba(0,0,0,0.25);
   --shadow-md: 0 10px 30px rgba(0,0,0,0.35);
   --glow: 0 0 25px rgba(138,125,255,0.25);
@@ -53,38 +53,52 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-heading);
-  letter-spacing: 1px;
+  letter-spacing: 0;
 }
 
 a {
   color: var(--accent);
   text-decoration: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 a:hover {
-  opacity: 0.85;
+  opacity: 0.88;
 }
 
-/* Global card system */
-.card, .track-card, .featured {
+.card,
+.track-card,
+.featured {
   background: linear-gradient(180deg, var(--surface), var(--surface-2));
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(10px);
 }
 
-/* Buttons baseline */
 button {
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   border-radius: var(--radius-md);
 }
 
-/* Motion polish */
-* {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+a,
+button,
+.card,
+.track-card,
+.featured,
+.portal-card,
+.tab,
+.filter,
+.play-btn {
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }

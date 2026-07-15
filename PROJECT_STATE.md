@@ -16,21 +16,12 @@
 - Visuals page retitled to VISUAL UNIVERSE with duplicate category links removed above the hero player
 - Astral Thread moved under the new Books section as Book 01: The Astral Thread
 - Books page added with a shelf intro, official ebook link, and a left/right chapter reader instead of stacked chapter scrolling
-- Books reader chapter data moved into assets/js/books-reader.js for easier chapter growth
-- Continued Books chapter data added in assets/js/books-chapters-continued.js and loaded by books.html
-- Opening Books narration links refreshed through assets/js/books-audio-overrides.js
-- Chapter 01: The Quiet Strength Within added with corrected AI narration preview and full narration link
-- Chapter 02: A Prelude to Serenity added with corrected AI narration preview and full narration link
-- Chapter 03: The Symphony of Becoming added with corrected AI narration preview and full narration link
-- Chapter 04: The Symphony of Dreams added with corrected AI narration preview and full narration link
-- Chapter 05: The Astral Thread renumbered with corrected AI narration preview and full narration link
-- Chapter 06: Beneath the Breadfruit Tree renumbered with corrected AI narration preview and full narration link
-- Chapter 07: A Garden of Two Worlds added with AI narration preview and full narration link
-- Chapter 08: The Heart of Aetheria added with AI narration preview and full narration link
-- Chapter 09: The Garden of Forgotten Names added with AI narration preview and full narration link
-- Chapter 10: The Celestial Loom added with AI narration preview and full narration link
-- Chapter 11: Dreamweavers added with AI narration preview and full narration link
-- Books narration scripts now use word-form chapter numbers for all currently loaded chapters so the voiceover does not read leading zeroes aloud
+- Books reader chapter data now loads from assets/js/books-chapter-01.js through assets/js/books-chapter-20.js as the temporary working manuscript source
+- Books reader script simplified to render generated chapter data safely and hide narration controls when no matching audio is available
+- Current temporary Astral Thread version added with 20 chapters from the latest supplied manuscript
+- Chapters 01-06 retain matching corrected AI narration preview and full narration links
+- Chapters 07-20 are text-first until the final manuscript is confirmed and narration can be regenerated against stable chapter numbers
+- Books narration scripts use word-form chapter numbers where audio is currently available so the voiceover does not read leading zeroes aloud
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
@@ -54,7 +45,8 @@
 - More homepage/live content can be added as releases, press assets, and arcade builds grow
 
 ## Next
-- Continue adding Astral Thread chapters after Chapter 11 with word-form chapter labels in narration scripts
+- Replace the temporary Astral Thread manuscript data when the official-official version is confirmed
+- Regenerate Books narration for the final chapter order using word-form chapter labels
 - Create final Books / Astral Thread visual chapter assets in Canva and add them to the reader
 - Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes

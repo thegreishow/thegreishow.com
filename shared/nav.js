@@ -7,7 +7,8 @@
   const parentPages = {
     'music-videos.html': 'visuals.html',
     'documentaries.html': 'visuals.html',
-    'live-sessions.html': 'visuals.html'
+    'live-sessions.html': 'visuals.html',
+    'astralthread.html': 'books.html'
   };
 
   function getPageFromPath(pathname) {

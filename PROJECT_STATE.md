@@ -19,9 +19,9 @@
 - Books reader chapter data now loads from assets/js/books-chapter-01.js through assets/js/books-chapter-20.js as the temporary working manuscript source
 - Books reader script simplified to render generated chapter data safely and hide narration controls when no matching audio is available
 - Current temporary Astral Thread version added with 20 chapters from the latest supplied manuscript
-- Chapters 01-06 retain matching corrected AI narration preview and full narration links
-- Chapters 07-20 are text-first until the final manuscript is confirmed and narration can be regenerated against stable chapter numbers
-- Books narration scripts use word-form chapter numbers where audio is currently available so the voiceover does not read leading zeroes aloud
+- Chapters 01-20 now have AI narration preview and full narration links
+- Books audio override layer supplies generated narration links for chapters that should stay text-stable
+- Books narration scripts use word-form chapter numbers so the voiceover does not read leading zeroes aloud
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
@@ -46,7 +46,7 @@
 
 ## Next
 - Replace the temporary Astral Thread manuscript data when the official-official version is confirmed
-- Regenerate Books narration for the final chapter order using word-form chapter labels
+- Re-audit or regenerate Books narration once the official-official manuscript is confirmed
 - Create final Books / Astral Thread visual chapter assets in Canva and add them to the reader
 - Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes

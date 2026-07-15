@@ -12,200 +12,140 @@
   <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
-    body{
-      margin:0;
-      background: radial-gradient(circle at top,#151525,#07070b 70%);
-      color:var(--text);
-      font-family:var(--font-body);
-      overflow-x:hidden;
+    .visuals-shell {
+      position: relative;
+      z-index: 1;
     }
 
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      background:
-        radial-gradient(circle at 25% 20%, rgba(140,80,255,0.18), transparent 55%),
-        radial-gradient(circle at 80% 70%, rgba(0,200,255,0.12), transparent 60%),
-        radial-gradient(circle at 50% 100%, rgba(255,255,255,0.05), transparent 60%);
-      pointer-events:none;
-      animation:drift 14s ease-in-out infinite alternate;
-      z-index:0;
+    .visual-actions {
+      margin: 24px 0 30px;
     }
 
-    @keyframes drift{
-      from{transform:scale(1)}
-      to{transform:scale(1.12)}
+    .visual-actions .pill {
+      color: var(--text);
+      text-decoration: none;
     }
 
-    .wrap{
-      position:relative;
-      z-index:2;
-      max-width:1150px;
-      margin:0 auto;
-      padding:70px 20px;
+    .visual-actions .pill:hover,
+    .visual-actions .pill:focus-visible {
+      transform: translateY(-3px);
+      border-color: rgba(0,200,255,0.36);
+      outline: none;
     }
 
-    h1{
-      text-align:center;
-      font-size:clamp(2.8rem,5vw,4.2rem);
-      letter-spacing:6px;
-      text-shadow:var(--glow-strong);
-      margin-bottom:10px;
-      font-family:var(--font-heading);
+    .hero-video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      box-shadow: var(--shadow-md), var(--glow);
+      background: #050509;
+      margin-bottom: 18px;
     }
 
-    .subtitle{
-      text-align:center;
-      color:var(--text-dim);
-      letter-spacing:2px;
-      margin-bottom:35px;
+    .hero-video iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: 0;
     }
 
-    .hero-video{
-      width:100%;
-      aspect-ratio:16/9;
-      border-radius:22px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,0.12);
-      box-shadow:var(--glow);
-      margin-bottom:45px;
-      position:relative;
+    .visual-card {
+      display: grid;
+      gap: 10px;
+      min-height: 160px;
+      padding: 20px;
+      align-content: end;
+      color: var(--text);
+      text-decoration: none;
     }
 
-    .hero-video::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(to top, rgba(0,0,0,0.35), transparent 60%);
-      pointer-events:none;
+    .visual-card span {
+      color: var(--accent-2);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
     }
 
-    .hero-video iframe{
-      width:100%;
-      height:100%;
-      border:none;
+    .visual-card h2 {
+      margin: 0;
+      font-size: 1.35rem;
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:18px;
+    .visual-card p {
+      margin: 0;
+      color: var(--text-dim);
+      line-height: 1.55;
     }
 
-    .card{
-      position:relative;
-      background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:18px;
-      padding:22px;
-      backdrop-filter:blur(14px);
-      text-decoration:none;
-      color:var(--text);
-      transition:0.35s ease;
-      overflow:hidden;
+    .visual-card:hover,
+    .visual-card:focus-visible {
+      transform: translateY(-5px);
+      border-color: rgba(0,200,255,0.35);
+      opacity: 1;
+      outline: none;
     }
 
-    .card:hover{
-      transform:translateY(-8px) scale(1.02);
-      box-shadow:var(--glow-strong);
-      border-color:rgba(255,255,255,0.2);
-    }
-
-    .card h3{
-      margin:0 0 6px 0;
-      font-family:var(--font-heading);
-      letter-spacing:1px;
-    }
-
-    .card p{
-      color:var(--text-dim);
-      font-size:0.9rem;
-      line-height:1.4;
-    }
-
-    .tabs{
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      margin-bottom:25px;
-      flex-wrap:wrap;
-    }
-
-    .tab{
-      padding:8px 14px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.08);
-      color:var(--text-dim);
-      text-decoration:none;
-      font-size:0.85rem;
-      transition:0.3s ease;
-    }
-
-    .tab:hover{
-      color:var(--text);
-      box-shadow:var(--glow);
-      border-color:rgba(255,255,255,0.2);
-    }
-
-    footer{
-      text-align:center;
-      margin-top:70px;
-      color:var(--text-dim);
-      font-size:0.85rem;
+    footer {
+      text-align: center;
+      margin-top: 64px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- GLOBAL NAV -->
   <div id="site-header"></div>
-  <script src="/shared/nav.js"></script>
+  <script src="shared/nav.js"></script>
 
-  <div class="wrap">
+  <main class="page-shell visuals-shell">
+    <section class="page-hero">
+      <p class="eyebrow">Visual Universe</p>
+      <h1>Visuals</h1>
+      <p>Cinematic worlds, performances, documentaries, and creative transmissions from The Grei Show archive.</p>
 
-    <h1>VISUALS</h1>
-    <p class="subtitle">Cinematic worlds, performances, and creative transmissions</p>
+      <div class="pill-row visual-actions" aria-label="Visual categories">
+        <a class="pill" href="music-videos.html">Music Videos</a>
+        <a class="pill" href="documentaries.html">Documentaries</a>
+        <a class="pill" href="live-sessions.html">Live Sessions</a>
+      </div>
+    </section>
 
-    <div class="tabs">
-      <a class="tab" href="music-videos.html">Music Videos</a>
-      <a class="tab" href="documentaries.html">Documentaries</a>
-      <a class="tab" href="live-sessions.html">Live Sessions</a>
-    </div>
-
-    <div class="hero-video">
+    <section class="hero-video" aria-label="Featured visual">
       <iframe
         src="https://www.youtube.com/embed/ZsoVettmghI?autoplay=1&mute=1&playsinline=1&rel=0"
+        title="Featured The Grei Show visual"
         allow="autoplay; encrypted-media"
         allowfullscreen>
       </iframe>
-    </div>
+    </section>
 
-    <div class="grid">
-      <a class="card" href="music-videos.html">
-        <h3>🎬 Music Videos</h3>
-        <p>Official releases and cinematic storytelling</p>
+    <section class="content-grid" aria-label="Visual sections">
+      <a class="section-panel visual-card" href="music-videos.html">
+        <span>Official Releases</span>
+        <h2>Music Videos</h2>
+        <p>Single releases, cinematic concepts, and visual storytelling.</p>
       </a>
 
-      <a class="card" href="documentaries.html">
-        <h3>🎥 Documentaries</h3>
-        <p>Behind the scenes and creative process narratives</p>
+      <a class="section-panel visual-card" href="documentaries.html">
+        <span>Archive</span>
+        <h2>Documentaries</h2>
+        <p>Behind-the-scenes films, interviews, process stories, and field notes.</p>
       </a>
 
-      <a class="card" href="live-sessions.html">
-        <h3>🎤 Live Sessions</h3>
-        <p>Raw performances and studio recordings</p>
+      <a class="section-panel visual-card" href="live-sessions.html">
+        <span>Performance</span>
+        <h2>Live Sessions</h2>
+        <p>Stage moments, sound-system clips, studio performances, and raw recordings.</p>
       </a>
-    </div>
+    </section>
 
-    <footer>THE GREI SHOW © 2026 • Wheel It! Records 💿</footer>
-
-  </div>
+    <footer>THE GREI SHOW &copy; 2026 - Wheel It! Records</footer>
+  </main>
 
   <script src="assets/js/app.js"></script>
-  <script src="assets/js/motion.js"></script>
-
 </body>
 </html>

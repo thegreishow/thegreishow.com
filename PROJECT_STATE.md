@@ -20,8 +20,10 @@
 - Chapter 01: The Quiet Strength Within added with AI narration preview and full narration link
 - Chapter 02: A Prelude to Serenity added with AI narration preview and full narration link
 - Chapter 03: The Symphony of Becoming added with AI narration preview and full narration link
-- Chapter 04: The Astral Thread added with AI narration preview and full narration link
-- Chapter 05: Beneath the Breadfruit Tree added with AI narration preview and full narration link
+- Chapter 04: The Symphony of Dreams added with AI narration preview and full narration link
+- Chapter 05: The Astral Thread renumbered with corrected AI narration preview and full narration link
+- Chapter 06: Beneath the Breadfruit Tree renumbered with corrected AI narration preview and full narration link
+- Books narration scripts now use word-form chapter numbers for new/renumbered chapters so the voiceover does not read leading zeroes aloud
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
@@ -45,7 +47,7 @@
 - More homepage/live content can be added as releases, press assets, and arcade builds grow
 
 ## Next
-- Continue adding Astral Thread chapters into assets/js/books-reader.js
+- Continue adding Astral Thread chapters into assets/js/books-reader.js with word-form chapter labels in narration scripts
 - Create final Books / Astral Thread visual chapter assets in Canva and add them to the reader
 - Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes

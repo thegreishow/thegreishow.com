@@ -16,8 +16,13 @@
 - Visuals page retitled to VISUAL UNIVERSE with duplicate category links removed above the hero player
 - Astral Thread moved under the new Books section as Book 01: The Astral Thread
 - Books page added with a shelf intro, official ebook link, and a left/right chapter reader instead of stacked chapter scrolling
+- Books reader chapter data moved into assets/js/books-reader.js for easier chapter growth
 - Chapter 01: The Quiet Strength Within added with AI narration preview and full narration link
 - Chapter 02: A Prelude to Serenity added with AI narration preview and full narration link
+- Chapter 03: The Symphony of Becoming added with AI narration preview and full narration link
+- Chapter 04: The Astral Thread added with AI narration preview and full narration link
+- Chapter 05: Beneath the Breadfruit Tree added with AI narration preview and full narration link
+- Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
 - Wheel It! Records page refreshed with clickable producer-reel cards
@@ -40,6 +45,7 @@
 - More homepage/live content can be added as releases, press assets, and arcade builds grow
 
 ## Next
+- Continue adding Astral Thread chapters into assets/js/books-reader.js
 - Create final Books / Astral Thread visual chapter assets in Canva and add them to the reader
 - Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes

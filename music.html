@@ -12,170 +12,213 @@
   <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
-    body {
-      background: radial-gradient(circle at top, #0f0f1a, #07070b 70%);
-    }
-
     .music-wrap {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 2rem 0 3rem;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      letter-spacing: 6px;
-      text-shadow: 0 0 25px rgba(120,80,255,0.4);
-    }
-
-    .featured {
-      margin-top: 2rem;
-      text-align: center;
-      padding: 2rem;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(12px);
       position: relative;
-      overflow: hidden;
+      z-index: 1;
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 70px 0;
     }
 
-    .featured h2 {
-      letter-spacing: 3px;
-      margin-bottom: 1rem;
-    }
-
-    .featured audio {
-      width: 100%;
-      max-width: 700px;
-    }
-
-    .wave-bars {
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-      margin-top: 1.2rem;
-      height: 30px;
-      align-items: flex-end;
-    }
-
-    .wave-bars span {
-      width: 4px;
-      height: 10px;
-      background: rgba(120,80,255,0.6);
-      animation: wave 1.2s infinite ease-in-out;
-      border-radius: 2px;
-    }
-
-    .wave-bars span:nth-child(2) { animation-delay: 0.1s; height: 18px; }
-    .wave-bars span:nth-child(3) { animation-delay: 0.2s; height: 25px; }
-    .wave-bars span:nth-child(4) { animation-delay: 0.3s; height: 14px; }
-    .wave-bars span:nth-child(5) { animation-delay: 0.4s; height: 22px; }
-
-    @keyframes wave {
-      0%,100% { transform: scaleY(0.6); opacity: 0.6; }
-      50% { transform: scaleY(1.2); opacity: 1; }
-    }
-
-    .links {
-      margin-top: 4rem;
+    .music-hero {
       text-align: center;
+      margin-bottom: 34px;
     }
 
-    .links h2 {
-      letter-spacing: 3px;
-      margin-bottom: 1rem;
+    .music-hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(3rem, 8vw, 5rem);
+      line-height: 0.95;
+      text-shadow: var(--glow-strong);
     }
 
-    .links-grid {
+    .music-hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .release-stage {
+      display: grid;
+      grid-template-columns: minmax(230px, 330px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .release-cover,
+    .release-panel,
+    .stream-panel {
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.045);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .release-cover {
+      overflow: hidden;
+      margin: 0;
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+
+    .release-cover img {
+      width: 100%;
+      height: 100%;
+      min-height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .release-cover figcaption {
+      padding: 14px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .release-panel {
+      padding: 24px;
+      display: grid;
+      align-content: center;
+      gap: 14px;
+    }
+
+    .release-panel h2 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1;
+    }
+
+    .release-panel p {
+      margin: 0;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    #featured-player audio {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .music-cta,
+    .stream-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 8px;
+      color: #fff;
+      background: rgba(255,255,255,0.055);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .music-cta.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, #1f6feb, #00a6ff);
+    }
+
+    .music-cta:hover,
+    .stream-links a:hover {
+      transform: translateY(-3px);
+      opacity: 1;
+    }
+
+    .stream-panel {
+      margin-top: 18px;
+      padding: 22px;
+    }
+
+    .stream-panel h2 {
+      margin: 0 0 14px;
+    }
+
+    .stream-links {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.8rem;
+      gap: 10px;
     }
 
-    .links a {
-      display: inline-block;
-      padding: 0.9rem 1.3rem;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 10px;
-      text-decoration: none;
-      color: #fff;
-      background: rgba(255,255,255,0.03);
-      transition: 0.3s ease;
-      backdrop-filter: blur(8px);
-    }
+    @media (max-width: 760px) {
+      .music-wrap {
+        width: min(100% - 24px, 1080px);
+        padding: 48px 0;
+      }
 
-    .links a:hover {
-      background: rgba(120,80,255,0.25);
-      box-shadow: 0 0 25px rgba(120,80,255,0.35);
-      transform: translateY(-2px);
+      .release-stage {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- GLOBAL NAV -->
   <div id="site-header"></div>
   <script src="shared/nav.js"></script>
 
-  <main class="section music-wrap">
+  <main class="music-wrap">
+    <section class="music-hero">
+      <p class="eyebrow">Audio Universe</p>
+      <h1>Music</h1>
+      <p>Featured transmissions, streaming paths, and release moments from The Grei Show.</p>
+    </section>
 
-    <div class="hero">
-      <h1 id="music-title" data-reveal>MUSIC</h1>
-      <p style="color: var(--text-light); margin-top:1rem;" data-reveal>
-        A cinematic audio universe
-      </p>
-    </div>
+    <section class="release-stage" aria-label="Featured release">
+      <figure class="release-cover">
+        <img src="assets/img/no-drama.jpg" alt="No Drama cover art">
+        <figcaption>No Drama - The Grei Show</figcaption>
+      </figure>
 
-    <div class="featured" data-reveal>
-      <h2>FEATURED TRANSMISSION</h2>
-      <div id="featured-player"></div>
-      <div class="wave-bars">
-        <span></span><span></span><span></span><span></span><span></span>
+      <div class="release-panel">
+        <p class="eyebrow">Featured Transmission</p>
+        <h2>No Drama</h2>
+        <p>The current lead release anchors the music page with a cleaner player, cover art, and quick access to the major listening platforms.</p>
+        <div id="featured-player" aria-live="polite"></div>
+        <div class="cta-row">
+          <a class="music-cta primary" href="https://snd.click/qnbs" target="_blank" rel="noopener">Listen Now</a>
+          <a class="music-cta" href="visuals.html">Watch Visuals</a>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="links" data-reveal>
-      <h2>STREAM MUSIC</h2>
-      <div class="links-grid">
-        <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank">Spotify</a>
-        <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank">Apple Music</a>
-        <a href="https://soundcloud.com/thegreishow" target="_blank">SoundCloud</a>
-        <a href="https://music.youtube.com/@thegreishxw?si=caga_AxUEGLyyT6r" target="_blank">YouTube Music</a>
-        <a href="https://tidal.com/artist/47307553/u" target="_blank">TIDAL</a>
-        <a href="https://thegreishow.bandcamp.com" target="_blank">Bandcamp</a>
+    <section class="stream-panel" aria-label="Streaming links">
+      <h2>Stream Music</h2>
+      <div class="stream-links">
+        <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener">Spotify</a>
+        <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener">Apple Music</a>
+        <a href="https://soundcloud.com/thegreishow" target="_blank" rel="noopener">SoundCloud</a>
+        <a href="https://music.youtube.com/@thegreishxw?si=caga_AxUEGLyyT6r" target="_blank" rel="noopener">YouTube Music</a>
+        <a href="https://tidal.com/artist/47307553/u" target="_blank" rel="noopener">TIDAL</a>
+        <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener">Bandcamp</a>
       </div>
-    </div>
-
+    </section>
   </main>
 
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/motion.js"></script>
   <script src="assets/js/portal.js"></script>
-
   <script>
     async function loadFeatured() {
       try {
         const res = await fetch('assets/data/cms.json');
         const cms = await res.json();
-
         const container = document.getElementById('featured-player');
         const track = cms?.music?.featured;
 
         if (container && track) {
           container.innerHTML = `
-            <audio controls autoplay style="width:100%;max-width:700px;">
+            <audio controls preload="metadata">
               <source src="${track.url}" type="audio/mpeg">
             </audio>
-            <p style="margin-top:1rem;color:var(--text-light);">
-              ${track.name}
-            </p>
           `;
         }
       } catch (e) {

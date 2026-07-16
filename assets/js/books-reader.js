@@ -5,6 +5,8 @@ const reader = document.querySelector('.reader-card');
 const chapterKicker = document.getElementById('chapter-kicker');
 const chapterTitle = document.getElementById('chapter-title');
 const chapterVisual = document.getElementById('chapter-visual');
+const chapterArtworkWrap = document.querySelector('.chapter-artwork');
+const chapterArtwork = document.getElementById('chapter-artwork');
 const audioBlock = document.querySelector('.audio-block');
 const chapterAudio = document.getElementById('chapter-audio');
 const chapterFullAudio = document.getElementById('chapter-full-audio');
@@ -77,11 +79,27 @@ function renderAudio(chapter) {
   }
 }
 
+function renderArtwork(chapter) {
+  if (!chapterArtworkWrap || !chapterArtwork) return;
+
+  const artwork = chapter.artwork;
+  chapterArtworkWrap.hidden = !artwork;
+
+  if (artwork) {
+    chapterArtwork.src = artwork;
+    chapterArtwork.alt = chapter.artworkAlt || `${chapter.title} artwork`;
+  } else {
+    chapterArtwork.removeAttribute('src');
+    chapterArtwork.alt = '';
+  }
+}
+
 function renderChapter() {
   if (!chapters.length) {
     chapterKicker.textContent = 'The Astral Thread';
     chapterTitle.textContent = 'Coming Soon';
     chapterVisual.textContent = '';
+    renderArtwork({});
     chapterReadTitle.textContent = '';
     chapterText.replaceChildren();
     chapterCount.textContent = '0 / 0';
@@ -96,6 +114,7 @@ function renderChapter() {
   chapterKicker.textContent = `${label} / The Astral Thread`;
   chapterTitle.textContent = chapter.title;
   chapterVisual.textContent = chapter.visual;
+  renderArtwork(chapter);
   chapterReadTitle.textContent = `${label}. ${chapter.title}`;
   renderParagraphs(chapter.paragraphs);
   renderAudio(chapter);

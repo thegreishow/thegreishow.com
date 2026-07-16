@@ -22,6 +22,7 @@
 - Chapters 01-20 now have AI narration preview and full narration links
 - Books audio override layer supplies generated narration links for chapters that should stay text-stable
 - Books narration scripts use word-form chapter numbers so the voiceover does not read leading zeroes aloud
+- Books reader now supports visual chapter artwork with generated Astral Thread cover, dream-forest, and breadfruit-tree assets
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
@@ -36,7 +37,7 @@
 
 ## Known Gaps
 - Several pages still keep page-specific inline style blocks while the shared component layer matures
-- Books chapter visuals need final Canva exports or other permanent artwork assets
+- Books chapter visuals have a first generated artwork batch, but most chapters still need final dedicated art
 - Books full audio should be moved to stable site-owned hosting before it is treated as final production audio
 - Press media kit download is still routed to the Connect page until real downloadable assets exist
 - Contact form currently opens an email draft instead of posting to a backend
@@ -47,7 +48,7 @@
 ## Next
 - Replace the temporary Astral Thread manuscript data when the official-official version is confirmed
 - Re-audit or regenerate Books narration once the official-official manuscript is confirmed
-- Create final Books / Astral Thread visual chapter assets in Canva and add them to the reader
+- Create the next Books / Astral Thread visual artwork batch and add more chapter-specific images to the reader
 - Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes
 - Add production-ready press photos and a downloadable media kit

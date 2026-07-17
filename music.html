@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audio Universe | The Grei Show</title>
-  <meta name="description" content="Listen to The Grei Show across streaming platforms and enter the Audio Universe, featuring No Drama and new independent releases.">
+  <title>Music & Discography | The Grei Show</title>
+  <meta name="description" content="Explore The Grei Show discography: albums, EPs, singles, collaborations, production credits and official streaming links from Jamaican artist and producer Gamel Reid.">
   <link rel="canonical" href="https://thegreishow.com/music">
+  <meta property="og:title" content="Music & Discography | The Grei Show">
+  <meta property="og:description" content="Albums, EPs, singles, collaborations and production credits from The Grei Show.">
+  <meta property="og:type" content="music.musician">
+  <meta property="og:url" content="https://thegreishow.com/music">
+  <meta property="og:image" content="https://thegreishow.com/assets/img/no-drama.webp">
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
@@ -14,208 +19,151 @@
   <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
-    .music-wrap {
-      position: relative;
-      z-index: 1;
-      width: min(1080px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 70px 0;
-    }
-
-    .music-hero {
-      text-align: center;
-      margin-bottom: 34px;
-    }
-
-    .music-hero h1 {
-      margin: 0;
-      font-size: clamp(3rem, 8vw, 5rem);
-      line-height: 0.95;
-      text-shadow: var(--glow-strong);
-    }
-
-    .release-stage {
-      display: grid;
-      grid-template-columns: minmax(230px, 330px) minmax(0, 1fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .release-cover,
-    .release-panel,
-    .stream-panel {
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.045);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .release-cover {
-      overflow: hidden;
-      margin: 0;
-      display: grid;
-      grid-template-rows: 1fr auto;
-    }
-
-    .release-cover img {
-      width: 100%;
-      height: 100%;
-      min-height: 280px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .release-cover figcaption {
-      padding: 14px;
-      color: var(--text-dim);
-      font-size: 0.9rem;
-    }
-
-    .release-panel {
-      padding: 24px;
-      display: grid;
-      align-content: center;
-      gap: 14px;
-    }
-
-    .release-panel h2 {
-      margin: 0;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      line-height: 1;
-    }
-
-    #featured-player audio {
-      width: 100%;
-      margin-top: 4px;
-    }
-
-    .cta-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-
-    .music-cta,
-    .stream-links a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 0 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 8px;
-      color: #fff;
-      background: rgba(255,255,255,0.055);
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .music-cta.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, #1f6feb, #00a6ff);
-    }
-
-    .music-cta:hover,
-    .stream-links a:hover {
-      transform: translateY(-3px);
-      opacity: 1;
-    }
-
-    .stream-panel {
-      margin-top: 18px;
-      padding: 22px;
-    }
-
-    .stream-panel h2 {
-      margin: 0 0 14px;
-    }
-
-    .stream-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    @media (max-width: 760px) {
-      .music-wrap {
-        width: min(100% - 24px, 1080px);
-        padding: 48px 0;
-      }
-
-      .release-stage {
-        grid-template-columns: 1fr;
-      }
-    }
+    body{color:var(--text);font-family:var(--font-body)}
+    .music-wrap{position:relative;z-index:1;width:min(1160px,calc(100% - 36px));margin:0 auto;padding:72px 0 110px}
+    .music-hero{text-align:center;max-width:900px;margin:0 auto 42px}
+    .music-hero h1{margin:0 0 18px;font-size:clamp(3.7rem,10vw,7.3rem);line-height:.84;letter-spacing:-.055em;text-shadow:var(--glow-strong)}
+    .music-hero p{margin:0 auto;color:var(--text-dim);font-size:1.12rem;line-height:1.75;max-width:760px}
+    .eyebrow,.section-kicker{margin:0 0 12px;color:var(--accent-2);font-size:.77rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+    .panel{margin:24px 0;padding:clamp(25px,4.5vw,44px);border:1px solid rgba(255,255,255,.11);border-radius:16px;background:rgba(0,0,0,.47);backdrop-filter:blur(16px)}
+    .panel-head{display:flex;justify-content:space-between;align-items:end;gap:22px;margin-bottom:24px}.panel h2{margin:0;font-size:clamp(2rem,4.4vw,3.5rem);line-height:1;letter-spacing:-.035em}.panel-head p{max-width:500px;margin:0;color:var(--text-dim);line-height:1.6}
+    .release-stage{display:grid;grid-template-columns:minmax(260px,390px) minmax(0,1fr);gap:22px;align-items:stretch}
+    .release-cover,.release-panel{border:1px solid rgba(255,255,255,.11);border-radius:14px;background:rgba(255,255,255,.045);overflow:hidden}
+    .release-cover{margin:0}.release-cover img{width:100%;height:100%;min-height:360px;object-fit:cover;display:block}.release-panel{padding:clamp(26px,5vw,50px);display:flex;flex-direction:column;justify-content:center}.release-panel h2{margin:0 0 14px;font-size:clamp(2.5rem,6vw,5rem)}.release-panel .deck{color:var(--text-dim);font-size:1.05rem;line-height:1.72;max-width:660px}
+    #featured-player audio{width:100%;margin-top:18px}.button-row{display:flex;flex-wrap:wrap;gap:11px;margin-top:22px}.music-cta{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 17px;border:1px solid rgba(255,255,255,.18);border-radius:999px;color:#fff;background:rgba(255,255,255,.055);font-weight:850;text-decoration:none;transition:transform .2s ease,border-color .2s ease}.music-cta.primary{background:#fff;color:#05070b}.music-cta:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.42)}
+    .platforms{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.platforms a{padding:17px 10px;text-align:center;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);color:#fff;text-decoration:none;font-weight:850}.platforms a:hover{background:rgba(255,255,255,.09)}
+    .release-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.release-card{display:flex;flex-direction:column;min-height:290px;padding:24px;border-radius:14px;border:1px solid rgba(255,255,255,.11);background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.025));position:relative;overflow:hidden}.release-card::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--accent-2),transparent)}.release-meta{color:var(--accent-2);font-size:.74rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase}.release-card h3{margin:24px 0 10px;font-size:1.45rem;line-height:1.15}.release-card p{margin:0;color:var(--text-dim);line-height:1.62}.tracklist{margin:18px 0 0;padding:0;list-style:none;color:var(--text-dim);font-size:.92rem;line-height:1.7}.release-card .button-row{margin-top:auto;padding-top:22px}
+    .catalogue{display:grid}.catalogue-row{display:grid;grid-template-columns:82px minmax(0,1fr) auto;gap:20px;align-items:center;padding:19px 0;border-bottom:1px solid rgba(255,255,255,.1)}.catalogue-row:last-child{border-bottom:0}.catalogue-year{font-weight:900;color:var(--accent-2)}.catalogue-row h3{margin:0 0 5px;font-size:1.08rem}.catalogue-row p{margin:0;color:var(--text-dim);font-size:.92rem}.catalogue-link{color:#fff;text-decoration:none;font-weight:850;white-space:nowrap}.catalogue-link::after{content:" ↗"}
+    .credit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.credit-card{padding:24px;border:1px solid rgba(255,255,255,.1);border-radius:13px;background:rgba(255,255,255,.045)}.credit-card small{color:var(--accent-2);font-weight:900;letter-spacing:.08em;text-transform:uppercase}.credit-card h3{margin:14px 0 8px}.credit-card p{margin:0 0 18px;color:var(--text-dim);line-height:1.62}
+    .note{margin:22px 0 0;color:var(--text-dim);font-size:.88rem;line-height:1.6}.section{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}.section.visible{opacity:1;transform:none}a:focus-visible{outline:2px solid #fff;outline-offset:4px}
+    @media(max-width:900px){.platforms{grid-template-columns:repeat(3,1fr)}.release-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){.music-wrap{width:min(100% - 24px,1160px);padding:48px 0 80px}.release-stage,.release-grid,.credit-grid{grid-template-columns:1fr}.panel-head{display:block}.panel-head p{margin-top:12px}.catalogue-row{grid-template-columns:60px minmax(0,1fr)}.catalogue-link{grid-column:2}.release-cover img{min-height:300px}}
+    @media(max-width:480px){.platforms{grid-template-columns:repeat(2,1fr)}.music-hero h1{font-size:clamp(3.2rem,18vw,5rem)}}
+    @media(prefers-reduced-motion:reduce){.section,.music-cta{opacity:1;transform:none;transition:none}}
   </style>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"MusicGroup",
+    "name":"The Grei Show",
+    "alternateName":"Gamel Reid",
+    "url":"https://thegreishow.com/music",
+    "genre":["Reggae","Dancehall","Hip-Hop","Experimental Caribbean Music"],
+    "sameAs":[
+      "https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k",
+      "https://music.apple.com/jm/artist/the-grei-show/885841733",
+      "https://music.youtube.com/@thegreishxw",
+      "https://tidal.com/artist/47307553/u",
+      "https://soundcloud.com/thegreishow",
+      "https://thegreishow.bandcamp.com"
+    ]
+  }
+  </script>
 </head>
-
 <body>
-
   <div id="site-header"></div>
-  <script src="shared/nav.js"></script>
 
   <main class="music-wrap">
-    <section class="music-hero">
+    <header class="music-hero section visible">
+      <p class="eyebrow">Official discography</p>
       <h1>AUDIO UNIVERSE</h1>
-    </section>
+      <p>Albums, EPs, singles, collaborations and production work from The Grei Show — moving through reggae, dancehall, hip-hop and experimental sound from Kingston, Jamaica.</p>
+    </header>
 
-    <section class="release-stage" aria-label="Featured release">
-      <figure class="release-cover">
-        <img src="assets/img/no-drama.webp" alt="No Drama cover art">
-        <figcaption>No Drama - The Grei Show</figcaption>
-      </figure>
-
+    <section class="release-stage section" aria-label="Featured release">
+      <figure class="release-cover"><img src="assets/img/no-drama.webp" alt="No Drama by The Grei Show cover art"></figure>
       <div class="release-panel">
-        <p class="eyebrow">Featured Transmission</p>
+        <p class="eyebrow">Featured transmission</p>
         <h2>No Drama</h2>
+        <p class="deck">A direct entry point into The Grei Show catalogue. Play the preview here, open the smart link, or continue into the complete discography below.</p>
         <div id="featured-player" aria-live="polite"></div>
-        <div class="cta-row">
-          <a class="music-cta primary" href="https://snd.click/qnbs" target="_blank" rel="noopener" data-track="listen" data-track-label="Music - Smart link">Listen Now</a>
-        </div>
+        <div class="button-row"><a class="music-cta primary" href="https://snd.click/qnbs" target="_blank" rel="noopener noreferrer">Listen now</a><a class="music-cta" href="#discography">Browse discography</a></div>
       </div>
     </section>
 
-    <section class="stream-panel" aria-label="Streaming links">
-      <h2>Stream Music</h2>
-      <div class="stream-links">
-        <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener">Spotify</a>
-        <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener">Apple Music</a>
-        <a href="https://soundcloud.com/thegreishow" target="_blank" rel="noopener">SoundCloud</a>
-        <a href="https://music.youtube.com/@thegreishxw?si=caga_AxUEGLyyT6r" target="_blank" rel="noopener">YouTube Music</a>
-        <a href="https://tidal.com/artist/47307553/u" target="_blank" rel="noopener">TIDAL</a>
-        <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="bandcamp" data-track-label="Music - Bandcamp">Bandcamp</a>
+    <section class="panel section" aria-labelledby="platform-title">
+      <div class="panel-head"><div><p class="section-kicker">Choose a platform</p><h2 id="platform-title">Stream everywhere.</h2></div><p>Follow the official artist pages for current releases, saved music and platform-specific playlists.</p></div>
+      <div class="platforms">
+        <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener noreferrer">Spotify</a>
+        <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener noreferrer">Apple Music</a>
+        <a href="https://music.youtube.com/@thegreishxw" target="_blank" rel="noopener noreferrer">YouTube Music</a>
+        <a href="https://tidal.com/artist/47307553/u" target="_blank" rel="noopener noreferrer">TIDAL</a>
+        <a href="https://soundcloud.com/thegreishow" target="_blank" rel="noopener noreferrer">SoundCloud</a>
+        <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener noreferrer">Bandcamp</a>
       </div>
+    </section>
+
+    <section class="panel section" id="discography" aria-labelledby="projects-title">
+      <div class="panel-head"><div><p class="section-kicker">Major projects</p><h2 id="projects-title">Albums &amp; EPs</h2></div><p>A growing sequence of full projects, from early independent releases to the concentrated 2025 run.</p></div>
+      <div class="release-grid">
+        <article class="release-card"><span class="release-meta">EP · 2025 · 5 tracks</span><h3>Dark Side of the Moon</h3><p>A compact late-night project led by “Stead Chilling,” “Call My Name” and “Global Gyalpower.”</p><ul class="tracklist"><li>Stead Chilling</li><li>Call My Name</li><li>Global Gyalpower</li></ul><div class="button-row"><a class="music-cta primary" href="https://music.apple.com/jm/album/dark-side-of-the-moon-ep/1849838344" target="_blank" rel="noopener noreferrer">Open project</a></div></article>
+        <article class="release-card"><span class="release-meta">EP · 2025 · 4 tracks</span><h3>There's Nothing to Believe In</h3><p>Four songs connecting reflective writing, rap energy and a widening musical world.</p><ul class="tracklist"><li>For My City</li><li>Fresh off the Boat</li><li>Return of the Pharaoh</li><li>My Offering</li></ul><div class="button-row"><a class="music-cta primary" href="https://music.apple.com/gb/album/theres-nothing-to-believe-in-ep/1826791782" target="_blank" rel="noopener noreferrer">Open project</a></div></article>
+        <article class="release-card"><span class="release-meta">Album · 2022 · 10 tracks</span><h3>Psy Phi</h3><p>A full-length independent album exploring psychedelic, spiritual and hip-hop-informed territory.</p><div class="button-row"><a class="music-cta primary" href="https://music.apple.com/gh/album/psy-phi/1651749104" target="_blank" rel="noopener noreferrer">Open album</a></div></article>
+        <article class="release-card"><span class="release-meta">EP · 2020 · 5 tracks</span><h3>1122</h3><p>An early Wheel It! Records project presenting The Grei Show in a concise hip-hop and rap format.</p><div class="button-row"><a class="music-cta primary" href="https://music.apple.com/jm/album/1122-ep/1541447654" target="_blank" rel="noopener noreferrer">Open EP</a></div></article>
+        <article class="release-card"><span class="release-meta">EP · 2021</span><h3>Loosen Up Remix EP</h3><p>Alternate interpretations built around “Loosen Up,” extending the original collaboration with Swnkah.</p><div class="button-row"><a class="music-cta" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Loosen%20Up%20Remix%20EP" target="_blank" rel="noopener noreferrer">Find on Apple Music</a></div></article>
+        <article class="release-card"><span class="release-meta">Early catalogue</span><h3>EP2</h3><p>An early project in the digital catalogue, marking the foundation of a long-running independent release history.</p><div class="button-row"><a class="music-cta" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20EP2" target="_blank" rel="noopener noreferrer">Find project</a></div></article>
+      </div>
+    </section>
+
+    <section class="panel section" aria-labelledby="singles-title">
+      <div class="panel-head"><div><p class="section-kicker">Release archive</p><h2 id="singles-title">Singles &amp; collaborations</h2></div><p>A selected chronological list. Each link opens the release or a focused platform search where a permanent release URL was unavailable.</p></div>
+      <div class="catalogue">
+        <div class="catalogue-row"><div class="catalogue-year">2025</div><div><h3>Any One a Dem — with Alex Marley</h3><p>Modern dancehall single · Wheel It! Records</p></div><a class="catalogue-link" href="https://music.apple.com/jm/album/any-one-a-dem-single/1846007836" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2025</div><div><h3>24 Days</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%2024%20Days" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2025</div><div><h3>Halfway</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Halfway" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2025</div><div><h3>A Love Alone</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20A%20Love%20Alone" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2024</div><div><h3>Puff Puff Pass (Remix) — with Bay-C</h3><p>Reggae single · Wheel It! Records</p></div><a class="catalogue-link" href="https://music.apple.com/us/album/puff-puff-pass-remix-single/1767170663" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2024</div><div><h3>Rage!</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Rage" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2022</div><div><h3>Puff Puff Pass</h3><p>Original reggae/trap single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Puff%20Puff%20Pass" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2022</div><div><h3>Ooh Ooh — Madone feat. The Grei Show</h3><p>Featured appearance on <em>Conception Immaculée</em></p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=Madone%20Ooh%20Ooh%20The%20Grei%20Show" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2021</div><div><h3>The Flame</h3><p>Reggae single · Wheel It! Records</p></div><a class="catalogue-link" href="https://music.apple.com/jm/album/the-flame-single/1587832103" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2021</div><div><h3>The Vibe — with Canned Beets &amp; Big Sugar</h3><p>Reggae collaboration · Wheel It! Records</p></div><a class="catalogue-link" href="https://music.apple.com/gb/album/the-vibe-single/1563429468" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2020</div><div><h3>Loosen Up — feat. Swnkah</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/tt/album/loosen-up-feat-swnkah-single/1522204460" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2020</div><div><h3>Friends</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Friends" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2019</div><div><h3>Joy</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Joy" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2018</div><div><h3>Squad People</h3><p>Single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Squad%20People" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2018</div><div><h3>Black Jesus — Leno Banton feat. Blvk H3ro &amp; The Grei Show</h3><p>Featured appearance</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=Black%20Jesus%20Leno%20Banton%20The%20Grei%20Show" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2017</div><div><h3>Wild Heart — Iset Sankofa &amp; The Grei Show Remix</h3><p>Official remix</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=Wild%20Heart%20Iset%20Sankofa%20The%20Grei%20Show%20Remix" target="_blank" rel="noopener noreferrer">Listen</a></div>
+        <div class="catalogue-row"><div class="catalogue-year">2016</div><div><h3>Blind Without Shades</h3><p>Early single</p></div><a class="catalogue-link" href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20Blind%20Without%20Shades" target="_blank" rel="noopener noreferrer">Listen</a></div>
+      </div>
+    </section>
+
+    <section class="panel section" aria-labelledby="credits-title">
+      <div class="panel-head"><div><p class="section-kicker">Behind the records</p><h2 id="credits-title">Production &amp; writing</h2></div><p>The Grei Show catalogue also includes work created for and with other artists.</p></div>
+      <div class="credit-grid">
+        <article class="credit-card"><small>Protoje · 2020</small><h3>Weed &amp; Ting</h3><p>Co-producer, composer/lyricist and keyboard contribution on Protoje's <em>In Search of Lost Time</em>.</p><a class="music-cta" href="https://music.apple.com/jm/song/1526149157" target="_blank" rel="noopener noreferrer">View song credits</a></article>
+        <article class="credit-card"><small>Blvk H3ro · 2019</small><h3>Blvk Peppa</h3><p>Production credit on the album <em>The Immortal Steppa</em>.</p><a class="music-cta" href="press.html#credits-title">View documented credits</a></article>
+        <article class="credit-card"><small>Swnkah &amp; Sugar Minott · 2025</small><h3>Dancehall Stylee</h3><p>Producer and synthesizer credit on the Wheel It! Records release.</p><a class="music-cta" href="https://www.shazam.com/song/1811688371/dancehall-stylee" target="_blank" rel="noopener noreferrer">View full credits</a></article>
+        <article class="credit-card"><small>Protoje &amp; Zion I Kings · 2023</small><h3>Weed &amp; Tings (Dub)</h3><p>Composer credit on the dub reworking from <em>In Search of Zion</em>.</p><a class="music-cta" href="https://www.shazam.com/song/1715355403/weed-tings-dub" target="_blank" rel="noopener noreferrer">View full credits</a></article>
+      </div>
+      <p class="note">Release information and dates are based on official streaming listings. Some older catalogue entries link to focused Apple Music searches because regional release URLs can vary.</p>
     </section>
   </main>
 
+  <script src="shared/nav.js"></script>
   <script src="assets/js/portal.js"></script>
   <script>
-    async function loadFeatured() {
-      try {
-        const res = await fetch('assets/data/cms.json');
-        const cms = await res.json();
-        const container = document.getElementById('featured-player');
-        const track = cms?.music?.featured;
-
-        if (container && track) {
-          const audio = document.createElement('audio');
-          const source = document.createElement('source');
-          audio.controls = true;
-          audio.preload = 'metadata';
-          source.src = track.url;
-          source.type = 'audio/mpeg';
-          audio.appendChild(source);
-          container.replaceChildren(audio);
+    async function loadFeatured(){
+      try{
+        const res=await fetch('assets/data/cms.json');
+        const cms=await res.json();
+        const container=document.getElementById('featured-player');
+        const track=cms?.music?.featured;
+        if(container&&track?.url){
+          const audio=document.createElement('audio');
+          const source=document.createElement('source');
+          audio.controls=true;audio.preload='metadata';source.src=track.url;source.type='audio/mpeg';audio.appendChild(source);container.replaceChildren(audio);
         }
-      } catch (e) {
-        console.error('Featured load failed', e);
-      }
+      }catch(error){console.error('Featured load failed',error)}
     }
-
     loadFeatured();
-  </script>
 
+    const sections=document.querySelectorAll('.section');
+    if('IntersectionObserver' in window&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      const observer=new IntersectionObserver((entries)=>{entries.forEach((entry)=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}})},{threshold:.1});
+      sections.forEach((section)=>observer.observe(section));
+    }else{sections.forEach((section)=>section.classList.add('visible'))}
+  </script>
 </body>
 </html>

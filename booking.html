@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book | The Grei Show</title>
+  <meta name="description" content="Book The Grei Show, music production, photography, DJ services, creative talent and Kingston experiences.">
+
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
+
+  <style>
+    .booking-shell{position:relative;z-index:1;width:min(1120px,calc(100% - 32px));margin:0 auto;padding:64px 0 80px}
+    .booking-hero{text-align:center;margin-bottom:34px}
+    .booking-hero h1{margin:8px 0 14px;font-size:clamp(3rem,9vw,6rem);line-height:.92;letter-spacing:0;text-shadow:var(--glow-strong)}
+    .booking-hero p{max-width:760px;margin:0 auto;color:var(--text-dim);line-height:1.7}
+    .service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:34px 0}
+    .service-card{display:grid;gap:8px;padding:20px;border:1px solid rgba(255,255,255,.11);border-radius:10px;background:rgba(255,255,255,.045);cursor:pointer;transition:.2s ease;text-align:left;color:var(--text)}
+    .service-card:hover,.service-card:focus-visible,.service-card.active{transform:translateY(-3px);border-color:rgba(0,200,255,.48);background:rgba(31,111,235,.12);box-shadow:0 0 28px rgba(0,200,255,.11);outline:none}
+    .service-icon{font-size:1.7rem}.service-card strong{font-size:1.05rem}.service-card span{color:var(--text-dim);line-height:1.5;font-size:.9rem}
+    .booking-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:18px;align-items:start}
+    .panel{padding:24px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:rgba(255,255,255,.045);backdrop-filter:blur(14px)}
+    .panel h2{margin:0 0 8px;letter-spacing:0}.panel-copy{margin:0 0 18px;color:var(--text-dim);line-height:1.6}
+    form{display:grid;gap:13px}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    label{display:grid;gap:7px;font-size:.82rem;font-weight:800;color:rgba(255,255,255,.82)}
+    input,select,textarea{width:100%;min-height:46px;border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:12px;color:var(--text);background:rgba(0,0,0,.3);font:inherit}
+    textarea{min-height:145px;resize:vertical}input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(0,200,255,.58);box-shadow:0 0 0 3px rgba(0,200,255,.12)}
+    option{color:#111}.submit-btn{min-height:48px;border:0;border-radius:8px;padding:0 18px;color:#fff;background:linear-gradient(135deg,#1f6feb,#00a6ff);font-weight:800;cursor:pointer}
+    .submit-btn:hover,.submit-btn:focus-visible{transform:translateY(-2px);outline:none}
+    .steps{display:grid;gap:16px}.step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}.step-number{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(31,111,235,.24);border:1px solid rgba(0,200,255,.35);font-weight:900}.step h3{margin:2px 0 4px;font-size:1rem}.step p{margin:0;color:var(--text-dim);line-height:1.5;font-size:.9rem}
+    .note{margin-top:18px;padding:14px;border-radius:8px;background:rgba(0,0,0,.22);color:var(--text-dim);font-size:.86rem;line-height:1.5}
+    .status{display:none;margin-top:12px;padding:12px;border-radius:8px;background:rgba(31,111,235,.16);border:1px solid rgba(0,200,255,.28);line-height:1.5}.status.show{display:block}
+    @media(max-width:850px){.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.booking-grid{grid-template-columns:1fr}}
+    @media(max-width:560px){.booking-shell{width:min(100% - 24px,1120px);padding:44px 0 60px}.service-grid,.field-row{grid-template-columns:1fr}.booking-hero h1{font-size:3.2rem}}
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <script src="shared/nav.js"></script>
+
+  <main class="booking-shell">
+    <section class="booking-hero">
+      <p class="eyebrow">Performances · Production · Creative Services</p>
+      <h1>Book The Experience</h1>
+      <p>Tell us what you are planning. We will review the details, confirm availability, quote the job and arrange the deposit.</p>
+    </section>
+
+    <section class="service-grid" aria-label="Booking services">
+      <button class="service-card" type="button" data-service="The Grei Show — Live Performance"><span class="service-icon">🎤</span><strong>Live Performance</strong><span>Book The Grei Show for concerts, festivals, clubs and private events.</span></button>
+      <button class="service-card" type="button" data-service="DJ Set"><span class="service-icon">🎧</span><strong>DJ Set</strong><span>Curated sets for parties, launches, lounges and cultural events.</span></button>
+      <button class="service-card" type="button" data-service="Music Production / Studio Session"><span class="service-icon">🎹</span><strong>Music Production</strong><span>Beats, recording, arrangement, vocal production and creative direction.</span></button>
+      <button class="service-card" type="button" data-service="Photography / Video"><span class="service-icon">📸</span><strong>Photo & Video</strong><span>Events, portraits, campaigns, music visuals and documentary coverage.</span></button>
+      <button class="service-card" type="button" data-service="Talent Booking — White Line Entertainment"><span class="service-icon">💃</span><strong>Book Talent</strong><span>Dancers, DJs, hosts, models and other Jamaican creatives.</span></button>
+      <button class="service-card" type="button" data-service="Kingston Experience / Tour"><span class="service-icon">🌴</span><strong>Kingston Experience</strong><span>Private music, culture and creative experiences in Kingston.</span></button>
+    </section>
+
+    <section class="booking-grid">
+      <div class="panel">
+        <h2>Booking Request</h2>
+        <p class="panel-copy">Complete the details below. Submitting opens a prepared email so you can review and send the request.</p>
+        <form id="booking-form">
+          <div class="field-row">
+            <label>Full name<input name="name" type="text" autocomplete="name" required></label>
+            <label>Email<input name="email" type="email" autocomplete="email" required></label>
+          </div>
+          <div class="field-row">
+            <label>WhatsApp / phone<input name="phone" type="tel" autocomplete="tel" required></label>
+            <label>Service
+              <select name="service" id="service" required>
+                <option value="">Select a service</option>
+                <option>The Grei Show — Live Performance</option>
+                <option>DJ Set</option>
+                <option>Music Production / Studio Session</option>
+                <option>Photography / Video</option>
+                <option>Talent Booking — White Line Entertainment</option>
+                <option>Kingston Experience / Tour</option>
+                <option>Other</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-row">
+            <label>Preferred date<input name="date" type="date" required></label>
+            <label>Budget
+              <select name="budget" required>
+                <option value="">Select a range</option>
+                <option>Under US$250</option><option>US$250–500</option><option>US$500–1,000</option><option>US$1,000–2,500</option><option>US$2,500+</option><option>Need a quote</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-row">
+            <label>City / country<input name="location" type="text" required></label>
+            <label>Venue / event name<input name="venue" type="text"></label>
+          </div>
+          <label>Tell us about the booking<textarea name="details" placeholder="Event type, audience size, set length, travel requirements, deliverables or anything else we should know." required></textarea></label>
+          <button class="submit-btn" type="submit">Prepare Booking Request</button>
+          <div id="status" class="status" role="status">Your email app should open with the booking request prepared. Send it to complete your inquiry.</div>
+        </form>
+      </div>
+
+      <aside class="panel">
+        <h2>How It Works</h2>
+        <div class="steps">
+          <div class="step"><div class="step-number">1</div><div><h3>Send the request</h3><p>Share the date, location, budget and event details.</p></div></div>
+          <div class="step"><div class="step-number">2</div><div><h3>Availability & quote</h3><p>We review the request and respond with availability, pricing and requirements.</p></div></div>
+          <div class="step"><div class="step-number">3</div><div><h3>Deposit & confirmation</h3><p>The date is secured after the agreed deposit and booking terms are completed.</p></div></div>
+        </div>
+        <div class="note"><strong>Important:</strong> submitting this form is an inquiry, not a confirmed booking. Travel, accommodation, production and technical requirements may affect the final quote.</div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const serviceSelect = document.getElementById('service');
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.service-card').forEach(item => item.classList.remove('active'));
+        card.classList.add('active');
+        serviceSelect.value = card.dataset.service;
+        document.getElementById('booking-form').scrollIntoView({behavior:'smooth',block:'center'});
+      });
+    });
+
+    document.getElementById('booking-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const subject = `Booking Request: ${data.get('service')} — ${data.get('date')}`;
+      const body = [
+        'NEW BOOKING REQUEST','',
+        `Name: ${data.get('name')}`,
+        `Email: ${data.get('email')}`,
+        `WhatsApp / Phone: ${data.get('phone')}`,
+        `Service: ${data.get('service')}`,
+        `Preferred Date: ${data.get('date')}`,
+        `Budget: ${data.get('budget')}`,
+        `Location: ${data.get('location')}`,
+        `Venue / Event: ${data.get('venue') || 'Not provided'}`,'',
+        'BOOKING DETAILS',data.get('details')
+      ].join('\n');
+      document.getElementById('status').classList.add('show');
+      window.location.href = `mailto:thegreishow@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+  </script>
+</body>
+</html>

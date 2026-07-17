@@ -3,9 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Merch | The Grei Show</title>
-  <meta name="description" content="Discover upcoming apparel, collectibles, and limited release drops from The Grei Show universe.">
+  <title>Shop & Merch | The Grei Show</title>
+  <meta name="description" content="Discover books, direct music support and upcoming limited apparel, collectibles and release-linked merchandise from The Grei Show.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#03060c">
   <link rel="canonical" href="https://thegreishow.com/merch">
+
+  <meta property="og:title" content="Shop & Merch | The Grei Show">
+  <meta property="og:description" content="Books, direct music and upcoming limited drops from The Grei Show universe.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thegreishow.com/merch">
+  <meta property="og:image" content="https://thegreishow.com/assets/images/books/astral-thread-cover.jpg">
+  <meta property="og:image:alt" content="The Astral Thread book cover">
+  <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
@@ -13,138 +23,28 @@
   <link rel="stylesheet" href="assets/css/theme.css">
 
   <style>
-    .merch-shell {
-      position: relative;
-      z-index: 1;
-      width: min(1080px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 70px 0;
-    }
-
-    .merch-hero {
-      text-align: center;
-      margin-bottom: 34px;
-    }
-
-    .merch-hero h1 {
-      margin: 0 0 12px;
-      font-size: 4rem;
-      line-height: 1;
-      letter-spacing: 0;
-      text-shadow: var(--glow-strong);
-    }
-
-    .merch-hero p {
-      max-width: 690px;
-      margin: 0 auto;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .drop-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      margin-top: 28px;
-    }
-
-    .drop-card {
-      min-height: 220px;
-      padding: 22px;
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.045);
-      backdrop-filter: blur(14px);
-      display: grid;
-      align-content: end;
-      gap: 10px;
-    }
-
-    .drop-card span {
-      color: var(--accent-2);
-      font-size: 0.76rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .drop-card h2 {
-      margin: 0;
-      letter-spacing: 0;
-    }
-
-    .drop-card p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.55;
-    }
-
-    .merch-note {
-      margin-top: 18px;
-      padding: 20px;
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 8px;
-      background: rgba(0,0,0,0.24);
-      text-align: center;
-      color: var(--text-dim);
-      line-height: 1.65;
-    }
-
-    .merch-note a {
-      color: #fff;
-      font-weight: 800;
-    }
-
-    @media (max-width: 760px) {
-      .merch-shell {
-        width: min(100% - 24px, 1080px);
-        padding: 48px 0;
-      }
-
-      .merch-hero h1 {
-        font-size: 2.9rem;
-      }
-
-      .drop-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+    .merch-shell{position:relative;z-index:1;width:min(1080px,calc(100% - 32px));margin:0 auto;padding:70px 0}.merch-hero{text-align:center;margin-bottom:34px}.merch-hero h1{margin:0 0 12px;font-size:clamp(3rem,8vw,5rem);line-height:1;text-shadow:var(--glow-strong)}.merch-hero p{max-width:690px;margin:0 auto;color:var(--text-dim);line-height:1.7}.drop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:28px}.drop-card{min-height:220px;padding:22px;border:1px solid rgba(255,255,255,.11);border-radius:8px;background:rgba(255,255,255,.045);backdrop-filter:blur(14px);display:grid;align-content:end;gap:10px}.drop-card span{color:var(--accent-2);font-size:.76rem;font-weight:800;text-transform:uppercase}.drop-card h2{margin:0}.drop-card p{margin:0;color:var(--text-dim);line-height:1.55}.drop-card a{color:#fff;font-weight:850;text-decoration:none}.merch-note{margin-top:18px;padding:20px;border:1px solid rgba(255,255,255,.11);border-radius:8px;background:rgba(0,0,0,.24);text-align:center;color:var(--text-dim);line-height:1.65}.merch-note a{color:#fff;font-weight:800}@media(max-width:760px){.merch-shell{width:min(100% - 24px,1080px);padding:48px 0}.drop-grid{grid-template-columns:1fr}}
   </style>
 </head>
-
 <body>
-
   <div id="site-header"></div>
-  <script src="shared/nav.js"></script>
 
   <main class="merch-shell">
     <section class="merch-hero">
-      <p class="eyebrow">Coming Soon</p>
-      <h1>Merch</h1>
-      <p>Future drops will live here: apparel, collectibles, limited art objects, and release-linked pieces from The Grei Show universe.</p>
+      <p class="eyebrow">Store & upcoming drops</p>
+      <h1>Shop</h1>
+      <p>Support the books and music available now, and preview future apparel, collectibles and release-linked pieces from The Grei Show universe.</p>
     </section>
 
-    <section class="drop-grid" aria-label="Planned merch categories">
-      <article class="drop-card">
-        <span>Apparel</span>
-        <h2>Wearable Signals</h2>
-        <p>Core pieces built around releases, visuals, and Wheel It! Records identity.</p>
-      </article>
-      <article class="drop-card">
-        <span>Collectibles</span>
-        <h2>Artifacts</h2>
-        <p>Small-batch objects, prints, and physical extensions of the creative universe.</p>
-      </article>
-      <article class="drop-card">
-        <span>Limited Drops</span>
-        <h2>Release Capsules</h2>
-        <p>Short-run drops connected to songs, films, arcade experiments, and story worlds.</p>
-      </article>
+    <section class="drop-grid" aria-label="Store categories">
+      <article class="drop-card"><span>Available now</span><h2>The Astral Thread</h2><p>Own the official ebook and enter the first published story-world from The Grei Show.</p><a href="books.html">View the book →</a></article>
+      <article class="drop-card"><span>Direct support</span><h2>Music</h2><p>Stream the catalogue or support releases directly through Bandcamp.</p><a href="music.html">Explore the music →</a></article>
+      <article class="drop-card"><span>Coming soon</span><h2>Limited Drops</h2><p>Apparel, prints, collectibles and short-run capsules connected to songs, visuals and story worlds.</p><a href="connect.html?interest=partnership">Ask about collaborations →</a></article>
     </section>
 
-    <div class="merch-note">
-      For merch partnerships, styling pulls, or early drop inquiries, contact <a href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a>.
-    </div>
+    <div class="merch-note">For merch partnerships, styling pulls, or early drop inquiries, contact <a href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a>.</div>
   </main>
 
+  <script src="shared/nav.js"></script>
 </body>
 </html>

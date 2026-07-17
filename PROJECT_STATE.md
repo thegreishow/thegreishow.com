@@ -13,9 +13,9 @@
 - Global navigation added to visual subpages
 - Homepage rebuilt as a focused audience and revenue funnel for music, books, Bandcamp support, creative services, the arcade, and the release list
 - Homepage media optimized from roughly 22 MB of JPEGs to lightweight WebP delivery while preserving the original source assets
-- Shared navigation reprioritized around Music, Watch, Books, Services, Shop, and Work with Grei, with an accessible mobile menu
-- Booking hub integrated into the responsive navigation, homepage, project inquiry flow, sitemap, and privacy-safe conversion events
-- Connect page upgraded from a fragile mailto form to a qualified project brief covering service, timeline, budget, and goals
+- Shared navigation reprioritized around Music, Visuals, Books, Wheel It! Records, Shop, and Work with Grei, with an accessible mobile menu
+- Booking and project inquiries consolidated into one Work with Grei destination, with legacy booking URLs preserved as redirects
+- Connect page upgraded from competing mailto forms to one qualified inquiry covering bookings, services, timeline, budget, location, and goals
 - Public token-based CMS form removed; content editing now routes to GitHub's authenticated editor without accepting credentials on the website
 - Core page descriptions, canonical URLs, structured homepage data, robots rules, and a real XML sitemap added
 - Conversion-ready event hooks added for page views, primary calls to action, purchases, and prepared inquiries
@@ -23,7 +23,8 @@
 - Music page retitled to AUDIO UNIVERSE and cleaned of behind-the-scenes explanatory copy
 - Visuals page retitled to VISUAL UNIVERSE with duplicate category links removed above the hero player
 - Astral Thread moved under the new Books section as Book 01: The Astral Thread
-- Books page added with a shelf intro, official ebook link, and a left/right chapter reader instead of stacked chapter scrolling
+- Books page rebuilt as a catalog-first storefront with selectable title cards, an official ebook route, a reserved Book 02 slot, and a left/right visual reader
+- The Astral Thread reader stays closed until the visitor selects the book, then initializes its chapter experience on demand
 - Books reader chapter data now loads from assets/js/books-chapter-01.js through assets/js/books-chapter-20.js as the temporary working manuscript source
 - Books reader script simplified to render generated chapter data safely and hide narration controls when no matching audio is available
 - Current temporary Astral Thread version added with 20 chapters from the latest supplied manuscript

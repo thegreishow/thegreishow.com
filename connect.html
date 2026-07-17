@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Work With The Grei Show | Production & Creative Direction</title>
-  <meta name="description" content="Start a project with The Grei Show: music production, creative direction, artist development, sync, licensing, press, and select partnerships.">
+  <title>Book &amp; Work With The Grei Show</title>
+  <meta name="description" content="One place to request performances, DJ sets, studio sessions, production, creative direction, visuals, talent, press, licensing, and partnerships with The Grei Show.">
+  <meta name="theme-color" content="#03060c">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://thegreishow.com/connect">
+  <link rel="icon" href="favicon.ico">
+
+  <meta property="og:title" content="Book &amp; Work With The Grei Show">
+  <meta property="og:description" content="Request a booking, creative project, production session, visual service, licensing conversation, or partnership from one page.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thegreishow.com/connect">
+  <meta property="og:image" content="https://thegreishow.com/assets/img/home-bg.webp">
+  <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
@@ -19,39 +28,42 @@
 
   <main class="connect-page">
     <section class="connect-hero" aria-labelledby="connect-title">
-      <p class="eyebrow">Bookings &middot; Production &middot; Partnerships</p>
-      <h1 id="connect-title">Let&apos;s make something worth feeling.</h1>
-      <p>Share the goal, the stage you are at, and what success looks like. Your answers become a clear project brief you can review before sending.</p>
+      <p class="eyebrow">Bookings &middot; Production &middot; Creative Work &middot; Partnerships</p>
+      <h1 id="connect-title">One place to book, build, and connect.</h1>
+      <p>Choose what you need, share the essential details, and prepare one clear request for review. Nothing sends until you open the email and press send.</p>
     </section>
 
-    <section class="service-options" aria-label="Ways to work together">
-      <article class="service-option">
-        <span>Sound</span>
-        <div>
-          <h2>Music production</h2>
-          <p>Original production, artist development, collaboration, recording, and release support.</p>
-        </div>
-      </article>
-      <article class="service-option">
-        <span>World</span>
-        <div>
-          <h2>Creative direction</h2>
-          <p>Visual identity, story systems, campaign concepts, and cohesive release experiences.</p>
-        </div>
-      </article>
-      <article class="service-option">
-        <span>Placement</span>
-        <div>
-          <h2>Sync & partnerships</h2>
-          <p>Licensing, media, live performance, press, brand, and aligned cultural partnerships.</p>
-        </div>
-      </article>
+    <section class="service-options" aria-label="Popular ways to work together">
+      <button class="service-option" type="button" aria-pressed="false" data-interest="live-performance" data-track="inquiry_service_select" data-track-label="Inquiry service - Live performance">
+        <span class="service-tag">Stage</span>
+        <span class="service-details"><strong>Live performance</strong><small>Concerts, festivals, clubs, private events, and cultural programming.</small></span>
+      </button>
+      <button class="service-option" type="button" aria-pressed="false" data-interest="dj-set" data-track="inquiry_service_select" data-track-label="Inquiry service - DJ set">
+        <span class="service-tag">Sound</span>
+        <span class="service-details"><strong>DJ set</strong><small>Curated sets for parties, launches, lounges, brand moments, and events.</small></span>
+      </button>
+      <button class="service-option" type="button" aria-pressed="false" data-interest="music-production" data-track="inquiry_service_select" data-track-label="Inquiry service - Music production">
+        <span class="service-tag">Studio</span>
+        <span class="service-details"><strong>Music production</strong><small>Production, recording, artist development, sessions, and release support.</small></span>
+      </button>
+      <button class="service-option" type="button" aria-pressed="false" data-interest="creative-direction" data-track="inquiry_service_select" data-track-label="Inquiry service - Creative direction">
+        <span class="service-tag">World</span>
+        <span class="service-details"><strong>Creative direction</strong><small>Visual identity, story systems, campaign concepts, and release experiences.</small></span>
+      </button>
+      <button class="service-option" type="button" aria-pressed="false" data-interest="photo-video" data-track="inquiry_service_select" data-track-label="Inquiry service - Photo and video">
+        <span class="service-tag">Visual</span>
+        <span class="service-details"><strong>Photo &amp; video</strong><small>Portraits, events, campaigns, music visuals, and documentary coverage.</small></span>
+      </button>
+      <button class="service-option" type="button" aria-pressed="false" data-interest="talent-booking" data-track="inquiry_service_select" data-track-label="Inquiry service - Talent booking">
+        <span class="service-tag">Culture</span>
+        <span class="service-details"><strong>Talent booking</strong><small>Dancers, DJs, hosts, models, and other Jamaican creative talent.</small></span>
+      </button>
     </section>
 
     <section class="inquiry-shell" aria-labelledby="inquiry-title">
       <div class="inquiry-card">
-        <h2 id="inquiry-title">Build your inquiry</h2>
-        <p class="inquiry-intro">Nothing sends automatically. This form prepares a complete email for you to review and send from your own inbox.</p>
+        <h2 id="inquiry-title">Prepare your request</h2>
+        <p class="inquiry-intro">Use the same form for bookings, creative projects, press, licensing, and partnerships. Date and location can be left blank when they do not apply.</p>
 
         <form id="project-inquiry" class="project-form">
           <div class="field">
@@ -65,16 +77,33 @@
           </div>
 
           <div class="field">
+            <label for="phone">WhatsApp / phone <span>(optional)</span></label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel">
+          </div>
+
+          <div class="field">
             <label for="interest">What do you need?</label>
             <select id="interest" name="interest" required>
-              <option value="">Choose a project type</option>
+              <option value="">Choose a request type</option>
+              <option value="live-performance">Live performance</option>
+              <option value="dj-set">DJ set</option>
+              <option value="studio-session">Studio session / production consultation</option>
               <option value="music-production">Music production</option>
               <option value="creative-direction">Creative direction</option>
               <option value="artist-development">Artist development</option>
+              <option value="photo-video">Photography / video</option>
+              <option value="talent-booking">Talent booking</option>
+              <option value="kingston-experience">Kingston experience / tour</option>
               <option value="sync-licensing">Sync or licensing</option>
               <option value="press">Press or interview</option>
               <option value="partnership">Brand or creative partnership</option>
+              <option value="other">Other</option>
             </select>
+          </div>
+
+          <div class="field">
+            <label for="date">Preferred date <span>(if applicable)</span></label>
+            <input id="date" name="date" type="date">
           </div>
 
           <div class="field">
@@ -89,12 +118,18 @@
             </select>
           </div>
 
-          <div class="field full">
+          <div class="field">
+            <label for="location">City, country, or venue <span>(if applicable)</span></label>
+            <input id="location" name="location" type="text" autocomplete="address-level2">
+          </div>
+
+          <div class="field">
             <label for="budget">Working budget (USD)</label>
             <select id="budget" name="budget" required>
               <option value="">Choose a range</option>
               <option value="Not sure yet">Not sure yet</option>
-              <option value="Under $500">Under $500</option>
+              <option value="Under $250">Under $250</option>
+              <option value="$250-$500">$250&ndash;$500</option>
               <option value="$500-$1,500">$500&ndash;$1,500</option>
               <option value="$1,500-$5,000">$1,500&ndash;$5,000</option>
               <option value="$5,000+">$5,000+</option>
@@ -102,30 +137,31 @@
           </div>
 
           <div class="field full">
-            <label for="brief">Tell me about the project</label>
-            <textarea id="brief" name="brief" minlength="30" placeholder="What are you making, where are you now, and what outcome do you want?" required></textarea>
+            <label for="brief">Tell me what you are planning</label>
+            <textarea id="brief" name="brief" minlength="30" placeholder="Share the event, project, audience, deliverables, current stage, and the outcome you want." required></textarea>
           </div>
 
-          <button class="prepare-button" type="submit">Prepare inquiry</button>
+          <button class="prepare-button" type="submit">Prepare request</button>
           <p class="form-note">Your details stay in your browser until you choose to open the email.</p>
 
           <div id="prepared-inquiry" class="prepared-inquiry" role="status" tabindex="-1" hidden>
-            <p>Your project email is ready. Open it, review every detail, then press send from your email app.</p>
-            <a id="prepared-email-link" class="prepared-link" href="mailto:thegreishow@gmail.com" data-track="send_inquiry" data-track-label="Prepared inquiry - Open email">Open in email</a>
+            <p>Your request is ready. Open it, review every detail, then press send from your email app.</p>
+            <a id="prepared-email-link" class="prepared-link" href="mailto:thegreishow@gmail.com" data-track="send_inquiry" data-track-label="Prepared request - Open email">Open in email</a>
           </div>
         </form>
 
-        <noscript><p>Email <a href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a> with your project type, timeline, budget, and brief.</p></noscript>
+        <noscript><p>Email <a href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a> with your request type, date or timeline, location, budget, and details.</p></noscript>
       </div>
 
-      <aside class="contact-side" aria-label="Other contact options">
+      <aside class="contact-side" aria-label="Request and contact details">
         <div class="contact-card">
-          <p class="eyebrow">Ready to set a date?</p>
-          <h2>Book a service</h2>
-          <p>For performances, DJ sets, studio sessions, photo and video work, talent, or Kingston experiences.</p>
-          <div class="contact-links">
-            <a href="booking.html" data-track="connect_booking" data-track-label="Connect - Open booking form">Open booking form</a>
-          </div>
+          <p class="eyebrow">What happens next</p>
+          <h2>Review, quote, confirm</h2>
+          <ol class="process-list">
+            <li>Share the essential details.</li>
+            <li>Receive availability, scope, and pricing.</li>
+            <li>Confirm the work and any required deposit.</li>
+          </ol>
         </div>
 
         <div class="contact-card">

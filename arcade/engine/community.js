@@ -1,5 +1,6 @@
 const PROFILE_KEY = 'grei_arcade_profile';
 const ACTIVITY_KEY = 'grei_arcade_activity';
+const ARCADE_API_BASE = 'https://grei-arcade-api.thegreishow.workers.dev';
 
 const communityStyles = new URL('./community.css', import.meta.url);
 if (!document.querySelector('link[data-arcade-community]')) {
@@ -91,7 +92,7 @@ function localTopThree(gameId) {
 
 async function getTopThree(gameId) {
   try {
-    const response = await fetch(`/api/leaderboard?game=${encodeURIComponent(gameId)}`);
+    const response = await fetch(`${ARCADE_API_BASE}/api/leaderboard?game=${encodeURIComponent(gameId)}`);
     if (!response.ok) throw new Error('offline');
     const data = await response.json();
     return { scores: Array.isArray(data.scores) ? data.scores.slice(0, 3) : [], global: true };

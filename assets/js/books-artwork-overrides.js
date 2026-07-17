@@ -44,6 +44,26 @@
     '10': {
       artwork: 'assets/images/books/astral-thread-chapter-10.jpg',
       artworkAlt: 'A mysterious man surrounded by translucent masks that suggest many hidden selves.'
+    },
+    '11': {
+      artwork: 'assets/images/books/astral-thread-chapter-11.jpg',
+      artworkAlt: 'A figure wearing flowing robes woven from starlight in a celestial atelier.'
+    },
+    '12': {
+      artwork: 'assets/images/books/astral-thread-chapter-12.jpg',
+      artworkAlt: 'Grei and SYNTHIA reaching toward an astral thread in a fractured future city.'
+    },
+    '13': {
+      artwork: 'assets/images/books/astral-thread-chapter-13.jpg',
+      artworkAlt: 'A solitary figure walking through drifting fragments toward a pale open horizon.'
+    },
+    '14': {
+      artwork: 'assets/images/books/astral-thread-chapter-14.jpg',
+      artworkAlt: 'A conflicted shadow-being standing before a radiant celestial threshold.'
+    },
+    '15': {
+      artwork: 'assets/images/books/astral-thread-chapter-15.jpg',
+      artworkAlt: 'A misty crossroads where a cloaked legendary figure watches over a sealed dark relic.'
     }
   };
 

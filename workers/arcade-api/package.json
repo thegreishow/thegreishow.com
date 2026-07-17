@@ -1,0 +1,15 @@
+{
+  "name": "grei-arcade-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create grei-arcade",
+    "db:init": "wrangler d1 execute grei-arcade --remote --file=./schema.sql",
+    "health": "node ./scripts/health-check.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.112.0"
+  }
+}

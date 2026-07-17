@@ -1,5 +1,16 @@
 [
   {
+    "id": "dreamweaver-oracle",
+    "title": "Dreamweaver Oracle",
+    "creator": "The Grei Show",
+    "description": "Collect story fragments, survive corrupted memories, and let the Oracle reshape each dream.",
+    "version": "1.0",
+    "type": "native",
+    "entry": "arcade/games/dreamweaver-oracle/index.html",
+    "thumbnail": "arcade/assets/thumbnails/dreamweaver-oracle.svg",
+    "tags": ["story", "action", "astral", "AI-ready"]
+  },
+  {
     "id": "signal-runner",
     "title": "Signal Runner",
     "creator": "The Grei Show",

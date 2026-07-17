@@ -1,6 +1,15 @@
 const PROFILE_KEY = 'grei_arcade_profile';
 const ACTIVITY_KEY = 'grei_arcade_activity';
 
+const communityStyles = new URL('./community.css', import.meta.url);
+if (!document.querySelector('link[data-arcade-community]')) {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = communityStyles.href;
+  link.dataset.arcadeCommunity = 'true';
+  document.head.appendChild(link);
+}
+
 function safeParse(value, fallback) {
   try { return JSON.parse(value) ?? fallback; } catch { return fallback; }
 }

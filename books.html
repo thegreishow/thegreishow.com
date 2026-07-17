@@ -4,473 +4,40 @@
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
   <title>Books | The Grei Show</title>
-  <meta name='description' content='Browse books from The Grei Show, including The Astral Thread visual reader and upcoming written, spoken, and visual releases.'>
+  <meta name='description' content='Browse books from The Grei Show, choose a title to read online, or buy your copy.'>
+  <meta name='theme-color' content='#03060c'>
+  <meta name='robots' content='index, follow'>
   <link rel='canonical' href='https://thegreishow.com/books'>
+  <link rel='icon' href='favicon.ico'>
+
+  <meta property='og:title' content='Books | The Grei Show'>
+  <meta property='og:description' content='Discover visionary fiction, spiritual fantasy, and immersive visual reading from The Grei Show.'>
+  <meta property='og:type' content='website'>
+  <meta property='og:url' content='https://thegreishow.com/books'>
+  <meta property='og:image' content='https://thegreishow.com/assets/images/books/astral-thread-cover.jpg'>
+  <meta name='twitter:card' content='summary_large_image'>
+
+  <script>
+    if (window.location.hash === '#reader' || window.location.hash === '#astral-thread') {
+      window.location.replace(`astralthread.html${window.location.search}${window.location.hash}`);
+    }
+  </script>
 
   <link rel='stylesheet' href='assets/css/base.css'>
   <link rel='stylesheet' href='assets/css/layout.css'>
   <link rel='stylesheet' href='assets/css/components.css'>
   <link rel='stylesheet' href='assets/css/theme.css'>
-
-  <style>
-    .books-shell {
-      position: relative;
-      z-index: 1;
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 70px 0;
-    }
-
-    .books-hero {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .books-hero h1 {
-      margin: 0 0 12px;
-      font-size: clamp(3.2rem, 10vw, 6rem);
-      line-height: 0.92;
-      text-transform: uppercase;
-      text-shadow: var(--glow-strong);
-    }
-
-    .books-hero p {
-      max-width: 700px;
-      margin: 0 auto;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .library-heading {
-      max-width: 760px;
-      margin: 0 0 24px;
-    }
-
-    .library-heading h2,
-    .selected-book-header h2 {
-      margin: 0;
-      font-size: clamp(2.2rem, 5vw, 4rem);
-      line-height: 1;
-    }
-
-    .library-heading p,
-    .selected-book-header p {
-      margin: 12px 0 0;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .book-library {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 58px;
-    }
-
-    .library-book {
-      min-height: 410px;
-      display: grid;
-      grid-template-columns: minmax(170px, 0.78fr) minmax(0, 1.22fr);
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 14px;
-      background: rgba(5,9,17,0.78);
-      box-shadow: var(--shadow-sm);
-      backdrop-filter: blur(14px);
-    }
-
-    .library-cover {
-      position: relative;
-      min-height: 100%;
-      overflow: hidden;
-      background: #07101a;
-    }
-
-    .library-cover img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-    }
-
-    .library-cover::after {
-      position: absolute;
-      inset: 0;
-      content: '';
-      background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.58));
-    }
-
-    .library-cover.placeholder {
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      color: rgba(255,255,255,0.62);
-      background:
-        radial-gradient(circle at 28% 20%, rgba(0,200,255,0.28), transparent 30%),
-        radial-gradient(circle at 75% 72%, rgba(138,125,255,0.3), transparent 34%),
-        #07101a;
-      font-size: clamp(3.8rem, 8vw, 6.4rem);
-      font-weight: 900;
-      letter-spacing: -0.08em;
-    }
-
-    .library-book-body {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 26px;
-    }
-
-    .library-book-body h3 {
-      margin: 8px 0 12px;
-      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-      line-height: 1;
-    }
-
-    .library-book-body > p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.65;
-    }
-
-    .format-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin: 20px 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .format-list li {
-      padding: 7px 10px;
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 999px;
-      color: rgba(255,255,255,0.62);
-      background: rgba(255,255,255,0.04);
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .library-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: auto;
-      padding-top: 24px;
-    }
-
-    .selected-book {
-      scroll-margin-top: 86px;
-    }
-
-    .selected-book[hidden] {
-      display: none;
-    }
-
-    .selected-book-header {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 22px;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .book-shelf {
-      display: grid;
-      grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1.22fr);
-      gap: 18px;
-      align-items: stretch;
-      margin-bottom: 18px;
-    }
-
-    .book-cover,
-    .book-info,
-    .reader-card {
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.045);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .book-cover {
-      position: relative;
-      min-height: 340px;
-      padding: 22px;
-      display: grid;
-      align-content: space-between;
-      overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.78)),
-        url('assets/images/books/astral-thread-cover.jpg') center / cover;
-    }
-
-    .book-cover span,
-    .chapter-kicker {
-      color: var(--accent-2);
-      font-size: 0.78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .book-cover h2 {
-      margin: 0;
-      max-width: 360px;
-      font-size: clamp(2.5rem, 7vw, 4.8rem);
-      line-height: 0.92;
-    }
-
-    .book-cover p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .book-info {
-      padding: 24px;
-      display: grid;
-      align-content: center;
-      gap: 16px;
-    }
-
-    .book-info h2 {
-      margin: 0;
-      font-size: clamp(2.1rem, 5vw, 3.4rem);
-      line-height: 1;
-    }
-
-    .book-info p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .book-actions,
-    .reader-controls {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .book-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 0 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 8px;
-      color: #fff;
-      background: rgba(255,255,255,0.055);
-      font-weight: 800;
-      text-decoration: none;
-      cursor: pointer;
-      font: inherit;
-    }
-
-    .book-button.primary {
-      border-color: transparent;
-      background: linear-gradient(135deg, #1f6feb, #00a6ff);
-    }
-
-    .book-button:hover,
-    .book-button:focus-visible {
-      transform: translateY(-3px);
-      opacity: 1;
-      outline: none;
-    }
-
-    .book-button:disabled {
-      cursor: not-allowed;
-      opacity: 0.45;
-      transform: none;
-    }
-
-    .reader-card {
-      padding: 18px;
-      overflow: hidden;
-    }
-
-    .book-spread {
-      display: grid;
-      grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr);
-      gap: 18px;
-      min-height: 540px;
-    }
-
-    .reader-card.turning .book-spread {
-      animation: pageTurn 0.32s ease;
-    }
-
-    @keyframes pageTurn {
-      0% { transform: translateX(18px); opacity: 0.52; }
-      100% { transform: translateX(0); opacity: 1; }
-    }
-
-    .left-page,
-    .right-page {
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      background: rgba(0,0,0,0.24);
-      padding: 22px;
-    }
-
-    .left-page {
-      display: grid;
-      align-content: space-between;
-      gap: 24px;
-      background:
-        radial-gradient(circle at 30% 22%, rgba(255,255,255,0.14), transparent 24%),
-        radial-gradient(circle at 78% 74%, rgba(138,125,255,0.2), transparent 32%),
-        rgba(0,0,0,0.24);
-    }
-
-    .left-page h2,
-    .right-page h2 {
-      margin: 10px 0 12px;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      line-height: 1;
-    }
-
-    .left-page p,
-    .right-page p {
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .chapter-artwork {
-      width: 100%;
-      height: clamp(230px, 31vw, 340px);
-      margin: 18px 0 14px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.045);
-      box-shadow: 0 18px 46px rgba(0,0,0,0.3);
-    }
-
-    .chapter-artwork[hidden] {
-      display: none;
-    }
-
-    .chapter-artwork img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    #chapter-visual {
-      margin: 0;
-    }
-
-    .audio-block {
-      display: grid;
-      gap: 12px;
-    }
-
-    audio {
-      width: 100%;
-    }
-
-    .right-page {
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 16px;
-    }
-
-    .chapter-text {
-      max-height: 390px;
-      overflow: auto;
-      padding-right: 12px;
-      scrollbar-color: rgba(255,255,255,0.28) transparent;
-    }
-
-    .chapter-text p {
-      margin: 0 0 18px;
-      color: rgba(255,255,255,0.82);
-      font-size: 1.02rem;
-      line-height: 1.9;
-    }
-
-    .chapter-text p:last-child {
-      margin-bottom: 0;
-    }
-
-    .chapter-count {
-      margin-left: auto;
-      color: var(--text-dim);
-      font-size: 0.88rem;
-      font-weight: 800;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 54px;
-      color: var(--text-dim);
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 860px) {
-      .books-shell {
-        width: min(100% - 24px, 1120px);
-        padding: 48px 0;
-      }
-
-      .book-library,
-      .book-shelf,
-      .book-spread {
-        grid-template-columns: 1fr;
-      }
-
-      .library-book {
-        grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1.35fr);
-      }
-
-      .book-spread {
-        min-height: 0;
-      }
-
-      .chapter-text {
-        max-height: 520px;
-      }
-
-      .chapter-artwork {
-        height: min(420px, 82vw);
-      }
-    }
-
-    @media (max-width: 580px) {
-      .library-book {
-        grid-template-columns: 1fr;
-      }
-
-      .library-cover {
-        min-height: 330px;
-      }
-
-      .selected-book-header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-    }
-  </style>
+  <link rel='stylesheet' href='assets/css/books.css'>
 </head>
 <body>
-
   <div id='site-header'></div>
   <script src='shared/nav.js'></script>
 
   <main class='books-shell'>
     <section class='books-hero'>
-      <p class='eyebrow'>Audiobooks - Visual Books - Ebooks</p>
+      <p class='eyebrow'>Stories &middot; Visual Readers &middot; Ebooks</p>
       <h1>Books</h1>
-      <p>Browse the library, choose a title, then read, listen, buy, or enter its visual world.</p>
+      <p>Browse the library, choose a title, then read its independent visual edition or buy your copy.</p>
     </section>
 
     <section id='library' aria-labelledby='library-title'>
@@ -488,15 +55,15 @@
           <div class='library-book-body'>
             <p class='chapter-kicker'>Book 01 &middot; Available now</p>
             <h3>The Astral Thread</h3>
-            <p>A reflective night-book built for reading, listening, and entering each chapter as a visual world.</p>
-            <ul class='format-list' aria-label='Available formats'>
-              <li>Visual reader</li>
-              <li>Ebook</li>
-              <li>Audio</li>
+            <p>A reflective night-book that moves through inner strength, dreams, cosmic mystery, and imagined worlds.</p>
+            <ul class='genre-list' aria-label='Genres and themes'>
+              <li>Visionary fiction</li>
+              <li>Spiritual fantasy</li>
+              <li>Inspirational</li>
             </ul>
             <div class='library-actions'>
-              <button id='open-astral-thread' class='book-button primary' type='button' aria-controls='astral-thread' aria-expanded='false' data-track='open_book' data-track-label='Books - Open Astral Thread'>Explore book</button>
-              <a class='book-button' href='https://www.amazon.in/Astral-Thread-Grei-Show-ebook/dp/B0F7RQ3463' target='_blank' rel='noopener' data-track='buy_book' data-track-label='Books - Buy Astral Thread'>Official ebook</a>
+              <a class='book-button primary' href='https://www.amazon.in/Astral-Thread-Grei-Show-ebook/dp/B0F7RQ3463' target='_blank' rel='noopener' aria-label='Buy The Astral Thread ebook on Amazon' data-track='buy_book' data-track-label='Books - Buy Astral Thread'>Buy Now</a>
+              <a class='book-button' href='astralthread.html' data-track='open_book' data-track-label='Books - Read Astral Thread online'>Read Online</a>
             </div>
           </div>
         </article>
@@ -507,106 +74,16 @@
             <p class='chapter-kicker'>Book 02 &middot; In development</p>
             <h3>Next title coming soon</h3>
             <p>The next written, spoken, and visual book experience will appear here when it is ready to reveal.</p>
-            <ul class='format-list' aria-label='Planned formats'>
-              <li>New story</li>
-              <li>More soon</li>
-            </ul>
+            <p class='genre-note'>Genres will be revealed with the title.</p>
             <div class='library-actions'>
-              <button class='book-button' type='button' disabled>Coming soon</button>
+              <button class='book-button' type='button' disabled>Coming Soon</button>
             </div>
           </div>
         </article>
       </div>
     </section>
 
-    <section id='astral-thread' class='selected-book' aria-labelledby='selected-book-title' tabindex='-1' hidden>
-      <div class='selected-book-header'>
-        <div>
-          <p class='chapter-kicker'>Selected book &middot; Book 01</p>
-          <h2 id='selected-book-title'>The Astral Thread</h2>
-          <p>Read the visual edition below or continue to the official ebook.</p>
-        </div>
-        <button id='back-to-library' class='book-button' type='button'>Back to library</button>
-      </div>
-
-    <section class='book-shelf' aria-label='The Astral Thread details'>
-      <article class='book-cover' aria-label='The Astral Thread cover panel'>
-        <div>
-          <span>Book 01</span>
-          <h2>The Astral Thread</h2>
-        </div>
-        <p>A reflective night-book built for reading, listening, and entering each chapter as a visual world.</p>
-      </article>
-
-      <article class='book-info'>
-        <p class='chapter-kicker'>Written, spoken, visual</p>
-        <h2>Enter The Astral Thread</h2>
-        <p>Each chapter is designed as a calm passage: a page to read, a voice to hear, and a visual atmosphere to step into.</p>
-        <div class='book-actions'>
-          <a class='book-button primary' href='https://www.amazon.in/Astral-Thread-Grei-Show-ebook/dp/B0F7RQ3463' target='_blank' rel='noopener' data-track='buy_book' data-track-label='Books - Buy Astral Thread'>Official ebook</a>
-          <a class='book-button' href='#reader'>Continue to reader</a>
-        </div>
-      </article>
-    </section>
-
-    <section id='reader' class='reader-card' aria-label='The Astral Thread visual reader' tabindex='-1' hidden>
-      <div class='book-spread'>
-        <article class='left-page' aria-label='Visual chapter page'>
-          <div>
-            <p id='chapter-kicker' class='chapter-kicker'></p>
-            <h2 id='chapter-title'></h2>
-            <figure class='chapter-artwork'>
-              <img id='chapter-artwork' alt='' loading='lazy'>
-            </figure>
-            <p id='chapter-visual'></p>
-          </div>
-          <div class='audio-block'>
-            <audio id='chapter-audio' controls preload='metadata'></audio>
-            <a id='chapter-full-audio' class='book-button' href='#' target='_blank' rel='noopener'>Full narration</a>
-          </div>
-        </article>
-
-        <article class='right-page' aria-label='Chapter text page'>
-          <div>
-            <p class='chapter-kicker'>Read</p>
-            <h2 id='chapter-read-title'></h2>
-          </div>
-          <div id='chapter-text' class='chapter-text'></div>
-          <div class='reader-controls'>
-            <button id='prev-chapter' class='book-button' type='button' aria-label='Previous chapter'>Previous</button>
-            <button id='next-chapter' class='book-button primary' type='button' aria-label='Next chapter'>Next</button>
-            <span id='chapter-count' class='chapter-count'></span>
-          </div>
-        </article>
-      </div>
-    </section>
-    </section>
-
     <footer>THE GREI SHOW &copy; 2026</footer>
   </main>
-
-  <script src='assets/js/books-chapter-01.js'></script>
-  <script src='assets/js/books-chapter-02.js'></script>
-  <script src='assets/js/books-chapter-03.js'></script>
-  <script src='assets/js/books-chapter-04.js'></script>
-  <script src='assets/js/books-chapter-05.js'></script>
-  <script src='assets/js/books-chapter-06.js'></script>
-  <script src='assets/js/books-chapter-07.js'></script>
-  <script src='assets/js/books-chapter-08.js'></script>
-  <script src='assets/js/books-chapter-09.js'></script>
-  <script src='assets/js/books-chapter-10.js'></script>
-  <script src='assets/js/books-chapter-11.js'></script>
-  <script src='assets/js/books-chapter-12.js'></script>
-  <script src='assets/js/books-chapter-13.js'></script>
-  <script src='assets/js/books-chapter-14.js'></script>
-  <script src='assets/js/books-chapter-15.js'></script>
-  <script src='assets/js/books-chapter-16.js'></script>
-  <script src='assets/js/books-chapter-17.js'></script>
-  <script src='assets/js/books-chapter-18.js'></script>
-  <script src='assets/js/books-chapter-19.js'></script>
-  <script src='assets/js/books-chapter-20.js'></script>
-  <script src='assets/js/books-audio-overrides.js'></script>
-  <script src='assets/js/books-artwork-overrides.js'></script>
-  <script src='assets/js/books-reader.js'></script>
 </body>
 </html>

@@ -23,8 +23,8 @@
 - Music page retitled to AUDIO UNIVERSE and cleaned of behind-the-scenes explanatory copy
 - Visuals page retitled to VISUAL UNIVERSE with duplicate category links removed above the hero player
 - Astral Thread moved under the new Books section as Book 01: The Astral Thread
-- Books page rebuilt as a catalog-first storefront with selectable title cards, an official ebook route, a reserved Book 02 slot, and a left/right visual reader
-- The Astral Thread reader stays closed until the visitor selects the book, then initializes its chapter experience on demand
+- Books page rebuilt as a catalog-first storefront with genre-led title cards, a clear Buy Now action, an independent reader route, and a reserved Book 02 slot
+- The Astral Thread now opens on its own reader page so future books can each have an independent reading experience
 - Books reader chapter data now loads from assets/js/books-chapter-01.js through assets/js/books-chapter-20.js as the temporary working manuscript source
 - Books reader script simplified to render generated chapter data safely and hide narration controls when no matching audio is available
 - Current temporary Astral Thread version added with 20 chapters from the latest supplied manuscript
@@ -34,7 +34,7 @@
 - Books reader audio player now defaults to full narration, with preview narration as a fallback if a full track cannot load
 - Books reader now supports visual chapter artwork with generated assets for all 20 Astral Thread chapters plus the Astral Thread cover fallback
 - Books reader supports Previous / Next controls plus left and right arrow keys
-- Old astralthread.html URL now redirects to books.html
+- Books reader keeps the story title and chapter number on the left page while dedicating the right page to a larger scrolling story area
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
 - Wheel It! Records page refreshed with clickable producer-reel cards
 - Connect, Merch, Photography, and Press pages refreshed to match the shared visual language

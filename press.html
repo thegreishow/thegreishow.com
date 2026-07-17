@@ -3,9 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Grei Show | Press</title>
-<meta name="description" content="Official biography, career timeline, news, media resources, and press contact for The Grei Show.">
+<title>The Grei Show | Press, Features & Credits</title>
+<meta name="description" content="Verified press coverage, selected credits, official biography, releases and media contact for Jamaican artist and producer The Grei Show.">
 <link rel="canonical" href="https://thegreishow.com/press">
+<meta property="og:title" content="The Grei Show | Press, Features & Credits">
+<meta property="og:description" content="Verified coverage, production credits and official media information for Jamaican artist and producer The Grei Show.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://thegreishow.com/press">
+<meta property="og:image" content="https://thegreishow.com/assets/img/home-bg.webp">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
 <link rel="stylesheet" href="assets/css/components.css">
@@ -13,66 +18,182 @@
 <link rel="stylesheet" href="assets/css/portal.css">
 <style>
 body{color:var(--text);font-family:var(--font-body)}
-.press{position:relative;z-index:1;max-width:1000px;margin:auto;padding:70px 25px}.panel{background:rgba(0,0,0,.45);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:40px;margin:30px 0}h1{font-size:4.8rem;line-height:1;letter-spacing:0;text-align:center}h2{letter-spacing:0}.tag{color:var(--text-dim);letter-spacing:0;text-align:center;text-transform:uppercase}.news-item,.timeline-item{margin:22px 0;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.12)}.news-item:last-child,.timeline-item:last-child{border:0}.media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px}.media-card{height:160px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-align:center}.press a{font-weight:800;color:#fff}
-@media(max-width:760px){.press{padding:48px 18px}h1{font-size:3rem}.panel{padding:24px}}
+.press{position:relative;z-index:1;max-width:1080px;margin:auto;padding:70px 25px 100px}
+.press-hero{text-align:center;max-width:820px;margin:0 auto 40px}
+h1{font-size:clamp(3.2rem,9vw,6.5rem);line-height:.9;letter-spacing:-.045em;margin:0 0 18px}
+h2{letter-spacing:-.02em;margin-top:0}
+h3{margin:.25rem 0 .65rem;line-height:1.15}
+.tag{color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase}
+.intro{font-size:1.15rem;line-height:1.75;color:var(--text-dim)}
+.panel{background:rgba(0,0,0,.48);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.11);border-radius:14px;padding:40px;margin:26px 0}
+.coverage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:24px}
+.coverage-card{display:flex;flex-direction:column;min-height:235px;padding:24px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.045);transition:transform .2s ease,border-color .2s ease}
+.coverage-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.3)}
+.coverage-meta{font-size:.77rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)}
+.coverage-card p{color:var(--text-dim);line-height:1.65}
+.coverage-card a{margin-top:auto;text-decoration:none}
+.source-link{display:inline-flex;align-items:center;gap:.45rem;font-weight:800;color:#fff}
+.source-link::after{content:'↗';font-size:.9em}
+.credit-list{display:grid;gap:0;margin-top:16px}
+.credit-item{display:grid;grid-template-columns:145px 1fr;gap:22px;padding:22px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.credit-item:last-child{border-bottom:0}
+.credit-year{font-weight:800;color:var(--text-dim)}
+.credit-item p{margin:.35rem 0;color:var(--text-dim);line-height:1.6}
+.link-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.press-button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 18px;border:1px solid rgba(255,255,255,.2);border-radius:999px;color:#fff;text-decoration:none;font-weight:800;background:rgba(255,255,255,.06)}
+.press-button.primary{background:#fff;color:#05070b}
+.press-button:hover{transform:translateY(-1px)}
+.fact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px}
+.fact{padding:20px;border-radius:10px;background:rgba(255,255,255,.055)}
+.fact strong{display:block;margin-bottom:8px}.fact span{color:var(--text-dim);line-height:1.5}
+.note{font-size:.88rem;color:var(--text-dim);margin-top:22px}
+.press a:focus-visible{outline:2px solid #fff;outline-offset:4px}
+@media(max-width:760px){.press{padding:48px 18px 80px}.panel{padding:25px}.coverage-grid,.fact-grid{grid-template-columns:1fr}.credit-item{grid-template-columns:1fr;gap:5px}.coverage-card{min-height:auto}}
 </style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Gamel Reid",
+  "alternateName":"The Grei Show",
+  "url":"https://thegreishow.com/",
+  "jobTitle":["Recording Artist","Music Producer","Songwriter","Creative Director"],
+  "homeLocation":{"@type":"Place","name":"Kingston, Jamaica"},
+  "sameAs":[
+    "https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k",
+    "https://music.apple.com/jm/artist/the-grei-show/885841733",
+    "https://youtube.com/@thegreishxw",
+    "https://instagram.com/thegreishow",
+    "https://thegreishow.bandcamp.com"
+  ]
+}
+</script>
 </head>
 <body>
 <div id="site-header"></div>
 <main class="press">
-<h1>PRESS</h1>
-<p class="tag">The Grei Show | Artist - Producer - Creative Director</p>
+  <header class="press-hero">
+    <p class="tag">Official media page</p>
+    <h1>PRESS</h1>
+    <p class="intro">Verified coverage, selected production credits and official background information for The Grei Show — a Jamaican recording artist, producer, songwriter and creative director.</p>
+  </header>
 
-<div class="panel">
-<h2>Artist Profile</h2>
-<p>The Grei Show is a Jamaican recording artist, producer, engineer and creative visionary from Kingston, Jamaica. His sound blends reggae, dancehall, hip hop and global influences while staying rooted in Jamaican culture.</p>
-<p>As the founder of Wheel It! Records, The Grei Show continues to build a creative ecosystem combining music, visuals, production and technology.</p>
-</div>
+  <section class="panel" aria-labelledby="bio-title">
+    <h2 id="bio-title">Official Biography</h2>
+    <p>The Grei Show is the artist and production identity of Gamel Reid, a Jamaican recording artist, songwriter and music producer whose work moves through reggae, dancehall, hip-hop and experimental Caribbean sound. Raised in Bull Bay and based in Kingston, he approaches music as both a performer and a world-builder, connecting records with visual art, storytelling and interactive media.</p>
+    <p>His catalogue includes solo releases, collaborative projects and production work for Jamaican artists. Among his best-known production credits is Protoje's “Weed &amp; Ting,” co-produced with Supa Dups for the album <em>In Search of Lost Time</em>. He is also the founder of Wheel It! Records, the independent platform behind his releases and creative collaborations.</p>
+    <div class="fact-grid" aria-label="Profile facts">
+      <div class="fact"><strong>Based in</strong><span>Kingston, Jamaica</span></div>
+      <div class="fact"><strong>Primary roles</strong><span>Artist, producer, songwriter, engineer and creative director</span></div>
+      <div class="fact"><strong>Independent label</strong><span>Wheel It! Records</span></div>
+    </div>
+  </section>
 
-<div class="panel">
-<h2>News</h2>
-<div class="news-item"><h3>The Grei Show Digital Universe Launches</h3><p>The official TheGreiShow.com platform brings music, videos, productions, photography, creative projects and future experiences together into one cinematic destination.</p></div>
-<div class="news-item"><h3>Producer & Collaborator</h3><p>The Grei Show continues building his catalogue as a producer and engineer, contributing to projects across reggae and contemporary music.</p></div>
-<div class="news-item"><h3>Wheel It! Records Producer Showcase</h3><p>Wheel It! Records is evolving as a showcase for productions, artists and creative collaborations connected to The Grei Show's musical journey.</p></div>
-</div>
+  <section class="panel" aria-labelledby="coverage-title">
+    <p class="tag" style="text-align:left">Independent sources</p>
+    <h2 id="coverage-title">Selected Press &amp; Features</h2>
+    <div class="coverage-grid">
+      <article class="coverage-card">
+        <span class="coverage-meta">Jamaica Observer · August 5, 2020</span>
+        <h3>Protoje announces <em>In Search of Lost Time</em></h3>
+        <p>The album announcement identifies “Weed &amp; Ting” as produced by Supa Dups and The Grei Show.</p>
+        <a class="source-link" href="https://www.jamaicaobserver.com/2020/08/05/in-search-of-lost-time-protoje-announces-new-album-with-popcaan-koffee-and-more/" target="_blank" rel="noopener noreferrer">Read the article</a>
+      </article>
 
-<div class="panel">
-<h2>Career Timeline</h2>
-<div class="timeline-item"><h3>Kingston, Jamaica</h3><p>Born from Jamaica's creative culture, The Grei Show developed as a songwriter, producer and recording artist.</p></div>
-<div class="timeline-item"><h3>Producer & Studio Work</h3><p>Built experience as an engineer and producer, creating music across reggae, dancehall, hip hop and modern global sounds.</p></div>
-<div class="timeline-item"><h3>Wheel It! Records</h3><p>Founded a creative platform focused on music, artists, productions and visual storytelling.</p></div>
-<div class="timeline-item"><h3>Global Creative Expansion</h3><p>Expanded into multimedia projects including music videos, documentaries, photography and digital experiences.</p></div>
-</div>
+      <article class="coverage-card">
+        <span class="coverage-meta">World A Reggae · September 24, 2024</span>
+        <h3>“Puff Puff Pass” remix featuring Bay-C</h3>
+        <p>A release feature on the collaboration with T.O.K member Bay-C, highlighting its reggae and trap fusion.</p>
+        <a class="source-link" href="https://www.worldareggae.com/releases/new-tracks/puff-puff-pass-remix-the-grei-show-ft-bay-c/" target="_blank" rel="noopener noreferrer">Read the feature</a>
+      </article>
 
-<div class="panel">
-<h2>Media Gallery</h2>
-<div class="media-grid">
-<div class="media-card">PRESS PHOTO<br>COMING SOON</div>
-<div class="media-card">LIVE PERFORMANCE<br>PHOTO</div>
-<div class="media-card">STUDIO / PRODUCER<br>PHOTO</div>
-</div>
-</div>
+      <article class="coverage-card">
+        <span class="coverage-meta">Reggaeville · November 3, 2024</span>
+        <h3>“Puff Puff Pass (Remix)” official video</h3>
+        <p>Reggaeville's video listing for The Grei Show and Bay-C collaboration.</p>
+        <a class="source-link" href="https://www.reggaeville.com/artist-details/bay-c/videos/video/the-grei-show-x-bay-c-puff-puff-pass-remix/" target="_blank" rel="noopener noreferrer">View the feature</a>
+      </article>
 
-<div class="panel">
-<h2>Media Kit</h2>
-<p>Official artist photos, biography, credits and promotional materials are being prepared for promoters, journalists and industry partners.</p>
-<a href="connect.html">REQUEST PRESS KIT</a>
-</div>
+      <article class="coverage-card">
+        <span class="coverage-meta">World A Reggae · April 20, 2024</span>
+        <h3>“Puff Puff Pass” music video</h3>
+        <p>A visual-release feature describing the song's reggae/trap sound and Jamaican island setting.</p>
+        <a class="source-link" href="https://www.worldareggae.com/releases/videoclips/puff-puff-pass-the-grei-show-music-video/" target="_blank" rel="noopener noreferrer">Read the feature</a>
+      </article>
 
-<div class="panel">
-<h2>Career Highlights</h2>
-<p>- Founder of Wheel It! Records</p>
-<p>- Producer, songwriter and recording artist from Kingston, Jamaica</p>
-<p>- Collaborations with Jamaican and international creatives</p>
-<p>- Publishing relationship with Warner Music Finland</p>
-<p>- Creator of original music, visual content and multimedia experiences</p>
-</div>
+      <article class="coverage-card">
+        <span class="coverage-meta">FNMNL · May 22, 2017</span>
+        <h3>Bussweh Party debut project</h3>
+        <p>The Japanese music publication profiles the Kingston collective and identifies The Grei Show as producer, singer and rapper.</p>
+        <a class="source-link" href="https://fnmnl.tv/2017/05/22/30616" target="_blank" rel="noopener noreferrer">Read the feature</a>
+      </article>
 
-<div class="panel">
-<h2>Contact</h2>
-<p>For interviews, performances, press requests and promotional materials:</p>
-<a href="connect.html">CONTACT / MEDIA REQUESTS</a>
-</div>
+      <article class="coverage-card">
+        <span class="coverage-meta">Jamaica Star · March 12, 2024</span>
+        <h3>Rock and Groove Xperience</h3>
+        <p>The Jamaica Star's event coverage includes The Grei Show among the music community attending the Dubwise Café showcase.</p>
+        <a class="source-link" href="https://jamaica-star.com/article/entertainment/20240312/perfect-vibe-rock-and-groove-xperience" target="_blank" rel="noopener noreferrer">Read the article</a>
+      </article>
+
+      <article class="coverage-card">
+        <span class="coverage-meta">World A Reggae · October 10, 2022</span>
+        <h3>“Puff Puff Pass” release</h3>
+        <p>An early release feature introducing the original reggae anthem and its trap-infused production.</p>
+        <a class="source-link" href="https://www.worldareggae.com/releases/new-tracks/puff-puff-pass-the-grei-show/" target="_blank" rel="noopener noreferrer">Read the feature</a>
+      </article>
+
+      <article class="coverage-card">
+        <span class="coverage-meta">World A Reggae · April 20, 2016</span>
+        <h3>Blvk H3ro's “H3rb” and <em>THC</em></h3>
+        <p>The feature credits The Grei Show among the producers contributing original music to Blvk H3ro's project.</p>
+        <a class="source-link" href="https://www.worldareggae.com/releases/videoclips/blvk-h3ro-h3rb-official-video/" target="_blank" rel="noopener noreferrer">Read the feature</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="credits-title">
+    <h2 id="credits-title">Selected Verified Credits</h2>
+    <div class="credit-list">
+      <div class="credit-item">
+        <div class="credit-year">2020</div>
+        <div><h3>Protoje — “Weed &amp; Ting”</h3><p>Producer and lyric credit. Released on Protoje's album <em>In Search of Lost Time</em> through In.Digg.Nation Collective / Six Course Music / RCA Records.</p><a class="source-link" href="https://www.shazam.com/song/1526149157/weed-and-ting" target="_blank" rel="noopener noreferrer">View song credits</a></div>
+      </div>
+      <div class="credit-item">
+        <div class="credit-year">2024</div>
+        <div><h3>The Grei Show x Bay-C — “Puff Puff Pass (Remix)”</h3><p>Recording artist and producer. Released September 20, 2024 through Wheel It! Records.</p><a class="source-link" href="https://music.apple.com/us/album/puff-puff-pass-remix-single/1767170663" target="_blank" rel="noopener noreferrer">View the release</a></div>
+      </div>
+      <div class="credit-item">
+        <div class="credit-year">2019</div>
+        <div><h3>Blvk H3ro — “Blvk Peppa”</h3><p>Production credit on Blvk H3ro's <em>The Immortal Steppa</em>, noted in Reggaeville's album review.</p><a class="source-link" href="https://www.reggaeville.com/artist-details/royal-blu/releases/mode/review/release/blvk-h3ro-the-immortal-steppa/" target="_blank" rel="noopener noreferrer">Read the review</a></div>
+      </div>
+      <div class="credit-item">
+        <div class="credit-year">2017</div>
+        <div><h3>Bussweh Party — <em>#BusswehParty</em></h3><p>Producer, singer and rapper across the Kingston collective's debut project, as profiled by FNMNL.</p><a class="source-link" href="https://fnmnl.tv/2017/05/22/30616" target="_blank" rel="noopener noreferrer">Read the profile</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="releases-title">
+    <h2 id="releases-title">Official Artist Channels</h2>
+    <p>Current releases, catalogue information and official visuals can be found through the links below.</p>
+    <div class="link-row">
+      <a class="press-button primary" href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener noreferrer">Spotify</a>
+      <a class="press-button" href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener noreferrer">Apple Music</a>
+      <a class="press-button" href="https://youtube.com/@thegreishxw" target="_blank" rel="noopener noreferrer">YouTube</a>
+      <a class="press-button" href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener noreferrer">Bandcamp</a>
+      <a class="press-button" href="photography.html">Photography</a>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="contact-title">
+    <h2 id="contact-title">Press, Interviews &amp; Bookings</h2>
+    <p>For interview requests, performance bookings, production enquiries, approved biography text, high-resolution images or other media materials, contact The Grei Show directly.</p>
+    <div class="link-row">
+      <a class="press-button primary" href="connect.html?interest=press-media">Request media materials</a>
+      <a class="press-button" href="mailto:thegreishow@gmail.com?subject=Press%20or%20Media%20Request">Email press contact</a>
+    </div>
+    <p class="note">All third-party references above link directly to the original publisher or platform. Credits and descriptions are presented conservatively to match the linked sources.</p>
+  </section>
 </main>
 <script src="shared/nav.js"></script>
 </body>

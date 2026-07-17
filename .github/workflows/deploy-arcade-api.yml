@@ -75,6 +75,12 @@ jobs:
       - name: Initialize remote database
         run: npx wrangler d1 execute grei-arcade --remote --file=./schema.sql
 
+      - name: Configure leaderboard secret
+        shell: bash
+        run: |
+          SCORE_SALT="$(openssl rand -hex 32)"
+          printf '%s' "$SCORE_SALT" | npx wrangler secret put SCORE_SALT
+
       - name: Deploy Worker
         run: npx wrangler deploy
 

@@ -75,6 +75,7 @@ jobs:
           EOF
 
           echo "Generated wrangler.toml for D1 database ${D1_DATABASE_ID:0:8}…"
+          echo "Attempting deployment with current Cloudflare token and route permissions."
 
       - name: Initialize remote database
         run: npx wrangler d1 execute grei-arcade --remote --file=./schema.sql

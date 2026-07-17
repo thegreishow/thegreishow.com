@@ -3,165 +3,188 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About | The Grei Show</title>
-  <meta name="description" content="Meet Gamel Reid, The Grei Show: a Jamaican recording artist, producer, author, and creative director building an expanding digital universe.">
+  <title>About The Grei Show | Jamaican Artist, Producer & Creative Director</title>
+  <meta name="description" content="Discover the story, music, production work and multidisciplinary creative vision of The Grei Show, Jamaican artist and producer Gamel Reid.">
   <link rel="canonical" href="https://thegreishow.com/about">
+
+  <meta property="og:title" content="About The Grei Show | Jamaican Artist, Producer & Creative Director">
+  <meta property="og:description" content="Music, stories and worlds by Jamaican recording artist, producer and multidisciplinary creator Gamel Reid.">
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://thegreishow.com/about">
+  <meta property="og:image" content="https://resources.tidal.com/images/08c7da18/9bdc/4cb5/8165/db037f1f554b/750x750.jpg">
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
+  <link rel="stylesheet" href="assets/css/portal.css">
 
   <style>
-    .about-page {
-      position: relative;
-      z-index: 1;
-      width: min(1000px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 70px 0;
-    }
-
-    .about-hero {
-      display: grid;
-      grid-template-columns: 230px minmax(0, 1fr);
-      gap: 24px;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .portrait {
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.14);
-      overflow: hidden;
-      box-shadow: var(--glow);
-      background: rgba(255,255,255,0.04);
-    }
-
-    .portrait img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .about-copy h1 {
-      margin: 0 0 12px;
-      font-size: clamp(3rem, 8vw, 5rem);
-      line-height: 0.95;
-      text-shadow: var(--glow-strong);
-    }
-
-    .about-copy p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.72;
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      margin-top: 18px;
-    }
-
-    .about-card {
-      padding: 20px;
-    }
-
-    .about-card span {
-      color: var(--accent-2);
-      font-size: 0.76rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .about-card h2 {
-      margin: 10px 0 10px;
-      font-size: 1.2rem;
-    }
-
-    .about-card p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.62;
-    }
-
-    .highlight {
-      color: #fff;
-      font-weight: 800;
-    }
-
-    @media (max-width: 760px) {
-      .about-page {
-        width: min(100% - 24px, 1000px);
-        padding: 48px 0;
-      }
-
-      .about-hero,
-      .about-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .portrait {
-        max-width: 260px;
-      }
-    }
+    body{color:var(--text);font-family:var(--font-body)}
+    .about-page{position:relative;z-index:1;width:min(1120px,calc(100% - 36px));margin:0 auto;padding:72px 0 110px}
+    .about-hero{display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);gap:clamp(30px,6vw,76px);align-items:center;min-height:68vh;margin-bottom:34px}
+    .portrait{position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);box-shadow:var(--glow)}
+    .portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(0,0,0,.64));pointer-events:none}
+    .portrait img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.01)}
+    .portrait-label{position:absolute;z-index:1;left:22px;right:22px;bottom:20px;display:flex;justify-content:space-between;gap:14px;font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)}
+    .eyebrow,.section-kicker{margin:0 0 13px;color:var(--accent-2);font-size:.78rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+    .about-copy h1{max-width:720px;margin:0 0 20px;font-size:clamp(3.5rem,8vw,7rem);line-height:.86;letter-spacing:-.055em;text-shadow:var(--glow-strong)}
+    .hero-deck{max-width:720px;margin:0;color:var(--text-dim);font-size:clamp(1.08rem,2vw,1.35rem);line-height:1.72}
+    .hero-deck strong{color:#fff}
+    .button-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+    .about-button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 19px;border:1px solid rgba(255,255,255,.2);border-radius:999px;color:#fff;text-decoration:none;font-weight:850;background:rgba(255,255,255,.055);transition:transform .2s ease,border-color .2s ease}
+    .about-button.primary{background:#fff;color:#05070b}.about-button:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.42)}
+    .panel{margin:24px 0;padding:clamp(26px,5vw,48px);border:1px solid rgba(255,255,255,.11);border-radius:16px;background:rgba(0,0,0,.46);backdrop-filter:blur(16px)}
+    .panel h2{max-width:780px;margin:0 0 20px;font-size:clamp(2rem,4.5vw,3.8rem);line-height:1;letter-spacing:-.035em}
+    .story-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(240px,.7fr);gap:44px;align-items:start}
+    .story-copy p{margin:0 0 1.15rem;color:var(--text-dim);font-size:1.03rem;line-height:1.82}.story-copy p:first-child{font-size:1.18rem;color:#fff}
+    .pullquote{margin:0;padding:28px;border-left:3px solid var(--accent-2);background:rgba(255,255,255,.045);border-radius:0 12px 12px 0;font-size:1.3rem;line-height:1.55;font-weight:800}
+    .fact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:28px}
+    .fact{padding:20px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+    .fact strong{display:block;margin-bottom:7px;font-size:1.05rem}.fact span{color:var(--text-dim);line-height:1.5}
+    .timeline{display:grid;margin-top:18px}
+    .milestone{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;padding:24px 0;border-bottom:1px solid rgba(255,255,255,.11)}
+    .milestone:last-child{border-bottom:0}.year{color:var(--accent-2);font-weight:900;letter-spacing:.05em}.milestone h3{margin:0 0 8px;font-size:1.2rem}.milestone p{margin:0;color:var(--text-dim);line-height:1.68}
+    .disciplines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:24px}
+    .discipline{min-height:230px;padding:24px;border-radius:13px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045)}
+    .discipline span{display:block;margin-bottom:25px;color:var(--accent-2);font-size:.74rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.discipline h3{margin:0 0 10px;font-size:1.28rem}.discipline p{margin:0;color:var(--text-dim);line-height:1.65}
+    .projects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}
+    .project{display:flex;flex-direction:column;min-height:225px;padding:26px;border-radius:13px;border:1px solid rgba(255,255,255,.11);background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));text-decoration:none;color:#fff;transition:transform .2s ease,border-color .2s ease}
+    .project:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.34)}.project small{color:var(--accent-2);font-weight:900;letter-spacing:.09em;text-transform:uppercase}.project h3{margin:22px 0 10px;font-size:1.55rem}.project p{margin:0;color:var(--text-dim);line-height:1.6}.project strong{margin-top:auto;padding-top:24px}
+    .closing{text-align:center;padding:clamp(44px,8vw,88px) clamp(24px,6vw,70px)}.closing h2{margin-left:auto;margin-right:auto;max-width:900px}.closing p{max-width:720px;margin:0 auto;color:var(--text-dim);font-size:1.1rem;line-height:1.75}.closing .button-row{justify-content:center}
+    .section{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}.section.visible{opacity:1;transform:none}
+    a:focus-visible{outline:2px solid #fff;outline-offset:4px}
+    @media(max-width:860px){.about-hero,.story-grid{grid-template-columns:1fr}.about-hero{min-height:auto}.portrait{max-width:480px}.fact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.disciplines{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.about-page{width:min(100% - 24px,1120px);padding:48px 0 78px}.about-copy h1{font-size:clamp(3.25rem,17vw,5.1rem)}.fact-grid,.disciplines,.projects{grid-template-columns:1fr}.milestone{grid-template-columns:1fr;gap:7px}.portrait-label{font-size:.64rem}.panel{border-radius:13px}}
+    @media(prefers-reduced-motion:reduce){.section,.project,.about-button{transition:none}.section{opacity:1;transform:none}}
   </style>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Person",
+    "name":"Gamel Reid",
+    "alternateName":"The Grei Show",
+    "url":"https://thegreishow.com/about",
+    "image":"https://resources.tidal.com/images/08c7da18/9bdc/4cb5/8165/db037f1f554b/750x750.jpg",
+    "description":"Jamaican recording artist, music producer, songwriter, author and multidisciplinary creative director.",
+    "jobTitle":["Recording Artist","Music Producer","Songwriter","Author","Creative Director"],
+    "birthPlace":{"@type":"Place","name":"Bull Bay, Jamaica"},
+    "homeLocation":{"@type":"Place","name":"Kingston, Jamaica"},
+    "sameAs":[
+      "https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k",
+      "https://music.apple.com/jm/artist/the-grei-show/885841733",
+      "https://youtube.com/@thegreishxw",
+      "https://instagram.com/thegreishow",
+      "https://thegreishow.bandcamp.com"
+    ]
+  }
+  </script>
 </head>
-
 <body>
-
   <div id="site-header"></div>
-  <script src="shared/nav.js"></script>
 
   <main class="about-page">
-    <section class="about-hero section visible">
+    <section class="about-hero section visible" aria-labelledby="about-title">
       <div class="portrait">
-        <img src="https://resources.tidal.com/images/08c7da18/9bdc/4cb5/8165/db037f1f554b/750x750.jpg" alt="The Grei Show portrait">
+        <img src="https://resources.tidal.com/images/08c7da18/9bdc/4cb5/8165/db037f1f554b/750x750.jpg" alt="Jamaican artist and producer The Grei Show" loading="eager">
+        <div class="portrait-label"><span>Kingston, Jamaica</span><span>Artist / Producer</span></div>
       </div>
 
       <div class="about-copy">
-        <p class="eyebrow">Artist - Producer - Creative Director</p>
-        <h1>About The Grei Show</h1>
-        <p>Gamel Reid, known as <strong>The Grei Show</strong>, is a Jamaican recording artist and producer whose music moves through reggae, hip-hop, dancehall, cinematic textures, and modern global sounds.</p>
+        <p class="eyebrow">Music · Stories · Worlds</p>
+        <h1 id="about-title">The Grei Show</h1>
+        <p class="hero-deck"><strong>The Grei Show is the creative identity of Gamel Reid</strong> — a Jamaican recording artist, producer, songwriter and multidisciplinary creator building a body of work that stretches beyond songs into visual art, literature, photography, technology and interactive experiences.</p>
+        <div class="button-row">
+          <a class="about-button primary" href="music.html">Explore the music</a>
+          <a class="about-button" href="press.html">Press and credits</a>
+        </div>
       </div>
     </section>
 
-    <section class="about-grid" aria-label="About highlights">
-      <article class="section-panel about-card section">
-        <span>Music</span>
-        <h2>Collaborations</h2>
-        <p>Work and creative links span <span class="highlight">Protoje</span>, <span class="highlight">Bay-C</span>, <span class="highlight">Big Sugar</span>, <span class="highlight">Blvk H3ro</span>, <span class="highlight">Supa Dups</span>, and more.</p>
-      </article>
+    <section class="panel section" aria-labelledby="story-title">
+      <p class="section-kicker">The story</p>
+      <h2 id="story-title">Rooted in Jamaica. Built without borders.</h2>
+      <div class="story-grid">
+        <div class="story-copy">
+          <p>Raised in Bull Bay and based in Kingston, Gamel Reid developed The Grei Show as more than a stage name. It became a framework for bringing together the many sides of his creative life: the performer, the producer, the writer, the engineer, the visual thinker and the entrepreneur.</p>
+          <p>His musical language draws from reggae, dancehall and Jamaican sound-system culture while remaining open to hip-hop, electronic music, cinematic composition and experimental textures. That range is not treated as a collection of separate genres. It is a single evolving vocabulary shaped by rhythm, atmosphere, storytelling and the instinct to make familiar forms feel new.</p>
+          <p>As a producer, he has contributed to records connected to Protoje, Blvk H3ro, Bay-C, Swnkah, Sugar Minott and other Jamaican artists. His work on Protoje's “Weed &amp; Ting,” co-produced with Supa Dups for the album <em>In Search of Lost Time</em>, placed his production within a major international reggae release. His own catalogue continues the same restless approach, moving from introspective songwriting and psychedelic textures to direct dancehall energy and bass-heavy experimentation.</p>
+          <p>Independence is central to the project. Through Wheel It! Records, The Grei Show develops releases, collaborations and multimedia ideas on his own terms, treating each project as part of a larger creative ecosystem rather than an isolated product.</p>
+        </div>
+        <blockquote class="pullquote">“A song can become a film. A film can become a game. A character can become a book. The medium changes, but the world remains connected.”</blockquote>
+      </div>
+      <div class="fact-grid" aria-label="Profile facts">
+        <div class="fact"><strong>Origin</strong><span>Bull Bay, Jamaica</span></div>
+        <div class="fact"><strong>Based in</strong><span>Kingston, Jamaica</span></div>
+        <div class="fact"><strong>Independent platform</strong><span>Wheel It! Records</span></div>
+        <div class="fact"><strong>Creative fields</strong><span>Music, writing, visuals and interactive media</span></div>
+      </div>
+    </section>
 
-      <article class="section-panel about-card section">
-        <span>Vision</span>
-        <h2>Creative Universe</h2>
-        <p>The project connects sound, visuals, production, interactive experiments, and storytelling into one expanding digital identity.</p>
-      </article>
+    <section class="panel section" aria-labelledby="journey-title">
+      <p class="section-kicker">Selected journey</p>
+      <h2 id="journey-title">A catalogue built through collaboration and experimentation.</h2>
+      <div class="timeline">
+        <article class="milestone"><div class="year">2016–2017</div><div><h3>Bussweh Party and early production work</h3><p>Established a distinctive role as producer, singer and rapper within Kingston's Bussweh collective, producing its debut project and helping shape records connected to Blvk H3ro.</p></div></article>
+        <article class="milestone"><div class="year">2019</div><div><h3>Production on “Blvk Peppa”</h3><p>The Grei Show's production appeared on Blvk H3ro's album <em>The Immortal Steppa</em>, extending a creative relationship formed within Kingston's independent scene.</p></div></article>
+        <article class="milestone"><div class="year">2020</div><div><h3>Protoje — “Weed &amp; Ting”</h3><p>Co-produced with Supa Dups for Protoje's <em>In Search of Lost Time</em>, with The Grei Show also documented on keyboards and composition.</p></div></article>
+        <article class="milestone"><div class="year">2022–2024</div><div><h3>“Puff Puff Pass” expands</h3><p>The original release grew into a collaboration with Bay-C of T.O.K, supported by an official video and coverage from international reggae publications.</p></div></article>
+        <article class="milestone"><div class="year">2025–Now</div><div><h3>A wider creative universe</h3><p>New music, independent releases, photography, fiction, live experiences, games and digital projects continue to expand The Grei Show beyond the traditional boundaries of an artist website or record catalogue.</p></div></article>
+      </div>
+    </section>
 
-      <article class="section-panel about-card section">
-        <span>Platform</span>
-        <h2>Wheel It! Records</h2>
-        <p>The label and production space gathers releases, collaborations, artist development, and multimedia work under one roof.</p>
-      </article>
+    <section class="panel section" aria-labelledby="beyond-title">
+      <p class="section-kicker">Beyond music</p>
+      <h2 id="beyond-title">Different disciplines. One imagination.</h2>
+      <div class="disciplines">
+        <article class="discipline"><span>01 / Sound</span><h3>Artist and producer</h3><p>Original releases, production, songwriting, engineering and collaborative work grounded in Jamaican music but designed for a global audience.</p></article>
+        <article class="discipline"><span>02 / Story</span><h3>Author and world-builder</h3><p>Fiction projects such as <em>The Astral Thread</em> explore dreams, identity, spirituality, memory and alternate realities through interconnected stories.</p></article>
+        <article class="discipline"><span>03 / Image</span><h3>Photography and visual direction</h3><p>Portraiture, documentary images, cover concepts and visual storytelling extend the emotional world of the music into still and moving images.</p></article>
+        <article class="discipline"><span>04 / Experience</span><h3>Events and live culture</h3><p>Performances, DJ sets, showcases and community-driven events create spaces where artists and audiences can meet outside conventional industry structures.</p></article>
+        <article class="discipline"><span>05 / Technology</span><h3>Interactive experiments</h3><p>Web projects, arcade concepts and digital experiences turn the official website into a creative destination rather than a static portfolio.</p></article>
+        <article class="discipline"><span>06 / Platform</span><h3>Wheel It! Records</h3><p>An independent home for releases, production, collaboration and artist development—built to keep creative ownership close to the creators.</p></article>
+      </div>
+    </section>
+
+    <section class="panel section" aria-labelledby="explore-title">
+      <p class="section-kicker">Explore the universe</p>
+      <h2 id="explore-title">Enter through any door.</h2>
+      <div class="projects">
+        <a class="project" href="music.html"><small>Catalogue</small><h3>Music</h3><p>Stream releases, discover projects and follow the sound as it continues to evolve.</p><strong>Listen now →</strong></a>
+        <a class="project" href="press.html"><small>Verified history</small><h3>Press &amp; Credits</h3><p>Read interviews, editorial features and documented production and songwriting credits.</p><strong>View press page →</strong></a>
+        <a class="project" href="photography.html"><small>Visual archive</small><h3>Photography</h3><p>See Jamaica, people and creative life through The Grei Show's visual perspective.</p><strong>Open gallery →</strong></a>
+        <a class="project" href="games.html"><small>Interactive</small><h3>Arcade</h3><p>Play experimental web games and explore the site's growing interactive side.</p><strong>Enter the arcade →</strong></a>
+      </div>
+    </section>
+
+    <section class="panel closing section" aria-labelledby="closing-title">
+      <p class="section-kicker">The work continues</p>
+      <h2 id="closing-title">The Grei Show is not one project. It is the space where all the projects meet.</h2>
+      <p>Every release, image, story and experiment adds another piece to an expanding creative universe—rooted in Jamaica, independently built and open to collaboration.</p>
+      <div class="button-row">
+        <a class="about-button primary" href="connect.html">Bookings and collaborations</a>
+        <a class="about-button" href="press.html">Media information</a>
+      </div>
     </section>
   </main>
 
+  <script src="shared/nav.js"></script>
   <script>
     const sections = document.querySelectorAll('.section');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.25 });
-
-    sections.forEach(section => observer.observe(section));
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      sections.forEach((section) => observer.observe(section));
+    } else {
+      sections.forEach((section) => section.classList.add('visible'));
+    }
   </script>
-
 </body>
 </html>

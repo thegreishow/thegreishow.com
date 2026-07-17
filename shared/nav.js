@@ -1,8 +1,9 @@
 // Grei Site - Global Navigation Injector
-// Loads the shared header and marks the current page consistently.
+// Loads the shared header, marks the current page, and keeps mobile controls consistent.
 
 (function () {
   let navInjected = false;
+  let initialized = false;
 
   const parentPages = {
     'music-videos.html': 'visuals.html',
@@ -25,7 +26,6 @@
   function getLinkPage(link) {
     const href = link.getAttribute('href');
     if (!href) return '';
-
     const url = new URL(href, window.location.href);
     return getPageFromPath(url.pathname);
   }
@@ -44,32 +44,51 @@
     });
   }
 
+  function closeMobileNav({ returnFocus = false } = {}) {
+    const toggle = document.querySelector('.nav-toggle');
+    const nav = document.getElementById('primary-nav');
+    if (!toggle || !nav) return;
+
+    nav.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.textContent = 'Menu';
+    document.querySelectorAll('.nav-more[open]').forEach(menu => menu.removeAttribute('open'));
+    if (returnFocus) toggle.focus();
+  }
+
   function bindNavControls() {
     const toggle = document.querySelector('.nav-toggle');
     const nav = document.getElementById('primary-nav');
     if (!toggle || !nav || toggle.dataset.bound === 'true') return;
 
     toggle.dataset.bound = 'true';
+
     toggle.addEventListener('click', () => {
       const isOpen = nav.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', String(isOpen));
       toggle.textContent = isOpen ? 'Close' : 'Menu';
+      if (!isOpen) document.querySelectorAll('.nav-more[open]').forEach(menu => menu.removeAttribute('open'));
     });
 
     nav.addEventListener('click', event => {
       if (!event.target.closest('a')) return;
-      nav.classList.remove('is-open');
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.textContent = 'Menu';
+      closeMobileNav();
+    });
+
+    document.addEventListener('click', event => {
+      const header = document.querySelector('.site-header');
+      if (!header || header.contains(event.target)) return;
+      closeMobileNav();
     });
 
     document.addEventListener('keydown', event => {
       if (event.key !== 'Escape') return;
-      nav.classList.remove('is-open');
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.textContent = 'Menu';
-      document.querySelectorAll('.nav-more[open]').forEach(menu => menu.removeAttribute('open'));
+      closeMobileNav({ returnFocus: nav.classList.contains('is-open') });
     });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) closeMobileNav();
+    }, { passive: true });
   }
 
   function initSiteEvents() {
@@ -139,11 +158,18 @@
     track('grei_page_view', { title: document.title });
   }
 
+  function injectEmergencyNav() {
+    const mount = document.getElementById('site-header');
+    if (!mount || mount.children.length) return;
+    mount.innerHTML = '<header class="site-header"><div class="nav-container"><a class="brand" href="index.html">THE GREI SHOW</a><nav class="site-nav is-open" aria-label="Emergency navigation"><a href="music.html">Music</a><a href="visuals.html">Visuals</a><a href="books.html">Books</a><a href="arcade.html">Arcade</a><a href="about.html">About</a><a href="connect.html">Connect</a></nav></div></header>';
+  }
+
   function injectNav(html) {
     const existing = document.querySelector('.site-header');
 
     if (navInjected || existing) {
       navInjected = true;
+      bindNavControls();
       markCurrentNavLink();
       return;
     }
@@ -168,7 +194,7 @@
 
     for (const path of paths) {
       try {
-        const res = await fetch(path);
+        const res = await fetch(path, { cache: 'no-cache' });
         if (res.ok) return res.text();
       } catch (err) {
         // Try the next path before reporting failure.
@@ -184,12 +210,22 @@
       injectNav(html);
     } catch (err) {
       console.error('[Nav Loader] Failed to load navigation:', err);
+      injectEmergencyNav();
     }
   }
 
-  window.markCurrentNavLink = markCurrentNavLink;
-  document.addEventListener('DOMContentLoaded', () => {
+  function init() {
+    if (initialized) return;
+    initialized = true;
     initSiteEvents();
     loadNav();
-  });
+  }
+
+  window.markCurrentNavLink = markCurrentNavLink;
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 })();

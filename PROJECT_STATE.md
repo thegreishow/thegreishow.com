@@ -22,7 +22,7 @@
 - Chapters 01-20 now have AI narration preview and full narration links
 - Books audio override layer supplies generated narration links for chapters that should stay text-stable
 - Books narration scripts use word-form chapter numbers so the voiceover does not read leading zeroes aloud
-- Books reader now supports visual chapter artwork with generated assets for Chapters 01, 02, 03, 04, and 06 plus the Astral Thread cover fallback
+- Books reader now supports visual chapter artwork with generated assets for all 20 Astral Thread chapters plus the Astral Thread cover fallback
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html
 - Music Videos, Documentaries, and Live Sessions archives refreshed with shared page shells and media-card styling
@@ -37,7 +37,7 @@
 
 ## Known Gaps
 - Several pages still keep page-specific inline style blocks while the shared component layer matures
-- Books chapter visuals have generated artwork for Chapters 01, 02, 03, 04, and 06, but most later chapters still need final dedicated art
+- Books chapter visuals now have a complete generated first pass across all 20 temporary Astral Thread chapters
 - Books full audio should be moved to stable site-owned hosting before it is treated as final production audio
 - Press media kit download is still routed to the Connect page until real downloadable assets exist
 - Contact form currently opens an email draft instead of posting to a backend
@@ -48,7 +48,7 @@
 ## Next
 - Replace the temporary Astral Thread manuscript data when the official-official version is confirmed
 - Re-audit or regenerate Books narration once the official-official manuscript is confirmed
-- Create the next Books / Astral Thread visual artwork batch and add more chapter-specific images to the reader
+- Refine Books / Astral Thread artwork in Canva or replace generated chapter art as the final manuscript settles
 - Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes
 - Add production-ready press photos and a downloadable media kit

@@ -64,6 +64,26 @@
     '15': {
       artwork: 'assets/images/books/astral-thread-chapter-15.jpg',
       artworkAlt: 'A misty crossroads where a cloaked legendary figure watches over a sealed dark relic.'
+    },
+    '16': {
+      artwork: 'assets/images/books/astral-thread-chapter-16.jpg',
+      artworkAlt: 'Hellman facing an infernal game board of masks, keys, and glowing identity tokens.'
+    },
+    '17': {
+      artwork: 'assets/images/books/astral-thread-chapter-17.jpg',
+      artworkAlt: 'Hellman and an angelic figure meeting tenderly between shadowed ruins and dawn light.'
+    },
+    '18': {
+      artwork: 'assets/images/books/astral-thread-chapter-18.jpg',
+      artworkAlt: 'A luminous eternal note hovering above an old instrument in a cosmic concert hall.'
+    },
+    '19': {
+      artwork: 'assets/images/books/astral-thread-chapter-19.jpg',
+      artworkAlt: 'A traveler holding a silent whistle as rings of light reveal a path through mist.'
+    },
+    '20': {
+      artwork: 'assets/images/books/astral-thread-chapter-20.jpg',
+      artworkAlt: 'A waking figure surrounded by translucent alternate selves in a bedroom dissolving into stars.'
     }
   };
 

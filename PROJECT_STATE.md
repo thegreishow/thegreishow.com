@@ -30,6 +30,7 @@
 - Chapters 01-20 now have AI narration preview and full narration links
 - Books audio override layer supplies generated narration links for chapters that should stay text-stable
 - Books narration scripts use word-form chapter numbers so the voiceover does not read leading zeroes aloud
+- Books reader audio player now defaults to full narration, with preview narration as a fallback if a full track cannot load
 - Books reader now supports visual chapter artwork with generated assets for all 20 Astral Thread chapters plus the Astral Thread cover fallback
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Old astralthread.html URL now redirects to books.html

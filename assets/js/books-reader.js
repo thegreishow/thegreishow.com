@@ -15,6 +15,7 @@ const chapterText = document.getElementById('chapter-text');
 const chapterCount = document.getElementById('chapter-count');
 const prevButton = document.getElementById('prev-chapter');
 const nextButton = document.getElementById('next-chapter');
+let activeAudioSource = '';
 const chapterNumberWords = [
   'Zero',
   'One',
@@ -58,15 +59,20 @@ function renderParagraphs(paragraphs) {
 function renderAudio(chapter) {
   const hasPreview = Boolean(chapter.previewAudio);
   const hasFullAudio = Boolean(chapter.fullAudio);
+  const audioSource = chapter.fullAudio || chapter.previewAudio;
 
-  audioBlock.hidden = !hasPreview && !hasFullAudio;
-  chapterAudio.hidden = !hasPreview;
+  audioBlock.hidden = !audioSource;
+  chapterAudio.hidden = !audioSource;
   chapterFullAudio.hidden = !hasFullAudio;
 
-  if (hasPreview) {
-    chapterAudio.src = chapter.previewAudio;
+  if (audioSource) {
+    activeAudioSource = audioSource;
+    chapterAudio.dataset.fallbackAudio = hasFullAudio && hasPreview ? chapter.previewAudio : '';
+    chapterAudio.src = audioSource;
     chapterAudio.load();
   } else {
+    activeAudioSource = '';
+    chapterAudio.dataset.fallbackAudio = '';
     chapterAudio.pause();
     chapterAudio.removeAttribute('src');
     chapterAudio.load();
@@ -78,6 +84,16 @@ function renderAudio(chapter) {
     chapterFullAudio.removeAttribute('href');
   }
 }
+
+chapterAudio.addEventListener('error', () => {
+  const fallbackAudio = chapterAudio.dataset.fallbackAudio;
+  if (!fallbackAudio || activeAudioSource === fallbackAudio) return;
+
+  activeAudioSource = fallbackAudio;
+  chapterAudio.dataset.fallbackAudio = '';
+  chapterAudio.src = fallbackAudio;
+  chapterAudio.load();
+});
 
 function renderArtwork(chapter) {
   if (!chapterArtworkWrap || !chapterArtwork) return;

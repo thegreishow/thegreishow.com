@@ -1,0 +1,16 @@
+name = "grei-arcade-api"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://thegreishow.com"
+OPENAI_MODEL = "gpt-5-mini"
+
+[[d1_databases]]
+binding = "ARCADE_DB"
+database_name = "grei-arcade"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# Store these as encrypted Worker secrets; never commit their values:
+# OPENAI_API_KEY
+# SCORE_SALT

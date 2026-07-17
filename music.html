@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Audio Universe | The Grei Show</title>
+  <meta name="description" content="Listen to The Grei Show across streaming platforms and enter the Audio Universe, featuring No Drama and new independent releases.">
+  <link rel="canonical" href="https://thegreishow.com/music">
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
@@ -161,7 +163,7 @@
 
     <section class="release-stage" aria-label="Featured release">
       <figure class="release-cover">
-        <img src="assets/img/no-drama.jpg" alt="No Drama cover art">
+        <img src="assets/img/no-drama.webp" alt="No Drama cover art">
         <figcaption>No Drama - The Grei Show</figcaption>
       </figure>
 
@@ -170,7 +172,7 @@
         <h2>No Drama</h2>
         <div id="featured-player" aria-live="polite"></div>
         <div class="cta-row">
-          <a class="music-cta primary" href="https://snd.click/qnbs" target="_blank" rel="noopener">Listen Now</a>
+          <a class="music-cta primary" href="https://snd.click/qnbs" target="_blank" rel="noopener" data-track="listen" data-track-label="Music - Smart link">Listen Now</a>
         </div>
       </div>
     </section>
@@ -183,7 +185,7 @@
         <a href="https://soundcloud.com/thegreishow" target="_blank" rel="noopener">SoundCloud</a>
         <a href="https://music.youtube.com/@thegreishxw?si=caga_AxUEGLyyT6r" target="_blank" rel="noopener">YouTube Music</a>
         <a href="https://tidal.com/artist/47307553/u" target="_blank" rel="noopener">TIDAL</a>
-        <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener">Bandcamp</a>
+        <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="bandcamp" data-track-label="Music - Bandcamp">Bandcamp</a>
       </div>
     </section>
   </main>
@@ -198,11 +200,14 @@
         const track = cms?.music?.featured;
 
         if (container && track) {
-          container.innerHTML = `
-            <audio controls preload="metadata">
-              <source src="${track.url}" type="audio/mpeg">
-            </audio>
-          `;
+          const audio = document.createElement('audio');
+          const source = document.createElement('source');
+          audio.controls = true;
+          audio.preload = 'metadata';
+          source.src = track.url;
+          source.type = 'audio/mpeg';
+          audio.appendChild(source);
+          container.replaceChildren(audio);
         }
       } catch (e) {
         console.error('Featured load failed', e);

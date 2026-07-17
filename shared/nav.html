@@ -1,11 +1,21 @@
 <style>
+  #site-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+
   .site-header {
     position: sticky;
     top: 0;
     z-index: 999;
-    background: rgba(7, 9, 13, 0.78);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(3, 6, 12, 0.82);
+    backdrop-filter: blur(20px);
+  }
+
+  #site-header .site-header {
+    position: relative;
   }
 
   .site-header * {
@@ -13,120 +23,243 @@
   }
 
   .nav-container {
-    width: min(1280px, calc(100% - 28px));
-    margin: 0 auto;
-    min-height: 62px;
+    width: min(1280px, calc(100% - 30px));
+    min-height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
+    gap: 24px;
+    margin: 0 auto;
   }
 
   .brand {
     flex: 0 0 auto;
-    color: #fff;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    line-height: 1;
     padding: 10px 0;
-    opacity: 0.95;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.24em;
+    line-height: 1;
+    text-decoration: none;
   }
 
   .brand:hover,
   .brand:focus-visible {
     opacity: 1;
+    outline: none;
   }
 
   .site-nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 7px;
+    gap: 4px;
     min-width: 0;
   }
 
-  .site-nav a {
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
-    padding: 10px 9px;
+  .site-nav a,
+  .nav-more summary {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
     border: 1px solid transparent;
     border-radius: 999px;
+    color: rgba(255, 255, 255, 0.68);
+    background: transparent;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    text-decoration: none;
     white-space: nowrap;
+    cursor: pointer;
   }
 
   .site-nav a:hover,
-  .site-nav a:focus-visible {
+  .site-nav a:focus-visible,
+  .nav-more summary:hover,
+  .nav-more summary:focus-visible {
+    border-color: rgba(255, 255, 255, 0.12);
     color: #fff;
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 1;
     outline: none;
   }
 
-  .site-nav a[aria-current='page'] {
+  .site-nav a[aria-current='page'],
+  .nav-more.has-current summary {
+    border-color: rgba(216, 255, 99, 0.34);
     color: #fff;
-    background: rgba(31,111,235,0.22);
-    border-color: rgba(0,200,255,0.38);
-    box-shadow: 0 0 20px rgba(0,200,255,0.12);
+    background: rgba(216, 255, 99, 0.1);
   }
 
   .site-nav .booking-link {
     color: #fff;
-    background: linear-gradient(135deg, rgba(31,111,235,.72), rgba(0,166,255,.72));
-    border-color: rgba(0,200,255,.34);
+    background: linear-gradient(135deg, rgba(31, 111, 235, 0.72), rgba(0, 166, 255, 0.72));
+    border-color: rgba(0, 200, 255, 0.34);
   }
 
-  @media (max-width: 860px) {
+  .site-nav .nav-cta {
+    margin-left: 4px;
+    border-color: transparent;
+    color: #06101a;
+    background: #d8ff63;
+  }
+
+  .site-nav .nav-cta:hover,
+  .site-nav .nav-cta:focus-visible,
+  .site-nav .nav-cta[aria-current='page'] {
+    border-color: transparent;
+    color: #06101a;
+    background: #e4ff91;
+  }
+
+  .nav-more {
+    position: relative;
+  }
+
+  .nav-more summary {
+    list-style: none;
+  }
+
+  .nav-more summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav-more summary::after {
+    margin-left: 6px;
+    content: '+';
+    color: rgba(255, 255, 255, 0.48);
+  }
+
+  .nav-more[open] summary::after {
+    content: '\2212';
+  }
+
+  .nav-more-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 180px;
+    display: grid;
+    gap: 3px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    background: rgba(3, 6, 12, 0.97);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.48);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-more-menu a {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 9px;
+  }
+
+  .nav-toggle {
+    min-height: 38px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.07);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
     .nav-container {
-      width: min(100% - 22px, 1280px);
-      min-height: 0;
-      padding: 12px 0;
-      display: grid;
-      gap: 10px;
+      min-height: 62px;
+      flex-wrap: wrap;
+      gap: 0;
+      padding: 11px 0;
     }
 
-    .brand {
-      justify-self: start;
-      font-size: 12px;
+    .nav-toggle {
+      display: inline-flex;
     }
 
     .site-nav {
-      justify-content: flex-start;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 3px;
-    }
-
-    .site-nav::-webkit-scrollbar {
+      width: 100%;
       display: none;
+      align-items: stretch;
+      justify-content: stretch;
+      gap: 5px;
+      padding-top: 12px;
     }
 
-    .site-nav a {
-      font-size: 11px;
-      padding: 9px 8px;
+    .site-nav.is-open {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .site-nav a,
+    .nav-more summary {
+      width: 100%;
+      min-height: 44px;
+      justify-content: flex-start;
+      padding: 0 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .site-nav .nav-cta {
+      margin-left: 0;
+      justify-content: center;
+    }
+
+    .nav-more {
+      grid-column: 1 / -1;
+    }
+
+    .nav-more-menu {
+      position: static;
+      min-width: 0;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 5px;
+      border-radius: 10px;
+      box-shadow: none;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .site-nav.is-open,
+    .nav-more-menu {
+      grid-template-columns: 1fr;
     }
   }
 </style>
 
-<header class='site-header' data-site-header>
-  <div class='nav-container'>
-    <a class='brand' href='index.html'>THE GREI SHOW</a>
-    <nav class='site-nav' aria-label='Primary navigation'>
-      <a href='music.html'>Music</a>
-      <a href='visuals.html'>Visuals</a>
-      <a href='arcade.html'>Arcade</a>
-      <a href='wheel-it-records.html'>Wheel It! Records</a>
-      <a href='merch.html'>Merch</a>
-      <a href='photography.html'>Photography</a>
-      <a href='books.html'>Books</a>
-      <a href='press.html'>Press</a>
-      <a class='booking-link' href='booking.html'>Book</a>
-      <a href='connect.html'>Connect</a>
-      <a href='about.html'>About</a>
+<header class="site-header" data-site-header>
+  <div class="nav-container">
+    <a class="brand" href="index.html">THE GREI SHOW</a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+
+    <nav id="primary-nav" class="site-nav" aria-label="Primary navigation">
+      <a href="music.html">Music</a>
+      <a href="visuals.html">Watch</a>
+      <a href="books.html">Books</a>
+      <a href="wheel-it-records.html">Services</a>
+      <a href="merch.html">Shop</a>
+      <details class="nav-more">
+        <summary>More</summary>
+        <div class="nav-more-menu">
+          <a href="arcade.html">Arcade</a>
+          <a href="photography.html">Photography</a>
+          <a href="press.html">Press</a>
+          <a href="about.html">About</a>
+        </div>
+      </details>
+      <a class="booking-link" href="booking.html" data-track="nav_booking" data-track-label="Navigation - Request booking">Request booking</a>
+      <a class="nav-cta" href="connect.html" data-track="nav_connect" data-track-label="Navigation - Work with Grei">Work with Grei</a>
     </nav>
   </div>
 </header>

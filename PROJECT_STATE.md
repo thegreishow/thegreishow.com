@@ -11,7 +11,15 @@
 - Shared navigation rebuilt with readable markup, responsive styling, and active-page state
 - Legacy header component aligned with current navigation
 - Global navigation added to visual subpages
-- Homepage streamlined back to a minimal presentation: artist name, No Drama artwork, and one primary listen action
+- Homepage rebuilt as a focused audience and revenue funnel for music, books, Bandcamp support, creative services, the arcade, and the release list
+- Homepage media optimized from roughly 22 MB of JPEGs to lightweight WebP delivery while preserving the original source assets
+- Shared navigation reprioritized around Music, Watch, Books, Services, Shop, and Work with Grei, with an accessible mobile menu
+- Booking hub integrated into the responsive navigation, homepage, project inquiry flow, sitemap, and privacy-safe conversion events
+- Connect page upgraded from a fragile mailto form to a qualified project brief covering service, timeline, budget, and goals
+- Public token-based CMS form removed; content editing now routes to GitHub's authenticated editor without accepting credentials on the website
+- Core page descriptions, canonical URLs, structured homepage data, robots rules, and a real XML sitemap added
+- Conversion-ready event hooks added for page views, primary calls to action, purchases, and prepared inquiries
+- Dependency-free static-site validation and GitHub Actions checks added for links, assets, titles, and unsafe credential fields
 - Music page retitled to AUDIO UNIVERSE and cleaned of behind-the-scenes explanatory copy
 - Visuals page retitled to VISUAL UNIVERSE with duplicate category links removed above the hero player
 - Astral Thread moved under the new Books section as Book 01: The Astral Thread
@@ -40,10 +48,11 @@
 - Books chapter visuals now have a complete generated first pass across all 20 temporary Astral Thread chapters
 - Books full audio should be moved to stable site-owned hosting before it is treated as final production audio
 - Press media kit download is still routed to the Connect page until real downloadable assets exist
-- Contact form currently opens an email draft instead of posting to a backend
+- Project inquiries still use the visitor's email app until a hosted form or CRM endpoint is connected
+- Direct payment links, a service deposit, and a real newsletter provider still require owner accounts and business settings
 - Photography still depends on externally hosted images
 - Arcade needs more play-state polish such as pause, sound, and leaderboard hooks
-- More homepage/live content can be added as releases, press assets, and arcade builds grow
+- Photography still needs reliable site-owned image assets
 
 ## Next
 - Replace the temporary Astral Thread manuscript data when the official-official version is confirmed
@@ -52,8 +61,11 @@
 - Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes
 - Add production-ready press photos and a downloadable media kit
+- Connect a hosted service deposit or checkout, scheduling link, and email-list provider
+- Connect an analytics provider to the existing dataLayer events and define conversion goals
+- Add privacy, refund, and service terms before direct checkout launches
 - Expand arcade with more playable experiences and stronger game-state systems
 - Add structured content/data files for music, visuals, books, press, and arcade growth
 - Add lightweight QA checks for broken links, missing assets, and page metadata
 
-Last Updated: July 15, 2026
+Last Updated: July 16, 2026

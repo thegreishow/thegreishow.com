@@ -3,151 +3,215 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Grei Show | Official</title>
+  <title>The Grei Show | Music, Stories & Creative Worlds</title>
 
-  <meta name="description" content="The official home of The Grei Show.">
-  <meta property="og:title" content="The Grei Show | Official">
-  <meta property="og:description" content="The official home of The Grei Show.">
+  <meta name="description" content="Enter The Grei Show: music, books, interactive worlds, visual storytelling, and creative services from Jamaican artist and producer Gamel Reid.">
+  <meta name="theme-color" content="#03060c">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://thegreishow.com/">
+
+  <meta property="og:title" content="The Grei Show | Music, Stories & Creative Worlds">
+  <meta property="og:description" content="Hear the music, read the stories, play the worlds, and build something original with The Grei Show.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thegreishow.com/">
+  <meta property="og:image" content="https://thegreishow.com/assets/img/home-bg.webp">
+  <meta property="og:image:alt" content="The Grei Show creative portrait">
   <meta name="twitter:card" content="summary_large_image">
 
+  <link rel="preload" href="assets/img/no-drama.webp" as="image" type="image/webp">
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
-  <link rel="stylesheet" href="assets/css/portal.css">
+  <link rel="stylesheet" href="assets/css/home.css">
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
-
-    body {
-      color: var(--text);
-      font-family: var(--font-body);
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Gamel Reid",
+      "alternateName": "The Grei Show",
+      "url": "https://thegreishow.com/",
+      "description": "Jamaican recording artist, producer, and creative director building music, stories, visual worlds, and interactive experiences.",
+      "sameAs": [
+        "https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k",
+        "https://music.apple.com/jm/artist/the-grei-show/885841733",
+        "https://youtube.com/@thegreishxw",
+        "https://instagram.com/thegreishow",
+        "https://thegreishow.bandcamp.com"
+      ]
     }
-
-    .home {
-      position: relative;
-      z-index: 1;
-      width: min(1080px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 42px 0 54px;
-    }
-
-    .home-hero {
-      min-height: calc(100vh - 116px);
-      display: grid;
-      place-items: center;
-      text-align: center;
-    }
-
-    .home-hero-inner {
-      display: grid;
-      justify-items: center;
-      gap: 18px;
-    }
-
-    .home-title {
-      margin: 0;
-      max-width: 980px;
-      font-family: var(--font-heading);
-      font-size: clamp(3.4rem, 12vw, 7rem);
-      line-height: 0.9;
-      letter-spacing: 0;
-      text-shadow: var(--glow-strong);
-    }
-
-    .release-title {
-      margin: 0;
-      color: var(--text-dim);
-      font-size: 0.82rem;
-      font-weight: 800;
-      letter-spacing: 0;
-      text-transform: uppercase;
-    }
-
-    .cover-art {
-      width: min(280px, 72vw);
-      aspect-ratio: 1;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.16);
-      box-shadow: 0 28px 90px rgba(0,0,0,0.42), 0 0 42px rgba(138,125,255,0.26);
-      animation: floatArt 7s ease-in-out infinite;
-    }
-
-    .cover-art img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    @keyframes floatArt {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .cta {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      padding: 0 18px;
-      border-radius: 8px;
-      border: 0;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 800;
-      background: linear-gradient(135deg, #1f6feb, #00a6ff);
-      box-shadow: 0 0 28px rgba(0,166,255,0.22);
-    }
-
-    .cta:hover,
-    .cta:focus-visible {
-      transform: translateY(-3px);
-      opacity: 1;
-      outline: none;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--text-dim);
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 760px) {
-      .home {
-        width: min(100% - 24px, 1080px);
-      }
-
-      .home-hero {
-        min-height: auto;
-        padding: 58px 0 44px;
-      }
-    }
-  </style>
+  </script>
 </head>
 
-<body>
-
+<body class="home-page">
   <div id="site-header"></div>
 
   <main class="home">
-    <section class="home-hero" aria-labelledby="home-title">
-      <div class="home-hero-inner">
-        <h1 id="home-title" class="home-title">THE GREI SHOW</h1>
-        <p class="release-title">No Drama</p>
-        <div class="cover-art">
-          <img src="assets/img/no-drama.jpg" alt="No Drama cover art">
+    <section class="hero" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="hero-kicker">Jamaican artist &middot; Producer &middot; World-builder</p>
+        <h1 id="home-title" class="hero-title"><span>Enter</span>The Grei Show</h1>
+        <p class="hero-lead">Music you can feel. Stories you can enter. Original worlds you can watch, read, play, and help bring to life.</p>
+
+        <div class="hero-actions">
+          <a class="home-button primary" href="https://snd.click/qnbs" target="_blank" rel="noopener" data-track="listen" data-track-label="Hero - No Drama">Hear No Drama</a>
+          <a class="home-button" href="booking.html" data-track="hero_booking" data-track-label="Hero - Request booking">Request a booking</a>
+          <a class="home-button internal" href="#explore" data-track="explore" data-track-label="Hero - Explore">Explore the universe</a>
         </div>
-        <a class="cta" href="https://snd.click/qnbs" target="_blank" rel="noopener">Listen Now</a>
+
+        <ul class="hero-proof" aria-label="Creative disciplines">
+          <li>Recording artist</li>
+          <li>Producer</li>
+          <li>Author</li>
+          <li>Creative director</li>
+        </ul>
+      </div>
+
+      <div class="hero-art" aria-label="Featured releases">
+        <span class="play-stamp">Now playing<br>No Drama</span>
+        <figure class="art-card album">
+          <img src="assets/img/no-drama.webp" alt="No Drama single cover by The Grei Show" width="1200" height="1200">
+          <figcaption>Featured release &middot; No Drama</figcaption>
+        </figure>
+        <figure class="art-card book">
+          <img src="assets/images/books/astral-thread-cover.jpg" alt="The Astral Thread book cover" width="960" height="1200" loading="lazy">
+          <figcaption>Book 01</figcaption>
+        </figure>
       </div>
     </section>
 
-    <footer>THE GREI SHOW &copy; 2026</footer>
+    <div class="signal-strip" aria-label="The Grei Show universe">
+      <span>Sound</span>
+      <span>Story</span>
+      <span>Visuals</span>
+      <span>Interactive</span>
+    </div>
+
+    <section id="explore" class="home-section" aria-labelledby="explore-title">
+      <div class="section-heading">
+        <p class="section-kicker">Choose your portal</p>
+        <h2 id="explore-title">One universe. Many ways in.</h2>
+        <p>Start with the signal that pulls you closest. Every release connects to a wider world of sound, story, and experimentation.</p>
+      </div>
+
+      <div class="portal-grid">
+        <a class="portal-card" href="music.html" data-track="explore_music" data-track-label="Portal - Music">
+          <img src="assets/img/no-drama.webp" alt="" width="1200" height="1200" loading="lazy">
+          <span class="portal-card__body">
+            <span class="card-kicker">Listen</span>
+            <h3>Audio Universe</h3>
+            <span class="portal-link">Enter the music</span>
+          </span>
+        </a>
+
+        <a class="portal-card" href="books.html" data-track="explore_books" data-track-label="Portal - Books">
+          <img src="assets/images/books/astral-thread-cover.jpg" alt="" width="960" height="1200" loading="lazy">
+          <span class="portal-card__body">
+            <span class="card-kicker">Read & listen</span>
+            <h3>The Astral Thread</h3>
+            <span class="portal-link">Open the book</span>
+          </span>
+        </a>
+
+        <a class="portal-card" href="arcade.html" data-track="explore_arcade" data-track-label="Portal - Arcade">
+          <img src="arcade/assets/thumbnails/signal-runner.svg" alt="" width="640" height="360" loading="lazy">
+          <span class="portal-card__body">
+            <span class="card-kicker">Play</span>
+            <h3>Grei Arcade</h3>
+            <span class="portal-link">Start a game</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section id="support" class="home-section offers-section" aria-labelledby="support-title">
+      <div class="section-heading">
+        <p class="section-kicker">Keep the signal moving</p>
+        <h2 id="support-title">Support independent creation.</h2>
+        <p>Every book, stream, direct purchase, and creative project helps fund the next record, story, visual, and playable experiment.</p>
+      </div>
+
+      <div class="offer-grid">
+        <article class="offer-card">
+          <span class="offer-number">01 &middot; Read</span>
+          <div>
+            <p class="card-kicker">Official ebook</p>
+            <h3>Own The Astral Thread</h3>
+            <p>A reflective collection built for late-night reading, listening, and visual exploration.</p>
+            <a class="home-button primary" href="https://www.amazon.in/Astral-Thread-Grei-Show-ebook/dp/B0F7RQ3463" target="_blank" rel="noopener" data-track="buy_book" data-track-label="Support - Buy Astral Thread">Buy the ebook</a>
+          </div>
+        </article>
+
+        <article class="offer-card">
+          <span class="offer-number">02 &middot; Listen</span>
+          <div>
+            <p class="card-kicker">Direct support</p>
+            <h3>Back the music</h3>
+            <p>Stream across every major platform or support the catalogue directly through Bandcamp.</p>
+            <a class="home-button" href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="bandcamp" data-track-label="Support - Bandcamp">Visit Bandcamp</a>
+          </div>
+        </article>
+
+        <article class="offer-card">
+          <span class="offer-number">03 &middot; Book</span>
+          <div>
+            <p class="card-kicker">Performances & services</p>
+            <h3>Bring the experience to you</h3>
+            <p>Request a performance, DJ set, studio session, photo or video service, creative talent, or a private Kingston experience.</p>
+            <a class="home-button" href="booking.html" data-track="support_booking" data-track-label="Support - Request booking">Check availability</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="work-title">
+      <div class="service-panel">
+        <div class="service-copy">
+          <p class="section-kicker">Wheel It! Records</p>
+          <h2 id="work-title">From first spark to finished world.</h2>
+          <p>Bring an idea, a song, or an unfinished vision. The Grei Show can help shape the sound, story, direction, and release experience around it.</p>
+          <div class="service-actions">
+            <a class="home-button primary" href="connect.html?interest=production" data-track="start_project" data-track-label="Services - Start project">Start a project</a>
+            <a class="home-button" href="wheel-it-records.html" data-track="view_records" data-track-label="Services - Wheel It Records">See Wheel It! Records</a>
+          </div>
+        </div>
+
+        <ol class="service-list">
+          <li><span>01</span><div><strong>Music production</strong><small>Original production, collaboration, development, and release support.</small></div></li>
+          <li><span>02</span><div><strong>Creative direction</strong><small>A clear visual and narrative system around the work.</small></div></li>
+          <li><span>03</span><div><strong>Sync & partnerships</strong><small>Music, media, performance, press, and aligned brand conversations.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="home-section list-section" aria-labelledby="list-title">
+      <div class="list-panel">
+        <div class="list-copy">
+          <p class="section-kicker">Stay close to the signal</p>
+          <h2 id="list-title">Get the next transmission.</h2>
+          <p>Join the release list for new music, story chapters, visual drops, playable experiments, and limited releases.</p>
+        </div>
+        <a class="home-button primary" href="mailto:thegreishow@gmail.com?subject=Add%20me%20to%20The%20Grei%20Show%20release%20list&body=Please%20add%20me%20to%20the%20release%20list.%0A%0AName%3A%20" data-track="join_list" data-track-label="Join release list">Join the list</a>
+      </div>
+    </section>
+
+    <footer class="home-footer">
+      <div>
+        <p class="footer-brand">THE GREI SHOW</p>
+        <p>Independent music, stories, and creative worlds from Jamaica. &copy; 2026</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="about.html">About</a>
+        <a href="photography.html">Photography</a>
+        <a href="press.html">Press</a>
+        <a href="merch.html">Merch</a>
+        <a href="booking.html">Book</a>
+        <a href="connect.html">Connect</a>
+      </nav>
+    </footer>
   </main>
 
   <script src="shared/nav.js"></script>
-
 </body>
 </html>

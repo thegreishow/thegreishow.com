@@ -3,6 +3,14 @@
 
 import { loadGameRegistry } from './registry.js';
 import { openGameEmbed } from './embed.js';
+import {
+  getPlayerProfile,
+  savePlayerProfile,
+  recordGameLaunch,
+  getRecentActivity,
+  getDailyChallenge,
+  getArcadeLevel
+} from './community.js';
 
 let arcadeState = {
   games: [],
@@ -69,6 +77,39 @@ function createGameCard(game) {
   return card;
 }
 
+function createCommunityPanel(games) {
+  const profile = getPlayerProfile();
+  const level = getArcadeLevel(profile.xp);
+  const challenge = getDailyChallenge(games);
+  const recent = getRecentActivity();
+  const recentMarkup = recent.length
+    ? recent.map(item => `<span class="community-pill">${escapeHtml(item.title)}</span>`).join('')
+    : '<span class="community-muted">Your recent games will appear here.</span>';
+
+  return `
+    <section class="arcade-community" aria-label="Arcade community profile">
+      <div class="community-profile">
+        <div>
+          <p class="arcade-kicker">Player identity</p>
+          <h2 id="community-player-name">${escapeHtml(profile.name)}</h2>
+          <p class="community-muted">Arcade Level ${level} · ${profile.xp} XP · ${profile.gamesPlayed} launches</p>
+        </div>
+        <button class="filter" id="edit-profile" type="button">Edit name</button>
+      </div>
+      <div class="community-challenge">
+        <p class="arcade-kicker">Daily challenge</p>
+        <h3>${challenge.game ? escapeHtml(challenge.game.title) : 'Arcade challenge'}</h3>
+        <p>${escapeHtml(challenge.objective)}</p>
+        <span class="community-reward">+${challenge.reward} XP when global profiles launch</span>
+      </div>
+      <div class="community-recent">
+        <p class="arcade-kicker">Recently played</p>
+        <div class="community-pills">${recentMarkup}</div>
+      </div>
+    </section>
+  `;
+}
+
 function createShell(root, games) {
   const tags = getAllTags(games);
   const nativeCount = games.filter(game => game.type !== 'external').length;
@@ -80,7 +121,7 @@ function createShell(root, games) {
         <div>
           <p class="arcade-kicker">The Grei Show</p>
           <h1 id="arcade-title">Arcade</h1>
-          <p>Play experiments, prototypes, and interactive drops from the creative universe. This lobby is built to expand cleanly as new games come online.</p>
+          <p>Play original games, chase personal bests, complete daily challenges, and build your identity inside The Grei Show creative universe.</p>
         </div>
         <div class="arcade-stats" aria-label="Arcade stats">
           <div class="stat"><strong>${games.length}</strong><span>Total games</span></div>
@@ -89,6 +130,8 @@ function createShell(root, games) {
           <div class="stat"><strong>${tags.length}</strong><span>Tags</span></div>
         </div>
       </section>
+
+      ${createCommunityPanel(games)}
 
       <section class="arcade-controls" aria-label="Arcade controls">
         <input class="arcade-search" type="search" placeholder="Search arcade" aria-label="Search arcade games" />
@@ -113,7 +156,6 @@ function filterGames() {
     const matchesTag = activeTag === 'all' || tags.includes(activeTag);
     const searchable = [game.title, game.description, game.creator, ...tags].join(' ').toLowerCase();
     const matchesQuery = !query || searchable.includes(query);
-
     return matchesTag && matchesQuery;
   });
 }
@@ -131,22 +173,28 @@ function renderGames(root) {
     return;
   }
 
-  arcadeState.visibleGames.forEach(game => {
-    grid.appendChild(createGameCard(game));
-  });
-
+  arcadeState.visibleGames.forEach(game => grid.appendChild(createGameCard(game)));
   attachGameEvents(grid, arcadeState.games);
 }
 
 function setActiveFilter(root, tag) {
   arcadeState.activeTag = tag;
-
-  root.querySelectorAll('.filter').forEach(button => {
+  root.querySelectorAll('.filter[data-tag]').forEach(button => {
     button.classList.toggle('active', button.dataset.tag === tag);
   });
-
   filterGames();
   renderGames(root);
+}
+
+function attachCommunityEvents(root) {
+  root.querySelector('#edit-profile')?.addEventListener('click', () => {
+    const current = getPlayerProfile();
+    const value = window.prompt('Choose your Arcade player name:', current.name);
+    if (value === null) return;
+    const profile = savePlayerProfile({ ...current, name: value });
+    const name = root.querySelector('#community-player-name');
+    if (name) name.textContent = profile.name;
+  });
 }
 
 function attachLobbyEvents(root) {
@@ -160,10 +208,12 @@ function attachLobbyEvents(root) {
   });
 
   filters?.addEventListener('click', event => {
-    const button = event.target.closest('.filter');
+    const button = event.target.closest('.filter[data-tag]');
     if (!button) return;
     setActiveFilter(root, button.dataset.tag || 'all');
   });
+
+  attachCommunityEvents(root);
 }
 
 function attachGameEvents(container, games) {
@@ -171,8 +221,9 @@ function attachGameEvents(container, games) {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id;
       const game = games.find(g => g.id === id);
-
       if (!game || !game.entry) return;
+
+      recordGameLaunch(game);
 
       if (game.type === 'external') {
         openGameEmbed(game);
@@ -189,15 +240,8 @@ async function initArcade() {
   if (!root) return;
 
   root.innerHTML = '<div class="arcade-empty">Loading arcade...</div>';
-
   const games = await loadGameRegistry();
-  arcadeState = {
-    games,
-    visibleGames: games,
-    activeTag: 'all',
-    search: ''
-  };
-
+  arcadeState = { games, visibleGames: games, activeTag: 'all', search: '' };
   createShell(root, games);
   attachLobbyEvents(root);
   filterGames();

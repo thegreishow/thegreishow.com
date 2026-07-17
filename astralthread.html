@@ -3,62 +3,94 @@
 <head>
   <meta charset='UTF-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <meta http-equiv='refresh' content='0; url=books.html'>
-  <title>Books | The Grei Show</title>
-  <link rel='canonical' href='books.html'>
+  <title>Read The Astral Thread | The Grei Show</title>
+  <meta name='description' content='Read and listen to The Astral Thread in its independent visual reader from The Grei Show.'>
+  <meta name='theme-color' content='#03060c'>
+  <meta name='robots' content='noindex, follow'>
+  <link rel='canonical' href='https://thegreishow.com/astralthread'>
+  <link rel='icon' href='favicon.ico'>
+
+  <meta property='og:title' content='Read The Astral Thread | The Grei Show'>
+  <meta property='og:description' content='A visionary, reflective visual story with chapter artwork and narration.'>
+  <meta property='og:type' content='book'>
+  <meta property='og:url' content='https://thegreishow.com/astralthread'>
+  <meta property='og:image' content='https://thegreishow.com/assets/images/books/astral-thread-cover.jpg'>
+  <meta name='twitter:card' content='summary_large_image'>
+
   <link rel='stylesheet' href='assets/css/base.css'>
   <link rel='stylesheet' href='assets/css/layout.css'>
   <link rel='stylesheet' href='assets/css/components.css'>
   <link rel='stylesheet' href='assets/css/theme.css'>
-  <style>
-    .redirect-shell {
-      position: relative;
-      z-index: 1;
-      width: min(760px, calc(100% - 32px));
-      min-height: 70vh;
-      margin: 0 auto;
-      display: grid;
-      place-items: center;
-      text-align: center;
-    }
-
-    .redirect-panel {
-      padding: 28px;
-      border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.045);
-      backdrop-filter: blur(14px);
-    }
-
-    .redirect-panel h1 {
-      margin: 0 0 12px;
-      font-size: clamp(2.4rem, 7vw, 4.2rem);
-      line-height: 0.95;
-      text-shadow: var(--glow-strong);
-    }
-
-    .redirect-panel p {
-      margin: 0 0 18px;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .redirect-panel a {
-      color: #fff;
-      font-weight: 800;
-    }
-  </style>
+  <link rel='stylesheet' href='assets/css/astral-thread.css'>
 </head>
 <body>
   <div id='site-header'></div>
   <script src='shared/nav.js'></script>
-  <main class='redirect-shell'>
-    <section class='redirect-panel'>
-      <h1>Books</h1>
-      <p>Astral Thread now lives inside the Books section.</p>
-      <a href='books.html'>Open Books</a>
+
+  <main id='astral-thread' class='reader-shell'>
+    <section class='reader-intro' aria-labelledby='reader-title'>
+      <a class='book-button' href='books.html'>Back to Books</a>
+      <div class='reader-intro-copy'>
+        <p class='eyebrow'>Independent Visual Reader</p>
+        <h1 id='reader-title'>The Astral Thread</h1>
+        <p>Read each chapter, enter its visual atmosphere, or listen to the narration. Use the page controls or your left and right arrow keys.</p>
+      </div>
+      <a class='book-button primary' href='https://www.amazon.in/Astral-Thread-Grei-Show-ebook/dp/B0F7RQ3463' target='_blank' rel='noopener' aria-label='Buy The Astral Thread ebook on Amazon' data-track='buy_book' data-track-label='Astral Thread Reader - Buy ebook'>Buy Now</a>
     </section>
+
+    <section id='reader' class='reader-card' aria-label='The Astral Thread visual reader' tabindex='-1'>
+      <div class='book-spread'>
+        <article class='left-page' aria-label='Visual chapter page'>
+          <div class='chapter-visuals'>
+            <p id='chapter-kicker' class='chapter-kicker'></p>
+            <h2 id='chapter-title'></h2>
+            <figure class='chapter-artwork'>
+              <img id='chapter-artwork' alt='' loading='lazy'>
+            </figure>
+            <p id='chapter-visual'></p>
+          </div>
+          <div class='audio-block'>
+            <audio id='chapter-audio' controls preload='metadata'></audio>
+            <a id='chapter-full-audio' class='book-button' href='#' target='_blank' rel='noopener'>Full Narration</a>
+          </div>
+        </article>
+
+        <article class='right-page' aria-labelledby='chapter-title'>
+          <div id='chapter-text' class='chapter-text' aria-label='Chapter story' tabindex='0'></div>
+          <div class='reader-controls'>
+            <button id='prev-chapter' class='book-button' type='button' aria-label='Previous chapter'>Previous</button>
+            <button id='next-chapter' class='book-button primary' type='button' aria-label='Next chapter'>Next</button>
+            <span id='chapter-count' class='chapter-count' aria-live='polite'></span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>THE GREI SHOW &copy; 2026</footer>
   </main>
-  <script>window.location.replace('books.html');</script>
+
+  <script src='assets/js/books-chapter-01.js'></script>
+  <script src='assets/js/books-chapter-02.js'></script>
+  <script src='assets/js/books-chapter-03.js'></script>
+  <script src='assets/js/books-chapter-04.js'></script>
+  <script src='assets/js/books-chapter-05.js'></script>
+  <script src='assets/js/books-chapter-06.js'></script>
+  <script src='assets/js/books-chapter-07.js'></script>
+  <script src='assets/js/books-chapter-08.js'></script>
+  <script src='assets/js/books-chapter-09.js'></script>
+  <script src='assets/js/books-chapter-10.js'></script>
+  <script src='assets/js/books-chapter-11.js'></script>
+  <script src='assets/js/books-chapter-12.js'></script>
+  <script src='assets/js/books-chapter-13.js'></script>
+  <script src='assets/js/books-chapter-14.js'></script>
+  <script src='assets/js/books-chapter-15.js'></script>
+  <script src='assets/js/books-chapter-16.js'></script>
+  <script src='assets/js/books-chapter-17.js'></script>
+  <script src='assets/js/books-chapter-18.js'></script>
+  <script src='assets/js/books-chapter-19.js'></script>
+  <script src='assets/js/books-chapter-20.js'></script>
+  <script src='assets/js/books-audio-overrides.js'></script>
+  <script src='assets/js/books-artwork-overrides.js'></script>
+  <script src='assets/js/books-reader.js'></script>
 </body>
 </html>

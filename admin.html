@@ -3,98 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin | The Grei Show CMS</title>
-
+  <meta name="robots" content="noindex, nofollow">
+  <title>Content Management | The Grei Show</title>
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
-
   <style>
-    body { padding: 2rem; font-family: sans-serif; }
-    textarea { width: 100%; height: 65vh; background: #0b0b0f; color: #fff; padding: 1rem; border: 1px solid #333; }
-    input { width: 100%; padding: 0.8rem; margin-top: 1rem; background:#111; color:#fff; border:1px solid #333; }
-    button { margin-top: 1rem; padding: 1rem 2rem; cursor:pointer; }
-    .status { margin-top: 1rem; color: #aaa; }
+    .admin-notice {
+      position: relative;
+      z-index: 1;
+      width: min(680px, calc(100% - 32px));
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    .admin-card {
+      padding: clamp(26px, 6vw, 48px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      background: rgba(3, 6, 12, 0.86);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+
+    .admin-card h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.2rem, 7vw, 4rem);
+      line-height: 1;
+    }
+
+    .admin-card p {
+      margin: 0;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .admin-actions a {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.07);
+      font-weight: 800;
+    }
+
+    .admin-actions a.primary {
+      border-color: transparent;
+      color: #06101a;
+      background: #d8ff63;
+    }
   </style>
 </head>
 <body>
-
-  <h1>CMS ADMIN PANEL (LIVE SYNC)</h1>
-
-  <p>Edit your entire universe and sync directly to GitHub:</p>
-
-  <textarea id="cmsEditor"></textarea>
-
-  <input id="token" type="password" placeholder="GitHub Personal Access Token" />
-
-  <button onclick="syncCMS()">SYNC TO GITHUB</button>
-  <button onclick="loadCMS()">Reload</button>
-
-  <div class="status" id="status"></div>
-
-  <script>
-    const repo = "thegreishow/thegreishow.com";
-    const path = "assets/data/cms.json";
-
-    async function loadCMS() {
-      const res = await fetch('assets/data/cms.json');
-      const data = await res.json();
-      document.getElementById('cmsEditor').value = JSON.stringify(data, null, 2);
-    }
-
-    async function getFileSha(token) {
-      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      return data.sha;
-    }
-
-    async function syncCMS() {
-      const token = document.getElementById('token').value;
-      const status = document.getElementById('status');
-
-      if (!token) {
-        status.innerText = "Missing GitHub token";
-        return;
-      }
-
-      try {
-        status.innerText = "Getting file SHA...";
-        const sha = await getFileSha(token);
-
-        status.innerText = "Encoding CMS...";
-        const content = btoa(unescape(encodeURIComponent(document.getElementById('cmsEditor').value)));
-
-        status.innerText = "Pushing to GitHub...";
-
-        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-          method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: "Live CMS update",
-            content,
-            sha
-          })
-        });
-
-        if (res.ok) {
-          status.innerText = "SYNC SUCCESSFUL 🚀";
-        } else {
-          const err = await res.json();
-          status.innerText = "SYNC FAILED: " + JSON.stringify(err);
-        }
-      } catch (e) {
-        status.innerText = "ERROR: " + e.message;
-      }
-    }
-
-    loadCMS();
-  </script>
-
+  <main class="admin-notice">
+    <section class="admin-card" aria-labelledby="admin-title">
+      <p class="eyebrow">Secure editing</p>
+      <h1 id="admin-title">Content management moved to GitHub.</h1>
+      <p>This public website never needs an access token. Sign in to GitHub to update the content source through its protected editor and review history.</p>
+      <div class="admin-actions">
+        <a class="primary" href="https://github.com/thegreishow/thegreishow.com/edit/main/assets/data/cms.json" target="_blank" rel="noopener">Open secure editor</a>
+        <a href="index.html">Return home</a>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

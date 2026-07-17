@@ -3,183 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect | The Grei Show</title>
+  <title>Work With The Grei Show | Production & Creative Direction</title>
+  <meta name="description" content="Start a project with The Grei Show: music production, creative direction, artist development, sync, licensing, press, and select partnerships.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://thegreishow.com/connect">
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
-
-  <style>
-    .connect-shell {
-      position: relative;
-      z-index: 1;
-      width: min(980px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 70px 0;
-    }
-
-    .connect-hero {
-      text-align: center;
-      margin-bottom: 34px;
-    }
-
-    .connect-hero h1 {
-      margin: 0 0 12px;
-      font-size: 4rem;
-      line-height: 1;
-      letter-spacing: 0;
-      text-shadow: var(--glow-strong);
-    }
-
-    .connect-hero p {
-      max-width: 720px;
-      margin: 0 auto;
-      color: var(--text-dim);
-      line-height: 1.7;
-    }
-
-    .connect-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-      gap: 18px;
-      align-items: start;
-    }
-
-    .panel {
-      padding: 22px;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.045);
-      backdrop-filter: blur(14px);
-    }
-
-    form {
-      display: grid;
-      gap: 12px;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      min-height: 44px;
-      border: 1px solid rgba(255,255,255,0.13);
-      border-radius: 8px;
-      padding: 12px;
-      color: var(--text);
-      background: rgba(0,0,0,0.28);
-      font: inherit;
-    }
-
-    textarea {
-      min-height: 150px;
-      resize: vertical;
-    }
-
-    input:focus,
-    textarea:focus {
-      outline: none;
-      border-color: rgba(0,200,255,0.58);
-      box-shadow: 0 0 0 3px rgba(0,200,255,0.12);
-    }
-
-    button,
-    .contact-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      border: 0;
-      border-radius: 8px;
-      padding: 0 16px;
-      color: #fff;
-      background: linear-gradient(135deg, #1f6feb, #00a6ff);
-      font-weight: 800;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .side-list {
-      display: grid;
-      gap: 14px;
-    }
-
-    .side-list h2,
-    .panel h2 {
-      margin: 0 0 12px;
-      letter-spacing: 0;
-    }
-
-    .side-list p,
-    .panel p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }
-
-    .socials {
-      display: grid;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .socials a {
-      color: var(--text);
-      font-weight: 800;
-    }
-
-    @media (max-width: 760px) {
-      .connect-shell {
-        width: min(100% - 24px, 980px);
-        padding: 48px 0;
-      }
-
-      .connect-hero h1 {
-        font-size: 2.9rem;
-      }
-
-      .connect-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/connect.css">
 </head>
 <body>
-
   <div id="site-header"></div>
-  <script src="shared/nav.js"></script>
 
-  <main class="connect-shell">
-    <section class="connect-hero">
-      <p class="eyebrow">Booking - Press - Collaborations</p>
-      <h1>Connect</h1>
-      <p>Reach out for music, production, press, performance, visuals, creative direction, or partnership conversations.</p>
+  <main class="connect-page">
+    <section class="connect-hero" aria-labelledby="connect-title">
+      <p class="eyebrow">Bookings &middot; Production &middot; Partnerships</p>
+      <h1 id="connect-title">Let&apos;s make something worth feeling.</h1>
+      <p>Share the goal, the stage you are at, and what success looks like. Your answers become a clear project brief you can review before sending.</p>
     </section>
 
-    <section class="connect-grid">
-      <div class="panel">
-        <h2>Send a Message</h2>
-        <form action="mailto:thegreishow@gmail.com" method="post" enctype="text/plain">
-          <input type="text" name="name" placeholder="Name" required>
-          <input type="email" name="email" placeholder="Email" required>
-          <textarea name="message" placeholder="Message" required></textarea>
-          <button type="submit">Open Email Draft</button>
+    <section class="service-options" aria-label="Ways to work together">
+      <article class="service-option">
+        <span>Sound</span>
+        <div>
+          <h2>Music production</h2>
+          <p>Original production, artist development, collaboration, recording, and release support.</p>
+        </div>
+      </article>
+      <article class="service-option">
+        <span>World</span>
+        <div>
+          <h2>Creative direction</h2>
+          <p>Visual identity, story systems, campaign concepts, and cohesive release experiences.</p>
+        </div>
+      </article>
+      <article class="service-option">
+        <span>Placement</span>
+        <div>
+          <h2>Sync & partnerships</h2>
+          <p>Licensing, media, live performance, press, brand, and aligned cultural partnerships.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="inquiry-shell" aria-labelledby="inquiry-title">
+      <div class="inquiry-card">
+        <h2 id="inquiry-title">Build your inquiry</h2>
+        <p class="inquiry-intro">Nothing sends automatically. This form prepares a complete email for you to review and send from your own inbox.</p>
+
+        <form id="project-inquiry" class="project-form">
+          <div class="field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required>
+          </div>
+
+          <div class="field">
+            <label for="email">Your email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+          </div>
+
+          <div class="field">
+            <label for="interest">What do you need?</label>
+            <select id="interest" name="interest" required>
+              <option value="">Choose a project type</option>
+              <option value="music-production">Music production</option>
+              <option value="creative-direction">Creative direction</option>
+              <option value="artist-development">Artist development</option>
+              <option value="sync-licensing">Sync or licensing</option>
+              <option value="performance">Live performance or booking</option>
+              <option value="press">Press or interview</option>
+              <option value="partnership">Brand or creative partnership</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="timeline">Ideal timeline</label>
+            <select id="timeline" name="timeline" required>
+              <option value="">Choose a timeline</option>
+              <option value="As soon as possible">As soon as possible</option>
+              <option value="Within 1 month">Within 1 month</option>
+              <option value="Within 1-3 months">Within 1&ndash;3 months</option>
+              <option value="3+ months">3+ months</option>
+              <option value="Flexible / exploring">Flexible / exploring</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="budget">Working budget (USD)</label>
+            <select id="budget" name="budget" required>
+              <option value="">Choose a range</option>
+              <option value="Not sure yet">Not sure yet</option>
+              <option value="Under $500">Under $500</option>
+              <option value="$500-$1,500">$500&ndash;$1,500</option>
+              <option value="$1,500-$5,000">$1,500&ndash;$5,000</option>
+              <option value="$5,000+">$5,000+</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="brief">Tell me about the project</label>
+            <textarea id="brief" name="brief" minlength="30" placeholder="What are you making, where are you now, and what outcome do you want?" required></textarea>
+          </div>
+
+          <button class="prepare-button" type="submit">Prepare inquiry</button>
+          <p class="form-note">Your details stay in your browser until you choose to open the email.</p>
+
+          <div id="prepared-inquiry" class="prepared-inquiry" role="status" tabindex="-1" hidden>
+            <p>Your project email is ready. Open it, review every detail, then press send from your email app.</p>
+            <a id="prepared-email-link" class="prepared-link" href="mailto:thegreishow@gmail.com" data-track="send_inquiry" data-track-label="Prepared inquiry - Open email">Open in email</a>
+          </div>
         </form>
+
+        <noscript><p>Email <a href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a> with your project type, timeline, budget, and brief.</p></noscript>
       </div>
 
-      <aside class="side-list">
-        <div class="panel">
+      <aside class="contact-side" aria-label="Other contact options">
+        <div class="contact-card">
+          <p class="eyebrow">Direct</p>
           <h2>Email</h2>
-          <p>Business inquiries, media requests, bookings, and collaborations.</p>
-          <div style="margin-top:14px;">
-            <a class="contact-link" href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a>
+          <p>For business, media, bookings, licensing, production, and collaboration.</p>
+          <div class="contact-links">
+            <a href="mailto:thegreishow@gmail.com" data-track="direct_email" data-track-label="Contact - Direct email">thegreishow@gmail.com</a>
           </div>
         </div>
 
-        <div class="panel">
-          <h2>Socials</h2>
-          <p>Official channels for current releases, visual drops, and updates.</p>
-          <div class="socials">
+        <div class="contact-card">
+          <p class="eyebrow">Follow</p>
+          <h2>Official channels</h2>
+          <p>Current releases, visual drops, live moments, and new transmissions.</p>
+          <div class="contact-links">
             <a href="https://youtube.com/@thegreishxw" target="_blank" rel="noopener">YouTube</a>
             <a href="https://instagram.com/thegreishow" target="_blank" rel="noopener">Instagram</a>
             <a href="https://x.com/thegreishow" target="_blank" rel="noopener">X</a>
@@ -187,7 +141,11 @@
         </div>
       </aside>
     </section>
+
+    <footer class="connect-footer">THE GREI SHOW &copy; 2026</footer>
   </main>
 
+  <script src="shared/nav.js"></script>
+  <script src="assets/js/contact.js"></script>
 </body>
 </html>

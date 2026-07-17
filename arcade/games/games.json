@@ -9,16 +9,5 @@
     "entry": "arcade/games/signal-runner/index.html",
     "thumbnail": "arcade/assets/thumbnails/signal-runner.svg",
     "tags": ["reflex", "music", "prototype"]
-  },
-  {
-    "id": "template-game",
-    "title": "Template Game",
-    "creator": "The Grei Show",
-    "description": "Base structure for all arcade games",
-    "version": "0.1",
-    "type": "native",
-    "entry": "arcade/games/template-game/index.html",
-    "thumbnail": "arcade/assets/thumbnails/template.svg",
-    "tags": ["template"]
   }
 ]

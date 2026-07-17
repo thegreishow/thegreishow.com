@@ -51,14 +51,39 @@ function validNumber(value, min, max) {
 
 async function getScores(env, game) {
   const result = await env.ARCADE_DB.prepare(
-    `SELECT name, score, level, duration, created_at AS createdAt
-     FROM scores
-     WHERE game = ?
+    `WITH personal_bests AS (
+       SELECT id, name, score, level, duration, created_at, player_hash,
+              ROW_NUMBER() OVER (
+                PARTITION BY player_hash
+                ORDER BY score DESC, duration ASC, created_at ASC, id ASC
+              ) AS personal_rank
+       FROM scores
+       WHERE game = ?
+     )
+     SELECT name, score, level, duration, created_at AS createdAt
+     FROM personal_bests
+     WHERE personal_rank = 1
      ORDER BY score DESC, duration ASC, created_at ASC
      LIMIT 10`
   ).bind(game).all();
 
   return result.results || [];
+}
+
+async function getPlayerRank(env, game, score) {
+  const result = await env.ARCADE_DB.prepare(
+    `WITH best_scores AS (
+       SELECT player_hash, MAX(score) AS score
+       FROM scores
+       WHERE game = ?
+       GROUP BY player_hash
+     )
+     SELECT COUNT(*) + 1 AS rank
+     FROM best_scores
+     WHERE score > ?`
+  ).bind(game, score).first();
+
+  return Number(result?.rank || 1);
 }
 
 async function leaderboard(request, env, url) {
@@ -119,16 +144,47 @@ async function leaderboard(request, env, url) {
     return json({ error: 'Too many submissions. Try again shortly.' }, 429, headers);
   }
 
-  await env.ARCADE_DB.prepare(
-    `INSERT INTO scores (game, name, score, level, duration, player_hash)
-     VALUES (?, ?, ?, ?, ?, ?)`
-  ).bind(body.game, name, score, level, duration, playerHash).run();
+  const existing = await env.ARCADE_DB.prepare(
+    `SELECT id, score, duration
+     FROM scores
+     WHERE game = ? AND player_hash = ?
+     ORDER BY score DESC, duration ASC, created_at ASC, id ASC
+     LIMIT 1`
+  ).bind(body.game, playerHash).first();
+
+  const improved = !existing || score > Number(existing.score) ||
+    (score === Number(existing.score) && duration < Number(existing.duration));
+
+  if (!existing) {
+    await env.ARCADE_DB.prepare(
+      `INSERT INTO scores (game, name, score, level, duration, player_hash)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    ).bind(body.game, name, score, level, duration, playerHash).run();
+  } else if (improved) {
+    await env.ARCADE_DB.batch([
+      env.ARCADE_DB.prepare(
+        `UPDATE scores
+         SET name = ?, score = ?, level = ?, duration = ?, created_at = CURRENT_TIMESTAMP
+         WHERE id = ?`
+      ).bind(name, score, level, duration, existing.id),
+      env.ARCADE_DB.prepare(
+        `DELETE FROM scores
+         WHERE game = ? AND player_hash = ? AND id <> ?`
+      ).bind(body.game, playerHash, existing.id)
+    ]);
+  }
+
+  const personalBest = improved ? score : Number(existing.score);
+  const rank = await getPlayerRank(env, body.game, personalBest);
 
   return json({
     ok: true,
+    improved,
+    personalBest,
+    rank,
     game: body.game,
     scores: await getScores(env, body.game)
-  }, 201, headers);
+  }, existing ? 200 : 201, headers);
 }
 
 async function dreamweaver(request, env) {
@@ -176,16 +232,19 @@ async function dreamweaver(request, env) {
 async function health(request, env) {
   const headers = responseHeaders(request, env);
   try {
-    const result = await env.ARCADE_DB.prepare('SELECT COUNT(*) AS total FROM scores').first();
+    const result = await env.ARCADE_DB.prepare(
+      `SELECT COUNT(*) AS records, COUNT(DISTINCT player_hash) AS players FROM scores`
+    ).first();
     return json({
       ok: true,
       service: 'grei-arcade-api',
       database: 'connected',
       leaderboard: Boolean(env.SCORE_SALT),
-      scores: Number(result?.total || 0),
+      records: Number(result?.records || 0),
+      players: Number(result?.players || 0),
       oracle: Boolean(env.OPENAI_API_KEY)
     }, 200, headers);
-  } catch (error) {
+  } catch {
     return json({
       ok: false,
       service: 'grei-arcade-api',

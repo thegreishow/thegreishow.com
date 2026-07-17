@@ -86,6 +86,28 @@ async function getPlayerRank(env, game, score) {
   return Number(result?.rank || 1);
 }
 
+async function enforceSubmissionLimit(env, playerHash) {
+  await env.ARCADE_DB.prepare(
+    `DELETE FROM score_attempts
+     WHERE created_at <= datetime('now', '-1 day')`
+  ).run();
+
+  const recent = await env.ARCADE_DB.prepare(
+    `SELECT COUNT(*) AS total
+     FROM score_attempts
+     WHERE player_hash = ?
+       AND created_at > datetime('now', '-1 minute')`
+  ).bind(playerHash).first();
+
+  if ((recent?.total || 0) >= 3) return false;
+
+  await env.ARCADE_DB.prepare(
+    `INSERT INTO score_attempts (player_hash) VALUES (?)`
+  ).bind(playerHash).run();
+
+  return true;
+}
+
 async function leaderboard(request, env, url) {
   const headers = responseHeaders(request, env);
 
@@ -133,14 +155,7 @@ async function leaderboard(request, env, url) {
     .map(byte => byte.toString(16).padStart(2, '0'))
     .join('');
 
-  const recent = await env.ARCADE_DB.prepare(
-    `SELECT COUNT(*) AS total
-     FROM scores
-     WHERE player_hash = ?
-       AND created_at > datetime('now', '-1 minute')`
-  ).bind(playerHash).first();
-
-  if ((recent?.total || 0) >= 3) {
+  if (!await enforceSubmissionLimit(env, playerHash)) {
     return json({ error: 'Too many submissions. Try again shortly.' }, 429, headers);
   }
 

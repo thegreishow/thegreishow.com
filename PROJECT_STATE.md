@@ -14,6 +14,7 @@
 - Homepage rebuilt as a focused audience and revenue funnel for music, books, Bandcamp support, creative services, the arcade, and the release list
 - Homepage media optimized from roughly 22 MB of JPEGs to lightweight WebP delivery while preserving the original source assets
 - Shared navigation reprioritized around Music, Watch, Books, Services, Shop, and Work with Grei, with an accessible mobile menu
+- Booking hub integrated into the responsive navigation, homepage, project inquiry flow, sitemap, and privacy-safe conversion events
 - Connect page upgraded from a fragile mailto form to a qualified project brief covering service, timeline, budget, and goals
 - Public token-based CMS form removed; content editing now routes to GitHub's authenticated editor without accepting credentials on the website
 - Core page descriptions, canonical URLs, structured homepage data, robots rules, and a real XML sitemap added

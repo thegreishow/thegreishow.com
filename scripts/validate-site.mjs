@@ -48,6 +48,12 @@ function validateTitle(filePath, source) {
   }
 }
 
+function validateConflictMarkers(filePath, source) {
+  for (const match of source.matchAll(/^(?:<<<<<<<|=======|>>>>>>>)(?:\s|$)/gm)) {
+    report(filePath, match.index, source, "Unresolved merge conflict marker found.");
+  }
+}
+
 function isSkippedTarget(value) {
   return (
     !value ||
@@ -204,6 +210,7 @@ for (const filePath of htmlFiles) {
     fragmentCount += 1;
   }
 
+  validateConflictMarkers(filePath, source);
   await validateLocalTargets(filePath, source, document);
   validateCredentials(filePath, source);
 }

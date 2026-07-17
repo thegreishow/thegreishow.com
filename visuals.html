@@ -3,9 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visual Universe | The Grei Show</title>
-  <meta name="description" content="Watch music videos, documentaries, live sessions, and visual transmissions from The Grei Show.">
+  <title>Music Videos, Live Sessions & Films | The Grei Show</title>
+  <meta name="description" content="Watch official music videos, live performances, documentaries and visual storytelling from Jamaican artist and producer The Grei Show.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#03060c">
   <link rel="canonical" href="https://thegreishow.com/visuals">
+
+  <meta property="og:title" content="Visual Universe | The Grei Show">
+  <meta property="og:description" content="Official music videos, performances, documentaries and visual transmissions from The Grei Show.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thegreishow.com/visuals">
+  <meta property="og:image" content="https://img.youtube.com/vi/ZsoVettmghI/maxresdefault.jpg">
+  <meta property="og:image:alt" content="Featured visual from The Grei Show">
+  <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
@@ -13,118 +23,74 @@
   <link rel="stylesheet" href="assets/css/theme.css">
   <link rel="stylesheet" href="assets/css/portal.css">
 
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"CollectionPage",
+    "name":"Visual Universe",
+    "url":"https://thegreishow.com/visuals",
+    "description":"Music videos, live sessions, documentaries and visual storytelling from The Grei Show.",
+    "isPartOf":{"@type":"WebSite","name":"The Grei Show","url":"https://thegreishow.com/"},
+    "mainEntity":{
+      "@type":"VideoObject",
+      "name":"Featured The Grei Show Visual",
+      "description":"Featured official visual from Jamaican artist and producer The Grei Show.",
+      "thumbnailUrl":"https://img.youtube.com/vi/ZsoVettmghI/maxresdefault.jpg",
+      "embedUrl":"https://www.youtube.com/embed/ZsoVettmghI",
+      "contentUrl":"https://www.youtube.com/watch?v=ZsoVettmghI"
+    }
+  }
+  </script>
+
   <style>
-    .visuals-shell {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-video {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px;
-      box-shadow: var(--shadow-md), var(--glow);
-      background: #050509;
-      margin-bottom: 18px;
-    }
-
-    .hero-video iframe {
-      width: 100%;
-      height: 100%;
-      display: block;
-      border: 0;
-    }
-
-    .visual-card {
-      display: grid;
-      gap: 10px;
-      min-height: 160px;
-      padding: 20px;
-      align-content: end;
-      color: var(--text);
-      text-decoration: none;
-    }
-
-    .visual-card span {
-      color: var(--accent-2);
-      font-size: 0.76rem;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .visual-card h2 {
-      margin: 0;
-      font-size: 1.35rem;
-    }
-
-    .visual-card p {
-      margin: 0;
-      color: var(--text-dim);
-      line-height: 1.55;
-    }
-
-    .visual-card:hover,
-    .visual-card:focus-visible {
-      transform: translateY(-5px);
-      border-color: rgba(0,200,255,0.35);
-      opacity: 1;
-      outline: none;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 64px;
-      color: var(--text-dim);
-      font-size: 0.85rem;
-    }
+    .visuals-shell {position:relative;z-index:1}
+    .hero-video {width:100%;aspect-ratio:16/9;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:8px;box-shadow:var(--shadow-md),var(--glow);background:#050509;margin-bottom:18px}
+    .hero-video iframe {width:100%;height:100%;display:block;border:0}
+    .visual-card {display:grid;gap:10px;min-height:160px;padding:20px;align-content:end;color:var(--text);text-decoration:none}
+    .visual-card span {color:var(--accent-2);font-size:.76rem;font-weight:800;text-transform:uppercase}
+    .visual-card h2 {margin:0;font-size:1.35rem}
+    .visual-card p {margin:0;color:var(--text-dim);line-height:1.55}
+    .visual-card:hover,.visual-card:focus-visible {transform:translateY(-5px);border-color:rgba(0,200,255,.35);opacity:1;outline:none}
+    footer {text-align:center;margin-top:64px;color:var(--text-dim);font-size:.85rem}
   </style>
 </head>
-
 <body>
-
   <div id="site-header"></div>
-  <script src="shared/nav.js"></script>
 
   <main class="page-shell visuals-shell">
     <section class="page-hero">
+      <p class="eyebrow">Official videos · Performance · Documentary</p>
       <h1>VISUAL UNIVERSE</h1>
       <p>Cinematic worlds, performances, documentaries, and creative transmissions from The Grei Show archive.</p>
     </section>
 
     <section class="hero-video" aria-label="Featured visual">
       <iframe
-        src="https://www.youtube.com/embed/ZsoVettmghI?autoplay=1&mute=1&playsinline=1&rel=0"
+        src="https://www.youtube.com/embed/ZsoVettmghI?playsinline=1&rel=0"
         title="Featured The Grei Show visual"
-        allow="autoplay; encrypted-media"
+        loading="lazy"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+        referrerpolicy="strict-origin-when-cross-origin"
         allowfullscreen>
       </iframe>
     </section>
 
     <section class="content-grid" aria-label="Visual sections">
       <a class="section-panel visual-card" href="music-videos.html">
-        <span>Official Releases</span>
-        <h2>Music Videos</h2>
-        <p>Single releases, cinematic concepts, and visual storytelling.</p>
+        <span>Official releases</span><h2>Music Videos</h2><p>Single releases, cinematic concepts, and visual storytelling.</p>
       </a>
-
       <a class="section-panel visual-card" href="documentaries.html">
-        <span>Archive</span>
-        <h2>Documentaries</h2>
-        <p>Behind-the-scenes films, interviews, process stories, and field notes.</p>
+        <span>Archive</span><h2>Documentaries</h2><p>Behind-the-scenes films, interviews, process stories, and field notes.</p>
       </a>
-
       <a class="section-panel visual-card" href="live-sessions.html">
-        <span>Performance</span>
-        <h2>Live Sessions</h2>
-        <p>Stage moments, sound-system clips, studio performances, and raw recordings.</p>
+        <span>Performance</span><h2>Live Sessions</h2><p>Stage moments, sound-system clips, studio performances, and raw recordings.</p>
       </a>
     </section>
 
-    <footer>THE GREI SHOW &copy; 2026 - Wheel It! Records</footer>
+    <footer>THE GREI SHOW &copy; 2026 — Wheel It! Records</footer>
   </main>
 
+  <script src="shared/nav.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

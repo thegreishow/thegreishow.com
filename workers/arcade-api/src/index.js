@@ -181,6 +181,7 @@ async function health(request, env) {
       ok: true,
       service: 'grei-arcade-api',
       database: 'connected',
+      leaderboard: Boolean(env.SCORE_SALT),
       scores: Number(result?.total || 0),
       oracle: Boolean(env.OPENAI_API_KEY)
     }, 200, headers);
@@ -188,7 +189,8 @@ async function health(request, env) {
     return json({
       ok: false,
       service: 'grei-arcade-api',
-      database: 'unavailable'
+      database: 'unavailable',
+      leaderboard: false
     }, 503, headers);
   }
 }

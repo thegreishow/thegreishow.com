@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | The Grei Show</title>
+  <meta name="description" content="The page you requested could not be found. Return to The Grei Show music, books, visuals, arcade, press or booking pages.">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#03060c">
+  <meta property="og:title" content="Page Not Found | The Grei Show">
+  <meta property="og:description" content="The signal moved. Choose another portal into The Grei Show.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://thegreishow.com/assets/img/home-bg.webp">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
+
+  <style>
+    .error-page{position:relative;z-index:1;width:min(1080px,calc(100% - 28px));min-height:calc(100vh - 70px);display:grid;place-items:center;margin:0 auto;padding:70px 0}
+    .error-shell{width:100%;padding:clamp(30px,7vw,80px);border:1px solid rgba(255,255,255,.12);border-radius:20px;background:radial-gradient(circle at 80% 10%,rgba(0,200,255,.12),transparent 40%),rgba(0,0,0,.5);box-shadow:var(--shadow-md);text-align:center}
+    .error-code{display:block;color:var(--accent-2);font-size:clamp(5rem,18vw,12rem);font-weight:950;line-height:.78;letter-spacing:-.08em;text-shadow:var(--glow-strong)}
+    h1{max-width:800px;margin:26px auto 16px;font-size:clamp(2.2rem,6vw,4.7rem);line-height:.95;letter-spacing:-.045em}
+    .error-copy{max-width:680px;margin:0 auto;color:var(--text-dim);font-size:1.08rem;line-height:1.75}
+    .portal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:34px}
+    .portal{display:flex;min-height:120px;flex-direction:column;justify-content:space-between;padding:21px;border:1px solid rgba(255,255,255,.1);border-radius:13px;background:rgba(255,255,255,.045);color:#fff;text-decoration:none;text-align:left;transition:transform .2s ease,border-color .2s ease}
+    .portal:hover,.portal:focus-visible{transform:translateY(-3px);border-color:rgba(216,255,99,.38);outline:none}.portal small{color:var(--accent-2);font-weight:900;letter-spacing:.09em;text-transform:uppercase}.portal strong{font-size:1.18rem}
+    .home-link{display:inline-flex;min-height:48px;align-items:center;justify-content:center;margin-top:28px;padding:0 20px;border-radius:999px;background:#fff;color:#05070b;text-decoration:none;font-weight:900}
+    @media(max-width:720px){.portal-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.portal-grid{grid-template-columns:1fr}.error-shell{border-radius:14px}}
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="error-page">
+    <section class="error-shell" aria-labelledby="error-title">
+      <span class="error-code" aria-hidden="true">404</span>
+      <p class="eyebrow">Signal not found</p>
+      <h1 id="error-title">This portal moved, changed, or never existed.</h1>
+      <p class="error-copy">The creative universe is still online. Choose another destination below, or return to the main entrance.</p>
+
+      <div class="portal-grid" aria-label="Popular destinations">
+        <a class="portal" href="music.html"><small>Listen</small><strong>Music &amp; Discography</strong></a>
+        <a class="portal" href="visuals.html"><small>Watch</small><strong>Visual Universe</strong></a>
+        <a class="portal" href="books.html"><small>Read</small><strong>Books</strong></a>
+        <a class="portal" href="arcade.html"><small>Play</small><strong>Grei Arcade</strong></a>
+        <a class="portal" href="press.html"><small>Discover</small><strong>Press &amp; Credits</strong></a>
+        <a class="portal" href="connect.html"><small>Connect</small><strong>Bookings &amp; Projects</strong></a>
+      </div>
+
+      <a class="home-link" href="index.html">Return home</a>
+    </section>
+  </main>
+  <script src="shared/nav.js"></script>
+</body>
+</html>

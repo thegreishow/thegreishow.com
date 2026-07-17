@@ -8,7 +8,8 @@
     'music-videos.html': 'visuals.html',
     'documentaries.html': 'visuals.html',
     'live-sessions.html': 'visuals.html',
-    'astralthread.html': 'books.html'
+    'astralthread.html': 'books.html',
+    'booking.html': 'connect.html'
   };
 
   function getPageFromPath(pathname) {

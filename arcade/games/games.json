@@ -22,13 +22,13 @@
     "tags": ["reflex", "music", "prototype"]
   },
   {
-    "id": "kingston-dash",
-    "title": "Kingston Dash",
+    "id": "jamaica-run",
+    "title": "Jamaica Run",
     "creator": "The Grei Show",
-    "description": "Sprint through Kingston, clear roadblocks, chain double jumps, and chase the global distance crown.",
+    "description": "Collect coins, dodge tropical obstacles, and run across Jamaica using the original animated runner sprite.",
     "version": "1.0",
     "type": "native",
-    "entry": "arcade/games/kingston-dash/index.html",
+    "entry": "arcade/games/jamaica-run/index.html",
     "thumbnail": "arcade/assets/thumbnails/kingston-dash.svg",
     "tags": ["runner", "Jamaica", "mobile", "action"]
   }

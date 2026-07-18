@@ -3,7 +3,7 @@ const AVATARS=['🌌','⚡','🔥','🎮','🪐','👾','🎧','🧿'];
 const GAME_RULES={
 'dreamweaver-oracle':{maxScore:1000000,maxRate:4,grace:25,levelDivisor:4},
 'signal-runner':{maxScore:10000000,maxRate:18,grace:60,levelDivisor:10},
-'kingston-dash':{maxScore:10000000,maxRate:20,grace:80,levelDivisor:10}
+'jamaica-run':{maxScore:10000000,maxRate:20,grace:80,levelDivisor:10}
 };
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{...JSON_HEADERS,...headers}});
 function responseHeaders(request,env){const allowed=String(env.ALLOWED_ORIGINS||'https://thegreishow.com,https://www.thegreishow.com').split(',').map(v=>v.trim());const origin=request.headers.get('Origin')||'';return{'Access-Control-Allow-Origin':allowed.includes(origin)?origin:allowed[0],'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type','Vary':'Origin','Cache-Control':'no-store'}}

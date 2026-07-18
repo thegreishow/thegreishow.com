@@ -4,6 +4,8 @@
 import { loadGameRegistry } from './registry.js';
 import { openGameEmbed } from './embed.js';
 import {
+  ARCADE_AVATARS,
+  hasPlayerProfile,
   getPlayerProfile,
   savePlayerProfile,
   recordGameLaunch,
@@ -89,12 +91,15 @@ function createCommunityPanel(games) {
   return `
     <section class="arcade-community" aria-label="Arcade community profile">
       <div class="community-profile">
-        <div>
-          <p class="arcade-kicker">Player identity</p>
-          <h2 id="community-player-name">${escapeHtml(profile.name)}</h2>
-          <p class="community-muted">Arcade Level ${level} · ${profile.xp} XP · ${profile.gamesPlayed} launches</p>
+        <div class="community-identity">
+          <div class="community-avatar" id="community-player-avatar" aria-hidden="true">${escapeHtml(profile.avatar)}</div>
+          <div>
+            <p class="arcade-kicker">Player identity</p>
+            <h2 id="community-player-name">${escapeHtml(profile.name)}</h2>
+            <p class="community-muted">Arcade Level ${level} · ${profile.xp} XP · ${profile.gamesPlayed} launches</p>
+          </div>
         </div>
-        <button class="filter" id="edit-profile" type="button">Edit name</button>
+        <button class="filter" id="edit-profile" type="button">Edit profile</button>
       </div>
       <div class="community-challenge">
         <p class="arcade-kicker">Daily challenge</p>
@@ -147,6 +152,87 @@ function createShell(root, games) {
   `;
 }
 
+function profileModalMarkup(profile, firstVisit) {
+  return `
+    <div class="player-profile-modal" role="dialog" aria-modal="true" aria-labelledby="player-profile-title">
+      <div class="player-profile-backdrop"></div>
+      <form class="player-profile-card" id="player-profile-form">
+        <p class="arcade-kicker">${firstVisit ? 'Welcome, player' : 'Player settings'}</p>
+        <h2 id="player-profile-title">${firstVisit ? 'Create your Arcade identity' : 'Edit your Arcade identity'}</h2>
+        <p class="player-profile-copy">Choose once and every game will remember you on this device.</p>
+        <label class="player-profile-label" for="player-profile-name">Arcade name</label>
+        <input id="player-profile-name" class="player-profile-input" name="name" value="${firstVisit ? '' : escapeHtml(profile.name)}" maxlength="18" minlength="3" pattern="[A-Za-z0-9 _-]{3,18}" autocomplete="nickname" required placeholder="Enter 3–18 characters" />
+        <fieldset class="player-avatar-fieldset">
+          <legend>Choose an avatar</legend>
+          <div class="player-avatar-grid">
+            ${ARCADE_AVATARS.map((avatar, index) => `
+              <label class="player-avatar-choice">
+                <input type="radio" name="avatar" value="${avatar}" ${avatar === profile.avatar || (firstVisit && index === 0) ? 'checked' : ''} />
+                <span>${avatar}</span>
+              </label>
+            `).join('')}
+          </div>
+        </fieldset>
+        <p class="player-profile-error" id="player-profile-error" aria-live="polite"></p>
+        <div class="player-profile-actions">
+          ${firstVisit ? '' : '<button class="profile-secondary" type="button" id="cancel-profile">Cancel</button>'}
+          <button class="profile-primary" type="submit">Save profile</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+function updateProfileDisplay(root, profile) {
+  const name = root.querySelector('#community-player-name');
+  const avatar = root.querySelector('#community-player-avatar');
+  if (name) name.textContent = profile.name;
+  if (avatar) avatar.textContent = profile.avatar;
+}
+
+function openProfileEditor(root, { firstVisit = false } = {}) {
+  document.querySelector('.player-profile-modal')?.remove();
+  const profile = getPlayerProfile();
+  document.body.insertAdjacentHTML('beforeend', profileModalMarkup(profile, firstVisit));
+  document.body.classList.add('profile-modal-open');
+
+  const modal = document.querySelector('.player-profile-modal');
+  const form = modal?.querySelector('#player-profile-form');
+  const input = modal?.querySelector('#player-profile-name');
+  const error = modal?.querySelector('#player-profile-error');
+
+  const close = () => {
+    modal?.remove();
+    document.body.classList.remove('profile-modal-open');
+  };
+
+  modal?.querySelector('#cancel-profile')?.addEventListener('click', close);
+  input?.focus();
+
+  form?.addEventListener('submit', event => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const cleanName = String(formData.get('name') || '')
+      .replace(/[^a-zA-Z0-9 _-]/g, '')
+      .trim()
+      .slice(0, 18);
+
+    if (cleanName.length < 3) {
+      if (error) error.textContent = 'Use at least 3 letters or numbers.';
+      input?.focus();
+      return;
+    }
+
+    const saved = savePlayerProfile({
+      ...profile,
+      name: cleanName,
+      avatar: String(formData.get('avatar') || ARCADE_AVATARS[0])
+    });
+    updateProfileDisplay(root, saved);
+    close();
+  });
+}
+
 function filterGames() {
   const query = arcadeState.search.trim().toLowerCase();
   const activeTag = arcadeState.activeTag.toLowerCase();
@@ -188,12 +274,7 @@ function setActiveFilter(root, tag) {
 
 function attachCommunityEvents(root) {
   root.querySelector('#edit-profile')?.addEventListener('click', () => {
-    const current = getPlayerProfile();
-    const value = window.prompt('Choose your Arcade player name:', current.name);
-    if (value === null) return;
-    const profile = savePlayerProfile({ ...current, name: value });
-    const name = root.querySelector('#community-player-name');
-    if (name) name.textContent = profile.name;
+    openProfileEditor(root);
   });
 }
 
@@ -223,6 +304,11 @@ function attachGameEvents(container, games) {
       const game = games.find(g => g.id === id);
       if (!game || !game.entry) return;
 
+      if (!hasPlayerProfile()) {
+        openProfileEditor(document.getElementById('arcade-root'), { firstVisit: true });
+        return;
+      }
+
       recordGameLaunch(game);
 
       if (game.type === 'external') {
@@ -246,6 +332,10 @@ async function initArcade() {
   attachLobbyEvents(root);
   filterGames();
   renderGames(root);
+
+  if (!hasPlayerProfile()) {
+    openProfileEditor(root, { firstVisit: true });
+  }
 }
 
 window.addEventListener('DOMContentLoaded', initArcade);

@@ -1,535 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whiteline • The Grei Show</title>
-    <link rel="stylesheet" href="assets/css/base.css">
-    <link rel="stylesheet" href="assets/css/components.css">
-    <link rel="stylesheet" href="assets/css/theme.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .whiteline-hero {
-            background: linear-gradient(180deg, #0a0c12 0%, #05070a 100%);
-            position: relative;
-        }
-        .section-header {
-            font-size: 2rem;
-            letter-spacing: -0.03em;
-        }
-        .talent-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .talent-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
-        .form-input {
-            background: #18181b;
-            border: 1px solid #27272a;
-            color: #fff;
-        }
-        .form-input:focus {
-            border-color: #d4af37;
-            box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
-        }
-        .category-pill {
-            transition: all 0.2s ease;
-        }
-        .category-pill.active {
-            background: #d4af37;
-            color: #111113;
-            border-color: #d4af37;
-        }
-        .media-zone {
-            border: 2px dashed #3f3f46;
-            transition: all 0.2s ease;
-        }
-        .media-zone.dragover {
-            border-color: #d4af37;
-            background: rgba(212,175,55,0.05);
-        }
-        .profile-modal {
-            max-height: 92vh;
-            overflow-y: auto;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>White Line Entertainment | Jamaican Talent & Bookings</title>
+  <meta name="description" content="White Line Entertainment connects Jamaican dancers, DJs, models, hosts, actors, artists, and creators with events, productions, campaigns, and casting opportunities.">
+  <meta name="theme-color" content="#070707">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://thegreishow.com/whiteline.html">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <style>
+    :root {
+      --wl-bg: #070707;
+      --wl-panel: #111;
+      --wl-panel-2: #171717;
+      --wl-line: rgba(255,255,255,.12);
+      --wl-text: #f7f4ed;
+      --wl-muted: #aaa59a;
+      --wl-gold: #d8b55b;
+      --wl-gold-2: #f0d78f;
+      --wl-green: #55d6a4;
+      --wl-danger: #ff7676;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--wl-bg); color: var(--wl-text); }
+    body.modal-open { overflow: hidden; }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .wl-page { overflow: hidden; }
+    .wl-wrap { width: min(1160px, calc(100% - 32px)); margin: 0 auto; }
+    .wl-section { padding: 88px 0; }
+    .wl-eyebrow { margin: 0 0 14px; color: var(--wl-gold-2); font-size: .76rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    .wl-title { margin: 0; max-width: 900px; font-size: clamp(2.45rem, 7vw, 6.7rem); line-height: .92; letter-spacing: -.055em; }
+    .wl-heading { margin: 0; font-size: clamp(2rem, 4vw, 4rem); line-height: .98; letter-spacing: -.045em; }
+    .wl-copy { max-width: 720px; color: var(--wl-muted); font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.7; }
+
+    .wl-hero { position: relative; min-height: 82vh; display: grid; align-items: end; padding: 120px 0 72px; background: radial-gradient(circle at 78% 18%, rgba(216,181,91,.18), transparent 28%), linear-gradient(135deg, #16120b 0%, #080808 46%, #020202 100%); }
+    .wl-hero::after { content: "WHITE LINE"; position: absolute; right: -1vw; bottom: -3vw; color: rgba(255,255,255,.025); font-size: clamp(6rem, 19vw, 18rem); font-weight: 900; letter-spacing: -.08em; white-space: nowrap; pointer-events: none; }
+    .wl-hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.3fr .7fr; gap: 54px; align-items: end; }
+    .wl-lead { max-width: 720px; margin: 26px 0 0; color: #c8c3b8; font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.65; }
+    .wl-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .wl-button { display: inline-flex; justify-content: center; align-items: center; min-height: 50px; padding: 0 22px; border: 1px solid var(--wl-line); border-radius: 999px; background: rgba(255,255,255,.04); color: var(--wl-text); font-weight: 800; text-decoration: none; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+    .wl-button:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.09); }
+    .wl-button.primary { border-color: var(--wl-gold); background: var(--wl-gold); color: #100d07; }
+    .wl-button.primary:hover { background: var(--wl-gold-2); }
+    .wl-hero-card { border: 1px solid var(--wl-line); border-radius: 28px; padding: 26px; background: rgba(11,11,11,.72); backdrop-filter: blur(18px); }
+    .wl-hero-card strong { display: block; margin-bottom: 8px; font-size: 1.35rem; }
+    .wl-hero-card p { margin: 0; color: var(--wl-muted); line-height: 1.6; }
+    .wl-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
+    .wl-stat { padding: 16px; border-radius: 18px; background: rgba(255,255,255,.05); }
+    .wl-stat b { display: block; color: var(--wl-gold-2); font-size: 1.35rem; }
+    .wl-stat span { color: var(--wl-muted); font-size: .82rem; }
+
+    .wl-services { background: #0b0b0b; border-top: 1px solid var(--wl-line); border-bottom: 1px solid var(--wl-line); }
+    .wl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 38px; }
+    .wl-card { min-height: 220px; padding: 28px; border: 1px solid var(--wl-line); border-radius: 26px; background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.015)); }
+    .wl-card-number { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(216,181,91,.45); border-radius: 50%; color: var(--wl-gold-2); font-size: .82rem; font-weight: 900; }
+    .wl-card h3 { margin: 28px 0 10px; font-size: 1.35rem; }
+    .wl-card p { margin: 0; color: var(--wl-muted); line-height: 1.6; }
+
+    .wl-process { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; align-items: start; }
+    .wl-steps { display: grid; gap: 14px; }
+    .wl-step { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 22px; border: 1px solid var(--wl-line); border-radius: 22px; background: var(--wl-panel); }
+    .wl-step b { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--wl-gold); color: #100d07; }
+    .wl-step h3 { margin: 0 0 6px; font-size: 1.1rem; }
+    .wl-step p { margin: 0; color: var(--wl-muted); line-height: 1.55; }
+
+    .wl-forms { background: linear-gradient(180deg, #111 0%, #080808 100%); border-top: 1px solid var(--wl-line); }
+    .wl-tabs { display: flex; gap: 10px; margin: 34px 0 20px; }
+    .wl-tab { min-height: 46px; padding: 0 18px; border: 1px solid var(--wl-line); border-radius: 999px; background: transparent; color: var(--wl-muted); font-weight: 800; }
+    .wl-tab[aria-selected="true"] { border-color: var(--wl-gold); background: var(--wl-gold); color: #100d07; }
+    .wl-form-shell { display: grid; grid-template-columns: 1.35fr .65fr; gap: 22px; }
+    .wl-form-card, .wl-side-card { border: 1px solid var(--wl-line); border-radius: 28px; background: var(--wl-panel); }
+    .wl-form-card { padding: clamp(22px, 4vw, 40px); }
+    .wl-side-card { align-self: start; padding: 28px; position: sticky; top: 24px; }
+    .wl-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .wl-field { display: grid; gap: 8px; }
+    .wl-field.full { grid-column: 1 / -1; }
+    .wl-field label { color: #d8d3c8; font-size: .86rem; font-weight: 750; }
+    .wl-field label span { color: var(--wl-muted); font-weight: 500; }
+    .wl-field input, .wl-field select, .wl-field textarea { width: 100%; border: 1px solid var(--wl-line); border-radius: 15px; outline: none; background: #090909; color: var(--wl-text); padding: 14px 15px; }
+    .wl-field textarea { min-height: 140px; resize: vertical; }
+    .wl-field input:focus, .wl-field select:focus, .wl-field textarea:focus { border-color: var(--wl-gold); box-shadow: 0 0 0 3px rgba(216,181,91,.12); }
+    .wl-checks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+    .wl-check { display: flex; gap: 9px; align-items: center; padding: 11px 12px; border: 1px solid var(--wl-line); border-radius: 14px; color: var(--wl-muted); }
+    .wl-check input { width: auto; accent-color: var(--wl-gold); }
+    .wl-submit { width: 100%; min-height: 54px; margin-top: 6px; border: 0; border-radius: 16px; background: var(--wl-gold); color: #100d07; font-weight: 900; }
+    .wl-submit:hover { background: var(--wl-gold-2); }
+    .wl-note { margin: 12px 0 0; color: var(--wl-muted); font-size: .82rem; line-height: 1.5; }
+    .wl-message { margin-top: 18px; padding: 16px; border: 1px solid rgba(85,214,164,.4); border-radius: 16px; background: rgba(85,214,164,.08); color: #cffff0; }
+    .wl-message[hidden] { display: none; }
+    .wl-side-card h3 { margin-top: 0; font-size: 1.4rem; }
+    .wl-side-card ul { margin: 18px 0 0; padding-left: 18px; color: var(--wl-muted); line-height: 1.8; }
+    .wl-direct { display: block; margin-top: 22px; color: var(--wl-gold-2); font-weight: 800; overflow-wrap: anywhere; }
+
+    .wl-footer { padding: 34px 0; border-top: 1px solid var(--wl-line); color: var(--wl-muted); font-size: .85rem; }
+    .wl-footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 900px) {
+      .wl-hero-grid, .wl-process, .wl-form-shell { grid-template-columns: 1fr; }
+      .wl-grid { grid-template-columns: 1fr 1fr; }
+      .wl-side-card { position: static; }
+    }
+
+    @media (max-width: 620px) {
+      .wl-wrap { width: min(100% - 22px, 1160px); }
+      .wl-section { padding: 66px 0; }
+      .wl-hero { min-height: auto; padding: 110px 0 58px; }
+      .wl-grid, .wl-form-grid, .wl-checks { grid-template-columns: 1fr; }
+      .wl-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+      .wl-tab { padding: 0 10px; }
+      .wl-title { font-size: clamp(2.75rem, 15vw, 4.7rem); }
+    }
+  </style>
 </head>
 <body>
-    <!-- Shared Navigation -->
-    <div id="site-header"></div>
-    <script src="shared/nav.js"></script>
+  <div id="site-header"></div>
 
-    <!-- Hero -->
-    <div class="whiteline-hero py-16">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <div class="inline-block px-4 py-1 rounded-full border border-white/20 text-xs tracking-[2px] mb-6">WHITELINE ENTERTAINMENT</div>
-            
-            <h1 class="text-6xl md:text-7xl font-bold tracking-tighter mb-4">Talent Submissions</h1>
-            <p class="max-w-md mx-auto text-xl text-zinc-400 mb-8">
-                Submit your profile for consideration by Whiteline Entertainment.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button onclick="document.getElementById('form-section').scrollIntoView({behavior:'smooth'})" 
-                        class="px-8 py-3.5 rounded-2xl bg-[#d4af37] text-[#111113] font-semibold hover:bg-amber-300 transition flex items-center justify-center gap-x-2">
-                    Submit Profile
-                    <i class="fa-solid fa-arrow-down"></i>
-                </button>
-                <button onclick="document.getElementById('roster-section').scrollIntoView({behavior:'smooth'})" 
-                        class="px-8 py-3.5 rounded-2xl border border-white/20 hover:bg-white/5 transition">
-                    View Roster
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Form Section -->
-    <div id="form-section" class="max-w-4xl mx-auto px-6 py-12">
-        <div class="mb-8">
-            <div class="text-emerald-400 text-sm font-semibold tracking-widest mb-1">STEP 01</div>
-            <h2 class="section-header tracking-tighter">Create Your Talent Profile</h2>
-            <p class="text-zinc-400 mt-2">All submissions are reviewed by our team.</p>
+  <main class="wl-page">
+    <section class="wl-hero" aria-labelledby="wl-title">
+      <div class="wl-wrap wl-hero-grid">
+        <div>
+          <p class="wl-eyebrow">White Line Entertainment · Kingston, Jamaica</p>
+          <h1 id="wl-title" class="wl-title">Talent moves culture. We move talent.</h1>
+          <p class="wl-lead">A Jamaican talent and booking network for dancers, DJs, models, hosts, actors, artists, creators, and production-ready personalities.</p>
+          <div class="wl-actions">
+            <a class="wl-button primary" href="#apply">Join the talent network</a>
+            <a class="wl-button" href="#book">Book talent</a>
+          </div>
         </div>
 
-        <div class="bg-[#111113] border border-zinc-800 rounded-3xl p-8 md:p-10">
-            <form id="talent-form" onsubmit="handleFormSubmit(event)">
-                
-                <!-- Personal Info -->
-                <div class="mb-8">
-                    <div class="flex items-center gap-x-3 mb-5">
-                        <i class="fa-solid fa-user text-[#d4af37]"></i>
-                        <h3 class="font-semibold text-lg">Personal Information</h3>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-1.5">FULL LEGAL NAME <span class="text-red-400">*</span></label>
-                            <input type="text" id="fullName" required class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Your full name">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-1.5">STAGE / PROFESSIONAL NAME</label>
-                            <input type="text" id="stageName" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Stage name">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-1.5">EMAIL <span class="text-red-400">*</span></label>
-                            <input type="email" id="email" required class="form-input w-full px-4 py-3 rounded-2xl" placeholder="you@email.com">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-1.5">PHONE</label>
-                            <input type="tel" id="phone" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="+1 (876) 555-0123">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs text-zinc-400 mb-1.5">LOCATION (City, Country)</label>
-                            <input type="text" id="location" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Kingston, Jamaica">
-                        </div>
-                    </div>
-                </div>
+        <aside class="wl-hero-card" aria-label="White Line overview">
+          <strong>Built for real opportunities.</strong>
+          <p>We connect credible talent with music videos, events, campaigns, castings, performances, content, and brand work.</p>
+          <div class="wl-stat-grid">
+            <div class="wl-stat"><b>20%</b><span>Standard agency commission</span></div>
+            <div class="wl-stat"><b>Jamaica</b><span>Culture-first talent network</span></div>
+            <div class="wl-stat"><b>Direct</b><span>Clear booking requests</span></div>
+            <div class="wl-stat"><b>Flexible</b><span>Non-exclusive representation</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
 
-                <!-- Craft -->
-                <div class="mb-8">
-                    <div class="flex items-center gap-x-3 mb-5">
-                        <i class="fa-solid fa-briefcase text-[#d4af37]"></i>
-                        <h3 class="font-semibold text-lg">Your Craft & Experience</h3>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="block text-xs text-zinc-400 mb-2">PRIMARY DISCIPLINES <span class="text-red-400">*</span></label>
-                        <div id="category-container" class="flex flex-wrap gap-2"></div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-1.5">YEARS OF EXPERIENCE</label>
-                            <input type="number" id="experience" value="3" class="form-input w-full px-4 py-3 rounded-2xl">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-1.5">NOTABLE CREDITS</label>
-                            <input type="text" id="credits" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Previous work / credits">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bio -->
-                <div class="mb-8">
-                    <div class="flex items-center gap-x-3 mb-4">
-                        <i class="fa-solid fa-align-left text-[#d4af37]"></i>
-                        <h3 class="font-semibold text-lg">Your Story <span class="text-red-400">*</span></h3>
-                    </div>
-                    <textarea id="bio" rows="4" required maxlength="420" class="form-input w-full px-4 py-3.5 rounded-3xl resize-y" placeholder="Tell us about yourself, your art, and what you're looking for..."></textarea>
-                    <div class="text-right text-xs text-zinc-500 mt-1" id="bio-count">0/420</div>
-                </div>
-
-                <!-- Media -->
-                <div class="mb-8">
-                    <div class="flex items-center gap-x-3 mb-4">
-                        <i class="fa-solid fa-images text-[#d4af37]"></i>
-                        <h3 class="font-semibold text-lg">Showcase Media</h3>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Photos -->
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-2">PHOTOS (up to 4)</label>
-                            <div id="photo-upload-zone" class="media-zone rounded-3xl p-6 text-center cursor-pointer" onclick="document.getElementById('photo-input').click()">
-                                <input type="file" id="photo-input" multiple accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
-                                <i class="fa-solid fa-cloud-upload-alt text-3xl text-zinc-500 mb-2"></i>
-                                <div class="font-medium">Click or drop photos</div>
-                                <div class="text-xs text-zinc-500 mt-1">JPG or PNG • Max 4 photos</div>
-                            </div>
-                            <div id="photo-previews" class="grid grid-cols-4 gap-3 mt-4"></div>
-                        </div>
-
-                        <!-- Video -->
-                        <div>
-                            <label class="block text-xs text-zinc-400 mb-2">VIDEO REEL (optional)</label>
-                            <input type="url" id="videoLink" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="YouTube or Vimeo link">
-                            <div class="text-xs text-zinc-500 mt-2">Or paste a direct video link</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-6 border-t border-zinc-800 flex justify-end">
-                    <button type="submit" 
-                            class="px-10 py-3.5 bg-[#d4af37] hover:bg-amber-300 active:bg-amber-400 transition text-[#111113] font-bold rounded-2xl flex items-center gap-x-3">
-                        SUBMIT TO WHITELINE
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
-            </form>
+    <section class="wl-section wl-services" aria-labelledby="services-title">
+      <div class="wl-wrap">
+        <p class="wl-eyebrow">What we represent</p>
+        <h2 id="services-title" class="wl-heading">A working network for Jamaican creative talent.</h2>
+        <div class="wl-grid">
+          <article class="wl-card"><span class="wl-card-number">01</span><h3>Dancers & performers</h3><p>Music videos, stage shows, tours, choreography, live activations, and cultural events.</p></article>
+          <article class="wl-card"><span class="wl-card-number">02</span><h3>Models & actors</h3><p>Campaigns, commercials, editorial work, film, television, branded content, and castings.</p></article>
+          <article class="wl-card"><span class="wl-card-number">03</span><h3>DJs, hosts & artists</h3><p>Parties, launches, festivals, corporate events, private bookings, and entertainment programming.</p></article>
+          <article class="wl-card"><span class="wl-card-number">04</span><h3>Creators & influencers</h3><p>Social campaigns, product storytelling, appearances, lifestyle content, and audience-led collaborations.</p></article>
+          <article class="wl-card"><span class="wl-card-number">05</span><h3>Production support</h3><p>Talent sourcing, casting coordination, call sheets, on-site support, and production communication.</p></article>
+          <article class="wl-card"><span class="wl-card-number">06</span><h3>Custom casting</h3><p>Purpose-built shortlists for directors, producers, brands, agencies, promoters, and event teams.</p></article>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <!-- Roster -->
-    <div id="roster-section" class="bg-zinc-950 border-t border-zinc-800 py-12">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="flex items-end justify-between mb-8">
-                <div>
-                    <div class="text-emerald-400 text-sm font-semibold tracking-widest">WHITELINE FAMILY</div>
-                    <h2 class="section-header tracking-tighter">Current Talent Roster</h2>
-                </div>
-                <button onclick="clearAllProfiles()" class="text-xs px-4 py-2 rounded-2xl border border-zinc-700 hover:bg-red-950 text-zinc-400 hover:text-red-400 transition">
-                    <i class="fa-solid fa-trash"></i> Clear Demo Data
-                </button>
-            </div>
-
-            <div id="profiles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                <!-- Populated by JS -->
-            </div>
-            <div id="empty-state" class="hidden text-center py-12 text-zinc-400">
-                No profiles yet. Be the first to submit above.
-            </div>
+    <section class="wl-section" aria-labelledby="process-title">
+      <div class="wl-wrap wl-process">
+        <div>
+          <p class="wl-eyebrow">How it works</p>
+          <h2 id="process-title" class="wl-heading">Simple enough to move quickly. Professional enough to trust.</h2>
+          <p class="wl-copy">White Line reviews submissions before adding talent to its active network. Clients receive a curated response based on availability, fit, budget, and production needs.</p>
         </div>
-    </div>
-
-    <!-- Modal -->
-    <div id="profile-modal" onclick="if (event.target.id === 'profile-modal') closeModal()" class="hidden fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4">
-        <div onclick="event.stopImmediatePropagation()" class="bg-zinc-900 border border-zinc-700 w-full max-w-3xl rounded-3xl overflow-hidden">
-            <div class="px-7 py-5 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
-                <div id="modal-header"></div>
-                <button onclick="closeModal()" class="text-2xl text-zinc-400 hover:text-white">&times;</button>
-            </div>
-            
-            <div class="p-7 profile-modal">
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-7">
-                    <div class="lg:col-span-3">
-                        <div class="mb-6">
-                            <div class="text-xs text-zinc-500 mb-1.5">ABOUT</div>
-                            <div id="modal-bio" class="leading-relaxed"></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-x-6 text-sm">
-                            <div><span class="text-zinc-500 text-xs">LOCATION</span><div id="modal-location" class="font-medium"></div></div>
-                            <div><span class="text-zinc-500 text-xs">EXPERIENCE</span><div id="modal-experience" class="font-medium"></div></div>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-2">
-                        <div class="mb-6">
-                            <div class="text-xs text-zinc-500 mb-2">PHOTOS</div>
-                            <div id="modal-photos" class="grid grid-cols-4 gap-2"></div>
-                        </div>
-                        <div>
-                            <div class="text-xs text-zinc-500 mb-2">VIDEO REEL</div>
-                            <div id="modal-video"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="px-7 py-5 bg-zinc-950 border-t border-zinc-800 flex gap-x-3 justify-end text-sm">
-                <button onclick="contactTalent()" class="px-5 py-2 border border-zinc-700 rounded-2xl hover:bg-zinc-900">Contact</button>
-                <button onclick="requestAudition()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold">Request Audition</button>
-            </div>
+        <div class="wl-steps">
+          <article class="wl-step"><b>1</b><div><h3>Send the right details</h3><p>Talent submits a profile and portfolio links. Clients submit a brief, date, location, budget, and talent needs.</p></div></article>
+          <article class="wl-step"><b>2</b><div><h3>White Line reviews the request</h3><p>Submissions are checked for professionalism, fit, availability, and the information needed to move forward.</p></div></article>
+          <article class="wl-step"><b>3</b><div><h3>Terms are confirmed</h3><p>Scope, rates, commission, transportation, usage, call time, payment, and production requirements are agreed before the booking.</p></div></article>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <div id="toast" class="hidden fixed bottom-6 right-6 bg-zinc-900 border border-zinc-700 px-5 py-3 rounded-2xl flex items-center gap-x-3 z-[300]">
-        <i class="fa-solid fa-check-circle text-emerald-400"></i>
-        <span id="toast-text" class="text-sm"></span>
-    </div>
+    <section class="wl-section wl-forms" id="apply" aria-labelledby="forms-title">
+      <div class="wl-wrap">
+        <p class="wl-eyebrow">Start here</p>
+        <h2 id="forms-title" class="wl-heading">Join the network or request talent.</h2>
+        <p class="wl-copy">Complete the form and your device will open a prepared email containing every detail. Review it, attach any files you want included, then press send.</p>
 
-    <script>
-        const categories = ["Acting", "Singing", "Modeling", "Dancing", "Music / Rap", "Comedy", "DJ / Producer", "Voiceover", "Influencer", "Other"];
-        let selectedCategories = [];
-        let currentPhotos = [];
-        let profiles = [];
+        <div class="wl-tabs" role="tablist" aria-label="White Line forms">
+          <button class="wl-tab" id="talent-tab" type="button" role="tab" aria-selected="true" aria-controls="talent-panel">I am talent</button>
+          <button class="wl-tab" id="client-tab" type="button" role="tab" aria-selected="false" aria-controls="client-panel">I need talent</button>
+        </div>
 
-        function loadProfiles() {
-            const saved = localStorage.getItem('whiteline_profiles_v2');
-            profiles = saved ? JSON.parse(saved) : [];
-            renderProfiles();
-        }
+        <div class="wl-form-shell">
+          <div class="wl-form-card">
+            <section id="talent-panel" role="tabpanel" aria-labelledby="talent-tab">
+              <form id="talent-form">
+                <div class="wl-form-grid">
+                  <div class="wl-field"><label for="talent-name">Full name</label><input id="talent-name" name="name" type="text" autocomplete="name" required></div>
+                  <div class="wl-field"><label for="stage-name">Stage / professional name <span>(optional)</span></label><input id="stage-name" name="stageName" type="text"></div>
+                  <div class="wl-field"><label for="talent-email">Email</label><input id="talent-email" name="email" type="email" autocomplete="email" required></div>
+                  <div class="wl-field"><label for="talent-phone">WhatsApp / phone</label><input id="talent-phone" name="phone" type="tel" autocomplete="tel" required></div>
+                  <div class="wl-field"><label for="talent-location">City / parish</label><input id="talent-location" name="location" type="text" placeholder="Kingston, St. Andrew" required></div>
+                  <div class="wl-field"><label for="experience">Years of experience</label><input id="experience" name="experience" type="number" min="0" max="60" required></div>
 
-        function initCategories() {
-            const container = document.getElementById('category-container');
-            container.innerHTML = '';
-            categories.forEach(cat => {
-                const pill = document.createElement('div');
-                pill.className = 'category-pill cursor-pointer px-4 py-1.5 text-xs font-medium border border-zinc-700 rounded-2xl hover:border-zinc-400';
-                pill.textContent = cat;
-                pill.onclick = () => {
-                    if (selectedCategories.includes(cat)) {
-                        selectedCategories = selectedCategories.filter(c => c !== cat);
-                        pill.classList.remove('active', 'bg-[#d4af37]', 'text-[#111113]', 'border-[#d4af37]');
-                    } else {
-                        selectedCategories.push(cat);
-                        pill.classList.add('active', 'bg-[#d4af37]', 'text-[#111113]', 'border-[#d4af37]');
-                    }
-                };
-                container.appendChild(pill);
-            });
-        }
-
-        function initBioCounter() {
-            const bio = document.getElementById('bio');
-            const countEl = document.getElementById('bio-count');
-            bio.oninput = () => countEl.textContent = `${bio.value.length}/420`;
-        }
-
-        function handlePhotoUpload(e) {
-            const files = Array.from(e.target.files).slice(0, 4 - currentPhotos.length);
-            const container = document.getElementById('photo-previews');
-
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const photo = { id: Date.now() + Math.random(), url: ev.target.result };
-                    currentPhotos.push(photo);
-
-                    const el = document.createElement('div');
-                    el.className = 'relative aspect-square rounded-2xl overflow-hidden border border-zinc-700';
-                    el.innerHTML = `
-                        <img src="${photo.url}" class="w-full h-full object-cover">
-                        <button class="absolute top-1 right-1 w-6 h-6 bg-black/70 rounded-full flex items-center justify-center text-xs">&times;</button>
-                    `;
-                    el.querySelector('button').onclick = () => {
-                        currentPhotos = currentPhotos.filter(p => p.id !== photo.id);
-                        el.remove();
-                    };
-                    container.appendChild(el);
-                };
-                reader.readAsDataURL(file);
-            });
-            e.target.value = '';
-        }
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'SUBMITTING...';
-            btn.disabled = true;
-
-            try {
-                const fullName = document.getElementById('fullName').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const bio = document.getElementById('bio').value.trim();
-
-                if (!fullName || !email || !bio || selectedCategories.length === 0) {
-                    throw new Error('Please fill all required fields and select at least one discipline.');
-                }
-
-                // Create clean profile (no heavy base64 storage to avoid quota)
-                const newProfile = {
-                    id: 'p-' + Date.now(),
-                    timestamp: Date.now(),
-                    fullName,
-                    stageName: document.getElementById('stageName').value.trim() || fullName.split(' ')[0],
-                    email,
-                    phone: document.getElementById('phone').value.trim(),
-                    location: document.getElementById('location').value.trim() || 'Not specified',
-                    categories: [...selectedCategories],
-                    experience: parseInt(document.getElementById('experience').value) || 0,
-                    credits: document.getElementById('credits').value.trim(),
-                    bio,
-                    photos: currentPhotos.length > 0 ? [currentPhotos[0].url] : ['https://picsum.photos/id/1011/600/600'],
-                    videoLink: document.getElementById('videoLink').value.trim()
-                };
-
-                profiles.unshift(newProfile);
-                localStorage.setItem('whiteline_profiles_v2', JSON.stringify(profiles));
-
-                renderProfiles();
-                showToast('Profile submitted successfully!');
-
-                // Reset form
-                e.target.reset();
-                selectedCategories = [];
-                currentPhotos = [];
-                document.getElementById('photo-previews').innerHTML = '';
-                document.querySelectorAll('#category-container .category-pill').forEach(p => p.classList.remove('active', 'bg-[#d4af37]', 'text-[#111113]'));
-                document.getElementById('bio-count').textContent = '0/420';
-
-                setTimeout(() => {
-                    document.getElementById('roster-section').scrollIntoView({ behavior: 'smooth' });
-                }, 500);
-
-            } catch (err) {
-                showToast(err.message, true);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        function renderProfiles() {
-            const grid = document.getElementById('profiles-grid');
-            const empty = document.getElementById('empty-state');
-            grid.innerHTML = '';
-
-            if (profiles.length === 0) {
-                empty.classList.remove('hidden');
-                return;
-            }
-            empty.classList.add('hidden');
-
-            profiles.forEach(profile => {
-                const card = document.createElement('div');
-                card.className = 'talent-card bg-[#111113] border border-zinc-800 rounded-3xl overflow-hidden cursor-pointer';
-                
-                const firstPhoto = profile.photos?.[0] || 'https://picsum.photos/id/1011/600/600';
-                const badges = profile.categories.slice(0, 2).map(c => 
-                    `<span class="px-2.5 py-px text-[10px] bg-zinc-800 rounded-xl">${c}</span>`).join('');
-
-                card.innerHTML = `
-                    <img src="${firstPhoto}" class="w-full aspect-[16/10] object-cover">
-                    <div class="p-5">
-                        <div class="font-semibold text-xl tracking-tight">${profile.stageName}</div>
-                        <div class="text-xs text-zinc-400">${profile.fullName}</div>
-                        <div class="flex gap-1.5 mt-3 mb-3">${badges}</div>
-                        <div class="text-xs text-zinc-400 line-clamp-2">${profile.bio.substring(0, 100)}${profile.bio.length > 100 ? '...' : ''}</div>
+                  <fieldset class="wl-field full" style="border:0;padding:0;margin:0">
+                    <label>Primary disciplines</label>
+                    <div class="wl-checks">
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="Dancer"> Dancer</label>
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="Model"> Model</label>
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="Actor"> Actor</label>
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="DJ"> DJ</label>
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="Host / MC"> Host / MC</label>
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="Recording artist"> Recording artist</label>
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="Creator / influencer"> Creator / influencer</label>
+                      <label class="wl-check"><input type="checkbox" name="discipline" value="Other"> Other</label>
                     </div>
-                `;
-                card.onclick = () => openProfileModal(profile);
-                grid.appendChild(card);
-            });
-        }
+                  </fieldset>
 
-        let currentProfile = null;
-
-        function openProfileModal(profile) {
-            currentProfile = profile;
-            const modal = document.getElementById('profile-modal');
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-
-            document.getElementById('modal-header').innerHTML = `
-                <div>
-                    <div class="text-3xl font-semibold tracking-tighter">${profile.stageName}</div>
-                    <div class="text-sm text-zinc-400">${profile.fullName}</div>
+                  <div class="wl-field full"><label for="portfolio">Portfolio / social links</label><textarea id="portfolio" name="portfolio" placeholder="Instagram, TikTok, YouTube, website, Google Drive, Dropbox, showreel or EPK links" required></textarea></div>
+                  <div class="wl-field full"><label for="credits">Notable credits <span>(optional)</span></label><textarea id="credits" name="credits" placeholder="Music videos, shows, brands, productions, artists, campaigns or other relevant work"></textarea></div>
+                  <div class="wl-field full"><label for="talent-bio">Short professional bio</label><textarea id="talent-bio" name="bio" minlength="40" maxlength="700" required></textarea></div>
+                  <div class="wl-field full"><label class="wl-check"><input id="talent-consent" type="checkbox" required> I confirm this information is accurate and White Line may contact me about relevant opportunities.</label></div>
+                  <div class="wl-field full"><button class="wl-submit" type="submit">Prepare talent submission</button><p class="wl-note">This opens your email app. Add headshots, comp cards, résumés, or media files as attachments before sending.</p></div>
                 </div>
-            `;
+                <div id="talent-message" class="wl-message" role="status" tabindex="-1" hidden></div>
+              </form>
+            </section>
 
-            document.getElementById('modal-bio').innerHTML = profile.bio.replace(/\n/g, '<br>');
-            document.getElementById('modal-location').textContent = profile.location;
-            document.getElementById('modal-experience').textContent = `${profile.experience} years`;
-
-            // Photos
-            const photoContainer = document.getElementById('modal-photos');
-            photoContainer.innerHTML = '';
-            if (profile.photos?.length) {
-                profile.photos.forEach(src => {
-                    const img = document.createElement('img');
-                    img.src = src;
-                    img.className = 'w-full aspect-square object-cover rounded-2xl border border-zinc-700';
-                    photoContainer.appendChild(img);
-                });
-            }
-
-            // Video
-            const videoContainer = document.getElementById('modal-video');
-            if (profile.videoLink) {
-                videoContainer.innerHTML = `<a href="${profile.videoLink}" target="_blank" class="block text-center py-3 border border-zinc-700 rounded-2xl hover:bg-zinc-900">Watch Video Reel →</a>`;
-            } else {
-                videoContainer.innerHTML = `<div class="text-center text-xs text-zinc-500 py-3">No video reel submitted</div>`;
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('profile-modal').style.display = 'none';
-            document.body.style.overflow = '';
-        }
-
-        function contactTalent() {
-            if (!currentProfile) return;
-            window.location.href = `mailto:${currentProfile.email}?subject=Whiteline%20Talent%20Inquiry`;
-        }
-
-        function requestAudition() {
-            if (!currentProfile) return;
-            const modalContent = document.querySelector('#profile-modal > div');
-            modalContent.innerHTML = `
-                <div class="p-10 text-center">
-                    <i class="fa-solid fa-check-circle text-6xl text-emerald-400 mb-6"></i>
-                    <h3 class="text-3xl font-semibold mb-3">Audition Request Sent</h3>
-                    <p class="text-zinc-300">Our team will contact ${currentProfile.stageName} within 48 hours.</p>
-                    <button onclick="closeModal()" class="mt-8 px-8 py-3 bg-white text-[#111113] font-semibold rounded-2xl">CLOSE</button>
+            <section id="client-panel" role="tabpanel" aria-labelledby="client-tab" hidden>
+              <form id="client-form">
+                <div class="wl-form-grid">
+                  <div class="wl-field"><label for="client-name">Your name</label><input id="client-name" name="name" type="text" autocomplete="name" required></div>
+                  <div class="wl-field"><label for="company">Company / production <span>(optional)</span></label><input id="company" name="company" type="text"></div>
+                  <div class="wl-field"><label for="client-email">Email</label><input id="client-email" name="email" type="email" autocomplete="email" required></div>
+                  <div class="wl-field"><label for="client-phone">WhatsApp / phone</label><input id="client-phone" name="phone" type="tel" autocomplete="tel" required></div>
+                  <div class="wl-field"><label for="project-type">Project type</label><select id="project-type" name="projectType" required><option value="">Choose one</option><option>Music video</option><option>Event / performance</option><option>Commercial / campaign</option><option>Film / television</option><option>Photo shoot</option><option>Social content</option><option>Private booking</option><option>Other</option></select></div>
+                  <div class="wl-field"><label for="talent-needed">Talent needed</label><input id="talent-needed" name="talentNeeded" type="text" placeholder="e.g. 6 dancers and 2 models" required></div>
+                  <div class="wl-field"><label for="project-date">Date</label><input id="project-date" name="date" type="date" required></div>
+                  <div class="wl-field"><label for="project-location">Location / venue</label><input id="project-location" name="location" type="text" required></div>
+                  <div class="wl-field"><label for="budget">Talent budget</label><select id="budget" name="budget" required><option value="">Choose a range</option><option>Not confirmed yet</option><option>Under JMD $50,000</option><option>JMD $50,000–$150,000</option><option>JMD $150,000–$500,000</option><option>JMD $500,000+</option><option>USD / international budget</option></select></div>
+                  <div class="wl-field"><label for="usage">Usage / distribution</label><input id="usage" name="usage" type="text" placeholder="Social, TV, digital ads, live event, worldwide, etc." required></div>
+                  <div class="wl-field full"><label for="client-brief">Project brief</label><textarea id="client-brief" name="brief" minlength="50" placeholder="Describe the concept, schedule, wardrobe, deliverables, audience, talent requirements, usage, transport, meals and any special conditions." required></textarea></div>
+                  <div class="wl-field full"><button class="wl-submit" type="submit">Prepare booking request</button><p class="wl-note">No booking is confirmed until talent availability, scope, rates, commission, deposit, and terms are agreed in writing.</p></div>
                 </div>
-            `;
+                <div id="client-message" class="wl-message" role="status" tabindex="-1" hidden></div>
+              </form>
+            </section>
+          </div>
+
+          <aside class="wl-side-card">
+            <p class="wl-eyebrow">Before you submit</p>
+            <h3>Give us enough information to act.</h3>
+            <ul>
+              <li>Use working portfolio links.</li>
+              <li>Include a reachable WhatsApp number.</li>
+              <li>Clients should state date, location, usage, and budget.</li>
+              <li>Talent should attach recent, clear photos when emailing.</li>
+              <li>Do not send passwords, IDs, banking details, or sensitive documents through this form.</li>
+            </ul>
+            <a class="wl-direct" href="mailto:thegreishow@gmail.com?subject=White%20Line%20Entertainment%20Inquiry">thegreishow@gmail.com</a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <footer class="wl-footer">
+      <div class="wl-wrap wl-footer-row"><span>WHITE LINE ENTERTAINMENT © 2026</span><span>Talent · Casting · Bookings · Production support</span></div>
+    </footer>
+  </main>
+
+  <script src="shared/nav.js"></script>
+  <script>
+    (() => {
+      const destination = 'thegreishow@gmail.com';
+      const tabs = [
+        { button: document.getElementById('talent-tab'), panel: document.getElementById('talent-panel'), hash: 'apply' },
+        { button: document.getElementById('client-tab'), panel: document.getElementById('client-panel'), hash: 'book' }
+      ];
+
+      function activateTab(index, updateHash = true) {
+        tabs.forEach((tab, i) => {
+          const active = i === index;
+          tab.button.setAttribute('aria-selected', String(active));
+          tab.panel.hidden = !active;
+        });
+        if (updateHash) history.replaceState(null, '', '#' + tabs[index].hash);
+      }
+
+      tabs.forEach((tab, index) => tab.button.addEventListener('click', () => activateTab(index)));
+      if (location.hash === '#book') activateTab(1, false);
+
+      function field(form, name) {
+        return String(new FormData(form).get(name) || '').trim();
+      }
+
+      function checkedValues(form, name) {
+        return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
+      }
+
+      function openPreparedEmail(subject, lines, messageElement) {
+        const body = lines.join('\n');
+        const href = `mailto:${destination}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        messageElement.innerHTML = `Your request is ready. <a href="${href}" style="color:inherit;font-weight:900">Open the prepared email</a>, review it, attach any files, then press send.`;
+        messageElement.hidden = false;
+        messageElement.focus();
+        window.location.href = href;
+      }
+
+      document.getElementById('talent-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const disciplines = checkedValues(form, 'discipline');
+        const message = document.getElementById('talent-message');
+
+        if (!disciplines.length) {
+          message.textContent = 'Select at least one primary discipline.';
+          message.hidden = false;
+          message.focus();
+          return;
         }
 
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-text').textContent = message;
-            toast.style.display = 'flex';
-            setTimeout(() => toast.style.display = 'none', 2800);
-        }
+        const name = field(form, 'name');
+        const professionalName = field(form, 'stageName');
+        openPreparedEmail(
+          `White Line Talent Submission — ${professionalName || name}`,
+          [
+            'WHITE LINE ENTERTAINMENT — TALENT SUBMISSION',
+            '',
+            `Full name: ${name}`,
+            `Stage / professional name: ${professionalName || 'Not provided'}`,
+            `Email: ${field(form, 'email')}`,
+            `WhatsApp / phone: ${field(form, 'phone')}`,
+            `Location: ${field(form, 'location')}`,
+            `Years of experience: ${field(form, 'experience')}`,
+            `Disciplines: ${disciplines.join(', ')}`,
+            '',
+            'PORTFOLIO / SOCIAL LINKS',
+            field(form, 'portfolio'),
+            '',
+            'NOTABLE CREDITS',
+            field(form, 'credits') || 'Not provided',
+            '',
+            'SHORT PROFESSIONAL BIO',
+            field(form, 'bio'),
+            '',
+            'I confirm the information above is accurate and White Line may contact me about relevant opportunities.',
+            '',
+            'Attachments to add before sending: recent headshots, full-body photos, comp card, résumé, EPK or other relevant material.'
+          ],
+          message
+        );
+      });
 
-        function clearAllProfiles() {
-            if (!confirm('Clear all demo profiles?')) return;
-            profiles = [];
-            localStorage.removeItem('whiteline_profiles_v2');
-            renderProfiles();
-        }
+      document.getElementById('client-form').addEventListener('submit', event => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const clientName = field(form, 'name');
+        const projectType = field(form, 'projectType');
+        const message = document.getElementById('client-message');
 
-        function initialize() {
-            initCategories();
-            initBioCounter();
-            loadProfiles();
-
-            // Drag & drop for photos
-            const zone = document.getElementById('photo-upload-zone');
-            if (zone) {
-                zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-                zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-                zone.addEventListener('drop', e => {
-                    e.preventDefault();
-                    zone.classList.remove('dragover');
-                    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-                    if (files.length) handlePhotoUpload({ target: { files } });
-                });
-            }
-
-            // Keyboard
-            document.addEventListener('keydown', e => {
-                if (e.key === 'Escape') {
-                    const m = document.getElementById('profile-modal');
-                    if (m.style.display === 'flex') closeModal();
-                }
-            });
-        }
-
-        window.onload = initialize;
-    </script>
+        openPreparedEmail(
+          `White Line Booking Request — ${projectType} — ${clientName}`,
+          [
+            'WHITE LINE ENTERTAINMENT — CLIENT BOOKING REQUEST',
+            '',
+            `Contact name: ${clientName}`,
+            `Company / production: ${field(form, 'company') || 'Not provided'}`,
+            `Email: ${field(form, 'email')}`,
+            `WhatsApp / phone: ${field(form, 'phone')}`,
+            `Project type: ${projectType}`,
+            `Talent needed: ${field(form, 'talentNeeded')}`,
+            `Date: ${field(form, 'date')}`,
+            `Location / venue: ${field(form, 'location')}`,
+            `Talent budget: ${field(form, 'budget')}`,
+            `Usage / distribution: ${field(form, 'usage')}`,
+            '',
+            'PROJECT BRIEF',
+            field(form, 'brief'),
+            '',
+            'I understand that this is a booking request and is not confirmed until availability, scope, rates, commission, deposit, and terms are agreed in writing.'
+          ],
+          message
+        );
+      });
+    })();
+  </script>
 </body>
 </html>

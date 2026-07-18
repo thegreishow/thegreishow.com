@@ -1,1 +1,145 @@
-COMPLETE_FULL_CORRECT_HTML_FROM_ARTIFACTS_NO_PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>White Line | The Grei Show</title>
+  <meta name="description" content="White Line — A new sonic and visual transmission from The Grei Show. Coming soon.">
+  <link rel="canonical" href="https://thegreishow.com/whiteline">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <style>
+    .whiteline-hero {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(180deg, #0a0c12 0%, #05070a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .whiteline-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.06) 0%, transparent 70%);
+    }
+    .whiteline-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+      padding: 40px 20px;
+    }
+    .whiteline-content h1 {
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      line-height: .92;
+      margin: 0 0 16px;
+      letter-spacing: -.02em;
+    }
+    .whiteline-content .tag {
+      display: inline-block;
+      padding: 6px 18px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .whiteline-section {
+      max-width: 820px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+    .whiteline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .whiteline-card {
+      background: #101722;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .coming-soon {
+      font-size: 15px;
+      color: #a0a8b8;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- GLOBAL NAV -->
+  <div id="site-header"></div>
+  <script src="shared/nav.js"></script>
+
+  <!-- HERO -->
+  <section class="whiteline-hero">
+    <div class="whiteline-content">
+      <div class="tag">New Transmission</div>
+      <h1>WHITE LINE</h1>
+      <p style="font-size:1.25rem; max-width:520px; margin:0 auto 32px; color:#c5ccd8;">
+        A new sonic and visual world from The Grei Show.<br>
+        Sound. Story. Signal.
+      </p>
+      <button onclick="document.getElementById('join').scrollIntoView({behavior:'smooth'})" 
+              style="min-height:52px; padding:0 32px; border-radius:999px; background:#fff; color:#000; font-weight:800; border:none; cursor:pointer;">
+        Join the Signal
+      </button>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="whiteline-section">
+    <h2 style="text-align:center; margin-bottom:16px;">What is White Line?</h2>
+    <p style="max-width:620px; margin:0 auto; text-align:center; color:#a8b0c0; line-height:1.7;">
+      White Line is an upcoming multi-format release — part music project, part interactive story, 
+      part visual experiment. It continues the universe built across The Astral Thread, the Arcade, 
+      and the wider Grei Show catalogue.
+    </p>
+
+    <div class="whiteline-grid">
+      <div class="whiteline-card">
+        <h3 style="margin-top:0;">Sound</h3>
+        <p>New original music and dub explorations in the signature Grei Show style.</p>
+      </div>
+      <div class="whiteline-card">
+        <h3 style="margin-top:0;">Story</h3>
+        <p>Chapters and narrative threads that expand the world you already know.</p>
+      </div>
+      <div class="whiteline-card">
+        <h3 style="margin-top:0;">Signal</h3>
+        <p>Interactive and visual experiences that pull you deeper into the transmission.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section id="join" class="whiteline-section" style="text-align:center; padding:60px 20px 80px;">
+    <h2 style="margin-bottom:12px;">Stay in the Signal</h2>
+    <p class="coming-soon">White Line is currently in active creation. Be the first to know when it drops.</p>
+
+    <div style="max-width:420px; margin:32px auto 0;">
+      <a href="connect.html?interest=white-line" 
+         style="display:inline-block; min-height:52px; padding:0 36px; border-radius:999px; background:#1f6feb; color:#fff; text-decoration:none; font-weight:800; line-height:52px;">
+        Get Early Access
+      </a>
+    </div>
+    <p style="margin-top:24px; font-size:13px; color:#6f7888;">
+      Or join the release list via the main site footer.
+    </p>
+  </section>
+
+  <script>
+    // Optional: simple analytics hook if dataLayer exists
+    if (window.dataLayer) {
+      window.dataLayer.push({ event: 'page_view', page: 'whiteline' });
+    }
+  </script>
+</body>
+</html>

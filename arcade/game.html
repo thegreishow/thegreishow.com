@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Game | The Grei Show Arcade</title>
+<meta name="description" content="Game details, instructions, achievements and leaderboard for The Grei Show Arcade.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+:root{--bg:#07090d;--panel:#101722;--line:rgba(255,255,255,.12);--muted:rgba(255,255,255,.68);--blue:#1f6feb;--cyan:#00c8ff;--gold:#d7b957}*{box-sizing:border-box}body{margin:0;color:#fff;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.page{width:min(1120px,calc(100% - 28px));margin:auto;padding:28px 0 64px}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap}.link{display:inline-flex;align-items:center;min-height:42px;padding:0 14px;border:1px solid var(--line);border-radius:9px;color:#fff;text-decoration:none;background:rgba(255,255,255,.05);font-weight:800}.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:22px;padding:22px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025))}.art{aspect-ratio:16/9;border-radius:11px;overflow:hidden;background:#0b0f14;border:1px solid var(--line)}.art img{width:100%;height:100%;object-fit:cover;display:block}.kicker{margin:0 0 9px;color:var(--gold);font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase}h1{font-size:clamp(2.5rem,8vw,5.5rem);line-height:.92;margin:0}.description{color:var(--muted);line-height:1.7}.tags{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0}.tag{padding:5px 8px;border:1px solid var(--line);border-radius:999px;color:rgba(255,255,255,.78);font-size:12px}.play{display:inline-flex;justify-content:center;align-items:center;width:100%;min-height:54px;border:0;border-radius:10px;background:linear-gradient(135deg,var(--blue),#39a6ff);color:#fff;font-size:16px;font-weight:900;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}.panel{padding:20px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--panel),#131d2b)}.panel h2{margin:0 0 14px;font-size:20px}.panel p,.panel li{color:var(--muted);line-height:1.6}.panel ol,.panel ul{padding-left:20px;margin:0}.score-row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}.score-row:last-child{border-bottom:0}.score-row span:first-child{color:var(--gold);font-weight:900}.score-row strong{overflow:hidden;text-overflow:ellipsis}.score-row em{font-style:normal;font-weight:900}.status{color:var(--muted)}@media(max-width:820px){.hero,.grid{grid-template-columns:1fr}.page{padding-top:18px}}
+</style>
+</head>
+<body>
+<div id="site-header"></div><script src="../shared/nav.js"></script>
+<main class="page">
+<div class="topbar"><a class="link" href="../arcade.html">← Arcade</a><a class="link" href="leaderboard.html">Global Leaderboards</a></div>
+<div id="root"><p class="status">Loading game…</p></div>
+</main>
+<script type="module">
+import { recordGameLaunch, ARCADE_API_BASE } from './engine/community.js';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const instructions={
+'dreamweaver-oracle':['Move through the dream and collect story fragments.','Avoid corrupted memories and survive as long as possible.','Use each run to uncover a different version of the Oracle.'],
+'signal-runner':['Move left and right using A/D, arrow keys or the on-screen controls.','Collect blue signals to build your score.','Avoid red static; losing all three lives ends the transmission.'],
+'jamaica-run':['Run across Jamaica and collect coins.','Jump or dodge tropical obstacles using the on-screen controls.','Keep moving to build distance and set a new personal best.']
+};
+const achievements={
+'dreamweaver-oracle':['First Fragment — complete your first run','Dream Walker — survive a full memory cycle','Oracle Chosen — reach a top leaderboard position'],
+'signal-runner':['Clean Signal — collect 10 signals','No Static — survive without losing a life','Transmission Master — score 500+'],
+'jamaica-run':['First Mile — begin your island run','Coin Collector — gather 25 coins','Island Legend — claim a top leaderboard score']
+};
+async function getScores(id){try{const r=await fetch(`${ARCADE_API_BASE}/api/leaderboard?game=${encodeURIComponent(id)}`);if(!r.ok)throw 0;const d=await r.json();return Array.isArray(d.scores)?d.scores.slice(0,10):[]}catch{return[]}}
+async function init(){
+ const id=new URLSearchParams(location.search).get('id');
+ const root=document.getElementById('root');
+ const games=await fetch('./games/games.json').then(r=>r.json()).catch(()=>[]);
+ const game=games.find(g=>g.id===id);
+ if(!game){root.innerHTML='<section class="panel"><h1>Game not found</h1><p class="status">This game is unavailable or has been removed.</p></section>';return}
+ document.title=`${game.title} | The Grei Show Arcade`;
+ const scores=await getScores(game.id);
+ const how=instructions[game.id]||['Read the controls shown when the game opens.','Play a full run and chase your personal best.','Submit your score to climb the global leaderboard.'];
+ const badges=achievements[game.id]||['First Play — launch the game','Personal Best — improve your score','Top Ten — enter the global leaderboard'];
+ root.innerHTML=`<section class="hero"><div class="art"><img src="../${esc(game.thumbnail)}" alt="${esc(game.title)} artwork"></div><div><p class="kicker">${esc(game.creator||'The Grei Show')} · v${esc(game.version||'1.0')}</p><h1>${esc(game.title)}</h1><p class="description">${esc(game.description)}</p><div class="tags">${(game.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><button class="play" id="play">Play Now</button></div></section><section class="grid"><article class="panel"><h2>How to Play</h2><ol>${how.map(i=>`<li>${esc(i)}</li>`).join('')}</ol></article><article class="panel"><h2>Achievements</h2><ul>${badges.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></article><article class="panel"><h2>Top Scores</h2>${scores.length?scores.map((s,i)=>`<div class="score-row"><span>${i+1}</span><strong>${esc(s.name||'Dreamer')}</strong><em>${Number(s.score)||0}</em></div>`).join(''):'<p class="status">No global scores yet. Claim first place.</p>'}</article></section>`;
+ document.getElementById('play').onclick=()=>{recordGameLaunch(game);location.href=game.type==='external'?game.entry:`../${game.entry}`};
+}
+init();
+</script>
+</body>
+</html>

@@ -1,7 +1,11 @@
 # The Grei Show Website - PROJECT STATE
 
 ## Phase 1 Status
-**In Progress** - Foundation Architecture + Visual Polish
+**In Progress** - Foundation Architecture + Visual Polish + Performance
+
+## Recent Updates (July 18)
+- Added `loading="lazy"` + `decoding="async"` to key images on homepage for faster load times.
+- Improved alt texts and ARIA for accessibility.
 
 ## Completed
 - Basic folder structure established
@@ -70,4 +74,4 @@
 - Add structured content/data files for music, visuals, books, press, and arcade growth
 - Add lightweight QA checks for broken links, missing assets, and page metadata
 
-Last Updated: July 16, 2026
+Last Updated: July 18, 2026

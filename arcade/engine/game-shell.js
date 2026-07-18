@@ -1,4 +1,21 @@
 (() => {
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = async (input, init = {}) => {
+    const url = typeof input === 'string' ? input : input?.url || '';
+    if (url.includes('/api/leaderboard') && String(init.method || 'GET').toUpperCase() === 'POST' && init.body) {
+      try {
+        const account = JSON.parse(localStorage.getItem('grei_arcade_account') || 'null');
+        if (account?.playerCode && account?.pin) {
+          const payload = JSON.parse(init.body);
+          payload.playerCode = account.playerCode;
+          payload.playerPin = account.pin;
+          init = { ...init, body: JSON.stringify(payload) };
+        }
+      } catch {}
+    }
+    return nativeFetch(input, init);
+  };
+
   const style = document.createElement('style');
   style.textContent = `
     .grei-gamebar{position:fixed;top:0;left:0;right:0;z-index:99999;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:rgba(4,5,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}
@@ -13,44 +30,23 @@
   const bar = document.createElement('nav');
   bar.className = 'grei-gamebar';
   bar.innerHTML = `<a href="../../../arcade.html" aria-label="Back to Arcade">← Arcade</a><strong>${gameName}</strong><div class="grei-gamebar-actions"><button type="button" data-grei-pause>Pause</button><button type="button" data-grei-fullscreen>Full screen</button></div>`;
-  const spacer = document.createElement('div');
-  spacer.className = 'grei-gamebar-spacer';
-  const pauseScreen = document.createElement('div');
-  pauseScreen.className = 'grei-pause-screen';
+  const spacer = document.createElement('div'); spacer.className = 'grei-gamebar-spacer';
+  const pauseScreen = document.createElement('div'); pauseScreen.className = 'grei-pause-screen';
   pauseScreen.innerHTML = '<div><h2>PAUSED</h2><p>Tap Pause again or press P to continue.</p></div>';
-  document.body.prepend(spacer);
-  document.body.prepend(bar);
-  document.body.appendChild(pauseScreen);
+  document.body.prepend(spacer); document.body.prepend(bar); document.body.appendChild(pauseScreen);
 
   let paused = false;
   const pauseBtn = bar.querySelector('[data-grei-pause]');
   const fullscreenBtn = bar.querySelector('[data-grei-fullscreen]');
-
   function setPaused(next) {
-    paused = Boolean(next);
-    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    paused = Boolean(next); pauseBtn.textContent = paused ? 'Resume' : 'Pause';
     pauseScreen.classList.toggle('show', paused);
     window.dispatchEvent(new CustomEvent('grei:pause', { detail: { paused } }));
   }
-
   pauseBtn.addEventListener('click', () => setPaused(!paused));
   pauseScreen.addEventListener('click', () => setPaused(false));
-  window.addEventListener('keydown', event => {
-    if (event.key.toLowerCase() === 'p') setPaused(!paused);
-  });
-
-  fullscreenBtn.addEventListener('click', async () => {
-    try {
-      if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch {}
-  });
-
-  document.addEventListener('fullscreenchange', () => {
-    fullscreenBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
-  });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) setPaused(true);
-  });
+  window.addEventListener('keydown', event => { if (event.key.toLowerCase() === 'p') setPaused(!paused); });
+  fullscreenBtn.addEventListener('click', async () => { try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); else await document.exitFullscreen(); } catch {} });
+  document.addEventListener('fullscreenchange', () => { fullscreenBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen'; });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
 })();

@@ -324,19 +324,6 @@
       line-height: 1;
     }
 
-    /* DEBUG BANNER FOR SOUND TESTING */
-    .debug-banner {
-      background: #ff3b30;
-      color: white;
-      padding: 12px;
-      text-align: center;
-      font-weight: 800;
-      font-size: 18px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      cursor: pointer;
-    }
-
     @media (max-width: 760px) {
       #arcade-root { width: min(100% - 24px, 1180px); padding-top: 26px; }
       .arcade-hero { grid-template-columns: 1fr; padding: 20px; }
@@ -354,40 +341,8 @@
   <div id="site-header"></div>
   <script src="shared/nav.js"></script>
 
-  <!-- DEBUG BANNER - TAP TO TEST SOUND -->
-  <div id="arcade-root" aria-live="polite">
-    <div class="debug-banner" onclick="testSound()">
-      🔴 TAP HERE TO TEST SOUND (iOS Safari) 🔴<br>
-      <small>If you hear a tone, sounds are working. Then play a game.</small>
-    </div>
-  </div>
+  <div id="arcade-root" aria-live="polite"></div>
 
   <script type="module" src="arcade/engine/loader.js"></script>
-
-  <script>
-    function testSound() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.value = 880;
-        gain.gain.value = 0.5;
-        const now = ctx.currentTime;
-        gain.gain.setValueAtTime(0.5, now);
-        gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.35);
-        alert('Sound played! (Check volume)');
-      } catch(e) {
-        alert('Audio error: ' + e.message);
-      }
-    }
-
-    // Also expose for games
-    window.testArcadeSound = testSound;
-  </script>
 </body>
 </html>

@@ -5,6 +5,15 @@
   let navInjected = false;
   let initialized = false;
 
+  function ensureFavicon() {
+    if (document.querySelector('link[rel="icon"]')) return;
+    const icon = document.createElement('link');
+    icon.rel = 'icon';
+    icon.type = 'image/svg+xml';
+    icon.href = '/assets/favicon.svg';
+    document.head.appendChild(icon);
+  }
+
   const parentPages = {
     'music-videos.html': 'visuals.html',
     'documentaries.html': 'visuals.html',
@@ -32,15 +41,11 @@
 
   function markCurrentNavLink() {
     const currentPage = getCurrentPage();
-
     document.querySelectorAll('.site-nav a').forEach(link => {
-      const isCurrentPage = getLinkPage(link) === currentPage;
-      link.toggleAttribute('aria-current', isCurrentPage);
+      link.toggleAttribute('aria-current', getLinkPage(link) === currentPage);
     });
-
     document.querySelectorAll('.nav-more').forEach(menu => {
-      const hasCurrentLink = Boolean(menu.querySelector('a[aria-current="page"]'));
-      menu.classList.toggle('has-current', hasCurrentLink);
+      menu.classList.toggle('has-current', Boolean(menu.querySelector('a[aria-current="page"]')));
     });
   }
 
@@ -48,7 +53,6 @@
     const toggle = document.querySelector('.nav-toggle');
     const nav = document.getElementById('primary-nav');
     if (!toggle || !nav) return;
-
     nav.classList.remove('is-open');
     toggle.setAttribute('aria-expanded', 'false');
     toggle.textContent = 'Menu';
@@ -60,40 +64,26 @@
     const toggle = document.querySelector('.nav-toggle');
     const nav = document.getElementById('primary-nav');
     if (!toggle || !nav || toggle.dataset.bound === 'true') return;
-
     toggle.dataset.bound = 'true';
-
     toggle.addEventListener('click', () => {
       const isOpen = nav.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', String(isOpen));
       toggle.textContent = isOpen ? 'Close' : 'Menu';
       if (!isOpen) document.querySelectorAll('.nav-more[open]').forEach(menu => menu.removeAttribute('open'));
     });
-
-    nav.addEventListener('click', event => {
-      if (!event.target.closest('a')) return;
-      closeMobileNav();
-    });
-
+    nav.addEventListener('click', event => { if (event.target.closest('a')) closeMobileNav(); });
     document.addEventListener('click', event => {
       const header = document.querySelector('.site-header');
-      if (!header || header.contains(event.target)) return;
-      closeMobileNav();
+      if (header && !header.contains(event.target)) closeMobileNav();
     });
-
     document.addEventListener('keydown', event => {
-      if (event.key !== 'Escape') return;
-      closeMobileNav({ returnFocus: nav.classList.contains('is-open') });
+      if (event.key === 'Escape') closeMobileNav({ returnFocus: nav.classList.contains('is-open') });
     });
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 900) closeMobileNav();
-    }, { passive: true });
+    window.addEventListener('resize', () => { if (window.innerWidth > 900) closeMobileNav(); }, { passive: true });
   }
 
   function initSiteEvents() {
     if (window.greiTrack) return;
-
     const campaignKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
     const params = new URLSearchParams(window.location.search);
     const currentCampaign = campaignKeys.reduce((campaign, key) => {
@@ -101,59 +91,33 @@
       if (value) campaign[key] = value;
       return campaign;
     }, {});
-
-    try {
-      if (Object.keys(currentCampaign).length) {
-        sessionStorage.setItem('grei_attribution', JSON.stringify(currentCampaign));
-      }
-    } catch {}
-
-    function getAttribution() {
-      try {
-        return JSON.parse(sessionStorage.getItem('grei_attribution') || '{}');
-      } catch (error) {
-        return {};
-      }
-    }
-
+    try { if (Object.keys(currentCampaign).length) sessionStorage.setItem('grei_attribution', JSON.stringify(currentCampaign)); } catch {}
+    function getAttribution() { try { return JSON.parse(sessionStorage.getItem('grei_attribution') || '{}'); } catch { return {}; } }
     function track(eventName, details) {
-      const trackedEvent = {
-        event: eventName,
-        page: window.location.pathname || '/',
-        ...getAttribution(),
-        ...details
-      };
-
+      const trackedEvent = { event: eventName, page: window.location.pathname || '/', ...getAttribution(), ...details };
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push(trackedEvent);
       window.dispatchEvent(new CustomEvent('grei:track', { detail: trackedEvent }));
     }
-
     function getSafeDestination(target) {
       const rawDestination = target.getAttribute('href') || '';
       if (!rawDestination) return '';
       if (rawDestination.startsWith('#')) return rawDestination;
-
       try {
         const url = new URL(rawDestination, window.location.href);
         if (url.protocol === 'mailto:' || url.protocol === 'tel:') return url.protocol.slice(0, -1);
         return url.origin === window.location.origin ? url.pathname : `${url.origin}${url.pathname}`;
-      } catch (error) {
-        return '';
-      }
+      } catch { return ''; }
     }
-
     document.addEventListener('click', event => {
       const target = event.target.closest('[data-track]');
       if (!target) return;
-
       track('grei_cta_click', {
         action: target.dataset.track,
         label: target.dataset.trackLabel || target.textContent.trim(),
         destination: getSafeDestination(target)
       });
     });
-
     window.greiTrack = track;
     track('grei_page_view', { title: document.title });
   }
@@ -166,66 +130,48 @@
 
   function injectNav(html) {
     const existing = document.querySelector('.site-header');
-
     if (navInjected || existing) {
       navInjected = true;
       bindNavControls();
       markCurrentNavLink();
       return;
     }
-
     const mount = document.getElementById('site-header');
-
-    if (mount) {
-      mount.innerHTML = html;
-    } else {
+    if (mount) mount.innerHTML = html;
+    else {
       const wrapper = document.createElement('div');
       wrapper.innerHTML = html;
       document.body.insertBefore(wrapper.firstElementChild, document.body.firstChild);
     }
-
     navInjected = true;
     bindNavControls();
     markCurrentNavLink();
   }
 
   async function fetchNavHtml() {
-    const paths = ['shared/nav.html', '/shared/nav.html'];
-
-    for (const path of paths) {
+    for (const path of ['shared/nav.html', '/shared/nav.html']) {
       try {
         const res = await fetch(path, { cache: 'no-cache' });
         if (res.ok) return res.text();
-      } catch (err) {
-        // Try the next path before reporting failure.
-      }
+      } catch {}
     }
-
     throw new Error('Shared navigation not found');
   }
 
   async function loadNav() {
-    try {
-      const html = await fetchNavHtml();
-      injectNav(html);
-    } catch (err) {
-      console.error('[Nav Loader] Failed to load navigation:', err);
-      injectEmergencyNav();
-    }
+    try { injectNav(await fetchNavHtml()); }
+    catch (err) { console.error('[Nav Loader] Failed to load navigation:', err); injectEmergencyNav(); }
   }
 
   function init() {
     if (initialized) return;
     initialized = true;
+    ensureFavicon();
     initSiteEvents();
     loadNav();
   }
 
   window.markCurrentNavLink = markCurrentNavLink;
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
-  } else {
-    init();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
 })();

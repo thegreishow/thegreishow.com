@@ -4,13 +4,12 @@
 **In Progress** - Foundation Architecture + Visual Polish + Performance + Arcade Polish
 
 ## Recent Updates (July 18)
-- Removed debug banner from arcade.html (clean state restored).
-- Significantly improved arcade sound system for iOS Safari compatibility:
-  - Auto AudioContext unlock on first user gesture (touch/click).
-  - Better tone generation and timing.
-  - Sound toggle in gamebar.
-  - Interaction sounds (click, hit, success, move) now more reliable across devices.
-- Signal Runner movement feel enhanced with velocity-scaled tones.
+- Cleaned arcade.html (debug banner removed).
+- Simplified sound system in game-shell.js for maximum compatibility (especially iOS Safari):
+  - Uses a fresh AudioContext for each sound (avoids suspended context issues).
+  - Reliable short tones for click, hit, success, move.
+  - Sound toggle button remains.
+- Signal Runner has velocity-based movement tones.
 
 ## Completed
 - Basic folder structure established

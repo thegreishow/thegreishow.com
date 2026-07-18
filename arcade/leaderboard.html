@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Global Leaderboards | The Grei Show Arcade</title>
+<meta name="description" content="Global high scores across every game in The Grei Show Arcade.">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/theme.css">
+<style>
+:root{--bg:#07090d;--panel:#101722;--line:rgba(255,255,255,.12);--muted:rgba(255,255,255,.68);--blue:#1f6feb;--gold:#d7b957}*{box-sizing:border-box}body{margin:0;color:#fff;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.page{width:min(1120px,calc(100% - 28px));margin:auto;padding:28px 0 64px}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap}.link{display:inline-flex;align-items:center;min-height:42px;padding:0 14px;border:1px solid var(--line);border-radius:9px;color:#fff;text-decoration:none;background:rgba(255,255,255,.05);font-weight:800}.hero{padding:28px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025));margin-bottom:18px}.kicker{margin:0 0 9px;color:var(--gold);font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase}h1{font-size:clamp(2.6rem,8vw,5.5rem);line-height:.92;margin:0}.hero p:last-child{max-width:700px;color:var(--muted);line-height:1.7}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.tab{min-height:42px;padding:0 14px;border:1px solid var(--line);border-radius:9px;color:#fff;background:rgba(255,255,255,.04);font-weight:800;cursor:pointer}.tab.active{background:var(--blue);border-color:var(--blue)}.board{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:linear-gradient(180deg,var(--panel),#131d2b)}.board-head,.row{display:grid;grid-template-columns:70px minmax(0,1fr) 130px 120px;gap:14px;align-items:center;padding:14px 18px}.board-head{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--line)}.row{border-bottom:1px solid rgba(255,255,255,.08)}.row:last-child{border-bottom:0}.rank{font-size:20px;font-weight:900;color:var(--gold)}.name{font-weight:900;overflow:hidden;text-overflow:ellipsis}.score{font-size:18px;font-weight:900}.meta{color:var(--muted);font-size:13px}.empty{padding:28px;color:var(--muted);text-align:center}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat{padding:16px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.04)}.stat strong{display:block;font-size:28px}.stat span{color:var(--muted);font-size:12px}@media(max-width:680px){.board-head{display:none}.row{grid-template-columns:48px 1fr auto}.row .meta{grid-column:2/4}.summary{grid-template-columns:1fr}.page{padding-top:18px}}
+</style>
+</head>
+<body>
+<div id="site-header"></div><script src="../shared/nav.js"></script>
+<main class="page">
+<div class="topbar"><a class="link" href="../arcade.html">← Arcade</a></div>
+<section class="hero"><p class="kicker">The Grei Show Arcade</p><h1>Global Leaderboards</h1><p>Every registered game, every top score, one shared competitive home.</p></section>
+<div id="root"><p class="empty">Loading leaderboards…</p></div>
+</main>
+<script type="module">
+import { ARCADE_API_BASE } from './engine/community.js';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+let games=[],boards={},active='all';
+async function loadBoard(game){try{const r=await fetch(`${ARCADE_API_BASE}/api/leaderboard?game=${encodeURIComponent(game.id)}`);if(!r.ok)throw 0;const d=await r.json();return Array.isArray(d.scores)?d.scores.slice(0,50):[]}catch{return[]}}
+function combined(){return games.flatMap(g=>(boards[g.id]||[]).map(s=>({...s,gameId:g.id,gameTitle:g.title}))).sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0)).slice(0,50)}
+function render(){
+ const root=document.getElementById('root');
+ const rows=active==='all'?combined():(boards[active]||[]).map(s=>({...s,gameId:active,gameTitle:games.find(g=>g.id===active)?.title||active}));
+ const total=Object.values(boards).reduce((n,s)=>n+s.length,0),leaders=Object.values(boards).filter(s=>s.length).length;
+ root.innerHTML=`<section class="summary"><div class="stat"><strong>${games.length}</strong><span>Competitive games</span></div><div class="stat"><strong>${total}</strong><span>Scores loaded</span></div><div class="stat"><strong>${leaders}</strong><span>Active boards</span></div></section><div class="tabs"><button class="tab ${active==='all'?'active':''}" data-id="all">Overall</button>${games.map(g=>`<button class="tab ${active===g.id?'active':''}" data-id="${esc(g.id)}">${esc(g.title)}</button>`).join('')}</div><section class="board"><div class="board-head"><span>Rank</span><span>Player</span><span>Score</span><span>Game</span></div>${rows.length?rows.map((s,i)=>`<div class="row"><span class="rank">${i+1}</span><span class="name">${esc(s.name||'Dreamer')}</span><span class="score">${Number(s.score)||0}</span><span class="meta">${esc(s.gameTitle)}</span></div>`).join(''):'<div class="empty">No scores on this board yet.</div>'}</section>`;
+ root.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{active=b.dataset.id;render()});
+}
+async function init(){
+ games=await fetch('./games/games.json').then(r=>r.json()).catch(()=>[]);
+ const results=await Promise.all(games.map(loadBoard));
+ games.forEach((g,i)=>boards[g.id]=results[i]);
+ render();
+}
+init();
+</script>
+</body>
+</html>

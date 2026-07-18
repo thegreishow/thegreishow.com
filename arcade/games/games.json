@@ -29,7 +29,7 @@
     "version": "1.0",
     "type": "native",
     "entry": "arcade/games/jamaica-run/index.html",
-    "thumbnail": "arcade/assets/thumbnails/kingston-dash.svg",
+    "thumbnail": "arcade/assets/thumbnails/jamaica-run.svg",
     "tags": ["runner", "Jamaica", "mobile", "action"]
   }
 ]

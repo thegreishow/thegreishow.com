@@ -1,9 +1,8 @@
 import { loadGameRegistry } from './registry.js';
-import { openGameEmbed } from './embed.js';
 import {
   ARCADE_AVATARS, hasPlayerProfile, hasSyncedAccount, getArcadeAccount,
   getPlayerProfile, savePlayerProfile, createSyncedAccount, loginSyncedAccount,
-  updateSyncedAccount, recordGameLaunch, getRecentActivity, getDailyChallenge, getArcadeLevel
+  updateSyncedAccount, getRecentActivity, getDailyChallenge, getArcadeLevel
 } from './community.js';
 
 let arcadeState={games:[],visibleGames:[],activeTag:'all',search:''};
@@ -11,9 +10,13 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const tagsOf=g=>Array.isArray(g.tags)?g.tags:[];
 
 function card(game){
-  const el=document.createElement('article');el.className='arcade-card';el.dataset.tags=tagsOf(game).join('|').toLowerCase();el.dataset.title=String(game.title||'').toLowerCase();
-  el.innerHTML=`<div class="arcade-card-inner"><div class="arcade-thumb"><img src="${esc(game.thumbnail||'')}" alt="${esc(game.title)} thumbnail" loading="lazy"></div><div class="arcade-info"><div class="arcade-meta"><span>${game.type==='external'?'External':'Native'}</span><span>v${esc(game.version||'1.0')}</span></div><h3>${esc(game.title)}</h3><p>${esc(game.description||'')}</p><div class="arcade-tags">${tagsOf(game).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div><button class="play-btn" type="button" data-id="${esc(game.id)}">Play</button></div>`;
-  el.querySelector('img')?.addEventListener('error',e=>{e.currentTarget.removeAttribute('src');e.currentTarget.alt=''});return el;
+  const el=document.createElement('article');
+  el.className='arcade-card';
+  el.dataset.tags=tagsOf(game).join('|').toLowerCase();
+  el.dataset.title=String(game.title||'').toLowerCase();
+  el.innerHTML=`<div class="arcade-card-inner"><div class="arcade-thumb"><img src="${esc(game.thumbnail||'')}" alt="${esc(game.title)} thumbnail" loading="lazy"></div><div class="arcade-info"><div class="arcade-meta"><span>${game.type==='external'?'External':'Native'}</span><span>v${esc(game.version||'1.0')}</span></div><h3>${esc(game.title)}</h3><p>${esc(game.description||'')}</p><div class="arcade-tags">${tagsOf(game).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div><button class="play-btn" type="button" data-id="${esc(game.id)}">View Game</button></div>`;
+  el.querySelector('img')?.addEventListener('error',e=>{e.currentTarget.removeAttribute('src');e.currentTarget.alt=''});
+  return el;
 }
 
 function community(games){
@@ -23,7 +26,7 @@ function community(games){
 
 function shell(root,games){
   const tags=[...new Set(games.flatMap(tagsOf))].sort(),native=games.filter(g=>g.type!=='external').length;
-  root.innerHTML=`<main class="arcade-shell"><section class="arcade-hero"><div><p class="arcade-kicker">The Grei Show</p><h1>Arcade</h1><p>Play original games, chase personal bests, and carry one synced identity across devices.</p></div><div class="arcade-stats"><div class="stat"><strong>${games.length}</strong><span>Total games</span></div><div class="stat"><strong>${native}</strong><span>Native builds</span></div><div class="stat"><strong>${games.length-native}</strong><span>External embeds</span></div><div class="stat"><strong>${tags.length}</strong><span>Tags</span></div></div></section>${community(games)}<section class="arcade-controls"><input class="arcade-search" type="search" placeholder="Search arcade" aria-label="Search arcade games"><div class="arcade-filters"><button class="filter active" data-tag="all">All</button>${tags.map(t=>`<button class="filter" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></section><div class="arcade-status"></div><section class="arcade-grid"></section></main>`;
+  root.innerHTML=`<main class="arcade-shell"><section class="arcade-hero"><div><p class="arcade-kicker">The Grei Show</p><h1>Arcade</h1><p>Play original games, chase personal bests, and carry one synced identity across devices.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a class="filter active" href="arcade/leaderboard.html" style="display:inline-flex;align-items:center;text-decoration:none">Global Leaderboards</a></div></div><div class="arcade-stats"><div class="stat"><strong>${games.length}</strong><span>Total games</span></div><div class="stat"><strong>${native}</strong><span>Native builds</span></div><div class="stat"><strong>${games.length-native}</strong><span>External embeds</span></div><div class="stat"><strong>${tags.length}</strong><span>Tags</span></div></div></section>${community(games)}<section class="arcade-controls"><input class="arcade-search" type="search" placeholder="Search arcade" aria-label="Search arcade games"><div class="arcade-filters"><button class="filter active" data-tag="all">All</button>${tags.map(t=>`<button class="filter" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div></section><div class="arcade-status"></div><section class="arcade-grid"></section></main>`;
 }
 
 function avatarChoices(selected){return ARCADE_AVATARS.map(a=>`<label class="player-avatar-choice"><input type="radio" name="avatar" value="${a}" ${a===selected?'checked':''}><span>${a}</span></label>`).join('')}
@@ -42,7 +45,7 @@ function openProfile(root,mode='create'){
 }
 
 function filter(){const q=arcadeState.search.trim().toLowerCase(),tag=arcadeState.activeTag.toLowerCase();arcadeState.visibleGames=arcadeState.games.filter(g=>(tag==='all'||tagsOf(g).map(t=>t.toLowerCase()).includes(tag))&&(!q||[g.title,g.description,g.creator,...tagsOf(g)].join(' ').toLowerCase().includes(q)))}
-function render(root){const grid=root.querySelector('.arcade-grid'),status=root.querySelector('.arcade-status');grid.innerHTML='';status.textContent=`${arcadeState.visibleGames.length} of ${arcadeState.games.length} games shown`;arcadeState.visibleGames.forEach(g=>grid.appendChild(card(g)));grid.querySelectorAll('.play-btn').forEach(btn=>btn.onclick=()=>{const g=arcadeState.games.find(x=>x.id===btn.dataset.id);if(!g)return;if(!hasPlayerProfile()){openProfile(root);return}recordGameLaunch(g);g.type==='external'?openGameEmbed(g):location.href=g.entry})}
-function attach(root){root.querySelector('#edit-profile').onclick=()=>openProfile(root,hasSyncedAccount()?'create':'create');root.querySelector('.arcade-search').oninput=e=>{arcadeState.search=e.target.value;filter();render(root)};root.querySelector('.arcade-filters').onclick=e=>{const b=e.target.closest('[data-tag]');if(!b)return;arcadeState.activeTag=b.dataset.tag;root.querySelectorAll('[data-tag]').forEach(x=>x.classList.toggle('active',x===b));filter();render(root)}}
+function render(root){const grid=root.querySelector('.arcade-grid'),status=root.querySelector('.arcade-status');grid.innerHTML='';status.textContent=`${arcadeState.visibleGames.length} of ${arcadeState.games.length} games shown`;arcadeState.visibleGames.forEach(g=>grid.appendChild(card(g)));grid.querySelectorAll('.play-btn').forEach(btn=>btn.onclick=()=>{location.href=`arcade/game.html?id=${encodeURIComponent(btn.dataset.id)}`})}
+function attach(root){root.querySelector('#edit-profile').onclick=()=>openProfile(root,'create');root.querySelector('.arcade-search').oninput=e=>{arcadeState.search=e.target.value;filter();render(root)};root.querySelector('.arcade-filters').onclick=e=>{const b=e.target.closest('[data-tag]');if(!b)return;arcadeState.activeTag=b.dataset.tag;root.querySelectorAll('[data-tag]').forEach(x=>x.classList.toggle('active',x===b));filter();render(root)}}
 async function init(){const root=document.getElementById('arcade-root');root.innerHTML='<div class="arcade-empty">Loading arcade...</div>';const games=await loadGameRegistry();arcadeState={games,visibleGames:games,activeTag:'all',search:''};shell(root,games);attach(root);filter();render(root);if(!hasPlayerProfile())openProfile(root)}
 window.addEventListener('DOMContentLoaded',init);

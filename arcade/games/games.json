@@ -20,5 +20,16 @@
     "entry": "arcade/games/signal-runner/index.html",
     "thumbnail": "arcade/assets/thumbnails/signal-runner.svg",
     "tags": ["reflex", "music", "prototype"]
+  },
+  {
+    "id": "kingston-dash",
+    "title": "Kingston Dash",
+    "creator": "The Grei Show",
+    "description": "Sprint through Kingston, clear roadblocks, chain double jumps, and chase the global distance crown.",
+    "version": "1.0",
+    "type": "native",
+    "entry": "arcade/games/kingston-dash/index.html",
+    "thumbnail": "arcade/assets/thumbnails/kingston-dash.svg",
+    "tags": ["runner", "Jamaica", "mobile", "action"]
   }
 ]

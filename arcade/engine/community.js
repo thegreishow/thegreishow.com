@@ -1,6 +1,9 @@
 const PROFILE_KEY = 'grei_arcade_profile';
 const ACTIVITY_KEY = 'grei_arcade_activity';
+const LEGACY_NAME_KEY = 'grei_arcade_player_name';
 const ARCADE_API_BASE = 'https://grei-arcade-api.thegreishow.workers.dev';
+
+export const ARCADE_AVATARS = ['🌌', '⚡', '🔥', '🎮', '🪐', '👾', '🎧', '🧿'];
 
 const communityStyles = new URL('./community.css', import.meta.url);
 if (!document.querySelector('link[data-arcade-community]')) {
@@ -21,10 +24,17 @@ function escapeHtml(value) {
   }[char]));
 }
 
+export function hasPlayerProfile() {
+  const saved = safeParse(localStorage.getItem(PROFILE_KEY), null);
+  return Boolean(saved && String(saved.name || '').trim());
+}
+
 export function getPlayerProfile() {
   const saved = safeParse(localStorage.getItem(PROFILE_KEY), {});
+  const legacyName = String(localStorage.getItem(LEGACY_NAME_KEY) || '').trim();
   return {
-    name: String(saved.name || 'Guest Dreamer').slice(0, 18),
+    name: String(saved.name || legacyName || 'Guest Dreamer').slice(0, 18),
+    avatar: ARCADE_AVATARS.includes(saved.avatar) ? saved.avatar : ARCADE_AVATARS[0],
     joinedAt: saved.joinedAt || new Date().toISOString(),
     xp: Number(saved.xp) || 0,
     gamesPlayed: Number(saved.gamesPlayed) || 0
@@ -33,13 +43,17 @@ export function getPlayerProfile() {
 
 export function savePlayerProfile(profile) {
   const clean = {
-    name: String(profile.name || 'Guest Dreamer').replace(/[^a-zA-Z0-9 _-]/g, '').trim().slice(0, 18) || 'Guest Dreamer',
+    name: String(profile.name || 'Guest Dreamer')
+      .replace(/[^a-zA-Z0-9 _-]/g, '')
+      .trim()
+      .slice(0, 18) || 'Guest Dreamer',
+    avatar: ARCADE_AVATARS.includes(profile.avatar) ? profile.avatar : ARCADE_AVATARS[0],
     joinedAt: profile.joinedAt || new Date().toISOString(),
     xp: Math.max(0, Number(profile.xp) || 0),
     gamesPlayed: Math.max(0, Number(profile.gamesPlayed) || 0)
   };
   localStorage.setItem(PROFILE_KEY, JSON.stringify(clean));
-  localStorage.setItem('grei_arcade_player_name', clean.name);
+  localStorage.setItem(LEGACY_NAME_KEY, clean.name);
   return clean;
 }
 
@@ -81,7 +95,7 @@ export function getArcadeLevel(xp) {
 function localTopThree(gameId) {
   if (gameId === 'signal-runner') {
     const score = Number(localStorage.getItem('grei-signal-runner-best') || 0);
-    const name = localStorage.getItem('grei_arcade_player_name') || 'You';
+    const name = localStorage.getItem(LEGACY_NAME_KEY) || 'You';
     return score ? [{ name, score }] : [];
   }
   return safeParse(localStorage.getItem(`grei_arcade_scores_${gameId}`), [])

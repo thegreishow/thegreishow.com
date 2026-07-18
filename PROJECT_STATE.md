@@ -1,15 +1,17 @@
 # The Grei Show Website - PROJECT STATE
 
 ## Phase 1 Status
-**In Progress** - Foundation Architecture + Visual Polish + Performance + Arcade Polish
+**In Progress** - Foundation Architecture + Visual Polish + Performance + Arcade Polish + New Pages
 
 ## Recent Updates (July 18)
-- Cleaned arcade.html (debug banner removed).
-- Simplified sound system in game-shell.js for maximum compatibility (especially iOS Safari):
-  - Uses a fresh AudioContext for each sound (avoids suspended context issues).
-  - Reliable short tones for click, hit, success, move.
-  - Sound toggle button remains.
-- Signal Runner has velocity-based movement tones.
+- Created and launched clean, professional **White Line** page (whiteline.html).
+  - Strong hero with tagline and call-to-action.
+  - Clear sections explaining Sound / Story / Signal.
+  - Join / Early Access flow linking to Connect page.
+  - Fully styled and responsive.
+  - **Hidden from main navigation** (like admin.html and epk.html) for now.
+- Major visual & movement polish pushed live to Signal Runner (stronger lean, trails, scrolling speed grid).
+- Simplified reliable sound system in arcade (per-sound AudioContext for better iOS compatibility).
 
 ## Completed
 - Basic folder structure established
@@ -63,6 +65,7 @@
 - Photography still depends on externally hosted images
 - Arcade needs deeper per-game sound integration and leaderboard UI
 - Photography still needs reliable site-owned image assets
+- White Line page is live but intentionally hidden from main navigation for now
 
 ## Next
 - Replace the temporary Astral Thread manuscript data when the official-official version is confirmed
@@ -77,5 +80,6 @@
 - Expand arcade with more playable experiences and stronger game-state systems
 - Add structured content/data files for music, visuals, books, press, and arcade growth
 - Add lightweight QA checks for broken links, missing assets, and page metadata
+- Decide on public reveal strategy for White Line page when ready
 
 Last Updated: July 18, 2026

@@ -6,46 +6,13 @@ window.WHITE_LINE_DATA = {
 /*
   WHITE LINE CONTENT MANAGEMENT
   --------------------------------
-  Add approved talent and active casting calls to the arrays above.
-
-  Talent example:
-  {
-    id: "unique-name",
-    name: "Professional Name",
-    legalName: "Optional legal name",
-    disciplines: ["Dancer", "Model"],
-    location: "Kingston, Jamaica",
-    image: "assets/images/whiteline/talent-name.jpg",
-    bio: "Short client-facing biography.",
-    credits: ["Credit one", "Credit two"],
-    instagram: "https://instagram.com/username",
-    reel: "https://youtube.com/...",
-    featured: true
-  }
-
-  Casting-call example:
-  {
-    id: "project-slug",
-    title: "Dancers Needed for Music Video",
-    type: "Music video",
-    location: "Kingston",
-    date: "2026-08-15",
-    deadline: "2026-08-05",
-    compensation: "JMD $15,000",
-    status: "open",
-    summary: "Short public brief.",
-    requirements: ["Age 21+", "Dancehall experience"],
-    applySubject: "Casting Application — Project Name"
-  }
+  Approved talent and casting calls now load from Supabase when configured.
+  The arrays above remain as a safe fallback while the database is being connected.
 */
 
-/*
-  STATIC PORTAL ENHANCEMENTS
-  These features improve the experience before a database-backed dashboard is added.
-*/
 (() => {
   const STORAGE_PREFIX = "whiteLineDraft:";
-  const WHATSAPP_NUMBER = "1876"; // Replace with the full agency WhatsApp number, digits only.
+  const WHATSAPP_NUMBER = "18768832197";
 
   const ready = (callback) => {
     if (document.readyState === "loading") {
@@ -89,6 +56,13 @@ window.WHITE_LINE_DATA = {
       .wl-floating-contact{position:fixed;right:18px;bottom:18px;z-index:950;display:flex;align-items:center;gap:9px;min-height:50px;padding:0 18px;border-radius:999px;background:#d8ff63;color:#071018;font-weight:950;text-decoration:none;box-shadow:0 12px 35px rgba(0,0,0,.35)}
       .wl-floating-contact:hover{transform:translateY(-2px)}
       .wl-required-note{margin:10px 0 0;color:#9eabba;font-size:.82rem}
+      .wl-database-status{display:grid;gap:4px;margin:0 0 20px;padding:15px 17px;border:1px solid rgba(255,255,255,.12);border-radius:15px;background:rgba(255,255,255,.025)}
+      .wl-database-status strong{color:#f5f7fb}.wl-database-status span{color:#9eabba;line-height:1.5}
+      .wl-database-status[data-state="success"]{border-color:rgba(216,255,99,.4);background:rgba(216,255,99,.08)}
+      .wl-database-status[data-state="warning"]{border-color:rgba(255,215,145,.4)}
+      .wl-database-status[data-state="error"],.wl-message[data-state="error"]{border-color:rgba(255,115,115,.5);background:rgba(255,90,90,.08)}
+      .wl-message[data-state="success"]{border-color:rgba(216,255,99,.45);background:rgba(216,255,99,.08)}
+      .wl-submit:disabled{opacity:.65;cursor:wait}
       @media(max-width:620px){.wl-floating-contact{right:11px;bottom:11px;padding:0 15px}.wl-floating-contact span{display:none}}
     `;
     document.head.appendChild(style);
@@ -108,16 +82,11 @@ window.WHITE_LINE_DATA = {
     const storageKey = STORAGE_PREFIX + key;
     const panel = form.querySelector(".wl-form-grid");
     if (!panel) return;
-
     restoreDraft(form, storageKey);
 
     const tools = document.createElement("div");
     tools.className = "wl-field full wl-form-tools";
-    tools.innerHTML = `
-      <button class="wl-mini-button" type="button" data-save>Save draft</button>
-      <button class="wl-mini-button" type="button" data-clear>Clear form</button>
-      <span class="wl-save-status" aria-live="polite">Drafts are stored only on this device.</span>
-    `;
+    tools.innerHTML = `<button class="wl-mini-button" type="button" data-save>Save draft</button><button class="wl-mini-button" type="button" data-clear>Clear form</button><span class="wl-save-status" aria-live="polite">Drafts are stored only on this device.</span>`;
     panel.appendChild(tools);
 
     const status = tools.querySelector(".wl-save-status");
@@ -142,11 +111,6 @@ window.WHITE_LINE_DATA = {
       localStorage.removeItem(storageKey);
       status.textContent = "Form and saved draft cleared.";
     });
-
-    form.addEventListener("submit", () => {
-      localStorage.removeItem(storageKey);
-      status.textContent = "Draft cleared after submission was prepared.";
-    });
   }
 
   function saveDraft(form, storageKey) {
@@ -160,30 +124,17 @@ window.WHITE_LINE_DATA = {
         values[field.name] = field.value;
       }
     });
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(values));
-    } catch (error) {
-      console.warn("White Line draft could not be saved.", error);
-    }
+    try { localStorage.setItem(storageKey, JSON.stringify(values)); } catch (error) { console.warn("White Line draft could not be saved.", error); }
   }
 
   function restoreDraft(form, storageKey) {
     let values;
-    try {
-      values = JSON.parse(localStorage.getItem(storageKey) || "null");
-    } catch {
-      localStorage.removeItem(storageKey);
-      return;
-    }
+    try { values = JSON.parse(localStorage.getItem(storageKey) || "null"); } catch { localStorage.removeItem(storageKey); return; }
     if (!values) return;
-
     form.querySelectorAll("input, select, textarea").forEach((field) => {
       if (!field.name || !(field.name in values)) return;
-      if (field.type === "checkbox") {
-        field.checked = Array.isArray(values[field.name]) && values[field.name].includes(field.value || true);
-      } else {
-        field.value = values[field.name];
-      }
+      if (field.type === "checkbox") field.checked = Array.isArray(values[field.name]) && values[field.name].includes(field.value || true);
+      else field.value = values[field.name];
     });
   }
 
@@ -192,7 +143,7 @@ window.WHITE_LINE_DATA = {
     if (!submit) return;
     const field = document.createElement("div");
     field.className = "wl-field full";
-    field.innerHTML = `<label class="wl-consent"><input type="checkbox" name="consent" required><span>${text}</span></label><p class="wl-required-note">Required before preparing the application.</p>`;
+    field.innerHTML = `<label class="wl-consent"><input type="checkbox" name="consent" required><span>${text}</span></label><p class="wl-required-note">Required before submitting.</p>`;
     submit.parentElement.insertBefore(field, submit);
   }
 
@@ -201,7 +152,7 @@ window.WHITE_LINE_DATA = {
     if (!submit) return;
     const checklist = document.createElement("div");
     checklist.className = "wl-field full wl-checklist";
-    checklist.innerHTML = "<h4>Prepare these attachments</h4><ul><li>Clear headshot and full-body image</li><li>Résumé, EPK or model comp card where applicable</li><li>Performance reel, portfolio or social links</li><li>Guardian contact for applicants under 18</li></ul>";
+    checklist.innerHTML = "<h4>Prepare these materials</h4><ul><li>Clear headshot and full-body image links</li><li>Résumé, EPK or model comp card where applicable</li><li>Performance reel, portfolio or social links</li><li>Guardian contact for applicants under 18</li></ul>";
     submit.parentElement.insertBefore(checklist, submit);
   }
 
@@ -215,13 +166,12 @@ window.WHITE_LINE_DATA = {
   }
 
   function addFloatingContact() {
-    if (!WHATSAPP_NUMBER || WHATSAPP_NUMBER === "1876") return;
     const message = encodeURIComponent("Hello White Line Entertainment, I would like to discuss talent or a casting project.");
     const link = document.createElement("a");
     link.className = "wl-floating-contact";
     link.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     link.target = "_blank";
-    link.rel = "noopener";
+    link.rel = "noopener noreferrer";
     link.setAttribute("aria-label", "Contact White Line Entertainment on WhatsApp");
     link.innerHTML = "◉ <span>WhatsApp White Line</span>";
     document.body.appendChild(link);
@@ -241,9 +191,23 @@ window.WHITE_LINE_DATA = {
   function improveExternalLinks() {
     document.querySelectorAll("a[target='_blank']").forEach((link) => {
       const rel = new Set((link.rel || "").split(/\s+/).filter(Boolean));
-      rel.add("noopener");
-      rel.add("noreferrer");
-      link.rel = [...rel].join(" ");
+      rel.add("noopener"); rel.add("noreferrer"); link.rel = [...rel].join(" ");
     });
   }
+
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  Promise.resolve()
+    .then(() => loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"))
+    .then(() => loadScript("assets/js/whiteline-supabase-config.js"))
+    .then(() => loadScript("assets/js/whiteline-database.js"))
+    .catch((error) => console.error("White Line database scripts failed to load", error));
 })();

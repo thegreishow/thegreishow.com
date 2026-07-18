@@ -4,11 +4,13 @@
 **In Progress** - Foundation Architecture + Visual Polish + Performance + Arcade Polish
 
 ## Recent Updates (July 18)
-- Added interaction-only sound system to arcade games (clicks, hits, success tones via Web Audio API). No background music.
-- Sound toggle button (🔊 / 🔇) added to gamebar.
-- Improved pause/fullscreen UX and visibility handling.
-- Added `window.greiPlaySound` helpers for easy integration in games.
-- Homepage lazy loading + accessibility improvements propagated.
+- Removed debug banner from arcade.html (clean state restored).
+- Significantly improved arcade sound system for iOS Safari compatibility:
+  - Auto AudioContext unlock on first user gesture (touch/click).
+  - Better tone generation and timing.
+  - Sound toggle in gamebar.
+  - Interaction sounds (click, hit, success, move) now more reliable across devices.
+- Signal Runner movement feel enhanced with velocity-scaled tones.
 
 ## Completed
 - Basic folder structure established
@@ -60,7 +62,7 @@
 - Project inquiries still use the visitor's email app until a hosted form or CRM endpoint is connected
 - Direct payment links, a service deposit, and a real newsletter provider still require owner accounts and business settings
 - Photography still depends on externally hosted images
-- Arcade needs more play-state polish such as deeper sound integration per game and leaderboard display
+- Arcade needs deeper per-game sound integration and leaderboard UI
 - Photography still needs reliable site-owned image assets
 
 ## Next
@@ -73,7 +75,7 @@
 - Connect a hosted service deposit or checkout, scheduling link, and email-list provider
 - Connect an analytics provider to the existing dataLayer events and define conversion goals
 - Add privacy, refund, and service terms before direct checkout launches
-- Expand arcade with more playable experiences and stronger game-state systems (deeper per-game sound hooks)
+- Expand arcade with more playable experiences and stronger game-state systems
 - Add structured content/data files for music, visuals, books, press, and arcade growth
 - Add lightweight QA checks for broken links, missing assets, and page metadata
 

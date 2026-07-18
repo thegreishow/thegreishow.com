@@ -3,390 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>White Line Entertainment | Jamaican Talent & Bookings</title>
-  <meta name="description" content="White Line Entertainment connects Jamaican dancers, DJs, models, hosts, actors, artists, and creators with events, productions, campaigns, and casting opportunities.">
-  <meta name="theme-color" content="#070707">
+  <title>White Line Entertainment | Talent, Casting & Bookings</title>
+  <meta name="description" content="Discover Jamaican creative talent, view casting calls, submit a professional profile, or request talent through White Line Entertainment.">
+  <meta name="theme-color" content="#03060c">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://thegreishow.com/whiteline.html">
-  <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
   <style>
-    :root {
-      --wl-bg: #070707;
-      --wl-panel: #111;
-      --wl-panel-2: #171717;
-      --wl-line: rgba(255,255,255,.12);
-      --wl-text: #f7f4ed;
-      --wl-muted: #aaa59a;
-      --wl-gold: #d8b55b;
-      --wl-gold-2: #f0d78f;
-      --wl-green: #55d6a4;
-      --wl-danger: #ff7676;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--wl-bg); color: var(--wl-text); }
-    body.modal-open { overflow: hidden; }
-    a { color: inherit; }
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
-
-    .wl-page { overflow: hidden; }
-    .wl-wrap { width: min(1160px, calc(100% - 32px)); margin: 0 auto; }
-    .wl-section { padding: 88px 0; }
-    .wl-eyebrow { margin: 0 0 14px; color: var(--wl-gold-2); font-size: .76rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
-    .wl-title { margin: 0; max-width: 900px; font-size: clamp(2.45rem, 7vw, 6.7rem); line-height: .92; letter-spacing: -.055em; }
-    .wl-heading { margin: 0; font-size: clamp(2rem, 4vw, 4rem); line-height: .98; letter-spacing: -.045em; }
-    .wl-copy { max-width: 720px; color: var(--wl-muted); font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.7; }
-
-    .wl-hero { position: relative; min-height: 82vh; display: grid; align-items: end; padding: 120px 0 72px; background: radial-gradient(circle at 78% 18%, rgba(216,181,91,.18), transparent 28%), linear-gradient(135deg, #16120b 0%, #080808 46%, #020202 100%); }
-    .wl-hero::after { content: "WHITE LINE"; position: absolute; right: -1vw; bottom: -3vw; color: rgba(255,255,255,.025); font-size: clamp(6rem, 19vw, 18rem); font-weight: 900; letter-spacing: -.08em; white-space: nowrap; pointer-events: none; }
-    .wl-hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.3fr .7fr; gap: 54px; align-items: end; }
-    .wl-lead { max-width: 720px; margin: 26px 0 0; color: #c8c3b8; font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.65; }
-    .wl-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-    .wl-button { display: inline-flex; justify-content: center; align-items: center; min-height: 50px; padding: 0 22px; border: 1px solid var(--wl-line); border-radius: 999px; background: rgba(255,255,255,.04); color: var(--wl-text); font-weight: 800; text-decoration: none; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
-    .wl-button:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.09); }
-    .wl-button.primary { border-color: var(--wl-gold); background: var(--wl-gold); color: #100d07; }
-    .wl-button.primary:hover { background: var(--wl-gold-2); }
-    .wl-hero-card { border: 1px solid var(--wl-line); border-radius: 28px; padding: 26px; background: rgba(11,11,11,.72); backdrop-filter: blur(18px); }
-    .wl-hero-card strong { display: block; margin-bottom: 8px; font-size: 1.35rem; }
-    .wl-hero-card p { margin: 0; color: var(--wl-muted); line-height: 1.6; }
-    .wl-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
-    .wl-stat { padding: 16px; border-radius: 18px; background: rgba(255,255,255,.05); }
-    .wl-stat b { display: block; color: var(--wl-gold-2); font-size: 1.35rem; }
-    .wl-stat span { color: var(--wl-muted); font-size: .82rem; }
-
-    .wl-services { background: #0b0b0b; border-top: 1px solid var(--wl-line); border-bottom: 1px solid var(--wl-line); }
-    .wl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 38px; }
-    .wl-card { min-height: 220px; padding: 28px; border: 1px solid var(--wl-line); border-radius: 26px; background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.015)); }
-    .wl-card-number { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(216,181,91,.45); border-radius: 50%; color: var(--wl-gold-2); font-size: .82rem; font-weight: 900; }
-    .wl-card h3 { margin: 28px 0 10px; font-size: 1.35rem; }
-    .wl-card p { margin: 0; color: var(--wl-muted); line-height: 1.6; }
-
-    .wl-process { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; align-items: start; }
-    .wl-steps { display: grid; gap: 14px; }
-    .wl-step { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 22px; border: 1px solid var(--wl-line); border-radius: 22px; background: var(--wl-panel); }
-    .wl-step b { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--wl-gold); color: #100d07; }
-    .wl-step h3 { margin: 0 0 6px; font-size: 1.1rem; }
-    .wl-step p { margin: 0; color: var(--wl-muted); line-height: 1.55; }
-
-    .wl-forms { background: linear-gradient(180deg, #111 0%, #080808 100%); border-top: 1px solid var(--wl-line); }
-    .wl-tabs { display: flex; gap: 10px; margin: 34px 0 20px; }
-    .wl-tab { min-height: 46px; padding: 0 18px; border: 1px solid var(--wl-line); border-radius: 999px; background: transparent; color: var(--wl-muted); font-weight: 800; }
-    .wl-tab[aria-selected="true"] { border-color: var(--wl-gold); background: var(--wl-gold); color: #100d07; }
-    .wl-form-shell { display: grid; grid-template-columns: 1.35fr .65fr; gap: 22px; }
-    .wl-form-card, .wl-side-card { border: 1px solid var(--wl-line); border-radius: 28px; background: var(--wl-panel); }
-    .wl-form-card { padding: clamp(22px, 4vw, 40px); }
-    .wl-side-card { align-self: start; padding: 28px; position: sticky; top: 24px; }
-    .wl-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .wl-field { display: grid; gap: 8px; }
-    .wl-field.full { grid-column: 1 / -1; }
-    .wl-field label { color: #d8d3c8; font-size: .86rem; font-weight: 750; }
-    .wl-field label span { color: var(--wl-muted); font-weight: 500; }
-    .wl-field input, .wl-field select, .wl-field textarea { width: 100%; border: 1px solid var(--wl-line); border-radius: 15px; outline: none; background: #090909; color: var(--wl-text); padding: 14px 15px; }
-    .wl-field textarea { min-height: 140px; resize: vertical; }
-    .wl-field input:focus, .wl-field select:focus, .wl-field textarea:focus { border-color: var(--wl-gold); box-shadow: 0 0 0 3px rgba(216,181,91,.12); }
-    .wl-checks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
-    .wl-check { display: flex; gap: 9px; align-items: center; padding: 11px 12px; border: 1px solid var(--wl-line); border-radius: 14px; color: var(--wl-muted); }
-    .wl-check input { width: auto; accent-color: var(--wl-gold); }
-    .wl-submit { width: 100%; min-height: 54px; margin-top: 6px; border: 0; border-radius: 16px; background: var(--wl-gold); color: #100d07; font-weight: 900; }
-    .wl-submit:hover { background: var(--wl-gold-2); }
-    .wl-note { margin: 12px 0 0; color: var(--wl-muted); font-size: .82rem; line-height: 1.5; }
-    .wl-message { margin-top: 18px; padding: 16px; border: 1px solid rgba(85,214,164,.4); border-radius: 16px; background: rgba(85,214,164,.08); color: #cffff0; }
-    .wl-message[hidden] { display: none; }
-    .wl-side-card h3 { margin-top: 0; font-size: 1.4rem; }
-    .wl-side-card ul { margin: 18px 0 0; padding-left: 18px; color: var(--wl-muted); line-height: 1.8; }
-    .wl-direct { display: block; margin-top: 22px; color: var(--wl-gold-2); font-weight: 800; overflow-wrap: anywhere; }
-
-    .wl-footer { padding: 34px 0; border-top: 1px solid var(--wl-line); color: var(--wl-muted); font-size: .85rem; }
-    .wl-footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-
-    [hidden] { display: none !important; }
-
-    @media (max-width: 900px) {
-      .wl-hero-grid, .wl-process, .wl-form-shell { grid-template-columns: 1fr; }
-      .wl-grid { grid-template-columns: 1fr 1fr; }
-      .wl-side-card { position: static; }
-    }
-
-    @media (max-width: 620px) {
-      .wl-wrap { width: min(100% - 22px, 1160px); }
-      .wl-section { padding: 66px 0; }
-      .wl-hero { min-height: auto; padding: 110px 0 58px; }
-      .wl-grid, .wl-form-grid, .wl-checks { grid-template-columns: 1fr; }
-      .wl-tabs { display: grid; grid-template-columns: 1fr 1fr; }
-      .wl-tab { padding: 0 10px; }
-      .wl-title { font-size: clamp(2.75rem, 15vw, 4.7rem); }
-    }
+    :root{--wl-bg:#03060c;--wl-panel:#08111d;--wl-panel-2:#0c1725;--wl-line:rgba(255,255,255,.12);--wl-text:#f5f7fb;--wl-muted:#9eabba;--wl-accent:#d8ff63;--wl-accent-soft:rgba(216,255,99,.12)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--wl-bg);color:var(--wl-text)}a{color:inherit}button,input,select,textarea{font:inherit}.wl-page{overflow:hidden}.wl-wrap{width:min(1180px,calc(100% - 32px));margin:auto}.wl-section{padding:82px 0}.wl-kicker{margin:0 0 12px;color:var(--wl-accent);font-size:.74rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase}.wl-title,.wl-heading{margin:0;letter-spacing:-.055em;line-height:.94}.wl-title{max-width:900px;font-size:clamp(3rem,8vw,7rem)}.wl-heading{font-size:clamp(2.1rem,5vw,4.4rem)}.wl-copy{max-width:760px;color:var(--wl-muted);font-size:1.08rem;line-height:1.7}.wl-hero{position:relative;padding:118px 0 76px;background:radial-gradient(circle at 78% 16%,rgba(216,255,99,.14),transparent 28%),linear-gradient(145deg,#07111e 0%,#03060c 58%)}.wl-hero:after{content:"WHITE LINE";position:absolute;right:-2vw;bottom:-4vw;color:rgba(255,255,255,.025);font-size:clamp(6rem,18vw,17rem);font-weight:950;letter-spacing:-.09em;white-space:nowrap;pointer-events:none}.wl-hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.35fr .65fr;gap:48px;align-items:end}.wl-lead{max-width:760px;margin:24px 0 0;color:#c6d0dc;font-size:clamp(1.05rem,2vw,1.35rem);line-height:1.65}.wl-actions,.wl-filters{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.wl-button,.wl-filter{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border:1px solid var(--wl-line);border-radius:999px;background:rgba(255,255,255,.04);color:var(--wl-text);font-weight:850;text-decoration:none;cursor:pointer}.wl-button.primary,.wl-filter.active{border-color:var(--wl-accent);background:var(--wl-accent);color:#071018}.wl-button:hover,.wl-filter:hover{border-color:rgba(216,255,99,.55);background:var(--wl-accent-soft)}.wl-button.primary:hover{background:#e5ff91}.wl-brand-card{padding:26px;border:1px solid var(--wl-line);border-radius:26px;background:rgba(8,17,29,.78);backdrop-filter:blur(18px)}.wl-brand-card strong{display:block;margin-bottom:8px;font-size:1.3rem}.wl-brand-card p{margin:0;color:var(--wl-muted);line-height:1.6}.wl-brand-mark{display:inline-flex;margin-bottom:22px;padding:8px 11px;border:1px solid rgba(216,255,99,.35);border-radius:999px;color:var(--wl-accent);font-size:.72rem;font-weight:900;letter-spacing:.14em}.wl-directory,.wl-casting{border-top:1px solid var(--wl-line)}.wl-directory{background:#050a12}.wl-section-head{display:flex;justify-content:space-between;gap:30px;align-items:end}.wl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}.talent-card,.casting-card,.wl-panel{border:1px solid var(--wl-line);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));overflow:hidden}.talent-card{cursor:pointer;transition:.2s ease}.talent-card:hover{transform:translateY(-4px);border-color:rgba(216,255,99,.42)}.talent-image{width:100%;aspect-ratio:4/3;object-fit:cover;background:#101925}.talent-body,.casting-card{padding:22px}.talent-body h3,.casting-card h3{margin:0 0 6px;font-size:1.35rem}.talent-meta,.casting-meta{color:var(--wl-muted);font-size:.86rem}.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.tag{padding:6px 9px;border-radius:999px;background:var(--wl-accent-soft);color:var(--wl-accent);font-size:.72rem;font-weight:850}.empty-state{grid-column:1/-1;padding:50px 24px;border:1px dashed rgba(255,255,255,.18);border-radius:24px;text-align:center;color:var(--wl-muted)}.empty-state strong{display:block;margin-bottom:8px;color:var(--wl-text);font-size:1.25rem}.casting-card{display:flex;flex-direction:column;gap:13px}.casting-status{align-self:flex-start;padding:6px 9px;border-radius:999px;background:var(--wl-accent);color:#071018;font-size:.7rem;font-weight:950;text-transform:uppercase}.casting-card p{margin:0;color:var(--wl-muted);line-height:1.6}.casting-card .wl-button{margin-top:auto}.wl-forms{border-top:1px solid var(--wl-line);background:linear-gradient(180deg,#08111d 0%,#03060c 100%)}.wl-tabs{display:flex;gap:10px;margin:30px 0 20px}.wl-tab{min-height:46px;padding:0 18px;border:1px solid var(--wl-line);border-radius:999px;background:transparent;color:var(--wl-muted);font-weight:850;cursor:pointer}.wl-tab[aria-selected="true"]{border-color:var(--wl-accent);background:var(--wl-accent);color:#071018}.wl-form-shell{display:grid;grid-template-columns:1.35fr .65fr;gap:20px}.wl-panel{padding:clamp(22px,4vw,38px)}.wl-side{align-self:start}.wl-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.wl-field{display:grid;gap:7px}.wl-field.full{grid-column:1/-1}.wl-field label{color:#d7dee8;font-size:.84rem;font-weight:800}.wl-field input,.wl-field select,.wl-field textarea{width:100%;padding:14px 15px;border:1px solid var(--wl-line);border-radius:14px;outline:none;background:#03070d;color:var(--wl-text)}.wl-field textarea{min-height:132px;resize:vertical}.wl-field input:focus,.wl-field select:focus,.wl-field textarea:focus{border-color:var(--wl-accent);box-shadow:0 0 0 3px var(--wl-accent-soft)}.wl-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wl-check{display:flex;align-items:center;gap:8px;padding:11px;border:1px solid var(--wl-line);border-radius:12px;color:var(--wl-muted)}.wl-check input{width:auto;accent-color:var(--wl-accent)}.wl-submit{width:100%;min-height:52px;border:0;border-radius:14px;background:var(--wl-accent);color:#071018;font-weight:950;cursor:pointer}.wl-note,.wl-side li{color:var(--wl-muted);line-height:1.6}.wl-message{margin-top:16px;padding:15px;border:1px solid rgba(216,255,99,.38);border-radius:14px;background:var(--wl-accent-soft)}.wl-footer{padding:30px 0;border-top:1px solid var(--wl-line);color:var(--wl-muted);font-size:.84rem}.wl-footer-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}[hidden]{display:none!important}
+    .modal{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:18px;background:rgba(0,0,0,.82)}.modal-card{width:min(720px,100%);max-height:90vh;overflow:auto;padding:28px;border:1px solid var(--wl-line);border-radius:24px;background:#08111d}.modal-close{float:right;border:0;background:transparent;color:white;font-size:1.7rem}.modal-photo{width:100%;max-height:380px;object-fit:cover;border-radius:18px;background:#101925}.modal-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+    @media(max-width:900px){.wl-hero-grid,.wl-form-shell{grid-template-columns:1fr}.wl-grid{grid-template-columns:1fr 1fr}.wl-section-head{display:block}.wl-side{position:static}}@media(max-width:620px){.wl-wrap{width:min(100% - 22px,1180px)}.wl-section{padding:64px 0}.wl-hero{padding:105px 0 58px}.wl-grid,.wl-form-grid,.wl-checks{grid-template-columns:1fr}.wl-tabs{display:grid;grid-template-columns:1fr 1fr}.wl-title{font-size:clamp(3rem,15vw,4.8rem)}}
   </style>
 </head>
 <body>
   <div id="site-header"></div>
-
   <main class="wl-page">
-    <section class="wl-hero" aria-labelledby="wl-title">
+    <section class="wl-hero">
       <div class="wl-wrap wl-hero-grid">
         <div>
-          <p class="wl-eyebrow">White Line Entertainment · Kingston, Jamaica</p>
-          <h1 id="wl-title" class="wl-title">Talent moves culture. We move talent.</h1>
-          <p class="wl-lead">A Jamaican talent and booking network for dancers, DJs, models, hosts, actors, artists, creators, and production-ready personalities.</p>
-          <div class="wl-actions">
-            <a class="wl-button primary" href="#apply">Join the talent network</a>
-            <a class="wl-button" href="#book">Book talent</a>
-          </div>
+          <p class="wl-kicker">A division of The Grei Show creative universe</p>
+          <h1 class="wl-title">White Line Entertainment</h1>
+          <p class="wl-lead">A curated Jamaican talent network connecting dancers, models, actors, DJs, hosts, artists and creators with castings, productions, campaigns and live opportunities.</p>
+          <div class="wl-actions"><a class="wl-button primary" href="#talent">Browse talent</a><a class="wl-button" href="#casting">Casting calls</a><a class="wl-button" href="#join">Create a profile</a></div>
         </div>
-
-        <aside class="wl-hero-card" aria-label="White Line overview">
-          <strong>Built for real opportunities.</strong>
-          <p>We connect credible talent with music videos, events, campaigns, castings, performances, content, and brand work.</p>
-          <div class="wl-stat-grid">
-            <div class="wl-stat"><b>20%</b><span>Standard agency commission</span></div>
-            <div class="wl-stat"><b>Jamaica</b><span>Culture-first talent network</span></div>
-            <div class="wl-stat"><b>Direct</b><span>Clear booking requests</span></div>
-            <div class="wl-stat"><b>Flexible</b><span>Non-exclusive representation</span></div>
-          </div>
-        </aside>
+        <aside class="wl-brand-card"><span class="wl-brand-mark">WHITE LINE × THE GREI SHOW</span><strong>Curated, not automatic.</strong><p>Talent applications are reviewed before public profiles are published. Clients see a clean, professional roster instead of unverified submissions.</p></aside>
       </div>
     </section>
 
-    <section class="wl-section wl-services" aria-labelledby="services-title">
+    <section id="talent" class="wl-section wl-directory">
       <div class="wl-wrap">
-        <p class="wl-eyebrow">What we represent</p>
-        <h2 id="services-title" class="wl-heading">A working network for Jamaican creative talent.</h2>
-        <div class="wl-grid">
-          <article class="wl-card"><span class="wl-card-number">01</span><h3>Dancers & performers</h3><p>Music videos, stage shows, tours, choreography, live activations, and cultural events.</p></article>
-          <article class="wl-card"><span class="wl-card-number">02</span><h3>Models & actors</h3><p>Campaigns, commercials, editorial work, film, television, branded content, and castings.</p></article>
-          <article class="wl-card"><span class="wl-card-number">03</span><h3>DJs, hosts & artists</h3><p>Parties, launches, festivals, corporate events, private bookings, and entertainment programming.</p></article>
-          <article class="wl-card"><span class="wl-card-number">04</span><h3>Creators & influencers</h3><p>Social campaigns, product storytelling, appearances, lifestyle content, and audience-led collaborations.</p></article>
-          <article class="wl-card"><span class="wl-card-number">05</span><h3>Production support</h3><p>Talent sourcing, casting coordination, call sheets, on-site support, and production communication.</p></article>
-          <article class="wl-card"><span class="wl-card-number">06</span><h3>Custom casting</h3><p>Purpose-built shortlists for directors, producers, brands, agencies, promoters, and event teams.</p></article>
-        </div>
+        <div class="wl-section-head"><div><p class="wl-kicker">Talent directory</p><h2 class="wl-heading">Discover the roster.</h2></div><p class="wl-copy">Filter approved profiles by discipline, open a profile, view credits and portfolio links, then request that talent for a project.</p></div>
+        <div id="talent-filters" class="wl-filters"></div>
+        <div id="talent-grid" class="wl-grid"></div>
       </div>
     </section>
 
-    <section class="wl-section" aria-labelledby="process-title">
-      <div class="wl-wrap wl-process">
-        <div>
-          <p class="wl-eyebrow">How it works</p>
-          <h2 id="process-title" class="wl-heading">Simple enough to move quickly. Professional enough to trust.</h2>
-          <p class="wl-copy">White Line reviews submissions before adding talent to its active network. Clients receive a curated response based on availability, fit, budget, and production needs.</p>
-        </div>
-        <div class="wl-steps">
-          <article class="wl-step"><b>1</b><div><h3>Send the right details</h3><p>Talent submits a profile and portfolio links. Clients submit a brief, date, location, budget, and talent needs.</p></div></article>
-          <article class="wl-step"><b>2</b><div><h3>White Line reviews the request</h3><p>Submissions are checked for professionalism, fit, availability, and the information needed to move forward.</p></div></article>
-          <article class="wl-step"><b>3</b><div><h3>Terms are confirmed</h3><p>Scope, rates, commission, transportation, usage, call time, payment, and production requirements are agreed before the booking.</p></div></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="wl-section wl-forms" id="apply" aria-labelledby="forms-title">
+    <section id="casting" class="wl-section wl-casting">
       <div class="wl-wrap">
-        <p class="wl-eyebrow">Start here</p>
-        <h2 id="forms-title" class="wl-heading">Join the network or request talent.</h2>
-        <p class="wl-copy">Complete the form and your device will open a prepared email containing every detail. Review it, attach any files you want included, then press send.</p>
+        <div class="wl-section-head"><div><p class="wl-kicker">Opportunities</p><h2 class="wl-heading">Casting calls & bookings.</h2></div><p class="wl-copy">Public opportunities can be posted here with dates, compensation, requirements and a direct application route.</p></div>
+        <div id="casting-grid" class="wl-grid"></div>
+      </div>
+    </section>
 
-        <div class="wl-tabs" role="tablist" aria-label="White Line forms">
-          <button class="wl-tab" id="talent-tab" type="button" role="tab" aria-selected="true" aria-controls="talent-panel">I am talent</button>
-          <button class="wl-tab" id="client-tab" type="button" role="tab" aria-selected="false" aria-controls="client-panel">I need talent</button>
-        </div>
-
+    <section id="join" class="wl-section wl-forms">
+      <div class="wl-wrap">
+        <p class="wl-kicker">Join or book</p><h2 class="wl-heading">Enter the network.</h2>
+        <p class="wl-copy">Applications and client briefs come directly to White Line for review. Approved profiles and active castings are then published to the directory.</p>
+        <div class="wl-tabs"><button id="talent-tab" class="wl-tab" aria-selected="true">Talent application</button><button id="client-tab" class="wl-tab" aria-selected="false">Client request</button></div>
         <div class="wl-form-shell">
-          <div class="wl-form-card">
-            <section id="talent-panel" role="tabpanel" aria-labelledby="talent-tab">
-              <form id="talent-form">
-                <div class="wl-form-grid">
-                  <div class="wl-field"><label for="talent-name">Full name</label><input id="talent-name" name="name" type="text" autocomplete="name" required></div>
-                  <div class="wl-field"><label for="stage-name">Stage / professional name <span>(optional)</span></label><input id="stage-name" name="stageName" type="text"></div>
-                  <div class="wl-field"><label for="talent-email">Email</label><input id="talent-email" name="email" type="email" autocomplete="email" required></div>
-                  <div class="wl-field"><label for="talent-phone">WhatsApp / phone</label><input id="talent-phone" name="phone" type="tel" autocomplete="tel" required></div>
-                  <div class="wl-field"><label for="talent-location">City / parish</label><input id="talent-location" name="location" type="text" placeholder="Kingston, St. Andrew" required></div>
-                  <div class="wl-field"><label for="experience">Years of experience</label><input id="experience" name="experience" type="number" min="0" max="60" required></div>
-
-                  <fieldset class="wl-field full" style="border:0;padding:0;margin:0">
-                    <label>Primary disciplines</label>
-                    <div class="wl-checks">
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="Dancer"> Dancer</label>
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="Model"> Model</label>
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="Actor"> Actor</label>
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="DJ"> DJ</label>
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="Host / MC"> Host / MC</label>
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="Recording artist"> Recording artist</label>
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="Creator / influencer"> Creator / influencer</label>
-                      <label class="wl-check"><input type="checkbox" name="discipline" value="Other"> Other</label>
-                    </div>
-                  </fieldset>
-
-                  <div class="wl-field full"><label for="portfolio">Portfolio / social links</label><textarea id="portfolio" name="portfolio" placeholder="Instagram, TikTok, YouTube, website, Google Drive, Dropbox, showreel or EPK links" required></textarea></div>
-                  <div class="wl-field full"><label for="credits">Notable credits <span>(optional)</span></label><textarea id="credits" name="credits" placeholder="Music videos, shows, brands, productions, artists, campaigns or other relevant work"></textarea></div>
-                  <div class="wl-field full"><label for="talent-bio">Short professional bio</label><textarea id="talent-bio" name="bio" minlength="40" maxlength="700" required></textarea></div>
-                  <div class="wl-field full"><label class="wl-check"><input id="talent-consent" type="checkbox" required> I confirm this information is accurate and White Line may contact me about relevant opportunities.</label></div>
-                  <div class="wl-field full"><button class="wl-submit" type="submit">Prepare talent submission</button><p class="wl-note">This opens your email app. Add headshots, comp cards, résumés, or media files as attachments before sending.</p></div>
-                </div>
-                <div id="talent-message" class="wl-message" role="status" tabindex="-1" hidden></div>
-              </form>
-            </section>
-
-            <section id="client-panel" role="tabpanel" aria-labelledby="client-tab" hidden>
-              <form id="client-form">
-                <div class="wl-form-grid">
-                  <div class="wl-field"><label for="client-name">Your name</label><input id="client-name" name="name" type="text" autocomplete="name" required></div>
-                  <div class="wl-field"><label for="company">Company / production <span>(optional)</span></label><input id="company" name="company" type="text"></div>
-                  <div class="wl-field"><label for="client-email">Email</label><input id="client-email" name="email" type="email" autocomplete="email" required></div>
-                  <div class="wl-field"><label for="client-phone">WhatsApp / phone</label><input id="client-phone" name="phone" type="tel" autocomplete="tel" required></div>
-                  <div class="wl-field"><label for="project-type">Project type</label><select id="project-type" name="projectType" required><option value="">Choose one</option><option>Music video</option><option>Event / performance</option><option>Commercial / campaign</option><option>Film / television</option><option>Photo shoot</option><option>Social content</option><option>Private booking</option><option>Other</option></select></div>
-                  <div class="wl-field"><label for="talent-needed">Talent needed</label><input id="talent-needed" name="talentNeeded" type="text" placeholder="e.g. 6 dancers and 2 models" required></div>
-                  <div class="wl-field"><label for="project-date">Date</label><input id="project-date" name="date" type="date" required></div>
-                  <div class="wl-field"><label for="project-location">Location / venue</label><input id="project-location" name="location" type="text" required></div>
-                  <div class="wl-field"><label for="budget">Talent budget</label><select id="budget" name="budget" required><option value="">Choose a range</option><option>Not confirmed yet</option><option>Under JMD $50,000</option><option>JMD $50,000–$150,000</option><option>JMD $150,000–$500,000</option><option>JMD $500,000+</option><option>USD / international budget</option></select></div>
-                  <div class="wl-field"><label for="usage">Usage / distribution</label><input id="usage" name="usage" type="text" placeholder="Social, TV, digital ads, live event, worldwide, etc." required></div>
-                  <div class="wl-field full"><label for="client-brief">Project brief</label><textarea id="client-brief" name="brief" minlength="50" placeholder="Describe the concept, schedule, wardrobe, deliverables, audience, talent requirements, usage, transport, meals and any special conditions." required></textarea></div>
-                  <div class="wl-field full"><button class="wl-submit" type="submit">Prepare booking request</button><p class="wl-note">No booking is confirmed until talent availability, scope, rates, commission, deposit, and terms are agreed in writing.</p></div>
-                </div>
-                <div id="client-message" class="wl-message" role="status" tabindex="-1" hidden></div>
-              </form>
-            </section>
+          <div class="wl-panel">
+            <form id="talent-form">
+              <div class="wl-form-grid">
+                <div class="wl-field"><label for="name">Full name</label><input id="name" name="name" required></div>
+                <div class="wl-field"><label for="stage">Professional name</label><input id="stage" name="stage"></div>
+                <div class="wl-field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+                <div class="wl-field"><label for="phone">WhatsApp / phone</label><input id="phone" name="phone" required></div>
+                <div class="wl-field"><label for="location">Location</label><input id="location" name="location" required></div>
+                <div class="wl-field"><label for="experience">Years of experience</label><input id="experience" name="experience" type="number" min="0" required></div>
+                <fieldset class="wl-field full" style="border:0;padding:0;margin:0"><label>Disciplines</label><div class="wl-checks" id="discipline-checks"></div></fieldset>
+                <div class="wl-field full"><label for="portfolio">Portfolio and social links</label><textarea id="portfolio" name="portfolio" required></textarea></div>
+                <div class="wl-field full"><label for="bio">Professional bio</label><textarea id="bio" name="bio" minlength="40" required></textarea></div>
+                <div class="wl-field full"><label for="credits">Notable credits</label><textarea id="credits" name="credits"></textarea></div>
+                <div class="wl-field full"><button class="wl-submit" type="submit">Prepare profile application</button><p class="wl-note">Your email app opens with the application prepared. Attach clear headshots, full-body photos, résumé, EPK or comp card before sending.</p></div>
+              </div><div id="talent-message" class="wl-message" hidden></div>
+            </form>
+            <form id="client-form" hidden>
+              <div class="wl-form-grid">
+                <div class="wl-field"><label for="client-name">Name</label><input id="client-name" name="name" required></div>
+                <div class="wl-field"><label for="company">Company / production</label><input id="company" name="company"></div>
+                <div class="wl-field"><label for="client-email">Email</label><input id="client-email" name="email" type="email" required></div>
+                <div class="wl-field"><label for="client-phone">WhatsApp / phone</label><input id="client-phone" name="phone" required></div>
+                <div class="wl-field"><label for="project">Project type</label><input id="project" name="project" required></div>
+                <div class="wl-field"><label for="needed">Talent needed</label><input id="needed" name="needed" required></div>
+                <div class="wl-field"><label for="date">Date</label><input id="date" name="date" type="date" required></div>
+                <div class="wl-field"><label for="client-location">Location</label><input id="client-location" name="location" required></div>
+                <div class="wl-field"><label for="budget">Budget</label><input id="budget" name="budget" required></div>
+                <div class="wl-field"><label for="usage">Usage / distribution</label><input id="usage" name="usage" required></div>
+                <div class="wl-field full"><label for="brief">Full brief</label><textarea id="brief" name="brief" minlength="40" required></textarea></div>
+                <div class="wl-field full"><button class="wl-submit" type="submit">Prepare talent request</button></div>
+              </div><div id="client-message" class="wl-message" hidden></div>
+            </form>
           </div>
-
-          <aside class="wl-side-card">
-            <p class="wl-eyebrow">Before you submit</p>
-            <h3>Give us enough information to act.</h3>
-            <ul>
-              <li>Use working portfolio links.</li>
-              <li>Include a reachable WhatsApp number.</li>
-              <li>Clients should state date, location, usage, and budget.</li>
-              <li>Talent should attach recent, clear photos when emailing.</li>
-              <li>Do not send passwords, IDs, banking details, or sensitive documents through this form.</li>
-            </ul>
-            <a class="wl-direct" href="mailto:thegreishow@gmail.com?subject=White%20Line%20Entertainment%20Inquiry">thegreishow@gmail.com</a>
-          </aside>
+          <aside class="wl-panel wl-side"><p class="wl-kicker">How publishing works</p><h3>Applications stay private until approved.</h3><ol><li>Talent sends a complete application.</li><li>White Line reviews identity, media, quality and fit.</li><li>An approved profile is added to the managed roster.</li><li>Clients can browse it and request a booking.</li><li>Casting calls are posted publicly and removed when closed.</li></ol><p class="wl-note">This first-stage version keeps publishing controlled by you. It does not give applicants direct access to edit the live website.</p></aside>
         </div>
       </div>
     </section>
-
-    <footer class="wl-footer">
-      <div class="wl-wrap wl-footer-row"><span>WHITE LINE ENTERTAINMENT © 2026</span><span>Talent · Casting · Bookings · Production support</span></div>
-    </footer>
+    <footer class="wl-footer"><div class="wl-wrap wl-footer-row"><span>WHITE LINE ENTERTAINMENT © 2026</span><span>Part of The Grei Show</span></div></footer>
   </main>
 
+  <div id="profile-modal" class="modal" hidden><article class="modal-card"><button id="modal-close" class="modal-close" aria-label="Close">×</button><div id="modal-content"></div></article></div>
   <script src="shared/nav.js"></script>
+  <script src="assets/js/whiteline-data.js"></script>
   <script>
-    (() => {
-      const destination = 'thegreishow@gmail.com';
-      const tabs = [
-        { button: document.getElementById('talent-tab'), panel: document.getElementById('talent-panel'), hash: 'apply' },
-        { button: document.getElementById('client-tab'), panel: document.getElementById('client-panel'), hash: 'book' }
-      ];
-
-      function activateTab(index, updateHash = true) {
-        tabs.forEach((tab, i) => {
-          const active = i === index;
-          tab.button.setAttribute('aria-selected', String(active));
-          tab.panel.hidden = !active;
-        });
-        if (updateHash) history.replaceState(null, '', '#' + tabs[index].hash);
-      }
-
-      tabs.forEach((tab, index) => tab.button.addEventListener('click', () => activateTab(index)));
-      if (location.hash === '#book') activateTab(1, false);
-
-      function field(form, name) {
-        return String(new FormData(form).get(name) || '').trim();
-      }
-
-      function checkedValues(form, name) {
-        return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
-      }
-
-      function openPreparedEmail(subject, lines, messageElement) {
-        const body = lines.join('\n');
-        const href = `mailto:${destination}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        messageElement.innerHTML = `Your request is ready. <a href="${href}" style="color:inherit;font-weight:900">Open the prepared email</a>, review it, attach any files, then press send.`;
-        messageElement.hidden = false;
-        messageElement.focus();
-        window.location.href = href;
-      }
-
-      document.getElementById('talent-form').addEventListener('submit', event => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        const disciplines = checkedValues(form, 'discipline');
-        const message = document.getElementById('talent-message');
-
-        if (!disciplines.length) {
-          message.textContent = 'Select at least one primary discipline.';
-          message.hidden = false;
-          message.focus();
-          return;
-        }
-
-        const name = field(form, 'name');
-        const professionalName = field(form, 'stageName');
-        openPreparedEmail(
-          `White Line Talent Submission — ${professionalName || name}`,
-          [
-            'WHITE LINE ENTERTAINMENT — TALENT SUBMISSION',
-            '',
-            `Full name: ${name}`,
-            `Stage / professional name: ${professionalName || 'Not provided'}`,
-            `Email: ${field(form, 'email')}`,
-            `WhatsApp / phone: ${field(form, 'phone')}`,
-            `Location: ${field(form, 'location')}`,
-            `Years of experience: ${field(form, 'experience')}`,
-            `Disciplines: ${disciplines.join(', ')}`,
-            '',
-            'PORTFOLIO / SOCIAL LINKS',
-            field(form, 'portfolio'),
-            '',
-            'NOTABLE CREDITS',
-            field(form, 'credits') || 'Not provided',
-            '',
-            'SHORT PROFESSIONAL BIO',
-            field(form, 'bio'),
-            '',
-            'I confirm the information above is accurate and White Line may contact me about relevant opportunities.',
-            '',
-            'Attachments to add before sending: recent headshots, full-body photos, comp card, résumé, EPK or other relevant material.'
-          ],
-          message
-        );
-      });
-
-      document.getElementById('client-form').addEventListener('submit', event => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        const clientName = field(form, 'name');
-        const projectType = field(form, 'projectType');
-        const message = document.getElementById('client-message');
-
-        openPreparedEmail(
-          `White Line Booking Request — ${projectType} — ${clientName}`,
-          [
-            'WHITE LINE ENTERTAINMENT — CLIENT BOOKING REQUEST',
-            '',
-            `Contact name: ${clientName}`,
-            `Company / production: ${field(form, 'company') || 'Not provided'}`,
-            `Email: ${field(form, 'email')}`,
-            `WhatsApp / phone: ${field(form, 'phone')}`,
-            `Project type: ${projectType}`,
-            `Talent needed: ${field(form, 'talentNeeded')}`,
-            `Date: ${field(form, 'date')}`,
-            `Location / venue: ${field(form, 'location')}`,
-            `Talent budget: ${field(form, 'budget')}`,
-            `Usage / distribution: ${field(form, 'usage')}`,
-            '',
-            'PROJECT BRIEF',
-            field(form, 'brief'),
-            '',
-            'I understand that this is a booking request and is not confirmed until availability, scope, rates, commission, deposit, and terms are agreed in writing.'
-          ],
-          message
-        );
-      });
-    })();
+  (()=>{
+    const email='thegreishow@gmail.com',data=window.WHITE_LINE_DATA||{talent:[],castingCalls:[]},disciplines=['Dancer','Model','Actor','DJ','Host / MC','Recording artist','Creator / influencer','Other'];
+    const esc=s=>String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    document.getElementById('discipline-checks').innerHTML=disciplines.map(d=>`<label class="wl-check"><input type="checkbox" name="discipline" value="${esc(d)}"> ${esc(d)}</label>`).join('');
+    const talentGrid=document.getElementById('talent-grid'),filters=document.getElementById('talent-filters');let active='All';
+    const allCats=['All',...new Set(data.talent.flatMap(t=>t.disciplines||[]))];
+    filters.innerHTML=allCats.map(c=>`<button class="wl-filter${c==='All'?' active':''}" data-filter="${esc(c)}">${esc(c)}</button>`).join('');
+    function renderTalent(){const list=active==='All'?data.talent:data.talent.filter(t=>(t.disciplines||[]).includes(active));talentGrid.innerHTML=list.length?list.map(t=>`<article class="talent-card" data-id="${esc(t.id)}"><img class="talent-image" src="${esc(t.image||'assets/img/home-bg.webp')}" alt="${esc(t.name)}"><div class="talent-body"><h3>${esc(t.name)}</h3><div class="talent-meta">${esc(t.location||'Jamaica')}</div><div class="tags">${(t.disciplines||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div></div></article>`).join(''):`<div class="empty-state"><strong>The public roster is ready for approved profiles.</strong>Applications can be reviewed and added to <code>assets/js/whiteline-data.js</code>.</div>`}
+    renderTalent();filters.addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;active=b.dataset.filter;filters.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderTalent()});
+    const modal=document.getElementById('profile-modal'),mc=document.getElementById('modal-content');talentGrid.addEventListener('click',e=>{const card=e.target.closest('[data-id]');if(!card)return;const t=data.talent.find(x=>x.id===card.dataset.id);if(!t)return;mc.innerHTML=`<img class="modal-photo" src="${esc(t.image||'assets/img/home-bg.webp')}" alt="${esc(t.name)}"><p class="wl-kicker" style="margin-top:22px">${esc((t.disciplines||[]).join(' · '))}</p><h2 class="wl-heading">${esc(t.name)}</h2><p class="wl-copy">${esc(t.bio)}</p>${t.credits?.length?`<h3>Selected credits</h3><ul>${t.credits.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>`:''}<div class="modal-links">${t.instagram?`<a class="wl-button" target="_blank" rel="noopener" href="${esc(t.instagram)}">Instagram</a>`:''}${t.reel?`<a class="wl-button" target="_blank" rel="noopener" href="${esc(t.reel)}">View reel</a>`:''}<a class="wl-button primary" href="mailto:${email}?subject=${encodeURIComponent('Talent Request — '+t.name)}">Request talent</a></div>`;modal.hidden=false;document.body.style.overflow='hidden'});
+    const close=()=>{modal.hidden=true;document.body.style.overflow=''};document.getElementById('modal-close').onclick=close;modal.onclick=e=>{if(e.target===modal)close()};document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+    const casting=document.getElementById('casting-grid');casting.innerHTML=data.castingCalls.length?data.castingCalls.filter(c=>c.status!=='closed').map(c=>`<article class="casting-card"><span class="casting-status">${esc(c.status||'open')}</span><h3>${esc(c.title)}</h3><div class="casting-meta">${esc(c.type)} · ${esc(c.location)} · ${esc(c.date)}</div><p>${esc(c.summary)}</p><div class="tags">${(c.requirements||[]).map(r=>`<span class="tag">${esc(r)}</span>`).join('')}</div><strong>${esc(c.compensation||'Compensation provided in brief')}</strong><a class="wl-button primary" href="mailto:${email}?subject=${encodeURIComponent(c.applySubject||('Casting Application — '+c.title))}">Apply now</a></article>`).join(''):`<div class="empty-state"><strong>No public casting calls are open right now.</strong>New opportunities will appear here when published by White Line.</div>`;
+    const tabs=[document.getElementById('talent-tab'),document.getElementById('client-tab')],forms=[document.getElementById('talent-form'),document.getElementById('client-form')];tabs.forEach((t,i)=>t.onclick=()=>{tabs.forEach((x,j)=>x.setAttribute('aria-selected',String(i===j)));forms.forEach((x,j)=>x.hidden=i!==j)});
+    const val=(f,n)=>String(new FormData(f).get(n)||'').trim(),openMail=(subject,lines,msg)=>{const href=`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;msg.innerHTML=`Your email is ready. <a href="${href}"><strong>Open it here</strong></a>, attach files if needed, review, then send.`;msg.hidden=false;location.href=href};
+    forms[0].onsubmit=e=>{e.preventDefault();const f=e.currentTarget,c=[...f.querySelectorAll('[name=discipline]:checked')].map(x=>x.value),m=document.getElementById('talent-message');if(!c.length){m.textContent='Select at least one discipline.';m.hidden=false;return}openMail(`White Line Profile Application — ${val(f,'stage')||val(f,'name')}`,['WHITE LINE TALENT PROFILE APPLICATION','',`Name: ${val(f,'name')}`,`Professional name: ${val(f,'stage')||'Not provided'}`,`Email: ${val(f,'email')}`,`Phone: ${val(f,'phone')}`,`Location: ${val(f,'location')}`,`Experience: ${val(f,'experience')} years`,`Disciplines: ${c.join(', ')}`,'','BIO',val(f,'bio'),'','CREDITS',val(f,'credits')||'Not provided','','PORTFOLIO LINKS',val(f,'portfolio')],m)};
+    forms[1].onsubmit=e=>{e.preventDefault();const f=e.currentTarget,m=document.getElementById('client-message');openMail(`White Line Talent Request — ${val(f,'project')}`,['WHITE LINE CLIENT REQUEST','',`Name: ${val(f,'name')}`,`Company: ${val(f,'company')||'Not provided'}`,`Email: ${val(f,'email')}`,`Phone: ${val(f,'phone')}`,`Project: ${val(f,'project')}`,`Talent needed: ${val(f,'needed')}`,`Date: ${val(f,'date')}`,`Location: ${val(f,'location')}`,`Budget: ${val(f,'budget')}`,`Usage: ${val(f,'usage')}`,'','BRIEF',val(f,'brief')],m)};
+  })();
   </script>
 </body>
 </html>

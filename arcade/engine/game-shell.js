@@ -16,61 +16,108 @@
     return nativeFetch(input, init);
   };
 
-  // === INTERACTION SOUND SYSTEM (Motion/Click/Hit sounds only - no BGM) ===
-  let audioCtx;
+  // === IMPROVED INTERACTION SOUND SYSTEM (iOS Safari friendly) ===
+  let audioCtx = null;
   let soundEnabled = true;
+  let audioUnlocked = false;
 
-  function initAudio() {
+  function getAudioContext() {
     if (!audioCtx) {
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       } catch (e) {
         console.warn('AudioContext not supported');
+        return null;
       }
     }
     return audioCtx;
   }
 
-  function playTone(frequency, duration = 80, type = 'sine', volume = 0.3) {
-    if (!soundEnabled) return;
-    const ctx = initAudio();
+  // Unlock audio on first user gesture (critical for iOS Safari)
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    const ctx = getAudioContext();
     if (!ctx) return;
 
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
+    // Create and play a silent buffer to unlock
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
 
-    oscillator.type = type;
-    oscillator.frequency.value = frequency;
-
-    filter.type = 'lowpass';
-    filter.frequency.value = 1200;
-
-    gain.gain.value = volume;
-
-    const now = ctx.currentTime;
-    gain.gain.setValueAtTime(volume, now);
-    gain.gain.linearRampToValueAtTime(0.001, now + duration / 1000);
-
-    oscillator.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-
-    oscillator.start(now);
-    oscillator.stop(now + duration / 1000 + 0.05);
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(() => {
+        audioUnlocked = true;
+        console.log('Audio unlocked for iOS');
+      }).catch(() => {});
+    } else {
+      audioUnlocked = true;
+    }
   }
 
-  // Public sound helpers for games
+  function playTone(frequency, duration = 80, type = 'sine', volume = 0.3) {
+    if (!soundEnabled || !audioUnlocked) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      oscillator.type = type;
+      oscillator.frequency.value = frequency;
+
+      filter.type = 'lowpass';
+      filter.frequency.value = 1400;
+
+      gain.gain.value = volume;
+
+      const now = ctx.currentTime;
+      gain.gain.setValueAtTime(volume, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + (duration / 1000));
+
+      oscillator.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      oscillator.start(now);
+      oscillator.stop(now + (duration / 1000) + 0.05);
+    } catch (e) {
+      console.warn('Sound play error:', e);
+    }
+  }
+
+  // Public API - games call these
   window.greiPlaySound = {
-    click: () => playTone(880, 60, 'square', 0.25),
-    hit: () => playTone(220, 120, 'sawtooth', 0.35),
-    success: () => { playTone(660, 80, 'sine', 0.3); setTimeout(() => playTone(880, 60, 'sine', 0.25), 90); },
-    move: () => playTone(440, 40, 'triangle', 0.2),
-    error: () => playTone(180, 150, 'sawtooth', 0.4),
-    toggle: () => { soundEnabled = !soundEnabled; return soundEnabled; }
+    click: () => playTone(880, 60, 'square', 0.28),
+    hit: () => playTone(220, 110, 'sawtooth', 0.38),
+    success: () => {
+      playTone(660, 70, 'sine', 0.32);
+      setTimeout(() => playTone(880, 55, 'sine', 0.28), 85);
+    },
+    move: () => playTone(520, 45, 'triangle', 0.22),
+    error: () => playTone(180, 140, 'sawtooth', 0.42),
+    toggle: () => {
+      soundEnabled = !soundEnabled;
+      return soundEnabled;
+    }
   };
 
-  // === EXISTING STYLES + GAMEBAR ===
+  // Auto-unlock on any first tap/click in the document
+  function setupAudioUnlock() {
+    const unlockOnce = () => {
+      unlockAudio();
+      document.removeEventListener('touchstart', unlockOnce);
+      document.removeEventListener('click', unlockOnce);
+    };
+    document.addEventListener('touchstart', unlockOnce, { once: true, passive: true });
+    document.addEventListener('click', unlockOnce, { once: true });
+  }
+  setupAudioUnlock();
+
+  // === GAMEBAR + STYLES ===
   const style = document.createElement('style');
   style.textContent = `
     .grei-gamebar{position:fixed;top:0;left:0;right:0;z-index:99999;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:rgba(4,5,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}
@@ -89,7 +136,7 @@
     <a href="../../../arcade.html" aria-label="Back to Arcade">← Arcade</a>
     <strong>${gameName}</strong>
     <div class="grei-gamebar-actions">
-      <button type="button" data-grei-sound title="Toggle interaction sounds">🔊</button>
+      <button type="button" data-grei-sound title="Toggle sounds">🔊</button>
       <button type="button" data-grei-pause>Pause</button>
       <button type="button" data-grei-fullscreen>Full screen</button>
     </div>`;
@@ -102,7 +149,6 @@
   document.body.prepend(bar);
   document.body.appendChild(pauseScreen);
 
-  // Sound toggle button
   const soundBtn = bar.querySelector('[data-grei-sound]');
   soundBtn.addEventListener('click', () => {
     const enabled = window.greiPlaySound.toggle();
@@ -138,6 +184,5 @@
 
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
 
-  // Expose pause state
   window.greiIsPaused = () => paused;
 })();

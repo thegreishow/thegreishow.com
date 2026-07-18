@@ -4,541 +4,322 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiteline • The Grei Show</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/components.css">
     <link rel="stylesheet" href="assets/css/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Custom styles to blend with The Grei Show design */
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        .whiteline-hero {
+            background: linear-gradient(180deg, #0a0c12 0%, #05070a 100%);
+            position: relative;
         }
-        
-        .heading-serif {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-
         .section-header {
-            font-size: 2.1rem;
-            line-height: 2.4rem;
-            font-weight: 700;
-            letter-spacing: -0.04em;
+            font-size: 2rem;
+            letter-spacing: -0.03em;
         }
-
         .talent-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
         .talent-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
-
         .form-input {
-            background-color: #18181b;
+            background: #18181b;
             border: 1px solid #27272a;
-            color: white;
-            transition: all 0.2s ease;
+            color: #fff;
         }
-        
         .form-input:focus {
             border-color: #d4af37;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-            outline: none;
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
         }
-
         .category-pill {
             transition: all 0.2s ease;
-            user-select: none;
         }
-        
         .category-pill.active {
-            background-color: #d4af37;
+            background: #d4af37;
             color: #111113;
             border-color: #d4af37;
-            font-weight: 600;
         }
-
-        .modal {
-            animation: modalPopIn 0.2s ease forwards;
-        }
-
-        @keyframes modalPopIn {
-            from { opacity: 0; transform: scale(0.96) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .whiteline-gold {
-            color: #d4af37;
-        }
-
-        .media-upload-zone {
+        .media-zone {
             border: 2px dashed #3f3f46;
             transition: all 0.2s ease;
         }
-        
-        .media-upload-zone.dragover {
+        .media-zone.dragover {
             border-color: #d4af37;
-            background-color: rgba(212, 175, 55, 0.05);
+            background: rgba(212,175,55,0.05);
         }
-
-        .section-divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #27272a, transparent);
+        .profile-modal {
+            max-height: 92vh;
+            overflow-y: auto;
         }
     </style>
 </head>
-<body class="bg-[#111113] text-white">
-    <!-- GLOBAL NAV (matches the rest of the site) -->
+<body>
+    <!-- Shared Navigation -->
     <div id="site-header"></div>
     <script src="shared/nav.js"></script>
 
-    <!-- Hero / Intro Section -->
-    <div class="max-w-5xl mx-auto px-6 pt-12 pb-10 text-center">
-        <h1 class="text-5xl md:text-6xl font-bold tracking-tighter heading-serif mb-4">
-            Talent Submissions
-        </h1>
-        
-        <p class="max-w-lg mx-auto text-lg text-zinc-400 mb-8">
-            Submit your profile, photos, and video reel to be considered for representation 
-            by Whiteline Entertainment.
-        </p>
-
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button onclick="scrollToForm()" 
-                    class="group w-full sm:w-auto px-8 py-3.5 rounded-3xl bg-[#d4af37] hover:bg-amber-300 active:bg-amber-400 transition-all text-[#111113] font-semibold flex items-center justify-center gap-x-3">
-                <span>Submit Your Profile</span>
-                <i class="fa-solid fa-arrow-down group-active:translate-y-0.5 transition-transform"></i>
-            </button>
+    <!-- Hero -->
+    <div class="whiteline-hero py-16">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="inline-block px-4 py-1 rounded-full border border-white/20 text-xs tracking-[2px] mb-6">WHITELINE ENTERTAINMENT</div>
             
-            <button onclick="document.getElementById('roster-section').scrollIntoView({ behavior: 'smooth' })" 
-                    class="w-full sm:w-auto px-6 py-3.5 rounded-3xl border border-zinc-700 hover:bg-zinc-900 transition-all font-medium flex items-center justify-center gap-x-2 text-zinc-300 text-sm">
-                <span>View Submitted Profiles</span>
-            </button>
+            <h1 class="text-6xl md:text-7xl font-bold tracking-tighter mb-4">Talent Submissions</h1>
+            <p class="max-w-md mx-auto text-xl text-zinc-400 mb-8">
+                Submit your profile for consideration by Whiteline Entertainment.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="document.getElementById('form-section').scrollIntoView({behavior:'smooth'})" 
+                        class="px-8 py-3.5 rounded-2xl bg-[#d4af37] text-[#111113] font-semibold hover:bg-amber-300 transition flex items-center justify-center gap-x-2">
+                    Submit Profile
+                    <i class="fa-solid fa-arrow-down"></i>
+                </button>
+                <button onclick="document.getElementById('roster-section').scrollIntoView({behavior:'smooth'})" 
+                        class="px-8 py-3.5 rounded-2xl border border-white/20 hover:bg-white/5 transition">
+                    View Roster
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Profile Creation Form -->
-    <div id="form-section" class="max-w-5xl mx-auto px-6 pb-16">
-        <div class="flex items-end justify-between mb-6">
-            <div>
-                <span class="text-emerald-400 text-sm font-semibold tracking-widest">STEP 01</span>
-                <h2 class="section-header tracking-tighter">Create Your Talent Profile</h2>
-                <p class="text-zinc-400 mt-1">This information will be reviewed by our talent team</p>
-            </div>
+    <!-- Form Section -->
+    <div id="form-section" class="max-w-4xl mx-auto px-6 py-12">
+        <div class="mb-8">
+            <div class="text-emerald-400 text-sm font-semibold tracking-widest mb-1">STEP 01</div>
+            <h2 class="section-header tracking-tighter">Create Your Talent Profile</h2>
+            <p class="text-zinc-400 mt-2">All submissions are reviewed by our team.</p>
         </div>
 
-        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 md:p-10">
+        <div class="bg-[#111113] border border-zinc-800 rounded-3xl p-8 md:p-10">
             <form id="talent-form" onsubmit="handleFormSubmit(event)">
-                <!-- Personal Information -->
-                <div class="mb-9">
-                    <div class="flex items-center gap-x-3 mb-4">
-                        <i class="fa-solid fa-user text-[#d4af37] w-5"></i>
-                        <h3 class="font-semibold text-lg tracking-tight">Personal Information</h3>
+                
+                <!-- Personal Info -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-x-3 mb-5">
+                        <i class="fa-solid fa-user text-[#d4af37]"></i>
+                        <h3 class="font-semibold text-lg">Personal Information</h3>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-xs font-medium text-zinc-400 mb-1.5">FULL LEGAL NAME <span class="text-red-400">*</span></label>
-                            <input type="text" id="fullName" required 
-                                   class="form-input w-full px-4 py-3 rounded-2xl text-sm placeholder:text-zinc-600" 
-                                   placeholder="Alexandra Marie Thompson">
+                            <label class="block text-xs text-zinc-400 mb-1.5">FULL LEGAL NAME <span class="text-red-400">*</span></label>
+                            <input type="text" id="fullName" required class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Your full name">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-zinc-400 mb-1.5">STAGE / PROFESSIONAL NAME</label>
-                            <input type="text" id="stageName" 
-                                   class="form-input w-full px-4 py-3 rounded-2xl text-sm placeholder:text-zinc-600" 
-                                   placeholder="Alex Marie">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-medium text-zinc-400 mb-1.5">EMAIL ADDRESS <span class="text-red-400">*</span></label>
-                            <input type="email" id="email" required 
-                                   class="form-input w-full px-4 py-3 rounded-2xl text-sm placeholder:text-zinc-600" 
-                                   placeholder="you@email.com">
+                            <label class="block text-xs text-zinc-400 mb-1.5">STAGE / PROFESSIONAL NAME</label>
+                            <input type="text" id="stageName" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Stage name">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-zinc-400 mb-1.5">PHONE NUMBER</label>
-                            <input type="tel" id="phone" 
-                                   class="form-input w-full px-4 py-3 rounded-2xl text-sm placeholder:text-zinc-600" 
-                                   placeholder="+1 (876) 555-0192">
+                            <label class="block text-xs text-zinc-400 mb-1.5">EMAIL <span class="text-red-400">*</span></label>
+                            <input type="email" id="email" required class="form-input w-full px-4 py-3 rounded-2xl" placeholder="you@email.com">
                         </div>
-                        
+                        <div>
+                            <label class="block text-xs text-zinc-400 mb-1.5">PHONE</label>
+                            <input type="tel" id="phone" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="+1 (876) 555-0123">
+                        </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-zinc-400 mb-1.5">BASED IN (CITY / COUNTRY)</label>
-                            <input type="text" id="location" 
-                                   class="form-input w-full px-4 py-3 rounded-2xl text-sm placeholder:text-zinc-600" 
-                                   placeholder="Kingston, Jamaica">
+                            <label class="block text-xs text-zinc-400 mb-1.5">LOCATION (City, Country)</label>
+                            <input type="text" id="location" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Kingston, Jamaica">
                         </div>
                     </div>
                 </div>
 
-                <!-- Professional Details -->
-                <div class="mb-9">
-                    <div class="flex items-center gap-x-3 mb-4">
-                        <i class="fa-solid fa-briefcase text-[#d4af37] w-5"></i>
-                        <h3 class="font-semibold text-lg tracking-tight">Your Craft & Experience</h3>
+                <!-- Craft -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-x-3 mb-5">
+                        <i class="fa-solid fa-briefcase text-[#d4af37]"></i>
+                        <h3 class="font-semibold text-lg">Your Craft & Experience</h3>
                     </div>
-                    
-                    <!-- Categories -->
+
                     <div class="mb-5">
-                        <label class="block text-xs font-medium text-zinc-400 mb-2.5">PRIMARY DISCIPLINES <span class="text-red-400">*</span> <span class="font-normal">(select all that apply)</span></label>
-                        
-                        <div id="category-container" class="flex flex-wrap gap-2">
-                            <!-- Populated by JS -->
-                        </div>
+                        <label class="block text-xs text-zinc-400 mb-2">PRIMARY DISCIPLINES <span class="text-red-400">*</span></label>
+                        <div id="category-container" class="flex flex-wrap gap-2"></div>
                     </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-xs font-medium text-zinc-400 mb-1.5">YEARS OF EXPERIENCE</label>
-                            <input type="number" id="experience" min="0" max="60" 
-                                   class="form-input w-full px-4 py-3 rounded-2xl text-sm" value="3">
+                            <label class="block text-xs text-zinc-400 mb-1.5">YEARS OF EXPERIENCE</label>
+                            <input type="number" id="experience" value="3" class="form-input w-full px-4 py-3 rounded-2xl">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-zinc-400 mb-1.5">NOTABLE CREDITS / PAST WORK</label>
-                            <input type="text" id="credits" 
-                                   class="form-input w-full px-4 py-3 rounded-2xl text-sm placeholder:text-zinc-600" 
-                                   placeholder="e.g. Lead in 'Kingston Nights', Opening act for Chronixx">
+                            <label class="block text-xs text-zinc-400 mb-1.5">NOTABLE CREDITS</label>
+                            <input type="text" id="credits" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="Previous work / credits">
                         </div>
                     </div>
                 </div>
 
                 <!-- Bio -->
-                <div class="mb-9">
+                <div class="mb-8">
                     <div class="flex items-center gap-x-3 mb-4">
-                        <i class="fa-solid fa-book text-[#d4af37] w-5"></i>
-                        <h3 class="font-semibold text-lg tracking-tight">Your Story</h3>
+                        <i class="fa-solid fa-align-left text-[#d4af37]"></i>
+                        <h3 class="font-semibold text-lg">Your Story <span class="text-red-400">*</span></h3>
                     </div>
-                    
-                    <div>
-                        <label class="block text-xs font-medium text-zinc-400 mb-1.5">SHORT BIO / ARTIST STATEMENT <span class="text-red-400">*</span></label>
-                        <textarea id="bio" rows="4" required maxlength="420"
-                                  class="form-input w-full px-4 py-3.5 rounded-3xl text-sm resize-y min-h-[110px] placeholder:text-zinc-600"
-                                  placeholder="Tell us who you are, what drives your art, and what you're looking to achieve with Whiteline..."></textarea>
-                        <div class="flex justify-between text-[10px] text-zinc-500 px-1 mt-1">
-                            <div>Keep it authentic. This is how we introduce you.</div>
-                            <div id="bio-count">0/420</div>
-                        </div>
-                    </div>
+                    <textarea id="bio" rows="4" required maxlength="420" class="form-input w-full px-4 py-3.5 rounded-3xl resize-y" placeholder="Tell us about yourself, your art, and what you're looking for..."></textarea>
+                    <div class="text-right text-xs text-zinc-500 mt-1" id="bio-count">0/420</div>
                 </div>
 
-                <!-- Media Uploads -->
-                <div>
+                <!-- Media -->
+                <div class="mb-8">
                     <div class="flex items-center gap-x-3 mb-4">
-                        <i class="fa-solid fa-images text-[#d4af37] w-5"></i>
-                        <h3 class="font-semibold text-lg tracking-tight">Showcase Media</h3>
+                        <i class="fa-solid fa-images text-[#d4af37]"></i>
+                        <h3 class="font-semibold text-lg">Showcase Media</h3>
                     </div>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Photos -->
-                        <div class="lg:col-span-3">
-                            <label class="block text-xs font-medium text-zinc-400 mb-2">PROFESSIONAL PHOTOS <span class="text-red-400">*</span></label>
-                            
-                            <!-- Upload Zone -->
-                            <div id="photo-upload-zone"
-                                 class="media-upload-zone border-2 border-dashed border-zinc-700 hover:border-zinc-500 rounded-3xl p-6 text-center cursor-pointer transition-colors"
-                                 onclick="document.getElementById('photo-input').click()">
+                        <div>
+                            <label class="block text-xs text-zinc-400 mb-2">PHOTOS (up to 4)</label>
+                            <div id="photo-upload-zone" class="media-zone rounded-3xl p-6 text-center cursor-pointer" onclick="document.getElementById('photo-input').click()">
                                 <input type="file" id="photo-input" multiple accept="image/*" class="hidden" onchange="handlePhotoUpload(event)">
-                                
-                                <div class="flex flex-col items-center justify-center py-3">
-                                    <i class="fa-solid fa-cloud-upload-alt text-3xl text-zinc-500 mb-3"></i>
-                                    <div class="font-medium text-sm">Drop photos here or click to upload</div>
-                                    <div class="text-xs text-zinc-500 mt-1">PNG, JPG • Max 5 photos • 10MB each</div>
-                                </div>
+                                <i class="fa-solid fa-cloud-upload-alt text-3xl text-zinc-500 mb-2"></i>
+                                <div class="font-medium">Click or drop photos</div>
+                                <div class="text-xs text-zinc-500 mt-1">JPG or PNG • Max 4 photos</div>
                             </div>
-                            
-                            <!-- Photo Previews -->
-                            <div id="photo-previews" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mt-4"></div>
-                            
-                            <div class="text-[10px] text-zinc-500 mt-2 px-1">High-quality headshots and performance photos work best.</div>
+                            <div id="photo-previews" class="grid grid-cols-4 gap-3 mt-4"></div>
                         </div>
-                        
-                        <!-- Video File Upload + Link -->
-                        <div class="lg:col-span-2 space-y-5">
-                            <!-- Video File Upload -->
-                            <div>
-                                <label class="block text-xs font-medium text-zinc-400 mb-2">UPLOAD VIDEO FILES <span class="text-zinc-600">(optional)</span></label>
-                                
-                                <div id="video-upload-zone"
-                                     class="media-upload-zone border-2 border-dashed border-zinc-700 hover:border-zinc-500 rounded-3xl p-5 text-center cursor-pointer transition-colors"
-                                     onclick="document.getElementById('video-input').click()">
-                                    <input type="file" id="video-input" multiple accept="video/*" class="hidden" onchange="handleVideoUpload(event)">
-                                    
-                                    <div class="flex flex-col items-center justify-center py-2">
-                                        <i class="fa-solid fa-video text-2xl text-zinc-500 mb-2"></i>
-                                        <div class="font-medium text-sm">Drop video files or click</div>
-                                        <div class="text-[10px] text-zinc-500 mt-0.5">MP4, MOV • Max 3 videos</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Video Previews -->
-                                <div id="video-previews" class="space-y-2 mt-3"></div>
-                            </div>
-                            
-                            <!-- Video Link -->
-                            <div>
-                                <label class="block text-xs font-medium text-zinc-400 mb-1.5">OR PASTE VIDEO REEL LINK</label>
-                                <input type="url" id="videoLink" 
-                                       class="form-input w-full px-4 py-2.5 rounded-2xl text-sm placeholder:text-zinc-600" 
-                                       placeholder="https://youtube.com/... or vimeo.com/...">
-                            </div>
+
+                        <!-- Video -->
+                        <div>
+                            <label class="block text-xs text-zinc-400 mb-2">VIDEO REEL (optional)</label>
+                            <input type="url" id="videoLink" class="form-input w-full px-4 py-3 rounded-2xl" placeholder="YouTube or Vimeo link">
+                            <div class="text-xs text-zinc-500 mt-2">Or paste a direct video link</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Submit -->
-                <div class="mt-9 pt-6 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-y-4">
-                    <div class="text-xs text-zinc-500 max-w-xs">
-                        By submitting, you agree to be contacted by Whiteline Entertainment regarding representation opportunities.
-                    </div>
-                    
-                    <button type="submit"
-                            class="w-full sm:w-auto group px-10 py-4 bg-gradient-to-r from-[#d4af37] to-amber-400 hover:from-amber-300 hover:to-amber-300 active:scale-[0.985] transition-all text-[#111113] font-bold text-base rounded-3xl flex items-center justify-center gap-x-3 shadow-lg shadow-amber-900/30">
-                        <span>SUBMIT PROFILE TO WHITELINE</span>
-                        <i class="fa-solid fa-paper-plane group-active:translate-x-0.5 transition"></i>
+                <div class="pt-6 border-t border-zinc-800 flex justify-end">
+                    <button type="submit" 
+                            class="px-10 py-3.5 bg-[#d4af37] hover:bg-amber-300 active:bg-amber-400 transition text-[#111113] font-bold rounded-2xl flex items-center gap-x-3">
+                        SUBMIT TO WHITELINE
+                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Roster Section -->
+    <!-- Roster -->
     <div id="roster-section" class="bg-zinc-950 border-t border-zinc-800 py-12">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-6xl mx-auto px-6">
             <div class="flex items-end justify-between mb-8">
                 <div>
-                    <span class="text-emerald-400 text-sm font-semibold tracking-[1.5px]">WHITELINE FAMILY</span>
+                    <div class="text-emerald-400 text-sm font-semibold tracking-widest">WHITELINE FAMILY</div>
                     <h2 class="section-header tracking-tighter">Current Talent Roster</h2>
                 </div>
-                <div>
-                    <button onclick="clearAllProfiles()" 
-                            class="text-xs flex items-center gap-x-2 px-4 py-2 rounded-2xl border border-zinc-700 hover:bg-red-950 hover:border-red-900 transition-colors text-zinc-400 hover:text-red-400">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                        <span class="hidden sm:inline">Clear Demo Data</span>
-                    </button>
-                </div>
+                <button onclick="clearAllProfiles()" class="text-xs px-4 py-2 rounded-2xl border border-zinc-700 hover:bg-red-950 text-zinc-400 hover:text-red-400 transition">
+                    <i class="fa-solid fa-trash"></i> Clear Demo Data
+                </button>
             </div>
 
-            <!-- Profiles Grid -->
-            <div id="profiles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 talent-grid">
-                <!-- Populated dynamically by JS -->
+            <div id="profiles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <!-- Populated by JS -->
             </div>
-            
-            <div id="empty-state" class="hidden text-center py-12">
-                <i class="fa-solid fa-user-plus text-5xl text-zinc-700 mb-4"></i>
-                <p class="text-zinc-400">No talent profiles submitted yet.<br>Be the first to add yours above.</p>
+            <div id="empty-state" class="hidden text-center py-12 text-zinc-400">
+                No profiles yet. Be the first to submit above.
             </div>
         </div>
     </div>
 
-    <!-- Profile Detail Modal -->
-    <div id="profile-modal" onclick="if (event.target.id === 'profile-modal') closeModal()" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
-        <div onclick="event.stopImmediatePropagation()" 
-             class="modal bg-zinc-900 border border-zinc-700 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl">
-            
-            <!-- Modal Header -->
-            <div class="px-7 pt-6 pb-4 flex items-start justify-between border-b border-zinc-800 bg-zinc-950">
-                <div id="modal-header-content" class="flex-1 pr-4">
-                    <!-- JS injected -->
-                </div>
-                <button onclick="closeModal()" class="text-zinc-400 hover:text-white transition p-2 -mr-2">
-                    <i class="fa-solid fa-times text-2xl"></i>
-                </button>
+    <!-- Modal -->
+    <div id="profile-modal" onclick="if (event.target.id === 'profile-modal') closeModal()" class="hidden fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" class="bg-zinc-900 border border-zinc-700 w-full max-w-3xl rounded-3xl overflow-hidden">
+            <div class="px-7 py-5 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+                <div id="modal-header"></div>
+                <button onclick="closeModal()" class="text-2xl text-zinc-400 hover:text-white">&times;</button>
             </div>
             
             <div class="p-7 profile-modal">
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-x-7 gap-y-8">
-                    
-                    <!-- Left: Bio & Details -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-7">
                     <div class="lg:col-span-3">
                         <div class="mb-6">
-                            <div class="uppercase text-xs tracking-[1.5px] text-zinc-500 mb-1.5">ABOUT THE TALENT</div>
-                            <div id="modal-bio" class="text-[15px] leading-relaxed text-zinc-200"></div>
+                            <div class="text-xs text-zinc-500 mb-1.5">ABOUT</div>
+                            <div id="modal-bio" class="leading-relaxed"></div>
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-x-5 text-sm mb-7">
-                            <div>
-                                <div class="text-xs text-zinc-500 mb-px">LOCATION</div>
-                                <div id="modal-location" class="font-medium"></div>
-                            </div>
-                            <div>
-                                <div class="text-xs text-zinc-500 mb-px">EXPERIENCE</div>
-                                <div id="modal-experience" class="font-medium"></div>
-                            </div>
-                            <div class="col-span-2 mt-4">
-                                <div class="text-xs text-zinc-500 mb-px">CREDITS</div>
-                                <div id="modal-credits" class="font-medium text-sm"></div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="uppercase text-xs tracking-[1.5px] text-zinc-500 mb-2">CONTACT</div>
-                            <div id="modal-contact" class="text-sm"></div>
+                        <div class="grid grid-cols-2 gap-x-6 text-sm">
+                            <div><span class="text-zinc-500 text-xs">LOCATION</span><div id="modal-location" class="font-medium"></div></div>
+                            <div><span class="text-zinc-500 text-xs">EXPERIENCE</span><div id="modal-experience" class="font-medium"></div></div>
                         </div>
                     </div>
-                    
-                    <!-- Right: Media -->
                     <div class="lg:col-span-2">
-                        <!-- Photos Gallery -->
                         <div class="mb-6">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="uppercase text-xs tracking-[1.5px] text-zinc-500 mb-1.5">PHOTO GALLERY</div>
-                                <div id="photo-count-badge" class="text-[10px] px-2.5 py-px rounded bg-zinc-800 text-zinc-400"></div>
-                            </div>
-                            
-                            <!-- Main Photo -->
-                            <div class="aspect-video bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 mb-3" id="modal-main-photo-container">
-                                <img id="modal-main-photo" class="w-full h-full object-cover cursor-pointer" onclick="enlargeCurrentPhoto()">
-                            </div>
-                            
-                            <!-- Thumbnails -->
-                            <div id="modal-photo-thumbs" class="grid grid-cols-5 gap-2"></div>
+                            <div class="text-xs text-zinc-500 mb-2">PHOTOS</div>
+                            <div id="modal-photos" class="grid grid-cols-4 gap-2"></div>
                         </div>
-                        
-                        <!-- Video -->
                         <div>
-                            <div class="uppercase text-xs tracking-[1.5px] text-zinc-500 mb-2">VIDEO REEL</div>
-                            <div id="modal-video-section">
-                                <!-- JS populated -->
-                            </div>
+                            <div class="text-xs text-zinc-500 mb-2">VIDEO REEL</div>
+                            <div id="modal-video"></div>
                         </div>
                     </div>
-                    
                 </div>
             </div>
             
-            <div class="px-7 py-5 bg-zinc-950 border-t border-zinc-800 flex items-center justify-between text-xs">
-                <div class="text-zinc-500">Profile submitted via Whiteline Talent Portal</div>
-                <div class="flex gap-x-3">
-                    <button onclick="contactTalent()" 
-                            class="px-5 py-2 rounded-2xl border border-zinc-700 hover:bg-zinc-900 text-xs font-medium flex items-center gap-x-2 transition-colors">
-                        <i class="fa-solid fa-envelope"></i>
-                        <span>CONTACT TALENT</span>
-                    </button>
-                    <button onclick="requestAudition()" 
-                            class="px-5 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold flex items-center gap-x-2 transition-colors">
-                        <span>REQUEST AUDITION</span>
-                    </button>
-                </div>
+            <div class="px-7 py-5 bg-zinc-950 border-t border-zinc-800 flex gap-x-3 justify-end text-sm">
+                <button onclick="contactTalent()" class="px-5 py-2 border border-zinc-700 rounded-2xl hover:bg-zinc-900">Contact</button>
+                <button onclick="requestAudition()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-semibold">Request Audition</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="hidden fixed bottom-6 right-6 bg-zinc-900 border border-zinc-700 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-x-3 z-[200]">
+    <div id="toast" class="hidden fixed bottom-6 right-6 bg-zinc-900 border border-zinc-700 px-5 py-3 rounded-2xl flex items-center gap-x-3 z-[300]">
         <i class="fa-solid fa-check-circle text-emerald-400"></i>
-        <span id="toast-message" class="text-sm font-medium"></span>
+        <span id="toast-text" class="text-sm"></span>
     </div>
 
     <script>
-        // Tailwind + site integration
-        function initializeTailwind() {
-            // Keep Tailwind for this page's complex UI while matching site colors
-        }
-        
-        const categories = [
-            "Acting", "Singing", "Modeling", "Dancing", 
-            "Music / Rap", "Comedy", "DJ / Producer", 
-            "Voiceover", "Influencer", "Other"
-        ];
-        
+        const categories = ["Acting", "Singing", "Modeling", "Dancing", "Music / Rap", "Comedy", "DJ / Producer", "Voiceover", "Influencer", "Other"];
         let selectedCategories = [];
         let currentPhotos = [];
-        let currentVideos = [];
         let profiles = [];
-        
+
         function loadProfiles() {
-            const saved = localStorage.getItem('whiteline_profiles');
+            const saved = localStorage.getItem('whiteline_profiles_v2');
             profiles = saved ? JSON.parse(saved) : [];
             renderProfiles();
         }
-        
+
         function initCategories() {
             const container = document.getElementById('category-container');
             container.innerHTML = '';
-            
             categories.forEach(cat => {
                 const pill = document.createElement('div');
-                pill.className = `category-pill cursor-pointer px-4 py-1.5 text-xs font-medium border border-zinc-700 rounded-2xl hover:border-zinc-400`;
-                pill.innerHTML = `<span>${cat}</span>`;
-                
+                pill.className = 'category-pill cursor-pointer px-4 py-1.5 text-xs font-medium border border-zinc-700 rounded-2xl hover:border-zinc-400';
+                pill.textContent = cat;
                 pill.onclick = () => {
                     if (selectedCategories.includes(cat)) {
                         selectedCategories = selectedCategories.filter(c => c !== cat);
                         pill.classList.remove('active', 'bg-[#d4af37]', 'text-[#111113]', 'border-[#d4af37]');
-                        pill.classList.add('border-zinc-700');
                     } else {
                         selectedCategories.push(cat);
                         pill.classList.add('active', 'bg-[#d4af37]', 'text-[#111113]', 'border-[#d4af37]');
-                        pill.classList.remove('border-zinc-700');
                     }
                 };
                 container.appendChild(pill);
             });
         }
-        
+
         function initBioCounter() {
             const bio = document.getElementById('bio');
-            const count = document.getElementById('bio-count');
-            
-            bio.addEventListener('input', () => {
-                count.textContent = `${bio.value.length}/420`;
-            });
+            const countEl = document.getElementById('bio-count');
+            bio.oninput = () => countEl.textContent = `${bio.value.length}/420`;
         }
-        
-        function handlePhotoUpload(event) {
-            const files = Array.from(event.target.files);
-            addPhotos(files);
-            event.target.value = '';
-        }
-        
-        function initDragDrop() {
-            const photoZone = document.getElementById('photo-upload-zone');
-            if (photoZone) {
-                photoZone.addEventListener('dragover', e => { e.preventDefault(); photoZone.classList.add('dragover'); });
-                photoZone.addEventListener('dragleave', () => photoZone.classList.remove('dragover'));
-                photoZone.addEventListener('drop', e => {
-                    e.preventDefault();
-                    photoZone.classList.remove('dragover');
-                    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-                    if (files.length) addPhotos(files);
-                });
-            }
-            
-            const videoZone = document.getElementById('video-upload-zone');
-            if (videoZone) {
-                videoZone.addEventListener('dragover', e => { e.preventDefault(); videoZone.classList.add('dragover'); });
-                videoZone.addEventListener('dragleave', () => videoZone.classList.remove('dragover'));
-                videoZone.addEventListener('drop', e => {
-                    e.preventDefault();
-                    videoZone.classList.remove('dragover');
-                    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('video/'));
-                    if (files.length) addVideos(files);
-                });
-            }
-        }
-        
-        function addPhotos(files) {
+
+        function handlePhotoUpload(e) {
+            const files = Array.from(e.target.files).slice(0, 4 - currentPhotos.length);
             const container = document.getElementById('photo-previews');
-            const max = 5;
-            
+
             files.forEach(file => {
-                if (currentPhotos.length >= max) { showToast("Max 5 photos"); return; }
-                
                 const reader = new FileReader();
-                reader.onload = e => {
-                    const photo = { id: Date.now() + Math.random(), url: e.target.result, name: file.name };
+                reader.onload = (ev) => {
+                    const photo = { id: Date.now() + Math.random(), url: ev.target.result };
                     currentPhotos.push(photo);
-                    
+
                     const el = document.createElement('div');
-                    el.className = 'photo-preview group border border-zinc-700';
+                    el.className = 'relative aspect-square rounded-2xl overflow-hidden border border-zinc-700';
                     el.innerHTML = `
-                        <img src="${photo.url}" alt="${photo.name}">
-                        <button class="remove-btn opacity-90 group-hover:opacity-100"><i class="fa-solid fa-times text-xs"></i></button>
+                        <img src="${photo.url}" class="w-full h-full object-cover">
+                        <button class="absolute top-1 right-1 w-6 h-6 bg-black/70 rounded-full flex items-center justify-center text-xs">&times;</button>
                     `;
                     el.querySelector('button').onclick = () => {
                         currentPhotos = currentPhotos.filter(p => p.id !== photo.id);
@@ -548,304 +329,207 @@
                 };
                 reader.readAsDataURL(file);
             });
+            e.target.value = '';
         }
-        
-        function addVideos(files) {
-            const container = document.getElementById('video-previews');
-            const max = 3;
-            
-            files.forEach(file => {
-                if (currentVideos.length >= max) { showToast("Max 3 videos"); return; }
-                
-                const url = URL.createObjectURL(file);
-                const video = { id: Date.now() + Math.random(), url, name: file.name, size: file.size, type: file.type };
-                currentVideos.push(video);
-                
-                const el = document.createElement('div');
-                el.className = 'flex items-center gap-x-3 bg-zinc-950 border border-zinc-700 rounded-2xl p-3 group';
-                el.innerHTML = `
-                    <div class="flex-shrink-0 w-14 h-10 bg-black rounded-xl overflow-hidden border border-zinc-600">
-                        <video src="${url}" class="w-full h-full object-cover" muted></video>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="text-sm font-medium truncate">${video.name}</div>
-                        <div class="text-xs text-zinc-500">${(video.size/1048576).toFixed(1)} MB</div>
-                    </div>
-                    <button class="remove-btn opacity-80 group-hover:opacity-100"><i class="fa-solid fa-times text-xs"></i></button>
-                `;
-                el.querySelector('button').onclick = () => {
-                    URL.revokeObjectURL(url);
-                    currentVideos = currentVideos.filter(v => v.id !== video.id);
-                    el.remove();
-                };
-                container.appendChild(el);
-            });
-        }
-        
+
         async function handleFormSubmit(e) {
             e.preventDefault();
-            
+
             const btn = e.target.querySelector('button[type="submit"]');
-            const original = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> SUBMITTING...`;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'SUBMITTING...';
             btn.disabled = true;
-            
+
             try {
                 const fullName = document.getElementById('fullName').value.trim();
                 const email = document.getElementById('email').value.trim();
                 const bio = document.getElementById('bio').value.trim();
-                
+
                 if (!fullName || !email || !bio || selectedCategories.length === 0) {
-                    throw new Error("Please fill required fields and select at least one discipline");
+                    throw new Error('Please fill all required fields and select at least one discipline.');
                 }
-                
+
+                // Create clean profile (no heavy base64 storage to avoid quota)
                 const newProfile = {
-                    id: 'profile-' + Date.now(),
+                    id: 'p-' + Date.now(),
                     timestamp: Date.now(),
                     fullName,
                     stageName: document.getElementById('stageName').value.trim() || fullName.split(' ')[0],
                     email,
                     phone: document.getElementById('phone').value.trim(),
-                    location: document.getElementById('location').value.trim() || "Not specified",
+                    location: document.getElementById('location').value.trim() || 'Not specified',
                     categories: [...selectedCategories],
                     experience: parseInt(document.getElementById('experience').value) || 0,
                     credits: document.getElementById('credits').value.trim(),
                     bio,
-                    photos: currentPhotos.length ? currentPhotos.map(p => p.url) : ["https://picsum.photos/id/1011/800/800"],
-                    videos: currentVideos.map(v => ({ name: v.name, size: v.size, type: v.type, url: v.url })),
+                    photos: currentPhotos.length > 0 ? [currentPhotos[0].url] : ['https://picsum.photos/id/1011/600/600'],
                     videoLink: document.getElementById('videoLink').value.trim()
                 };
-                
+
                 profiles.unshift(newProfile);
-                localStorage.setItem('whiteline_profiles', JSON.stringify(profiles));
+                localStorage.setItem('whiteline_profiles_v2', JSON.stringify(profiles));
+
                 renderProfiles();
-                
-                showToast("Profile submitted successfully!");
-                resetForm();
-                
+                showToast('Profile submitted successfully!');
+
+                // Reset form
+                e.target.reset();
+                selectedCategories = [];
+                currentPhotos = [];
+                document.getElementById('photo-previews').innerHTML = '';
+                document.querySelectorAll('#category-container .category-pill').forEach(p => p.classList.remove('active', 'bg-[#d4af37]', 'text-[#111113]'));
+                document.getElementById('bio-count').textContent = '0/420';
+
                 setTimeout(() => {
                     document.getElementById('roster-section').scrollIntoView({ behavior: 'smooth' });
-                }, 600);
-                
+                }, 500);
+
             } catch (err) {
                 showToast(err.message, true);
             } finally {
-                btn.innerHTML = original;
+                btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
-        
-        function resetForm() {
-            document.getElementById('talent-form').reset();
-            selectedCategories = [];
-            document.querySelectorAll('#category-container > div').forEach(p => p.classList.remove('active', 'bg-[#d4af37]', 'text-[#111113]', 'border-[#d4af37]'));
-            currentPhotos = [];
-            currentVideos = [];
-            document.getElementById('photo-previews').innerHTML = '';
-            document.getElementById('video-previews').innerHTML = '';
-            document.getElementById('bio-count').textContent = '0/420';
-        }
-        
+
         function renderProfiles() {
             const grid = document.getElementById('profiles-grid');
             const empty = document.getElementById('empty-state');
             grid.innerHTML = '';
-            
+
             if (profiles.length === 0) {
                 empty.classList.remove('hidden');
                 return;
             }
             empty.classList.add('hidden');
-            
-            profiles.forEach(p => grid.appendChild(createProfileCard(p)));
+
+            profiles.forEach(profile => {
+                const card = document.createElement('div');
+                card.className = 'talent-card bg-[#111113] border border-zinc-800 rounded-3xl overflow-hidden cursor-pointer';
+                
+                const firstPhoto = profile.photos?.[0] || 'https://picsum.photos/id/1011/600/600';
+                const badges = profile.categories.slice(0, 2).map(c => 
+                    `<span class="px-2.5 py-px text-[10px] bg-zinc-800 rounded-xl">${c}</span>`).join('');
+
+                card.innerHTML = `
+                    <img src="${firstPhoto}" class="w-full aspect-[16/10] object-cover">
+                    <div class="p-5">
+                        <div class="font-semibold text-xl tracking-tight">${profile.stageName}</div>
+                        <div class="text-xs text-zinc-400">${profile.fullName}</div>
+                        <div class="flex gap-1.5 mt-3 mb-3">${badges}</div>
+                        <div class="text-xs text-zinc-400 line-clamp-2">${profile.bio.substring(0, 100)}${profile.bio.length > 100 ? '...' : ''}</div>
+                    </div>
+                `;
+                card.onclick = () => openProfileModal(profile);
+                grid.appendChild(card);
+            });
         }
-        
-        function createProfileCard(profile) {
-            const card = document.createElement('div');
-            card.className = `talent-card bg-zinc-900 border border-zinc-700 rounded-3xl overflow-hidden cursor-pointer group`;
-            
-            const firstPhoto = profile.photos?.[0] || 'https://picsum.photos/id/1011/600/600';
-            const badges = profile.categories.slice(0,2).map(c => `<span class="px-2.5 py-px text-[10px] bg-zinc-800 rounded-xl">${c}</span>`).join('');
-            
-            card.innerHTML = `
-                <div class="relative">
-                    <img src="${firstPhoto}" class="w-full aspect-[4/3] object-cover group-hover:scale-[1.03] transition-transform" alt="${profile.stageName}">
-                </div>
-                <div class="p-4">
-                    <div class="font-semibold text-lg tracking-tight truncate">${profile.stageName}</div>
-                    <div class="text-xs text-zinc-400 truncate">${profile.fullName}</div>
-                    <div class="flex flex-wrap gap-1.5 mt-3 mb-2">${badges}</div>
-                    <div class="line-clamp-2 text-xs text-zinc-400">${profile.bio.substring(0,110)}${profile.bio.length > 110 ? '...' : ''}</div>
-                </div>
-            `;
-            card.onclick = () => openProfileModal(profile);
-            return card;
-        }
-        
-        let currentModalProfile = null;
-        let currentModalPhotoIndex = 0;
-        
+
+        let currentProfile = null;
+
         function openProfileModal(profile) {
-            currentModalProfile = profile;
-            currentModalPhotoIndex = 0;
-            
+            currentProfile = profile;
             const modal = document.getElementById('profile-modal');
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            
-            const header = document.getElementById('modal-header-content');
-            header.innerHTML = `
+
+            document.getElementById('modal-header').innerHTML = `
                 <div>
-                    <div class="flex items-center gap-x-3">
-                        <h3 class="text-3xl font-semibold tracking-tighter">${profile.stageName}</h3>
-                    </div>
-                    <div class="flex flex-wrap gap-x-1.5 mt-1">${profile.categories.map(c => `<span class="px-3 py-0.5 text-xs bg-zinc-800 rounded-2xl">${c}</span>`).join('')}</div>
+                    <div class="text-3xl font-semibold tracking-tighter">${profile.stageName}</div>
+                    <div class="text-sm text-zinc-400">${profile.fullName}</div>
                 </div>
             `;
-            
+
             document.getElementById('modal-bio').innerHTML = profile.bio.replace(/\n/g, '<br>');
             document.getElementById('modal-location').textContent = profile.location;
             document.getElementById('modal-experience').textContent = `${profile.experience} years`;
-            document.getElementById('modal-credits').textContent = profile.credits || '—';
-            
-            document.getElementById('modal-contact').innerHTML = `
-                <div class="space-y-1 text-sm">
-                    <div><span class="text-zinc-500">Email:</span> <a href="mailto:${profile.email}" class="hover:underline">${profile.email}</a></div>
-                    ${profile.phone ? `<div><span class="text-zinc-500">Phone:</span> ${profile.phone}</div>` : ''}
-                </div>
-            `;
-            
-            renderModalPhotos(profile);
-            renderModalVideo(profile);
-        }
-        
-        function renderModalPhotos(profile) {
-            const main = document.getElementById('modal-main-photo');
-            const thumbs = document.getElementById('modal-photo-thumbs');
-            const count = document.getElementById('photo-count-badge');
-            
-            thumbs.innerHTML = '';
-            if (!profile.photos?.length) {
-                main.src = 'https://picsum.photos/id/1011/800/600';
-                count.textContent = '0 photos';
-                return;
-            }
-            
-            count.textContent = `${profile.photos.length} photo${profile.photos.length > 1 ? 's' : ''}`;
-            main.src = profile.photos[currentModalPhotoIndex];
-            
-            profile.photos.forEach((src, i) => {
-                const t = document.createElement('div');
-                t.className = `aspect-square rounded-xl overflow-hidden border cursor-pointer ${i === currentModalPhotoIndex ? 'border-[#d4af37] ring-1 ring-[#d4af37]' : 'border-zinc-700'}`;
-                t.innerHTML = `<img src="${src}" class="w-full h-full object-cover">`;
-                t.onclick = () => {
-                    currentModalPhotoIndex = i;
-                    main.src = src;
-                    thumbs.querySelectorAll('div').forEach((el, idx) => {
-                        el.classList.toggle('border-[#d4af37]', idx === i);
-                        el.classList.toggle('ring-1', idx === i);
-                        el.classList.toggle('ring-[#d4af37]', idx === i);
-                        el.classList.toggle('border-zinc-700', idx !== i);
-                    });
-                };
-                thumbs.appendChild(t);
-            });
-        }
-        
-        function renderModalVideo(profile) {
-            const container = document.getElementById('modal-video-section');
-            container.innerHTML = '';
-            
-            if (profile.videos?.length) {
-                let html = `<div class="space-y-3">`;
-                profile.videos.forEach(v => {
-                    const mb = (v.size / 1048576).toFixed(1);
-                    html += `
-                        <div class="bg-zinc-950 border border-zinc-700 rounded-2xl p-4">
-                            <div class="font-medium text-sm">${v.name}</div>
-                            <div class="text-xs text-zinc-500 mb-2">${mb} MB</div>
-                            ${v.url?.startsWith('blob:') ? 
-                                `<video controls class="w-full rounded-xl" style="max-height:220px"><source src="${v.url}" type="${v.type}"></video>` : 
-                                `<div class="text-xs text-zinc-400 py-2">Video file attached (playable in full version)</div>`
-                            }
-                        </div>`;
+
+            // Photos
+            const photoContainer = document.getElementById('modal-photos');
+            photoContainer.innerHTML = '';
+            if (profile.photos?.length) {
+                profile.photos.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'w-full aspect-square object-cover rounded-2xl border border-zinc-700';
+                    photoContainer.appendChild(img);
                 });
-                html += `</div>`;
-                container.innerHTML = html;
-                return;
             }
-            
+
+            // Video
+            const videoContainer = document.getElementById('modal-video');
             if (profile.videoLink) {
-                container.innerHTML = `<a href="${profile.videoLink}" target="_blank" class="block text-center py-4 border border-zinc-700 rounded-2xl hover:bg-zinc-900">Watch Video Reel →</a>`;
-                return;
+                videoContainer.innerHTML = `<a href="${profile.videoLink}" target="_blank" class="block text-center py-3 border border-zinc-700 rounded-2xl hover:bg-zinc-900">Watch Video Reel →</a>`;
+            } else {
+                videoContainer.innerHTML = `<div class="text-center text-xs text-zinc-500 py-3">No video reel submitted</div>`;
             }
-            
-            container.innerHTML = `<div class="text-center py-6 text-zinc-400 text-sm">No video reel submitted</div>`;
         }
-        
+
         function closeModal() {
             document.getElementById('profile-modal').style.display = 'none';
             document.body.style.overflow = '';
         }
-        
+
         function contactTalent() {
-            if (!currentModalProfile) return;
-            window.location.href = `mailto:${currentModalProfile.email}?subject=Whiteline%20Talent%20Inquiry`;
+            if (!currentProfile) return;
+            window.location.href = `mailto:${currentProfile.email}?subject=Whiteline%20Talent%20Inquiry`;
         }
-        
+
         function requestAudition() {
-            if (!currentModalProfile) return;
-            const modal = document.querySelector('#profile-modal > div');
-            modal.innerHTML = `
+            if (!currentProfile) return;
+            const modalContent = document.querySelector('#profile-modal > div');
+            modalContent.innerHTML = `
                 <div class="p-10 text-center">
                     <i class="fa-solid fa-check-circle text-6xl text-emerald-400 mb-6"></i>
                     <h3 class="text-3xl font-semibold mb-3">Audition Request Sent</h3>
-                    <p class="text-zinc-300 max-w-sm mx-auto">Our team will contact ${currentModalProfile.stageName} within 48 hours.</p>
+                    <p class="text-zinc-300">Our team will contact ${currentProfile.stageName} within 48 hours.</p>
                     <button onclick="closeModal()" class="mt-8 px-8 py-3 bg-white text-[#111113] font-semibold rounded-2xl">CLOSE</button>
                 </div>
             `;
         }
-        
-        let toastTimer;
-        function showToast(msg, error = false) {
-            const t = document.getElementById('toast');
-            document.getElementById('toast-message').textContent = msg;
-            t.style.display = 'flex';
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.style.display = 'none', 3200);
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = message;
+            toast.style.display = 'flex';
+            setTimeout(() => toast.style.display = 'none', 2800);
         }
-        
+
         function clearAllProfiles() {
             if (!confirm('Clear all demo profiles?')) return;
             profiles = [];
-            localStorage.removeItem('whiteline_profiles');
+            localStorage.removeItem('whiteline_profiles_v2');
             renderProfiles();
         }
-        
-        function scrollToForm() {
-            document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function initializePortal() {
+
+        function initialize() {
             initCategories();
             initBioCounter();
-            initDragDrop();
             loadProfiles();
-            
+
+            // Drag & drop for photos
+            const zone = document.getElementById('photo-upload-zone');
+            if (zone) {
+                zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+                zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+                    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                    if (files.length) handlePhotoUpload({ target: { files } });
+                });
+            }
+
             // Keyboard
             document.addEventListener('keydown', e => {
                 if (e.key === 'Escape') {
                     const m = document.getElementById('profile-modal');
                     if (m.style.display === 'flex') closeModal();
                 }
-                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
-                    e.preventDefault();
-                    scrollToForm();
-                }
             });
         }
-        
-        window.onload = initializePortal;
+
+        window.onload = initialize;
     </script>
 </body>
 </html>

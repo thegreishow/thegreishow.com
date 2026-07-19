@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>White Line Admin</title>
+  <style>
+    :root{color-scheme:dark;--bg:#03060c;--panel:#0a1320;--line:rgba(255,255,255,.12);--text:#f5f7fb;--muted:#9eabba;--accent:#d8ff63}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}.wrap{width:min(1180px,calc(100% - 28px));margin:auto;padding:40px 0 80px}h1{font-size:clamp(2.4rem,7vw,5rem);letter-spacing:-.06em;margin:0 0 8px}.muted{color:var(--muted)}.panel{margin-top:22px;padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--panel)}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.cards{display:grid;gap:12px}.card{padding:16px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.025)}.card h3{margin:0 0 5px}.meta{color:var(--muted);font-size:.88rem}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}button,input,select{font:inherit}input,select{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#03070d;color:var(--text)}button{padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-weight:800;cursor:pointer}.primary{background:var(--accent);color:#071018;border-color:var(--accent)}.danger{border-color:#ff7777}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between}.toolbar button{white-space:nowrap}.status{margin-top:14px;padding:12px;border-radius:12px;background:rgba(216,255,99,.08);color:var(--muted)}[hidden]{display:none!important}@media(max-width:760px){.grid{grid-template-columns:1fr}.toolbar{align-items:stretch;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="muted">WHITE LINE ENTERTAINMENT</p>
+    <h1>Admin dashboard</h1>
+    <p class="muted">Review applications and booking requests. Access is limited to approved administrators.</p>
+
+    <section id="login-panel" class="panel">
+      <h2>Sign in</h2>
+      <form id="login-form" class="grid">
+        <label>Email<input name="email" type="email" required></label>
+        <label>Password<input name="password" type="password" required></label>
+        <div><button class="primary" type="submit">Sign in</button></div>
+      </form>
+      <div id="login-status" class="status" hidden></div>
+    </section>
+
+    <section id="dashboard" hidden>
+      <div class="panel toolbar"><strong id="admin-email"></strong><button id="logout">Sign out</button></div>
+      <div class="grid">
+        <section class="panel"><div class="toolbar"><h2>Talent applications</h2><button data-refresh>Refresh</button></div><div id="applications" class="cards"></div></section>
+        <section class="panel"><div class="toolbar"><h2>Client requests</h2><button data-refresh>Refresh</button></div><div id="requests" class="cards"></div></section>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/whiteline-supabase-config.js"></script>
+  <script src="assets/js/whiteline-admin.js"></script>
+</body>
+</html>

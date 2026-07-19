@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>White Line Talent Dashboard</title>
+  <style>
+    :root{color-scheme:dark;--bg:#03060c;--panel:#0a1320;--panel2:#0e1a2a;--line:rgba(255,255,255,.12);--text:#f5f7fb;--muted:#9eabba;--accent:#d8ff63;--danger:#ff8585}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}.wrap{width:min(1180px,calc(100% - 28px));margin:auto;padding:34px 0 80px}h1{margin:0;font-size:clamp(2.5rem,7vw,5rem);letter-spacing:-.06em;line-height:.95}h2,h3{line-height:1.15}.muted{color:var(--muted)}.panel{margin-top:20px;padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--panel)}.toolbar,.actions,.tabs{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar{justify-content:space-between}.tabs{margin-top:22px}.tab.active,.primary{background:var(--accent)!important;color:#071018!important;border-color:var(--accent)!important}.view[hidden],[hidden]{display:none!important}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}.card{padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)}.cards{display:grid;gap:12px}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(216,255,99,.1);color:var(--accent);font-size:.76rem;font-weight:850}.meta{color:var(--muted);font-size:.88rem}button,.button,input,select,textarea{font:inherit}button,.button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-weight:850;text-decoration:none;cursor:pointer}input,select,textarea{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#03070d;color:var(--text)}textarea{min-height:110px;resize:vertical}label{display:grid;gap:6px;color:var(--muted);font-size:.88rem}.status{margin-top:14px;padding:13px;border:1px solid var(--line);border-radius:13px;color:var(--muted)}.photos{display:grid;grid-template-columns:1fr 1fr;gap:12px}.photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;background:#03070d}.danger{border-color:var(--danger)}@media(max-width:760px){.grid,.form-grid,.photos{grid-template-columns:1fr}.full{grid-column:auto}.toolbar{align-items:stretch;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="toolbar"><div><p class="muted">WHITE LINE ENTERTAINMENT</p><h1>Talent dashboard</h1></div><div class="actions"><a class="button" href="whiteline.html">Public roster</a><button id="logout">Sign out</button></div></div>
+    <div id="portal-status" class="status">Loading your account…</div>
+
+    <nav class="tabs" aria-label="Talent portal sections">
+      <button class="tab active" data-view="dashboard">Dashboard</button>
+      <button class="tab" data-view="profile">My profile</button>
+      <button class="tab" data-view="castings">Casting calls</button>
+      <button class="tab" data-view="bookings">Bookings</button>
+    </nav>
+
+    <section id="view-dashboard" class="view">
+      <div class="grid">
+        <section class="panel"><h2 id="welcome-name">Welcome</h2><p class="muted">Manage your professional information and respond to White Line opportunities.</p><div id="profile-summary"></div></section>
+        <section class="panel"><h2>Latest profile submission</h2><div id="change-status" class="cards"></div></section>
+      </div>
+    </section>
+
+    <section id="view-profile" class="view" hidden>
+      <section class="panel">
+        <h2>Submit profile updates</h2>
+        <p class="muted">Your public profile will not change until White Line reviews and approves this submission.</p>
+        <form id="profile-form" class="form-grid">
+          <label>Full name<input name="full_name" required></label>
+          <label>Stage name<input name="stage_name"></label>
+          <label>Category<input name="category" required></label>
+          <label>Location<input name="city"></label>
+          <label class="full">Biography<textarea name="short_bio" required></textarea></label>
+          <label class="full">Skills / credits<textarea name="skills" placeholder="One item per line"></textarea></label>
+          <label>Instagram<input name="instagram_url" type="url"></label>
+          <label>TikTok<input name="tiktok_url" type="url"></label>
+          <label>YouTube<input name="youtube_url" type="url"></label>
+          <label>Facebook<input name="facebook_url" type="url"></label>
+          <label>X / Twitter<input name="x_url" type="url"></label>
+          <label>Website<input name="website_url" type="url"></label>
+          <label class="full">Portfolio / reel<input name="portfolio_url" type="url"></label>
+          <label>New headshot<input id="headshot-file" type="file" accept="image/jpeg,image/png,image/webp"></label>
+          <label>New body shot<input id="body-file" type="file" accept="image/jpeg,image/png,image/webp"></label>
+          <label>Availability<select name="availability_status"><option value="available">Available</option><option value="limited">Limited availability</option><option value="unavailable">Unavailable</option></select></label>
+          <div class="full"><button class="primary" type="submit">Submit changes for review</button></div>
+        </form>
+        <div id="profile-message" class="status" hidden></div>
+      </section>
+    </section>
+
+    <section id="view-castings" class="view" hidden><section class="panel"><h2>Open casting calls</h2><div id="casting-list" class="cards"></div></section></section>
+    <section id="view-bookings" class="view" hidden><section class="panel"><h2>Assigned bookings</h2><div id="booking-list" class="cards"></div></section></section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/whiteline-supabase-config.js"></script>
+  <script src="assets/js/whiteline-talent-portal.js"></script>
+</body>
+</html>

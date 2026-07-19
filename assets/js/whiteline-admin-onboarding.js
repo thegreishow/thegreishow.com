@@ -30,6 +30,10 @@
   document.addEventListener('DOMContentLoaded', enhanceApplicationCards, { once: true });
 
   async function enhanceApplicationCards() {
+    document.querySelectorAll('#applications .card .actions button').forEach((button) => {
+      if (button.textContent.trim() === 'Approve + create draft profile') button.remove();
+    });
+
     const cards = [...document.querySelectorAll('#applications .card')].filter((card) => !card.dataset.privateMediaLoaded);
     for (const card of cards) {
       const applicationId = card.querySelector('[data-table="talent_applications"][data-id]')?.dataset.id;

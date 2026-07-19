@@ -13,7 +13,7 @@
     addConnectionStatus();
 
     if (!configured || !window.supabase?.createClient) {
-      setStatus("Setup required", "Database files are installed, but Supabase is not configured.", "warning");
+      setStatus("Setup required", "Add the Supabase project URL and anon key to activate storage.", "warning");
       return;
     }
 
@@ -21,14 +21,14 @@
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
     });
 
-    connectForms();
-
     try {
       await loadPublicDirectory();
+      connectForms();
       setStatus("Database connected", "Applications are securely stored and public listings are synced from Supabase.", "success");
     } catch (error) {
       console.error("White Line database initialization failed", error);
-      setStatus("Database connection issue", "Forms are available, but public listings may not have loaded.", "error");
+      connectForms();
+      setStatus("Database connection issue", "The page is available, but live listings may not have loaded.", "error");
     }
   });
 
@@ -68,7 +68,7 @@
   async function loadPublicDirectory() {
     const [talentResult, castingResult] = await Promise.all([
       db.from("talent_profiles")
-        .select("id,slug,full_name,stage_name,category,secondary_categories,city,parish,country,profile_image_url,short_bio,skills,instagram_url,portfolio_url,featured,display_order")
+        .select("id,slug,full_name,stage_name,category,secondary_categories,city,parish,country,profile_image_url,short_bio,skills,instagram_url,tiktok_url,youtube_url,facebook_url,x_url,website_url,portfolio_url,featured,display_order")
         .eq("status", "approved")
         .order("featured", { ascending: false })
         .order("display_order", { ascending: true }),
@@ -89,9 +89,16 @@
       image: row.profile_image_url,
       bio: row.short_bio,
       credits: row.skills || [],
-      instagram: row.instagram_url,
-      reel: row.portfolio_url,
-      featured: row.featured
+      featured: row.featured,
+      socials: {
+        instagram: row.instagram_url,
+        tiktok: row.tiktok_url,
+        youtube: row.youtube_url,
+        facebook: row.facebook_url,
+        x: row.x_url,
+        website: row.website_url,
+        portfolio: row.portfolio_url
+      }
     }));
 
     const castingCalls = (castingResult.data || []).map((row) => ({
@@ -152,7 +159,8 @@
 
   function profileCard(item) {
     const image = item.image || "assets/img/home-bg.webp";
-    return `<article class="talent-card" tabindex="0" data-id="${escapeHtml(item.id)}"><img class="talent-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}"><div class="talent-body"><h3>${escapeHtml(item.name)}</h3><div class="talent-meta">${escapeHtml(item.location || "Jamaica")}</div><div class="tags">${(item.disciplines || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div></div></article>`;
+    const links = Object.entries(item.socials || {}).filter(([, url]) => url).map(([name, url]) => `<a class="tag" href="${escapeHtml(url)}" target="_blank" rel="noopener" aria-label="${escapeHtml(item.name)} on ${escapeHtml(name)}">${escapeHtml(label(name))}</a>`).join("");
+    return `<article class="talent-card"><img class="talent-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}"><div class="talent-body"><h3>${escapeHtml(item.name)}</h3><div class="talent-meta">${escapeHtml(item.location || "Jamaica")}</div><div class="tags">${(item.disciplines || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>${links ? `<div class="tags">${links}</div>` : ""}</div></article>`;
   }
 
   function renderCasting(calls) {
@@ -195,10 +203,12 @@
     const button = form.querySelector("button[type='submit']");
     const disciplines = [...form.querySelectorAll("[name='discipline']:checked")].map((input) => input.value);
     if (!disciplines.length) return showMessage(message, "Select at least one discipline.", true);
-    if (!db) return showMessage(message, "Database connection is unavailable. Please contact White Line on WhatsApp.", true);
+    if (!db) return showMessage(message, "Database setup is not complete yet. Please contact White Line on WhatsApp.", true);
 
-    const values = new FormData(form);
     setBusy(button, true, "Submitting securely…");
+    const values = new FormData(form);
+    const location = text(values, "location");
+    const primary = disciplines[0];
     const { error } = await db.from("talent_applications").insert({
       casting_call_id: text(values, "castingInterest") || null,
       full_name: text(values, "name"),
@@ -206,19 +216,16 @@
       email: text(values, "email"),
       phone: text(values, "phone"),
       whatsapp: text(values, "phone"),
-      category: disciplines[0],
+      category: primary,
       secondary_categories: disciplines.slice(1),
-      city: text(values, "location"),
+      city: location,
       biography: text(values, "bio"),
-      experience: `${text(values, "experience")} years. ${text(values, "credits")}`.trim(),
-      skills: disciplines.join(", "),
+      experience: text(values, "experience"),
       portfolio_url: text(values, "portfolio") || null,
       consent_to_store_data: values.get("consent") === "on",
       consent_to_contact: values.get("consent") === "on",
       status: "new",
-      source: "website",
-      referrer: document.referrer || null,
-      user_agent: navigator.userAgent
+      source: "website"
     });
     setBusy(button, false, "Submit application");
     if (error) return showMessage(message, friendlyError(error), true);
@@ -232,10 +239,10 @@
     const form = event.currentTarget;
     const message = document.getElementById("client-message");
     const button = form.querySelector("button[type='submit']");
-    if (!db) return showMessage(message, "Database connection is unavailable. Please contact White Line on WhatsApp.", true);
+    if (!db) return showMessage(message, "Database setup is not complete yet. Please contact White Line on WhatsApp.", true);
 
-    const values = new FormData(form);
     setBusy(button, true, "Sending request…");
+    const values = new FormData(form);
     const { error } = await db.from("client_requests").insert({
       client_name: text(values, "name"),
       company_name: text(values, "company") || null,
@@ -243,47 +250,36 @@
       phone: text(values, "phone"),
       whatsapp: text(values, "phone"),
       project_type: text(values, "project"),
-      talent_category: text(values, "needed") || null,
+      talent_category: text(values, "needed"),
       project_description: text(values, "brief"),
-      requirements: [`Budget: ${text(values, "budget")}`, `Usage: ${text(values, "usage")}`].join("\n"),
+      requirements: [text(values, "usage"), `Budget: ${text(values, "budget")}`].filter(Boolean).join(" | "),
       event_date: text(values, "date") || null,
       location: text(values, "location"),
       consent_to_store_data: values.get("consent") === "on",
       consent_to_contact: values.get("consent") === "on",
       status: "new",
-      source: "website",
-      referrer: document.referrer || null,
-      user_agent: navigator.userAgent
+      source: "website"
     });
     setBusy(button, false, "Submit talent request");
     if (error) return showMessage(message, friendlyError(error), true);
     form.reset();
     localStorage.removeItem("whiteLineDraft:client");
-    showMessage(message, "Request received. White Line will review the brief and follow up about availability, rates and next steps.", false);
+    showMessage(message, "Request received. White Line will follow up about availability, rates and next steps.", false);
   }
 
+  function label(name) { return ({ instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", facebook: "Facebook", x: "X", website: "Website", portfolio: "Portfolio" })[name] || name; }
   function text(formData, name) { return String(formData.get(name) || "").trim(); }
-  function setBusy(button, busy, label) { if (button) { button.disabled = busy; button.textContent = label; } }
-  function showMessage(element, textValue, error) {
-    if (!element) return;
-    element.hidden = false;
-    element.dataset.state = error ? "error" : "success";
-    element.textContent = textValue;
-    element.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
+  function setBusy(button, busy, labelText) { if (button) { button.disabled = busy; button.textContent = labelText; } }
+  function showMessage(element, textValue, error) { if (element) { element.hidden = false; element.dataset.state = error ? "error" : "success"; element.textContent = textValue; element.scrollIntoView({ behavior: "smooth", block: "nearest" }); } }
   function friendlyError(error) {
     console.error(error);
-    if (error?.code === "23503") return "The selected casting call is no longer available. Refresh the page and try again.";
-    if (error?.code === "23505") return "This submission appears to have already been received.";
-    if (error?.code === "42501" || error?.code === "23514") return "The submission was blocked by a security rule. Check the consent box and required fields.";
-    if (error?.code === "PGRST204") return "The website and database fields are out of sync. Please contact White Line on WhatsApp.";
+    if (error?.code === "42501") return "The submission was blocked by a security rule. Check the required consent box and try again.";
     return "The submission could not be stored. Please try again or contact White Line on WhatsApp.";
   }
   function formatDate(value) {
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    const raw = String(value || "");
+    const date = raw.includes("T") ? new Date(raw) : new Date(`${raw}T12:00:00`);
+    return Number.isNaN(date.getTime()) ? raw : date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
   }
-  function escapeHtml(value) {
-    return String(value || "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]));
-  }
+  function escapeHtml(value) { return String(value || "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character])); }
 })();

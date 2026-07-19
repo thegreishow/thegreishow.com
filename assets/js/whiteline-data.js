@@ -22,7 +22,6 @@ window.WHITE_LINE_DATA = window.WHITE_LINE_DATA || { talent: [], castingCalls: [
     .then(() => window.supabase?.createClient ? null : loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'))
     .then(() => window.WHITE_LINE_SUPABASE?.url ? null : loadScript('assets/js/whiteline-supabase-config.js'))
     .then(() => loadScript('assets/js/whiteline-database.js'))
-    .then(() => loadScript('assets/js/whiteline-media-enhancements.js'))
     .then(() => loadScript('assets/js/whiteline-live-onboarding.js'))
     .catch((error) => console.error('White Line scripts failed to load', error));
 })();

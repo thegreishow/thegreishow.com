@@ -10,6 +10,9 @@
   const requestsHost = $("requests");
   const talentHost = $("talent-profiles");
   const castingHost = $("casting-calls");
+  const profileForm = $("talent-profile-form");
+  const profileImage = $("profile-image-file");
+  const profilePreview = $("profile-image-preview");
 
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -30,9 +33,20 @@
     loginForm.reset();
   });
 
+  profileImage.addEventListener("change", () => {
+    const file = profileImage.files?.[0];
+    if (!file) {
+      profilePreview.hidden = true;
+      profilePreview.removeAttribute("src");
+      return;
+    }
+    profilePreview.src = URL.createObjectURL(file);
+    profilePreview.hidden = false;
+  });
+
   document.querySelectorAll("[data-refresh]").forEach((button) => button.addEventListener("click", loadData));
   document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
-  $("talent-profile-form").addEventListener("submit", saveTalentProfile);
+  profileForm.addEventListener("submit", saveTalentProfile);
   $("casting-form").addEventListener("submit", saveCastingCall);
 
   db.auth.getSession().then(({ data }) => { if (data.session) openDashboard(); });
@@ -54,9 +68,9 @@
   async function loadData() {
     setLoading();
     const [applications, requests, talent, castings] = await Promise.all([
-      db.from("talent_applications").select("id,full_name,stage_name,email,phone,whatsapp,category,city,biography,experience,portfolio_url,status,created_at").order("created_at", { ascending: false }),
+      db.from("talent_applications").select("id,full_name,stage_name,email,phone,whatsapp,category,city,biography,experience,portfolio_url,instagram_url,tiktok_url,youtube_url,headshot_url,resume_url,status,created_at").order("created_at", { ascending: false }),
       db.from("client_requests").select("id,client_name,company_name,email,phone,whatsapp,project_type,talent_category,project_description,requirements,event_date,location,budget_min,budget_max,currency,status,created_at").order("created_at", { ascending: false }),
-      db.from("talent_profiles").select("id,full_name,stage_name,category,city,status,featured,created_at").order("created_at", { ascending: false }),
+      db.from("talent_profiles").select("id,full_name,stage_name,category,city,status,featured,profile_image_url,instagram_url,tiktok_url,youtube_url,facebook_url,x_url,website_url,portfolio_url,created_at").order("created_at", { ascending: false }),
       db.from("casting_calls").select("id,title,category,location,event_date,application_deadline,compensation,status,created_at").order("created_at", { ascending: false })
     ]);
 
@@ -80,7 +94,8 @@
     if (!rows.length) return "<p class='muted'>No talent applications yet.</p>";
     return rows.map((row) => {
       const phone = row.whatsapp || row.phone;
-      return `<article class="card"><span class="pill">${esc(row.status)}</span><h3>${esc(row.stage_name || row.full_name)}</h3><div class="meta">${esc(row.category)} · ${esc(row.city || "Location not provided")} · ${date(row.created_at)}</div><p>${esc(row.biography || "No biography supplied.")}</p>${row.experience ? `<p class="meta">Experience: ${esc(row.experience)}</p>` : ""}<div class="contact-links"><a class="button" href="mailto:${encodeURIComponent(row.email)}">Email</a>${phone ? `<a class="button" target="_blank" rel="noopener" href="https://wa.me/${digits(phone)}">WhatsApp</a>` : ""}${row.portfolio_url ? `<a class="button" target="_blank" rel="noopener" href="${esc(row.portfolio_url)}">Portfolio</a>` : ""}</div><div class="actions"><button data-table="talent_applications" data-id="${row.id}" data-status="reviewing">Reviewing</button><button class="primary" data-table="talent_applications" data-id="${row.id}" data-status="approved">Approve</button><button class="danger" data-table="talent_applications" data-id="${row.id}" data-status="rejected">Reject</button></div></article>`;
+      const links = socialLinks(row);
+      return `<article class="card"><span class="pill">${esc(row.status)}</span><h3>${esc(row.stage_name || row.full_name)}</h3><div class="meta">${esc(row.category)} · ${esc(row.city || "Location not provided")} · ${date(row.created_at)}</div><p>${esc(row.biography || "No biography supplied.")}</p>${row.experience ? `<p class="meta">Experience: ${esc(row.experience)}</p>` : ""}<div class="contact-links"><a class="button" href="mailto:${encodeURIComponent(row.email)}">Email</a>${phone ? `<a class="button" target="_blank" rel="noopener" href="https://wa.me/${digits(phone)}">WhatsApp</a>` : ""}${row.portfolio_url ? safeLink(row.portfolio_url, "Portfolio") : ""}${row.headshot_url ? safeLink(row.headshot_url, "Headshot") : ""}${row.resume_url ? safeLink(row.resume_url, "Résumé") : ""}${links}</div><div class="actions"><button data-table="talent_applications" data-id="${row.id}" data-status="reviewing">Reviewing</button><button class="primary" data-table="talent_applications" data-id="${row.id}" data-status="approved">Approve</button><button class="danger" data-table="talent_applications" data-id="${row.id}" data-status="rejected">Reject</button></div></article>`;
     }).join("");
   }
 
@@ -95,7 +110,7 @@
 
   function renderTalentProfiles(rows) {
     if (!rows.length) return "<p class='muted'>No roster profiles yet.</p>";
-    return rows.map((row) => `<article class="card"><span class="pill">${esc(row.status)}</span><h3>${esc(row.stage_name || row.full_name)}</h3><div class="meta">${esc(row.category)} · ${esc(row.city || "Jamaica")}${row.featured ? " · Featured" : ""}</div><div class="actions">${row.status === "approved" ? `<button data-table="talent_profiles" data-id="${row.id}" data-status="inactive">Unpublish</button>` : `<button class="primary" data-table="talent_profiles" data-id="${row.id}" data-status="approved">Publish</button>`}<button data-feature="${row.featured ? "false" : "true"}" data-id="${row.id}">${row.featured ? "Remove feature" : "Feature"}</button></div></article>`).join("");
+    return rows.map((row) => `<article class="card">${row.profile_image_url ? `<img class="preview" src="${esc(row.profile_image_url)}" alt="${esc(row.stage_name || row.full_name)}">` : ""}<span class="pill">${esc(row.status)}</span><h3>${esc(row.stage_name || row.full_name)}</h3><div class="meta">${esc(row.category)} · ${esc(row.city || "Jamaica")}${row.featured ? " · Featured" : ""}</div><div class="contact-links">${socialLinks(row)}${row.portfolio_url ? safeLink(row.portfolio_url, "Portfolio") : ""}</div><div class="actions">${row.status === "approved" ? `<button data-table="talent_profiles" data-id="${row.id}" data-status="inactive">Unpublish</button>` : `<button class="primary" data-table="talent_profiles" data-id="${row.id}" data-status="approved">Publish</button>`}<button data-feature="${row.featured ? "false" : "true"}" data-id="${row.id}">${row.featured ? "Remove feature" : "Feature"}</button></div></article>`).join("");
   }
 
   function renderCastings(rows) {
@@ -123,25 +138,52 @@
     const form = event.currentTarget;
     const data = new FormData(form);
     const fullName = text(data, "full_name");
-    const payload = {
-      full_name: fullName,
-      stage_name: nullable(data, "stage_name"),
-      slug: slugify(text(data, "stage_name") || fullName) + "-" + Date.now().toString().slice(-5),
-      category: text(data, "category"),
-      short_bio: text(data, "short_bio"),
-      city: nullable(data, "city"),
-      profile_image_url: nullable(data, "profile_image_url"),
-      instagram_url: nullable(data, "instagram_url"),
-      portfolio_url: nullable(data, "portfolio_url"),
-      status: text(data, "status") || "draft",
-      featured: text(data, "featured") === "true"
-    };
-    show($("talent-profile-status"), "Saving…");
-    const { error } = await db.from("talent_profiles").insert(payload);
-    if (error) return show($("talent-profile-status"), error.message);
-    form.reset();
-    show($("talent-profile-status"), "Talent profile saved.");
-    await loadData();
+    const file = profileImage.files?.[0];
+    let imageUrl = nullable(data, "profile_image_url");
+
+    try {
+      show($("talent-profile-status"), file ? "Uploading profile image…" : "Saving profile…");
+      if (file) imageUrl = await uploadPublicImage(file, text(data, "stage_name") || fullName);
+      const payload = {
+        full_name: fullName,
+        stage_name: nullable(data, "stage_name"),
+        slug: slugify(text(data, "stage_name") || fullName) + "-" + Date.now().toString().slice(-5),
+        category: text(data, "category"),
+        short_bio: text(data, "short_bio"),
+        city: nullable(data, "city"),
+        profile_image_url: imageUrl,
+        instagram_url: nullable(data, "instagram_url"),
+        tiktok_url: nullable(data, "tiktok_url"),
+        youtube_url: nullable(data, "youtube_url"),
+        facebook_url: nullable(data, "facebook_url"),
+        x_url: nullable(data, "x_url"),
+        website_url: nullable(data, "website_url"),
+        portfolio_url: nullable(data, "portfolio_url"),
+        status: text(data, "status") || "draft",
+        featured: text(data, "featured") === "true"
+      };
+      const { error } = await db.from("talent_profiles").insert(payload);
+      if (error) throw error;
+      form.reset();
+      profilePreview.hidden = true;
+      profilePreview.removeAttribute("src");
+      show($("talent-profile-status"), "Talent profile and media saved.");
+      await loadData();
+    } catch (error) {
+      show($("talent-profile-status"), error.message || "Could not save the talent profile.");
+    }
+  }
+
+  async function uploadPublicImage(file, name) {
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) throw new Error("Profile image must be JPG, PNG or WebP.");
+    if (file.size > 8 * 1024 * 1024) throw new Error("Profile image must be smaller than 8 MB.");
+    const extension = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `profiles/${slugify(name)}-${crypto.randomUUID()}.${extension}`;
+    const { error } = await db.storage.from("talent-media").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
+    if (error) throw error;
+    const { data } = db.storage.from("talent-media").getPublicUrl(path);
+    return data.publicUrl;
   }
 
   async function saveCastingCall(event) {
@@ -175,6 +217,14 @@
     document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.view === name));
   }
 
+  function socialLinks(row) {
+    const items = [
+      [row.instagram_url, "Instagram"], [row.tiktok_url, "TikTok"], [row.youtube_url, "YouTube"],
+      [row.facebook_url, "Facebook"], [row.x_url, "X"], [row.website_url, "Website"]
+    ];
+    return items.filter(([url]) => url).map(([url, label]) => safeLink(url, label)).join("");
+  }
+  function safeLink(url, label) { return `<a class="button" target="_blank" rel="noopener" href="${esc(url)}">${label}</a>`; }
   function show(element, message) { element.hidden = false; element.textContent = message; }
   function text(data, name) { return String(data.get(name) || "").trim(); }
   function nullable(data, name) { return text(data, name) || null; }

@@ -13,7 +13,7 @@
     addConnectionStatus();
 
     if (!configured || !window.supabase?.createClient) {
-      setStatus("Setup required", "Database files are installed. Add the Supabase project URL and anon key to activate storage.", "warning");
+      setStatus("Setup required", "Database files are installed, but Supabase is not configured.", "warning");
       return;
     }
 
@@ -21,14 +21,14 @@
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
     });
 
+    connectForms();
+
     try {
       await loadPublicDirectory();
-      connectForms();
       setStatus("Database connected", "Applications are securely stored and public listings are synced from Supabase.", "success");
     } catch (error) {
       console.error("White Line database initialization failed", error);
-      connectForms();
-      setStatus("Database connection issue", "The page is available, but live listings may not have loaded. Please try again later.", "error");
+      setStatus("Database connection issue", "Forms are available, but public listings may not have loaded.", "error");
     }
   });
 
@@ -68,43 +68,45 @@
   async function loadPublicDirectory() {
     const [talentResult, castingResult] = await Promise.all([
       db.from("talent_profiles")
-        .select("slug,professional_name,disciplines,location,image_url,bio,credits,instagram_url,reel_url,featured")
+        .select("id,slug,full_name,stage_name,category,secondary_categories,city,parish,country,profile_image_url,short_bio,skills,instagram_url,portfolio_url,featured,display_order")
         .eq("status", "approved")
         .order("featured", { ascending: false })
-        .order("professional_name", { ascending: true }),
+        .order("display_order", { ascending: true }),
       db.from("casting_calls")
-        .select("slug,title,project_type,location,project_date,deadline,compensation,summary,requirements,status")
+        .select("id,slug,title,category,location,event_date,application_deadline,compensation,description,requirements,status,featured")
         .eq("status", "open")
-        .order("deadline", { ascending: true, nullsFirst: false })
+        .order("application_deadline", { ascending: true, nullsFirst: false })
     ]);
 
     if (talentResult.error) throw talentResult.error;
     if (castingResult.error) throw castingResult.error;
 
     const talent = (talentResult.data || []).map((row) => ({
-      id: row.slug,
-      name: row.professional_name,
-      disciplines: row.disciplines || [],
-      location: row.location,
-      image: row.image_url,
-      bio: row.bio,
-      credits: row.credits || [],
+      id: row.slug || row.id,
+      name: row.stage_name || row.full_name,
+      disciplines: [row.category, ...(row.secondary_categories || [])].filter(Boolean),
+      location: [row.city, row.parish, row.country].filter(Boolean).join(", "),
+      image: row.profile_image_url,
+      bio: row.short_bio,
+      credits: row.skills || [],
       instagram: row.instagram_url,
-      reel: row.reel_url,
+      reel: row.portfolio_url,
       featured: row.featured
     }));
 
     const castingCalls = (castingResult.data || []).map((row) => ({
-      id: row.slug,
+      id: row.id,
+      slug: row.slug,
       title: row.title,
-      type: row.project_type,
-      location: row.location,
-      date: row.project_date,
-      deadline: row.deadline,
+      type: row.category || "Casting opportunity",
+      location: row.location || "Jamaica",
+      date: row.event_date,
+      deadline: row.application_deadline,
       compensation: row.compensation,
       status: row.status,
-      summary: row.summary,
-      requirements: row.requirements || []
+      summary: row.description,
+      requirements: row.requirements ? [row.requirements] : [],
+      featured: row.featured
     }));
 
     window.WHITE_LINE_DATA = { talent, castingCalls };
@@ -121,7 +123,6 @@
 
     const categories = ["All", ...new Set(talent.flatMap((item) => item.disciplines || []))];
     filters.innerHTML = categories.map((category, index) => `<button class="wl-filter${index === 0 ? " active" : ""}" data-db-filter="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join("");
-
     let active = "All";
     const search = document.getElementById("talent-search");
     const sort = document.getElementById("talent-sort");
@@ -151,7 +152,7 @@
 
   function profileCard(item) {
     const image = item.image || "assets/img/home-bg.webp";
-    return `<article class="talent-card" tabindex="0" role="button" data-id="${escapeHtml(item.id)}"><img class="talent-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}"><div class="talent-body"><h3>${escapeHtml(item.name)}</h3><div class="talent-meta">${escapeHtml(item.location || "Jamaica")}</div><div class="tags">${(item.disciplines || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div></div></article>`;
+    return `<article class="talent-card" tabindex="0" data-id="${escapeHtml(item.id)}"><img class="talent-image" src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}"><div class="talent-body"><h3>${escapeHtml(item.name)}</h3><div class="talent-meta">${escapeHtml(item.location || "Jamaica")}</div><div class="tags">${(item.disciplines || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div></div></article>`;
   }
 
   function renderCasting(calls) {
@@ -159,12 +160,16 @@
     const count = document.getElementById("casting-count");
     const search = document.getElementById("casting-search");
     if (!grid) return;
-
     const draw = () => {
       const query = (search?.value || "").trim().toLowerCase();
       const list = calls.filter((item) => [item.title, item.type, item.location, item.summary, item.compensation, ...(item.requirements || [])].join(" ").toLowerCase().includes(query));
       if (count) count.textContent = `${list.length} open call${list.length === 1 ? "" : "s"}`;
-      grid.innerHTML = list.length ? list.map((item) => `<article class="casting-card"><span class="casting-status">Open</span><h3>${escapeHtml(item.title)}</h3><div class="casting-meta">${escapeHtml(item.type)} · ${escapeHtml(item.location)}${item.date ? ` · ${escapeHtml(formatDate(item.date))}` : ""}</div>${item.deadline ? `<div class="casting-deadline">Deadline ${escapeHtml(formatDate(item.deadline))}</div>` : ""}<p>${escapeHtml(item.summary)}</p><div class="tags">${(item.requirements || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div><strong>${escapeHtml(item.compensation || "Compensation provided in brief")}</strong><button class="wl-button primary apply-casting" data-casting="${escapeHtml(item.title)}">Apply to this casting</button></article>`).join("") : `<div class="empty-state"><strong>${calls.length ? "No casting calls match your search." : "No public casting calls are open right now."}</strong>${calls.length ? "Try a broader search." : "New opportunities will appear here when published."}</div>`;
+      grid.innerHTML = list.length ? list.map((item) => `<article class="casting-card"><span class="casting-status">Open</span><h3>${escapeHtml(item.title)}</h3><div class="casting-meta">${escapeHtml(item.type)} · ${escapeHtml(item.location)}${item.date ? ` · ${escapeHtml(formatDate(item.date))}` : ""}</div>${item.deadline ? `<div class="casting-deadline">Deadline ${escapeHtml(formatDate(item.deadline))}</div>` : ""}<p>${escapeHtml(item.summary)}</p><div class="tags">${(item.requirements || []).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div><strong>${escapeHtml(item.compensation || "Compensation provided in brief")}</strong><button class="wl-button primary apply-casting" data-casting-id="${escapeHtml(item.id)}">Apply to this casting</button></article>`).join("") : `<div class="empty-state"><strong>${calls.length ? "No casting calls match your search." : "No public casting calls are open right now."}</strong>${calls.length ? "Try a broader search." : "New opportunities will appear here when published."}</div>`;
+      grid.querySelectorAll(".apply-casting").forEach((button) => button.addEventListener("click", () => {
+        const select = document.getElementById("casting-interest");
+        if (select) select.value = button.dataset.castingId;
+        document.getElementById("join")?.scrollIntoView({ behavior: "smooth" });
+      }));
     };
     search?.addEventListener("input", draw);
     draw();
@@ -173,7 +178,7 @@
   function refreshCastingOptions(calls) {
     const select = document.getElementById("casting-interest");
     if (!select) return;
-    select.innerHTML = `<option value="General talent profile">General talent profile</option>${calls.map((call) => `<option value="Casting: ${escapeHtml(call.title)}">Casting: ${escapeHtml(call.title)}</option>`).join("")}`;
+    select.innerHTML = `<option value="">General talent profile</option>${calls.map((call) => `<option value="${escapeHtml(call.id)}">Casting: ${escapeHtml(call.title)}</option>`).join("")}`;
   }
 
   function connectForms() {
@@ -190,25 +195,30 @@
     const button = form.querySelector("button[type='submit']");
     const disciplines = [...form.querySelectorAll("[name='discipline']:checked")].map((input) => input.value);
     if (!disciplines.length) return showMessage(message, "Select at least one discipline.", true);
-    if (!db) return showMessage(message, "Database setup is not complete yet. Please contact White Line on WhatsApp.", true);
+    if (!db) return showMessage(message, "Database connection is unavailable. Please contact White Line on WhatsApp.", true);
 
-    setBusy(button, true, "Submitting securely…");
     const values = new FormData(form);
+    setBusy(button, true, "Submitting securely…");
     const { error } = await db.from("talent_applications").insert({
-      application_type: text(values, "castingInterest") || "General talent profile",
+      casting_call_id: text(values, "castingInterest") || null,
       full_name: text(values, "name"),
-      professional_name: text(values, "stage") || null,
+      stage_name: text(values, "stage") || null,
       email: text(values, "email"),
       phone: text(values, "phone"),
-      location: text(values, "location"),
-      years_experience: Number(text(values, "experience") || 0),
-      disciplines,
-      portfolio_links: text(values, "portfolio"),
-      bio: text(values, "bio"),
-      credits: text(values, "credits") || null,
-      consent: values.get("consent") === "on",
+      whatsapp: text(values, "phone"),
+      category: disciplines[0],
+      secondary_categories: disciplines.slice(1),
+      city: text(values, "location"),
+      biography: text(values, "bio"),
+      experience: `${text(values, "experience")} years. ${text(values, "credits")}`.trim(),
+      skills: disciplines.join(", "),
+      portfolio_url: text(values, "portfolio") || null,
+      consent_to_store_data: values.get("consent") === "on",
+      consent_to_contact: values.get("consent") === "on",
       status: "new",
-      source: "website"
+      source: "website",
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent
     });
     setBusy(button, false, "Submit application");
     if (error) return showMessage(message, friendlyError(error), true);
@@ -222,25 +232,28 @@
     const form = event.currentTarget;
     const message = document.getElementById("client-message");
     const button = form.querySelector("button[type='submit']");
-    if (!db) return showMessage(message, "Database setup is not complete yet. Please contact White Line on WhatsApp.", true);
+    if (!db) return showMessage(message, "Database connection is unavailable. Please contact White Line on WhatsApp.", true);
 
-    setBusy(button, true, "Sending request…");
     const values = new FormData(form);
+    setBusy(button, true, "Sending request…");
     const { error } = await db.from("client_requests").insert({
       client_name: text(values, "name"),
-      company: text(values, "company") || null,
+      company_name: text(values, "company") || null,
       email: text(values, "email"),
       phone: text(values, "phone"),
+      whatsapp: text(values, "phone"),
       project_type: text(values, "project"),
-      talent_requested: text(values, "needed"),
-      project_date: text(values, "date") || null,
+      talent_category: text(values, "needed") || null,
+      project_description: text(values, "brief"),
+      requirements: [`Budget: ${text(values, "budget")}`, `Usage: ${text(values, "usage")}`].join("\n"),
+      event_date: text(values, "date") || null,
       location: text(values, "location"),
-      budget: text(values, "budget"),
-      usage: text(values, "usage"),
-      brief: text(values, "brief"),
-      consent: values.get("consent") === "on",
+      consent_to_store_data: values.get("consent") === "on",
+      consent_to_contact: values.get("consent") === "on",
       status: "new",
-      source: "website"
+      source: "website",
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent
     });
     setBusy(button, false, "Submit talent request");
     if (error) return showMessage(message, friendlyError(error), true);
@@ -249,36 +262,27 @@
     showMessage(message, "Request received. White Line will review the brief and follow up about availability, rates and next steps.", false);
   }
 
-  function text(formData, name) {
-    return String(formData.get(name) || "").trim();
-  }
-
-  function setBusy(button, busy, label) {
-    if (!button) return;
-    button.disabled = busy;
-    button.textContent = label;
-  }
-
-  function showMessage(element, text, error) {
+  function text(formData, name) { return String(formData.get(name) || "").trim(); }
+  function setBusy(button, busy, label) { if (button) { button.disabled = busy; button.textContent = label; } }
+  function showMessage(element, textValue, error) {
     if (!element) return;
     element.hidden = false;
     element.dataset.state = error ? "error" : "success";
-    element.textContent = text;
+    element.textContent = textValue;
     element.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
-
   function friendlyError(error) {
     console.error(error);
+    if (error?.code === "23503") return "The selected casting call is no longer available. Refresh the page and try again.";
     if (error?.code === "23505") return "This submission appears to have already been received.";
-    if (error?.code === "42501") return "The submission was blocked by a security rule. Check the required consent box and try again.";
+    if (error?.code === "42501" || error?.code === "23514") return "The submission was blocked by a security rule. Check the consent box and required fields.";
+    if (error?.code === "PGRST204") return "The website and database fields are out of sync. Please contact White Line on WhatsApp.";
     return "The submission could not be stored. Please try again or contact White Line on WhatsApp.";
   }
-
   function formatDate(value) {
-    const date = new Date(`${value}T12:00:00`);
+    const date = new Date(value);
     return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
   }
-
   function escapeHtml(value) {
     return String(value || "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]));
   }

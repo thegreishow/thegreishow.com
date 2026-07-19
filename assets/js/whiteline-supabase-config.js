@@ -1,14 +1,10 @@
 /*
   WHITE LINE SUPABASE CONFIGURATION
   ---------------------------------
-  1. Create a Supabase project.
-  2. Open Project Settings > API.
-  3. Paste the Project URL and anon/public key below.
-
   The anon key is designed to be public in browser apps.
   Never place the service_role key in this file or anywhere in the website.
 */
 window.WHITE_LINE_SUPABASE = {
-  url: "PASTE_SUPABASE_PROJECT_URL_HERE",
-  anonKey: "PASTE_SUPABASE_ANON_KEY_HERE"
+  url: "https://dkvbeizjlgxqjuxnlqho.supabase.co",
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrdmJlaXpqbGd4cWp1eG5scWhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0MDMzNjIsImV4cCI6MjA5OTk3OTM2Mn0.LEoOB6rdDwYh9ViogHuZCJ2gBx6fu78RDzyPBwTe4YE"
 };

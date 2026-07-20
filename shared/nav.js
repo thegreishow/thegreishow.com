@@ -19,7 +19,8 @@
     'documentaries.html': 'visuals.html',
     'live-sessions.html': 'visuals.html',
     'astralthread.html': 'books.html',
-    'booking.html': 'connect.html'
+    'booking.html': 'connect.html',
+    'whiteline': 'whiteline.html'
   };
 
   function getPageFromPath(pathname) {
@@ -125,7 +126,7 @@
   function injectEmergencyNav() {
     const mount = document.getElementById('site-header');
     if (!mount || mount.children.length) return;
-    mount.innerHTML = '<header class="site-header"><div class="nav-container"><a class="brand" href="index.html">THE GREI SHOW</a><nav class="site-nav is-open" aria-label="Emergency navigation"><a href="music.html">Music</a><a href="visuals.html">Visuals</a><a href="books.html">Books</a><a href="arcade.html">Arcade</a><a href="about.html">About</a><a href="connect.html">Connect</a></nav></div></header>';
+    mount.innerHTML = '<header class="site-header"><div class="nav-container"><a class="brand" href="index.html">THE GREI SHOW</a><nav class="site-nav is-open" aria-label="Emergency navigation"><a href="music.html">Music</a><a href="visuals.html">Visuals</a><a href="books.html">Books</a><a href="whiteline.html">Talent &amp; Bookings</a><a href="arcade.html">Arcade</a><a href="about.html">About</a><a href="connect.html">Connect</a></nav></div></header>';
   }
 
   function injectNav(html) {

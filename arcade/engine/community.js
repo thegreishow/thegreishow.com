@@ -67,7 +67,7 @@ export function getRecentActivity(){return safeParse(localStorage.getItem(ACTIVI
 export function getDailyChallenge(games){
   const d=new Date(),key=`${d.getUTCFullYear()}-${d.getUTCMonth()+1}-${d.getUTCDate()}`; let seed=0; for(const c of key)seed=(seed*31+c.charCodeAt(0))>>>0;
   const game=games.length?games[seed%games.length]:null; const challenges=['Set a new personal best','Play twice without leaving the Arcade','Reach the next level','Share your score with a friend','Try a game you have not played today'];
-  return {dayKey:key,game,objective:challenges[seed%challenges.length],reward:25};
+  return {dayKey:key,game,objective:challenges[seed%challenges.length]};
 }
 export function getArcadeLevel(xp){return Math.max(1,Math.floor(Math.sqrt(Math.max(0,xp)/25))+1)}
 function localTopThree(gameId){

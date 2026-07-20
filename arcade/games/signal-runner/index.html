@@ -61,6 +61,7 @@
   }
 
   function begin() {
+    document.querySelector('[data-grei-discovery]')?.remove();
     reset(); running = true; paused = false; startedAt = Date.now(); last = performance.now(); overlay.hidden = true; requestAnimationFrame(loop);
   }
 
@@ -82,7 +83,9 @@
   function end() {
     running = false; best = Math.max(best, score); localStorage.setItem('grei-signal-runner-best', best); hud();
     ot.textContent = 'TRANSMISSION LOST'; oc.textContent = `Final score: ${score}. Submitting...`;
-    document.getElementById('start').textContent = 'Run Again'; overlay.hidden = false; submit();
+    document.getElementById('start').textContent = 'Run Again'; overlay.hidden = false;
+    window.greiShowDiscovery?.(document.querySelector('.panel'), GAME);
+    submit();
   }
 
   function addItem() {

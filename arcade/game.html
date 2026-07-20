@@ -26,7 +26,7 @@ const instructions={
 'signal-runner':['Move left and right using A/D, arrow keys or the on-screen controls.','Collect blue signals to build your score.','Avoid red static; losing all three lives ends the transmission.'],
 'jamaica-run':['Run across Jamaica and collect coins.','Jump or dodge tropical obstacles using the on-screen controls.','Keep moving to build distance and set a new personal best.']
 };
-const achievements={
+const goals={
 'dreamweaver-oracle':['First Fragment — complete your first run','Dream Walker — survive a full memory cycle','Oracle Chosen — reach a top leaderboard position'],
 'signal-runner':['Clean Signal — collect 10 signals','No Static — survive without losing a life','Transmission Master — score 500+'],
 'jamaica-run':['First Mile — begin your island run','Coin Collector — gather 25 coins','Island Legend — claim a top leaderboard score']
@@ -41,8 +41,8 @@ async function init(){
  document.title=`${game.title} | The Grei Show Arcade`;
  const scores=await getScores(game.id);
  const how=instructions[game.id]||['Read the controls shown when the game opens.','Play a full run and chase your personal best.','Submit your score to climb the global leaderboard.'];
- const badges=achievements[game.id]||['First Play — launch the game','Personal Best — improve your score','Top Ten — enter the global leaderboard'];
- root.innerHTML=`<section class="hero"><div class="art"><img src="../${esc(game.thumbnail)}" alt="${esc(game.title)} artwork"></div><div><p class="kicker">${esc(game.creator||'The Grei Show')} · v${esc(game.version||'1.0')}</p><h1>${esc(game.title)}</h1><p class="description">${esc(game.description)}</p><div class="tags">${(game.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><button class="play" id="play">Play Now</button></div></section><section class="grid"><article class="panel"><h2>How to Play</h2><ol>${how.map(i=>`<li>${esc(i)}</li>`).join('')}</ol></article><article class="panel"><h2>Achievements</h2><ul>${badges.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></article><article class="panel"><h2>Top Scores</h2>${scores.length?scores.map((s,i)=>`<div class="score-row"><span>${i+1}</span><strong>${esc(s.name||'Dreamer')}</strong><em>${Number(s.score)||0}</em></div>`).join(''):'<p class="status">No global scores yet. Claim first place.</p>'}</article></section>`;
+ const goalsForGame=goals[game.id]||['First Play — launch the game','Personal Best — improve your score','Top Ten — enter the global leaderboard'];
+ root.innerHTML=`<section class="hero"><div class="art"><img src="../${esc(game.thumbnail)}" alt="${esc(game.title)} artwork"></div><div><p class="kicker">${esc(game.creator||'The Grei Show')} · v${esc(game.version||'1.0')}</p><h1>${esc(game.title)}</h1><p class="description">${esc(game.description)}</p><div class="tags">${(game.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><button class="play" id="play">Play Now</button></div></section><section class="grid"><article class="panel"><h2>How to Play</h2><ol>${how.map(i=>`<li>${esc(i)}</li>`).join('')}</ol></article><article class="panel"><h2>Run Goals</h2><ul>${goalsForGame.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></article><article class="panel"><h2>Top Scores</h2>${scores.length?scores.map((s,i)=>`<div class="score-row"><span>${i+1}</span><strong>${esc(s.name||'Dreamer')}</strong><em>${Number(s.score)||0}</em></div>`).join(''):'<p class="status">No global scores yet. Claim first place.</p>'}</article></section>`;
  document.getElementById('play').onclick=()=>{recordGameLaunch(game);location.href=game.type==='external'?game.entry:`../${game.entry}`};
 }
 init();

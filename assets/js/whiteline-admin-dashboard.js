@@ -18,7 +18,7 @@
   }
 
   async function refresh() {
-    ['command-actions','command-bookings','command-finance','command-activity'].forEach(id => { if ($(id)) $(id).innerHTML='<p class="muted">Loading…</p>'; });
+    ['command-actions','command-bookings','command-bookings-full','command-finance','command-activity'].forEach(id => { if ($(id)) $(id).innerHTML='<p class="muted">Loading…</p>'; });
     const [apps, requests, profiles, castings, payments, payouts] = await Promise.all([
       db.from('talent_applications').select('id,full_name,stage_name,category,city,status,created_at').order('created_at',{ascending:false}),
       db.from('client_requests').select('id,client_name,company_name,project_type,event_date,status,booking_stage,payment_status,quoted_amount,amount_paid,currency,created_at').order('created_at',{ascending:false}),
@@ -47,7 +47,9 @@
   }
 
   function renderBookings(d) {
-    $('command-bookings').innerHTML=d.requests.length?`<div class="table-wrap"><table><thead><tr><th>Client</th><th>Project</th><th>Stage</th><th>Payment</th><th>Value</th><th>Event</th></tr></thead><tbody>${d.requests.map(x=>`<tr><td><strong>${esc(x.client_name)}</strong><small>${esc(x.company_name||'')}</small></td><td>${esc(x.project_type||'Booking')}</td><td>${esc(x.booking_stage||x.status||'new')}</td><td>${esc(x.payment_status||'unpaid')}</td><td>${money(x.quoted_amount,x.currency||'USD')}</td><td>${when(x.event_date)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-state"><strong>No bookings yet.</strong><p class="muted">Client enquiries will appear here.</p></div>';
+    const html=d.requests.length?`<div class="table-wrap"><table><thead><tr><th>Client</th><th>Project</th><th>Stage</th><th>Payment</th><th>Value</th><th>Event</th></tr></thead><tbody>${d.requests.map(x=>`<tr><td><strong>${esc(x.client_name)}</strong><small>${esc(x.company_name||'')}</small></td><td>${esc(x.project_type||'Booking')}</td><td>${esc(x.booking_stage||x.status||'new')}</td><td>${esc(x.payment_status||'unpaid')}</td><td>${money(x.quoted_amount,x.currency||'USD')}</td><td>${when(x.event_date)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-state"><strong>No bookings yet.</strong><p class="muted">Client enquiries will appear here.</p></div>';
+    if ($('command-bookings')) $('command-bookings').innerHTML=html;
+    if ($('command-bookings-full')) $('command-bookings-full').innerHTML=html;
   }
 
   function renderFinance(d) {

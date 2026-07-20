@@ -1,11 +1,29 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.52.1";
 
+const allowedOrigins = new Set([
+  "https://thegreishow.com",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
+]);
+
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") || "";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://thegreishow.com",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    Vary: "Origin",
+  };
+}
+
 Deno.serve(async (req: Request) => {
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
+  if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
   try {
     const authHeader = req.headers.get("Authorization") || "";
-    if (!authHeader.startsWith("Bearer ")) return json({ error: "Authentication required" }, 401);
+    if (!authHeader.startsWith("Bearer ")) return json(req, { error: "Authentication required" }, 401);
 
     const supabaseUrl = requiredEnv("SUPABASE_URL");
     const anon = requiredEnv("SUPABASE_ANON_KEY");
@@ -14,27 +32,27 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(supabaseUrl, serviceRole, { auth: { persistSession: false } });
 
     const { data: { user }, error: userError } = await userClient.auth.getUser();
-    if (userError || !user) return json({ error: "Invalid session" }, 401);
+    if (userError || !user) return json(req, { error: "Invalid session" }, 401);
     const { data: membership } = await admin.from("whiteline_admins").select("user_id").eq("user_id", user.id).maybeSingle();
-    if (!membership) return json({ error: "White Line administrator access required" }, 403);
+    if (!membership) return json(req, { error: "White Line administrator access required" }, 403);
 
     const body = await req.json();
     const payoutId = String(body.payout_id || "");
-    if (!payoutId) return json({ error: "payout_id is required" }, 400);
+    if (!payoutId) return json(req, { error: "payout_id is required" }, 400);
 
     const { data: payout, error } = await admin.from("talent_payouts")
       .select("id,status,payout_amount,currency,payout_receiver,paypal_sender_batch_id,paypal_payout_batch_id,talent_profiles(stage_name,full_name,payout_email)")
       .eq("id", payoutId).single();
     if (error) throw error;
-    if (payout.status === "paid") return json({ payout_id: payout.id, status: payout.status, batch_id: payout.paypal_payout_batch_id });
-    if (payout.status === "processing" && payout.paypal_payout_batch_id) return json({ payout_id: payout.id, status: payout.status, batch_id: payout.paypal_payout_batch_id });
-    if (payout.status !== "eligible") return json({ error: `Payout is ${payout.status}, not eligible.` }, 409);
+    if (payout.status === "paid") return json(req, { payout_id: payout.id, status: payout.status, batch_id: payout.paypal_payout_batch_id });
+    if (payout.status === "processing" && payout.paypal_payout_batch_id) return json(req, { payout_id: payout.id, status: payout.status, batch_id: payout.paypal_payout_batch_id });
+    if (payout.status !== "eligible") return json(req, { error: `Payout is ${payout.status}, not eligible.` }, 409);
 
     const profile = Array.isArray(payout.talent_profiles) ? payout.talent_profiles[0] : payout.talent_profiles;
     const receiver = String(payout.payout_receiver || profile?.payout_email || "").trim().toLowerCase();
-    if (!receiver || !receiver.includes("@")) return json({ error: "Talent PayPal payout email is missing." }, 409);
+    if (!receiver || !receiver.includes("@")) return json(req, { error: "Talent PayPal payout email is missing." }, 409);
     const amount = Number(payout.payout_amount || 0);
-    if (!(amount > 0)) return json({ error: "Payout amount must be greater than zero." }, 409);
+    if (!(amount > 0)) return json(req, { error: "Payout amount must be greater than zero." }, 409);
 
     const senderBatchId = payout.paypal_sender_batch_id || `wl-${payout.id}`;
     const token = await paypalAccessToken();
@@ -77,10 +95,10 @@ Deno.serve(async (req: Request) => {
     }).eq("id", payout.id);
     if (updateError) throw updateError;
 
-    return json({ payout_id: payout.id, status: "processing", batch_id: batchId });
+    return json(req, { payout_id: payout.id, status: "processing", batch_id: batchId });
   } catch (error) {
     console.error(error);
-    return json({ error: error instanceof Error ? error.message : "Talent payout failed." }, 500);
+    return json(req, { error: error instanceof Error ? error.message : "Talent payout failed." }, 500);
   }
 });
 
@@ -104,4 +122,4 @@ function paypalBaseUrl() {
     : "https://api-m.sandbox.paypal.com";
 }
 function requiredEnv(name: string) { const value = Deno.env.get(name); if (!value) throw new Error(`${name} is not configured.`); return value; }
-function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } }); }
+function json(req: Request, body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders(req), "Content-Type": "application/json" } }); }

@@ -1,6 +1,12 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 
+const allowedOrigins = new Set([
+  "https://thegreishow.com",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
+]);
+
 type QueueRow = {
   id: string;
   template_key: string;
@@ -11,7 +17,8 @@ type QueueRow = {
 };
 
 Deno.serve(async (req: Request) => {
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
+  if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
   try {
     await authorize(req);
     const supabase = createClient(requiredEnv("SUPABASE_URL"), requiredEnv("SUPABASE_SERVICE_ROLE_KEY"), { auth: { persistSession: false } });
@@ -48,9 +55,9 @@ Deno.serve(async (req: Request) => {
         results.push({ id: row.id, status: "failed", error: String(error?.message || error) });
       }
     }
-    return json({ processed: results.length, results });
+    return json(req, { processed: results.length, results });
   } catch (error) {
-    return json({ error: String(error?.message || error) }, 500);
+    return json(req, { error: String(error?.message || error) }, 500);
   }
 });
 
@@ -118,4 +125,14 @@ function stripHtml(value: string) { return value.replace(/<br\s*\/?>/gi, "\n").r
 function escapeHtml(value: string) { return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] || c)); }
 function requiredEnv(name: string) { const value = Deno.env.get(name); if (!value) throw new Error(`${name} is not configured`); return value; }
 async function safeJson(req: Request) { try { return await req.json(); } catch { return {}; } }
-function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } }); }
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") || "";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://thegreishow.com",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    Vary: "Origin",
+  };
+}
+function json(req: Request, body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders(req), "Content-Type": "application/json" } }); }

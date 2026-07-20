@@ -1,6 +1,5 @@
 const chapters = Array.isArray(window.astralThreadChapters) ? window.astralThreadChapters : [];
 let activeChapter = 0;
-let activeAudioSource = '';
 
 const reader = document.querySelector('.reader-card');
 const chapterKicker = document.getElementById('chapter-kicker');
@@ -56,43 +55,25 @@ function renderParagraphs(paragraphs = []) {
 }
 
 function renderAudio(chapter) {
-  const hasPreview = Boolean(chapter.previewAudio);
-  const hasFullAudio = Boolean(chapter.fullAudio);
-  const audioSource = chapter.fullAudio || chapter.previewAudio;
+  const audioSource = chapter.fullAudio;
 
   audioBlock.hidden = !audioSource;
   chapterAudio.hidden = !audioSource;
-  chapterFullAudio.hidden = !hasFullAudio;
+  chapterFullAudio.hidden = !audioSource;
 
   if (audioSource) {
-    activeAudioSource = audioSource;
-    chapterAudio.dataset.fallbackAudio = hasFullAudio && hasPreview ? chapter.previewAudio : '';
     chapterAudio.src = audioSource;
     chapterAudio.load();
+    chapterFullAudio.href = audioSource;
+    chapterFullAudio.setAttribute('aria-label', `Open the full narration for ${chapter.title}`);
   } else {
-    activeAudioSource = '';
-    chapterAudio.dataset.fallbackAudio = '';
     chapterAudio.pause();
     chapterAudio.removeAttribute('src');
     chapterAudio.load();
-  }
-
-  if (hasFullAudio) {
-    chapterFullAudio.href = chapter.fullAudio;
-  } else {
     chapterFullAudio.removeAttribute('href');
+    chapterFullAudio.removeAttribute('aria-label');
   }
 }
-
-chapterAudio.addEventListener('error', () => {
-  const fallbackAudio = chapterAudio.dataset.fallbackAudio;
-  if (!fallbackAudio || activeAudioSource === fallbackAudio) return;
-
-  activeAudioSource = fallbackAudio;
-  chapterAudio.dataset.fallbackAudio = '';
-  chapterAudio.src = fallbackAudio;
-  chapterAudio.load();
-});
 
 function renderArtwork(chapter) {
   const artwork = chapter.artwork;

@@ -1,14 +1,26 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.52.1";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+const allowedOrigins = new Set([
+  "https://thegreishow.com",
+  "http://localhost:4173",
+  "http://127.0.0.1:4173",
+]);
+
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") || "";
+  return {
+  "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://thegreishow.com",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
+  Vary: "Origin",
+  };
 };
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
+  if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
 
   try {
     const supabaseUrl = requiredEnv("SUPABASE_URL");
@@ -16,14 +28,14 @@ Deno.serve(async (req: Request) => {
     const siteUrl = (Deno.env.get("SITE_URL") || "https://thegreishow.com").replace(/\/$/, "");
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace(/^Bearer\s+/i, "");
-    if (!token) return json({ error: "Missing admin session." }, 401);
+    if (!token) return json(req, { error: "Missing admin session." }, 401);
 
     const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
     const { data: userData, error: userError } = await admin.auth.getUser(token);
-    if (userError || !userData.user) return json({ error: "Invalid admin session." }, 401);
+    if (userError || !userData.user) return json(req, { error: "Invalid admin session." }, 401);
 
     const { data: adminRow } = await admin.from("whiteline_admins").select("user_id").eq("user_id", userData.user.id).maybeSingle();
-    if (!adminRow) return json({ error: "White Line admin access required." }, 403);
+    if (!adminRow) return json(req, { error: "White Line admin access required." }, 403);
 
     const body = await req.json();
     const clientRequestId = String(body.clientRequestId || "");
@@ -32,25 +44,25 @@ Deno.serve(async (req: Request) => {
     const depositPercent = Number(body.depositPercent || 50);
     const currency = String(body.currency || "USD").toUpperCase();
 
-    if (!clientRequestId) return json({ error: "Missing booking request." }, 400);
-    if (!["deposit", "balance", "full"].includes(paymentType)) return json({ error: "Invalid payment type." }, 400);
-    if (!Number.isFinite(quoteAmount) || quoteAmount <= 0) return json({ error: "Invalid quote amount." }, 400);
-    if (!Number.isFinite(depositPercent) || depositPercent <= 0 || depositPercent > 100) return json({ error: "Invalid deposit percentage." }, 400);
-    if (!/^[A-Z]{3}$/.test(currency)) return json({ error: "Invalid currency." }, 400);
+    if (!clientRequestId) return json(req, { error: "Missing booking request." }, 400);
+    if (!["deposit", "balance", "full"].includes(paymentType)) return json(req, { error: "Invalid payment type." }, 400);
+    if (!Number.isFinite(quoteAmount) || quoteAmount <= 0) return json(req, { error: "Invalid quote amount." }, 400);
+    if (!Number.isFinite(depositPercent) || depositPercent <= 0 || depositPercent > 100) return json(req, { error: "Invalid deposit percentage." }, 400);
+    if (!/^[A-Z]{3}$/.test(currency)) return json(req, { error: "Invalid currency." }, 400);
 
     const { data: booking, error: bookingError } = await admin
       .from("client_requests")
       .select("id,client_name,email,project_name,project_type,quoted_amount,amount_paid")
       .eq("id", clientRequestId)
       .single();
-    if (bookingError || !booking) return json({ error: "Booking request not found." }, 404);
+    if (bookingError || !booking) return json(req, { error: "Booking request not found." }, 404);
 
     const amountPaid = Number(booking.amount_paid || 0);
     const depositAmount = roundMoney(quoteAmount * depositPercent / 100);
     const amount = paymentType === "deposit"
       ? Math.max(depositAmount - amountPaid, 0)
       : Math.max(quoteAmount - amountPaid, 0);
-    if (amount <= 0) return json({ error: "This booking has no remaining amount due." }, 400);
+    if (amount <= 0) return json(req, { error: "This booking has no remaining amount due." }, 400);
 
     const { data: payment, error: paymentError } = await admin.from("booking_payments").insert({
       client_request_id: clientRequestId,
@@ -118,10 +130,10 @@ Deno.serve(async (req: Request) => {
     }).eq("id", clientRequestId);
     if (updateBookingError) throw updateBookingError;
 
-    return json({ paymentId: payment.id, orderId: order.id, url: approvalUrl, reference });
+    return json(req, { paymentId: payment.id, orderId: order.id, url: approvalUrl, reference });
   } catch (error) {
     console.error(error);
-    return json({ error: error instanceof Error ? error.message : "Could not create PayPal checkout." }, 500);
+    return json(req, { error: error instanceof Error ? error.message : "Could not create PayPal checkout." }, 500);
   }
 });
 
@@ -149,4 +161,4 @@ function paypalBaseUrl() {
 function requiredEnv(name: string) { const value = Deno.env.get(name); if (!value) throw new Error(`${name} is not configured.`); return value; }
 function roundMoney(value: number) { return Math.round((value + Number.EPSILON) * 100) / 100; }
 function capitalize(value: string) { return value.charAt(0).toUpperCase() + value.slice(1); }
-function json(body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }); }
+function json(req: Request, body: unknown, status = 200) { return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders(req), "Content-Type": "application/json" } }); }

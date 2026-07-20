@@ -22,6 +22,8 @@ create index if not exists talent_profiles_source_application_idx
 create or replace function public.set_whiteline_updated_at()
 returns trigger
 language plpgsql
+security invoker
+set search_path = public
 as $$
 begin
   new.updated_at = now();

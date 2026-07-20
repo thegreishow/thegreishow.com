@@ -89,6 +89,7 @@
     .sound-btn.active { background: var(--arcade-green, #4ade80) !important; color: #000 !important; }
     .grei-game-discovery{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:14px 0 0;padding:0 16px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(255,255,255,.07);color:#fff;font:800 12px/1 system-ui;letter-spacing:.04em;text-decoration:none}
     .grei-game-discovery:hover{background:rgba(255,255,255,.14)}
+    body.grei-immersive{height:100dvh;overflow:hidden}body.grei-immersive .grei-gamebar,body.grei-immersive .grei-gamebar-spacer{display:none!important}body.grei-immersive .wrap{display:block;width:100%;height:100dvh;padding:0}body.grei-immersive .side{display:none}body.grei-immersive .layout{display:block;height:100%}body.grei-immersive .stage,body.grei-immersive .stage canvas{height:100dvh!important;min-height:100dvh!important;border:0!important;border-radius:0!important}body.grei-immersive .wrap>.hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:10px;right:10px;z-index:10;pointer-events:none}
     @media(max-width:560px){.grei-gamebar strong{display:none}.grei-gamebar a,.grei-gamebar button{min-height:44px;padding:0 12px}.grei-gamebar-spacer{height:62px}}
   `;
   document.head.appendChild(style);
@@ -107,7 +108,7 @@
 
   const spacer = document.createElement('div'); spacer.className = 'grei-gamebar-spacer';
   const pauseScreen = document.createElement('div'); pauseScreen.className = 'grei-pause-screen';
-  pauseScreen.innerHTML = '<div><h2>PAUSED</h2><p>Tap Pause again or press P to continue.</p></div>';
+  pauseScreen.innerHTML = '<div><h2>PAUSED</h2><p>Tap Pause again or press Space to continue.</p></div>';
 
   document.body.prepend(spacer);
   document.body.prepend(bar);
@@ -121,6 +122,7 @@
   });
 
   let paused = false;
+  let immersive = false;
   const pauseBtn = bar.querySelector('[data-grei-pause]');
   const fullscreenBtn = bar.querySelector('[data-grei-fullscreen]');
 
@@ -133,18 +135,32 @@
 
   pauseBtn.addEventListener('click', () => setPaused(!paused));
   pauseScreen.addEventListener('click', () => setPaused(false));
-  window.addEventListener('keydown', event => { if (event.key.toLowerCase() === 'p') setPaused(!paused); });
+  const nativeFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const updateFullscreenButton = () => { fullscreenBtn.textContent = nativeFullscreenElement() || immersive ? 'Exit full screen' : 'Full screen'; };
+  const setImmersive = next => { immersive = Boolean(next); document.body.classList.toggle('grei-immersive', immersive); window.scrollTo(0, 0); updateFullscreenButton(); };
+  async function toggleFullscreen() {
+    const request = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (nativeFullscreenElement()) {
+      try { await exit?.call(document); } catch {}
+      return;
+    }
+    if (immersive) { setImmersive(false); return; }
+    if (request) {
+      try { await request.call(document.documentElement); return; } catch {}
+    }
+    setImmersive(true);
+  }
 
-  fullscreenBtn.addEventListener('click', async () => {
-    try {
-      if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch {}
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  window.addEventListener('keydown', event => {
+    if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.code === 'Space') { event.preventDefault(); setPaused(!paused); }
+    if (event.key.toLowerCase() === 'f') { event.preventDefault(); toggleFullscreen(); }
   });
 
-  document.addEventListener('fullscreenchange', () => {
-    fullscreenBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
-  });
+  document.addEventListener('fullscreenchange', () => { if (nativeFullscreenElement()) immersive = false; updateFullscreenButton(); });
+  document.addEventListener('webkitfullscreenchange', () => { if (nativeFullscreenElement()) immersive = false; updateFullscreenButton(); });
 
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
 

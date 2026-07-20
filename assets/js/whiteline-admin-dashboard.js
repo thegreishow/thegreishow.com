@@ -67,4 +67,8 @@
 
   function currency(rows){return rows.find(x=>x.currency)?.currency||'USD'}
   function set(id,v){if($(id))$(id).textContent=v}
+
+  const emailScript = document.createElement('script');
+  emailScript.src = 'assets/js/whiteline-admin-emails.js';
+  document.body.appendChild(emailScript);
 })();

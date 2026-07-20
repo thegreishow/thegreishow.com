@@ -9,7 +9,6 @@ const chapterArtworkWrap = document.querySelector('.chapter-artwork');
 const chapterArtwork = document.getElementById('chapter-artwork');
 const audioBlock = document.querySelector('.audio-block');
 const chapterAudio = document.getElementById('chapter-audio');
-const chapterFullAudio = document.getElementById('chapter-full-audio');
 const chapterText = document.getElementById('chapter-text');
 const chapterCount = document.getElementById('chapter-count');
 const prevButton = document.getElementById('prev-chapter');
@@ -59,19 +58,16 @@ function renderAudio(chapter) {
 
   audioBlock.hidden = !audioSource;
   chapterAudio.hidden = !audioSource;
-  chapterFullAudio.hidden = !audioSource;
 
   if (audioSource) {
     chapterAudio.src = audioSource;
+    chapterAudio.defaultPlaybackRate = 1.5;
+    chapterAudio.playbackRate = 1.5;
     chapterAudio.load();
-    chapterFullAudio.href = audioSource;
-    chapterFullAudio.setAttribute('aria-label', `Open the full narration for ${chapter.title}`);
   } else {
     chapterAudio.pause();
     chapterAudio.removeAttribute('src');
     chapterAudio.load();
-    chapterFullAudio.removeAttribute('href');
-    chapterFullAudio.removeAttribute('aria-label');
   }
 }
 

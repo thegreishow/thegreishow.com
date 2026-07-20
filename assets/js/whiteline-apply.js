@@ -1,11 +1,14 @@
 (() => {
   const config = window.WHITE_LINE_SUPABASE || {};
   if (!window.supabase?.createClient || !config.url || !config.anonKey || !window.WhiteLineUpload) return;
+
   const db = window.supabase.createClient(config.url, config.anonKey);
   const form = document.getElementById('talent-form');
   const message = document.getElementById('talent-message');
   const params = new URLSearchParams(location.search);
   const castingTitle = params.get('title');
+
+  if (!form || !message) return;
 
   if (castingTitle) {
     document.getElementById('application-type').value = `Casting: ${castingTitle}`;
@@ -17,12 +20,20 @@
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const button = form.querySelector('[type="submit"]');
+    const originalText = button.textContent;
     const data = new FormData(form);
     const disciplines = [...form.querySelectorAll('[name="discipline"]:checked')].map((input) => input.value);
-    if (!disciplines.length) return show('Select at least one discipline.');
+    if (!disciplines.length) {
+      show('Select at least one discipline.', 'error');
+      form.querySelector('[name="discipline"]')?.focus();
+      return;
+    }
 
     button.disabled = true;
-    show('Uploading your application securely…');
+    button.textContent = 'Submitting securely…';
+    form.setAttribute('aria-busy', 'true');
+    show('Uploading your media and application securely…', 'progress');
+
     try {
       const applicationKey = crypto.randomUUID();
       const [headshot, bodyPhoto, resume] = await Promise.all([
@@ -30,8 +41,12 @@
         window.WhiteLineUpload(db, data.get('body_file'), applicationKey, 'full-body', true),
         window.WhiteLineUpload(db, data.get('resume_file'), applicationKey, 'resume', false)
       ]);
+
       const portfolioText = text(data, 'portfolio');
       const links = portfolioText.split(/\s+/).filter((value) => /^https?:\/\//i.test(value));
+      const language = nullable(data, 'language');
+      const skills = [...disciplines, ...(language ? [`Language: ${language}`] : [])];
+
       const payload = {
         full_name: text(data, 'name'),
         stage_name: nullable(data, 'stage'),
@@ -44,7 +59,7 @@
         country: text(data, 'country'),
         biography: text(data, 'bio'),
         experience: text(data, 'experience'),
-        skills: disciplines.join(', '),
+        skills: skills.join(', '),
         portfolio_url: links[0] || null,
         instagram_url: nullable(data, 'instagram'),
         tiktok_url: nullable(data, 'tiktok'),
@@ -68,18 +83,28 @@
         referrer: document.referrer || null,
         status: 'new'
       };
+
       const { error } = await db.from('talent_applications').insert(payload);
       if (error) throw error;
+
       form.reset();
-      show('Application received. White Line will review your profile and contact you by email or WhatsApp.');
+      show('Application received. White Line will review your profile and contact you by email or WhatsApp.', 'success');
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.greiTrack?.('whiteline_talent_application', { category: disciplines[0], country: payload.country });
     } catch (error) {
-      show(error.message || 'Your application could not be submitted.');
+      show(error.message || 'Your application could not be submitted. Please review your information and try again.', 'error');
     } finally {
       button.disabled = false;
+      button.textContent = originalText;
+      form.removeAttribute('aria-busy');
     }
   });
 
   function text(data, name) { return String(data.get(name) || '').trim(); }
   function nullable(data, name) { return text(data, name) || null; }
-  function show(value) { message.hidden = false; message.textContent = value; }
+  function show(value, state) {
+    message.hidden = false;
+    message.dataset.state = state;
+    message.textContent = value;
+  }
 })();

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No Drama — DJ & Press Promo | The Grei Show</title>
+  <meta name="description" content="Official DJ, radio and press promo page for No Drama by Jamaican artist The Grei Show. Download the broadcast-ready MP3, cover art and press assets.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#071018">
+  <link rel="canonical" href="https://thegreishow.com/promo/no-drama/">
+
+  <meta property="og:title" content="No Drama — The Grei Show | Official DJ & Press Promo">
+  <meta property="og:description" content="Download the broadcast-ready MP3, official artwork and press assets from Wheel It! Records.">
+  <meta property="og:type" content="music.song">
+  <meta property="og:url" content="https://thegreishow.com/promo/no-drama/">
+  <meta property="og:image" content="https://thegreishow.com/assets/img/no-drama.webp">
+  <meta property="og:image:alt" content="No Drama single cover by The Grei Show">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    :root {
+      --ink: #071018;
+      --panel: #10222f;
+      --panel-deep: #0a1821;
+      --line: #294653;
+      --gold: #f3c842;
+      --white: #f4f8fa;
+      --muted: #b8c8d0;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(243, 200, 66, .14), transparent 28rem),
+        radial-gradient(circle at 85% 30%, rgba(42, 111, 141, .24), transparent 32rem),
+        var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 22px 0;
+      font-size: .82rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .brand { font-weight: 800; }
+    .brand span { color: var(--gold); }
+    .back-link { color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--white); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+      align-items: center;
+      gap: clamp(30px, 6vw, 78px);
+      min-height: calc(100vh - 90px);
+      padding: 46px 0 72px;
+    }
+
+    .cover-wrap { position: relative; }
+    .cover {
+      border-radius: 22px;
+      box-shadow: 0 32px 90px rgba(0, 0, 0, .52);
+      border: 1px solid rgba(255,255,255,.12);
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+
+    .stamp {
+      position: absolute;
+      right: -12px;
+      bottom: 28px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--ink);
+      font-size: .74rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      box-shadow: 0 10px 34px rgba(0,0,0,.35);
+    }
+
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(4rem, 10vw, 8.7rem);
+      line-height: .84;
+      letter-spacing: -.07em;
+      color: var(--gold);
+    }
+
+    .artist {
+      margin: 16px 0 0;
+      font-size: clamp(1.25rem, 2.5vw, 2rem);
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .lead {
+      max-width: 660px;
+      margin: 24px 0 0;
+      color: #dbe5e9;
+      font-size: clamp(1rem, 1.6vw, 1.17rem);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 14px 21px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,.06);
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .button:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.5); }
+    .button.primary { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+    .button.light { background: var(--white); color: var(--ink); border-color: var(--white); }
+
+    .microcopy {
+      margin-top: 15px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .section { padding: 28px 0 76px; }
+    .section-title {
+      margin: 0 0 24px;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(160deg, rgba(16,34,47,.94), rgba(8,21,29,.96));
+    }
+
+    .card h2, .card h3 { margin-top: 0; }
+    .card p { color: var(--muted); }
+    .card a:not(.button) { color: var(--gold); }
+
+    .details {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 16px;
+    }
+
+    .metadata {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      margin: 0;
+    }
+
+    .metadata div {
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .metadata dt {
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .metadata dd { margin: 3px 0 0; font-weight: 750; }
+
+    .quote {
+      margin: 0;
+      font-size: clamp(1.28rem, 2.4vw, 2rem);
+      line-height: 1.3;
+      letter-spacing: -.02em;
+    }
+
+    .contact {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      padding: 30px;
+      border: 1px solid rgba(243,200,66,.3);
+      border-radius: 20px;
+      background: rgba(243,200,66,.08);
+    }
+
+    footer {
+      padding: 32px 0 42px;
+      color: #82959f;
+      font-size: .85rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    @media (max-width: 840px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .cover-wrap { max-width: 620px; }
+      .grid, .details { grid-template-columns: 1fr; }
+      .contact { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 22px, 1120px); }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .hero { padding-top: 18px; }
+      .stamp { right: 8px; bottom: 12px; }
+      .actions { display: grid; }
+      .button { width: 100%; }
+      .metadata { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MusicRecording",
+    "name": "No Drama",
+    "byArtist": {
+      "@type": "MusicGroup",
+      "name": "The Grei Show"
+    },
+    "datePublished": "2026-07-03",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Wheel It! Records"
+    },
+    "url": "https://thegreishow.com/promo/no-drama/",
+    "image": "https://thegreishow.com/assets/img/no-drama.webp"
+  }
+  </script>
+</head>
+<body>
+  <header class="shell topbar">
+    <div class="brand"><span>Wheel It!</span> Records</div>
+    <a class="back-link" href="../../index.html">TheGreiShow.com</a>
+  </header>
+
+  <main>
+    <section class="shell hero" aria-labelledby="release-title">
+      <div class="cover-wrap">
+        <img class="cover" src="../../assets/img/no-drama.webp" alt="No Drama single cover by The Grei Show" width="1200" height="1200">
+        <span class="stamp">Official DJ service</span>
+      </div>
+
+      <div>
+        <p class="kicker">Jamaica to the world · Radio · DJs · Press</p>
+        <h1 id="release-title">No<br>Drama</h1>
+        <p class="artist">THE GREI SHOW</p>
+        <p class="lead">A contemporary Jamaican release about protecting your peace, maintaining emotional discipline and refusing unnecessary conflict—built for reggae, dancehall, Afro-fusion and global independent-music programming.</p>
+
+        <div class="actions">
+          <a class="button primary" href="https://drive.google.com/uc?export=download&amp;id=1RiTGwG_XRhWC95bh5aQ3DLIAtC-aHTxx">Download broadcast MP3</a>
+          <a class="button light" href="https://drive.google.com/drive/folders/1nVNfPVc2LovxnC-FNpTdyKepW-KgnEbn" target="_blank" rel="noopener">Open full press folder</a>
+          <a class="button" href="https://distrokid.com/hyperfollow/thegreishow/no-drama" target="_blank" rel="noopener">Listen everywhere</a>
+          <a class="button" href="https://www.youtube.com/watch?v=3KAd6CWxHBs" target="_blank" rel="noopener">Watch video</a>
+        </div>
+        <p class="microcopy">MP3 size: 6.8 MB · Official artwork and label/artist logos are included in the press folder.</p>
+      </div>
+    </section>
+
+    <section class="shell section" aria-labelledby="assets-title">
+      <p class="kicker">One-click access</p>
+      <h2 class="section-title" id="assets-title">DJ & media assets</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Broadcast MP3</h3>
+          <p>Download the official high-quality MP3 for radio rotation, DJ sets and playlist servicing.</p>
+          <a href="https://drive.google.com/uc?export=download&amp;id=1RiTGwG_XRhWC95bh5aQ3DLIAtC-aHTxx">Download “No Drama”</a>
+        </article>
+        <article class="card">
+          <h3>Official artwork</h3>
+          <p>Access the full-resolution single cover for editorial, playlist, radio and social promotion.</p>
+          <a href="https://drive.google.com/file/d/1usYltRL-34w6_0ZFaTd-VseXiEkLOI7B/view" target="_blank" rel="noopener">Open cover artwork</a>
+        </article>
+        <article class="card">
+          <h3>Complete press folder</h3>
+          <p>Download the MP3, cover art, The Grei Show logo and Wheel It! Records logo together.</p>
+          <a href="https://drive.google.com/drive/folders/1nVNfPVc2LovxnC-FNpTdyKepW-KgnEbn" target="_blank" rel="noopener">View all assets</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell section details" aria-labelledby="release-details-title">
+      <article class="card">
+        <p class="kicker">Release information</p>
+        <h2 id="release-details-title">Official metadata</h2>
+        <dl class="metadata">
+          <div><dt>Artist</dt><dd>The Grei Show</dd></div>
+          <div><dt>Title</dt><dd>No Drama</dd></div>
+          <div><dt>Release date</dt><dd>July 3, 2026</dd></div>
+          <div><dt>Label</dt><dd>Wheel It! Records</dd></div>
+          <div><dt>Writer</dt><dd>Gamel Reid</dd></div>
+          <div><dt>Country</dt><dd>Jamaica</dd></div>
+          <div><dt>Genres</dt><dd>Reggae · Dancehall · Afro-fusion</dd></div>
+          <div><dt>Clean version</dt><dd>Contact label if required</dd></div>
+        </dl>
+      </article>
+
+      <aside class="card">
+        <p class="kicker">Positioning</p>
+        <blockquote class="quote">“Protect your peace. Maintain your discipline. Refuse unnecessary conflict.”</blockquote>
+        <p>Available for radio play, DJ support, playlist placement, premieres, interviews and editorial coverage.</p>
+      </aside>
+    </section>
+
+    <section class="shell section">
+      <div class="contact">
+        <div>
+          <p class="kicker">Bookings, interviews & servicing</p>
+          <h2 class="section-title" style="margin-bottom:8px">Connect with Wheel It! Records</h2>
+          <p style="margin:0;color:var(--muted)">For alternate formats, interview scheduling, drops, dubplates or additional information.</p>
+        </div>
+        <a class="button primary" href="mailto:wheelitrecords@gmail.com?subject=No%20Drama%20-%20DJ%20%2F%20Media%20Request">wheelitrecords@gmail.com</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">© 2026 Wheel It! Records · Kingston, Jamaica · The Grei Show</div>
+  </footer>
+</body>
+</html>

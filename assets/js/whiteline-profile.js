@@ -1,0 +1,1 @@
+(()=>{const host=document.getElementById('profile-host');if(host)host.dataset.ready='true'})();

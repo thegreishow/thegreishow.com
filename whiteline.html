@@ -1,8 +1,69 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>White Line Entertainment | International Talent Agency</title><meta name="description" content="Discover and book approved dancers, models, actors, DJs, hosts, recording artists and creators through White Line Entertainment."><meta name="robots" content="index,follow"><link rel="canonical" href="https://thegreishow.com/whiteline"><link rel="stylesheet" href="assets/css/base.css"><link rel="stylesheet" href="assets/css/layout.css"><link rel="stylesheet" href="assets/css/components.css"><link rel="stylesheet" href="assets/css/theme.css"><link rel="stylesheet" href="assets/css/whiteline-public.css"></head>
-<body><div id="site-header"></div><main>
-<section class="hero"><div class="wrap hero-grid"><div><p class="kicker">International talent agency & casting network</p><h1 class="title">White Line Entertainment</h1><p class="lead">A curated global roster connecting exceptional dancers, models, actors, DJs, hosts, recording artists and creators with productions, campaigns, events and brands.</p><div class="actions"><a class="button primary" href="#talent">Discover talent</a><a class="button" href="whiteline-castings.html">Casting calls</a><a class="button" href="whiteline-apply.html">Create a profile</a></div></div><aside class="panel"><p class="kicker">Curated representation</p><h2>Professional talent. Clear booking.</h2><p class="copy">Every public profile is reviewed by White Line. Clients can discover talent, submit a brief and manage secure PayPal payments through one agency.</p></aside></div></section>
-<section id="talent" class="section alt"><div class="wrap"><div class="section-head"><div><p class="kicker">Approved roster</p><h2 class="heading">Discover the talent.</h2></div><p class="copy">Search by name, discipline or location. Open any profile to view their bio, portfolio and booking options.</p></div><div class="tools"><input id="talent-search" class="search" type="search" placeholder="Search talent, country or discipline…"><span id="talent-count" class="meta"></span></div><div id="talent-filters" class="filters"></div><div id="talent-grid" class="grid"></div></div></section>
-<section id="book" class="section"><div class="wrap two-col"><div><p class="kicker">Book talent</p><h2 class="heading">Tell us what you are creating.</h2><p class="copy">Send White Line your project brief. We will recommend suitable talent, confirm availability, negotiate the engagement and prepare secure payment.</p><div class="actions"><a class="button" href="whiteline-castings.html">View opportunities</a><a class="button" href="whiteline-apply.html">Join the roster</a></div></div><form id="client-form" class="panel form-grid"><div class="field"><label>Name<input name="client_name" required></label></div><div class="field"><label>Company / production<input name="company_name"></label></div><div class="field"><label>Email<input name="email" type="email" required></label></div><div class="field"><label>WhatsApp / phone<input name="phone" required></label></div><div class="field"><label>Project type<input name="project_type" required></label></div><div class="field"><label>Talent needed<input id="needed" name="talent_category" required></label></div><div class="field"><label>Event / shoot date<input name="event_date" type="date"></label></div><div class="field"><label>Location<input name="location" required></label></div><div class="field"><label>Budget minimum<input name="budget_min" type="number" min="0" step="0.01"></label></div><div class="field"><label>Budget maximum<input name="budget_max" type="number" min="0" step="0.01"></label></div><div class="field"><label>Currency<select name="currency" class="select"><option>USD</option><option>JMD</option><option>GBP</option><option>EUR</option><option>CAD</option></select></label></div><div class="field full"><label>Project brief<textarea name="project_description" minlength="30" required></textarea></label></div><div class="field full"><label>Requirements / usage<textarea name="requirements"></textarea></label></div><div class="field full"><button class="button primary" type="submit">Submit booking request</button><div id="client-message" class="status" hidden></div></div></form></div></section>
-<footer class="footer"><div class="wrap">WHITE LINE ENTERTAINMENT © 2026 · Talent · Casting · Bookings</div></footer></main>
-<div id="profile-modal" class="modal" hidden><article class="modal-card"><button id="modal-close" class="close" aria-label="Close">×</button><div id="modal-content"></div></article></div><script src="shared/nav.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/whiteline-supabase-config.js"></script><script src="assets/js/whiteline-landing.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>White Line Entertainment | International Talent Agency</title>
+  <meta name="description" content="Discover and book approved dancers, models, actors, DJs, hosts, recording artists and creators through White Line Entertainment.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#02050a">
+  <link rel="canonical" href="https://thegreishow.com/whiteline">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
+  <link rel="stylesheet" href="assets/css/whiteline-public.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="kicker">International talent agency & casting network</p>
+          <h1 class="title">Talent that moves culture.</h1>
+          <p class="lead">White Line Entertainment connects exceptional dancers, models, actors, DJs, hosts, recording artists and creators with productions, campaigns, live events and brands worldwide.</p>
+          <div class="trust-row" aria-label="White Line services"><span class="trust-chip">Curated roster</span><span class="trust-chip">International bookings</span><span class="trust-chip">Secure PayPal payments</span><span class="trust-chip">15% agency commission</span></div>
+          <div class="actions"><a class="button primary" href="#talent">Discover talent</a><a class="button" href="#book">Book talent</a></div>
+          <nav class="subnav" aria-label="White Line pages"><a aria-current="page" href="whiteline.html">Talent agency</a><a href="whiteline-castings.html">Casting calls</a><a href="whiteline-apply.html">Create a profile</a></nav>
+        </div>
+        <aside class="panel">
+          <p class="kicker">White Line standard</p>
+          <h2>Professional talent. Clear representation.</h2>
+          <p class="copy">Every public profile is reviewed before publication. White Line handles enquiries, availability, negotiation, payment coordination and talent payouts through one managed agency workflow.</p>
+          <ul class="steps"><li><span>1</span><div><strong>Send your brief</strong><br>Tell us the role, date, location, budget and usage.</div></li><li><span>2</span><div><strong>Receive a curated match</strong><br>We recommend suitable talent and confirm availability.</div></li><li><span>3</span><div><strong>Book securely</strong><br>Approve the engagement and pay through a verified process.</div></li></ul>
+        </aside>
+      </div>
+    </section>
+
+    <section id="talent" class="section alt">
+      <div class="wrap">
+        <div class="section-head"><div><p class="kicker">Approved roster</p><h2 class="heading">Discover the talent.</h2></div><p class="copy">Search by name, discipline or location. Open a profile to view biography, portfolio links, availability and booking options.</p></div>
+        <div class="tools"><input id="talent-search" class="search" type="search" placeholder="Search talent, country or discipline…" aria-label="Search the White Line roster"><span id="talent-count" class="meta" aria-live="polite"></span></div>
+        <div id="talent-filters" class="filters" aria-label="Filter talent by discipline"></div>
+        <div id="talent-grid" class="grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="book" class="section">
+      <div class="wrap two-col">
+        <div><p class="kicker">Book talent</p><h2 class="heading">Tell us what you are creating.</h2><p class="copy">Share the project details and White Line will recommend talent, confirm availability, negotiate the engagement and prepare secure payment. The more complete the brief, the faster we can respond.</p><ul class="steps"><li><span>1</span><div><strong>Project details</strong><br>Role, date, location, budget and usage.</div></li><li><span>2</span><div><strong>Agency response</strong><br>Availability, recommendations and quotation.</div></li><li><span>3</span><div><strong>Confirmation</strong><br>Agreement, payment and talent assignment.</div></li></ul><div class="actions"><a class="button" href="whiteline-castings.html">View casting opportunities</a><a class="button" href="whiteline-apply.html">Join the roster</a></div></div>
+        <form id="client-form" class="panel form-grid">
+          <div class="field"><label>Name<input name="client_name" autocomplete="name" required></label></div><div class="field"><label>Company / production<input name="company_name" autocomplete="organization"></label></div>
+          <div class="field"><label>Email<input name="email" type="email" autocomplete="email" required></label></div><div class="field"><label>WhatsApp / phone<input name="phone" autocomplete="tel" required></label></div>
+          <div class="field"><label>Project type<input name="project_type" placeholder="Music video, event, campaign…" required></label></div><div class="field"><label>Talent needed<input id="needed" name="talent_category" placeholder="Dancer, model, DJ…" required></label></div>
+          <div class="field"><label>Event / shoot date<input name="event_date" type="date"></label></div><div class="field"><label>Location<input name="location" placeholder="City, country or remote" required></label></div>
+          <div class="field"><label>Budget minimum<input name="budget_min" type="number" min="0" step="0.01"></label></div><div class="field"><label>Budget maximum<input name="budget_max" type="number" min="0" step="0.01"></label></div>
+          <div class="field"><label>Currency<select name="currency" class="select"><option>USD</option><option>JMD</option><option>GBP</option><option>EUR</option><option>CAD</option></select></label></div><div class="field"><label>Preferred contact<select name="preferred_contact" class="select"><option>Email</option><option>WhatsApp</option><option>Phone</option></select></label></div>
+          <div class="field full"><label>Project brief<textarea name="project_description" minlength="30" placeholder="Describe the project, audience, schedule and what the talent will be doing." required></textarea></label></div>
+          <div class="field full"><label>Requirements / usage<textarea name="requirements" placeholder="Wardrobe, travel, deliverables, territories, usage period, exclusivity or technical requirements."></textarea></label></div>
+          <div class="field full"><button class="button primary" type="submit">Submit booking request</button><div id="client-message" class="status" hidden aria-live="polite"></div></div>
+        </form>
+      </div>
+    </section>
+    <footer class="footer"><div class="wrap footer-row"><span>WHITE LINE ENTERTAINMENT © 2026</span><span>Talent · Casting · International bookings</span></div></footer>
+  </main>
+  <div id="profile-modal" class="modal" hidden><article class="modal-card" role="dialog" aria-modal="true" aria-label="Talent profile"><button id="modal-close" class="close" aria-label="Close profile">×</button><div id="modal-content"></div></article></div>
+  <script src="shared/nav.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/whiteline-supabase-config.js"></script><script src="assets/js/whiteline-landing.js"></script>
+</body>
+</html>

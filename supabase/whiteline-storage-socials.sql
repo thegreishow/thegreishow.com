@@ -49,12 +49,6 @@ drop policy if exists "Public submits talent files" on storage.objects;
 drop policy if exists "WhiteLine admins read talent submissions" on storage.objects;
 drop policy if exists "WhiteLine admins delete talent submissions" on storage.objects;
 
-create policy "Public reads talent media"
-on storage.objects
-for select
-to public
-using (bucket_id = 'talent-media');
-
 create policy "WhiteLine admins upload talent media"
 on storage.objects
 for insert

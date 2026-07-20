@@ -36,12 +36,13 @@
 - Books page rebuilt as a catalog-first storefront with genre-led title cards, a clear Buy Now action, an independent reader route, and a reserved Book 02 slot
 - The Astral Thread now opens on its own reader page so future books can each have an independent reading experience
 - Books reader chapter data now loads from assets/js/books-chapter-01.js through assets/js/books-chapter-20.js as the temporary working manuscript source
-- Books reader script simplified to render generated chapter data safely and hide narration controls when no matching audio is available
+- Books reader migration is prepared to load only the active chapter's full narration once the local MP3 set is added
 - Current temporary Astral Thread version added with 20 chapters from the latest supplied manuscript
-- Chapters 01-20 now have AI narration preview and full narration links
-- Books audio override layer supplies generated narration links for chapters that should stay text-stable
-- Books narration scripts use word-form chapter numbers so the voiceover does not read leading zeroes aloud
-- Books reader audio player now defaults to full narration, with preview narration as a fallback if a full track cannot load
+- Chapters 01-20 have permanent local narration paths prepared, but the complete MP3 files still need to be generated
+- Books audio override migration supplies one intended local full-narration path for every chapter
+- Planned chapter narration opens with word-form chapter numbers so the voiceover does not read leading zeroes aloud
+- Books reader migration removes the silent fallback to short preview clips when a full narration source fails
+- Narration validation is prepared to block releases with missing, duplicate, temporary, or malformed Astral Thread audio files
 - Books reader now supports visual chapter artwork with generated assets for all 20 Astral Thread chapters plus the Astral Thread cover fallback
 - Books reader supports Previous / Next controls plus left and right arrow keys
 - Books reader keeps the story title and chapter number on the left page while dedicating the right page to a larger scrolling story area
@@ -58,7 +59,7 @@
 ## Known Gaps
 - Several pages still keep page-specific inline style blocks while the shared component layer matures
 - Books chapter visuals now have a complete generated first pass across all 20 temporary Astral Thread chapters
-- Books full audio should be moved to stable site-owned hosting before it is treated as final production audio
+- Books full narration still needs generation, normalization, file delivery, and a human pronunciation and pacing pass
 - Press media kit download is still routed to the Connect page until real downloadable assets exist
 - Project inquiries still use the visitor's email app until a hosted form or CRM endpoint is connected
 - Direct payment links, a service deposit, and a real newsletter provider still require owner accounts and business settings
@@ -69,9 +70,9 @@
 
 ## Next
 - Replace the temporary Astral Thread manuscript data when the official-official version is confirmed
+- Generate, normalize, and add the 20 complete Astral Thread narration MP3s
 - Re-audit or regenerate Books narration once the official-official manuscript is confirmed
 - Refine Books / Astral Thread artwork in Canva or replace generated chapter art as the final manuscript settles
-- Move Astral Thread audio into permanent hosting or repository assets
 - Consolidate repeated inline page styles into shared component classes
 - Add production-ready press photos and a downloadable media kit
 - Connect a hosted service deposit or checkout, scheduling link, and email-list provider
@@ -82,4 +83,4 @@
 - Add lightweight QA checks for broken links, missing assets, and page metadata
 - Decide on public reveal strategy for White Line page when ready
 
-Last Updated: July 18, 2026
+Last Updated: July 20, 2026

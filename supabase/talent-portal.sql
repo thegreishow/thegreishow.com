@@ -101,7 +101,9 @@ begin
 end;
 $$;
 
+revoke all on function public.current_talent_profile_id() from public, anon;
 grant execute on function public.current_talent_profile_id() to authenticated;
+revoke all on function public.claim_talent_portal() from public, anon;
 grant execute on function public.claim_talent_portal() to authenticated;
 
 alter table public.talent_accounts enable row level security;

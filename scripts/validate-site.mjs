@@ -1,7 +1,8 @@
-import { readdir, readFile, stat } from "node:fs/promises";
+import { open, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ignoredDirectories = new Set([".git", "node_modules"]);
@@ -197,6 +198,94 @@ function validateCredentials(filePath, source) {
   }
 }
 
+async function validateAstralThreadAudio() {
+  const overridePath = path.join(projectRoot, "assets/js/books-audio-overrides.js");
+  const chapterSources = [];
+  const context = vm.createContext({ window: {} });
+
+  for (let index = 1; index <= 20; index += 1) {
+    const number = String(index).padStart(2, "0");
+    const chapterPath = path.join(projectRoot, `assets/js/books-chapter-${number}.js`);
+    const source = await readFile(chapterPath, "utf8");
+    chapterSources.push(source);
+
+    try {
+      vm.runInContext(source, context, { filename: chapterPath });
+    } catch (error) {
+      report(chapterPath, 0, source, `Chapter data could not be loaded: ${error.message}`);
+      return;
+    }
+  }
+
+  const overrideSource = await readFile(overridePath, "utf8");
+
+  try {
+    vm.runInContext(overrideSource, context, { filename: overridePath });
+  } catch (error) {
+    report(overridePath, 0, overrideSource, `Audio mapping could not be loaded: ${error.message}`);
+    return;
+  }
+
+  const chapters = context.window.astralThreadChapters;
+  if (!Array.isArray(chapters) || chapters.length !== 20) {
+    report(overridePath, 0, overrideSource, "Astral Thread audio must map exactly 20 chapters.");
+    return;
+  }
+
+  const allAudioSource = `${chapterSources.join("\n")}\n${overrideSource}`;
+  if (/aidocmaker\.com|mcp-preview/i.test(allAudioSource)) {
+    report(overridePath, 0, overrideSource, "Temporary or blocked narration URLs remain in the chapter data.");
+  }
+
+  const seenAudioPaths = new Set();
+
+  for (let index = 0; index < chapters.length; index += 1) {
+    const chapter = chapters[index];
+    const expectedNumber = String(index + 1).padStart(2, "0");
+
+    if (chapter.number !== expectedNumber) {
+      report(overridePath, 0, overrideSource, `Expected chapter ${expectedNumber} in audio position ${index + 1}.`);
+    }
+
+    if (chapter.previewAudio) {
+      report(overridePath, 0, overrideSource, `Chapter ${chapter.number} still has a preview-audio fallback.`);
+    }
+
+    if (!/^assets\/audio\/books\/the-astral-thread\/v1\/[a-z0-9-]+\.mp3$/.test(chapter.fullAudio || "")) {
+      report(overridePath, 0, overrideSource, `Chapter ${chapter.number} does not use a permanent local MP3 path.`);
+      continue;
+    }
+
+    if (seenAudioPaths.has(chapter.fullAudio)) {
+      report(overridePath, 0, overrideSource, `Chapter ${chapter.number} reuses another chapter's audio file.`);
+      continue;
+    }
+    seenAudioPaths.add(chapter.fullAudio);
+
+    const audioPath = path.join(projectRoot, chapter.fullAudio);
+    try {
+      const audioStat = await stat(audioPath);
+      if (!audioStat.isFile() || audioStat.size < 100_000) {
+        report(overridePath, 0, overrideSource, `Chapter ${chapter.number} narration is missing or unexpectedly small.`);
+        continue;
+      }
+
+      const handle = await open(audioPath, "r");
+      const signature = Buffer.alloc(3);
+      await handle.read(signature, 0, signature.length, 0);
+      await handle.close();
+
+      const hasId3 = signature.toString("ascii") === "ID3";
+      const hasMpegFrame = signature[0] === 0xff && (signature[1] & 0xe0) === 0xe0;
+      if (!hasId3 && !hasMpegFrame) {
+        report(overridePath, 0, overrideSource, `Chapter ${chapter.number} narration is not a recognizable MP3 file.`);
+      }
+    } catch {
+      report(overridePath, 0, overrideSource, `Chapter ${chapter.number} narration file does not exist: ${chapter.fullAudio}`);
+    }
+  }
+}
+
 const htmlFiles = (await findHtmlFiles(projectRoot)).sort();
 
 for (const filePath of htmlFiles) {
@@ -214,6 +303,8 @@ for (const filePath of htmlFiles) {
   await validateLocalTargets(filePath, source, document);
   validateCredentials(filePath, source);
 }
+
+await validateAstralThreadAudio();
 
 issues.sort(
   (left, right) =>

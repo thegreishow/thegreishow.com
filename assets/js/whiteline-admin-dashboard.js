@@ -48,8 +48,7 @@
 
   function renderBookings(d) {
     const html=d.requests.length?`<div class="table-wrap"><table><thead><tr><th>Client</th><th>Project</th><th>Stage</th><th>Payment</th><th>Value</th><th>Event</th></tr></thead><tbody>${d.requests.map(x=>`<tr><td><strong>${esc(x.client_name)}</strong><small>${esc(x.company_name||'')}</small></td><td>${esc(x.project_type||'Booking')}</td><td>${esc(x.booking_stage||x.status||'new')}</td><td>${esc(x.payment_status||'unpaid')}</td><td>${money(x.quoted_amount,x.currency||'USD')}</td><td>${when(x.event_date)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-state"><strong>No bookings yet.</strong><p class="muted">Client enquiries will appear here.</p></div>';
-    if ($('command-bookings')) $('command-bookings').innerHTML=html;
-    if ($('command-bookings-full')) $('command-bookings-full').innerHTML=html;
+    document.querySelectorAll('#command-bookings, #command-bookings-full').forEach(node => { node.innerHTML = html; });
   }
 
   function renderFinance(d) {

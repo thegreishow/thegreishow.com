@@ -27,6 +27,23 @@
     move: 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA='
   };
 
+  const discoveryLinks = {
+    'dreamweaver-oracle': { href: '../../../astralthread.html', label: 'Read The Astral Thread' },
+    'signal-runner': { href: '../../../music.html', label: 'Enter the Audio Universe' },
+    'jamaica-run': { href: '../../../music.html', label: 'Explore The Grei Show Music' }
+  };
+
+  window.greiShowDiscovery = (container, gameId) => {
+    const discovery = discoveryLinks[gameId];
+    if (!container || !discovery || container.querySelector('[data-grei-discovery]')) return;
+    const link = document.createElement('a');
+    link.className = 'grei-game-discovery';
+    link.dataset.greiDiscovery = 'true';
+    link.href = discovery.href;
+    link.textContent = discovery.label;
+    container.appendChild(link);
+  };
+
   // Fallback oscillator (more reliable for tones)
   function playTone(frequency, duration = 80, type = 'sine', volume = 0.3) {
     if (!soundEnabled) return;
@@ -70,6 +87,8 @@
     .grei-gamebar strong{font:900 13px/1.2 system-ui;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.grei-gamebar-actions{display:flex;gap:7px}.grei-gamebar-spacer{height:58px}
     .grei-pause-screen{position:fixed;inset:0;z-index:99998;display:none;place-items:center;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);color:#fff;text-align:center}.grei-pause-screen.show{display:grid}.grei-pause-screen div{padding:28px}.grei-pause-screen h2{font:900 clamp(2.3rem,10vw,5rem)/.9 system-ui;margin:0 0 12px}.grei-pause-screen p{font:500 15px/1.5 system-ui;color:rgba(255,255,255,.7)}
     .sound-btn.active { background: var(--arcade-green, #4ade80) !important; color: #000 !important; }
+    .grei-game-discovery{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:14px 0 0;padding:0 16px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(255,255,255,.07);color:#fff;font:800 12px/1 system-ui;letter-spacing:.04em;text-decoration:none}
+    .grei-game-discovery:hover{background:rgba(255,255,255,.14)}
     @media(max-width:560px){.grei-gamebar strong{display:none}.grei-gamebar a,.grei-gamebar button{min-height:44px;padding:0 12px}.grei-gamebar-spacer{height:62px}}
   `;
   document.head.appendChild(style);
@@ -128,6 +147,16 @@
   });
 
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (gameName !== 'Jamaica Run') return;
+    const endScreen = document.getElementById('endScreen');
+    const endCard = endScreen?.querySelector('.card');
+    if (!endScreen || !endCard) return;
+    const showDiscovery = () => { if (!endScreen.hidden) window.greiShowDiscovery(endCard, 'jamaica-run'); };
+    new MutationObserver(showDiscovery).observe(endScreen, { attributes: true, attributeFilter: ['hidden'] });
+    showDiscovery();
+  });
 
   window.greiIsPaused = () => paused;
 })();

@@ -6,111 +6,25 @@
   <meta name="robots" content="noindex,nofollow">
   <title>White Line Admin</title>
   <style>
-    :root{color-scheme:dark;--bg:#03060c;--panel:#0a1320;--panel2:#0e1a2a;--line:rgba(255,255,255,.12);--text:#f5f7fb;--muted:#9eabba;--accent:#d8ff63;--danger:#ff8585}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}.wrap{width:min(1280px,calc(100% - 28px));margin:auto;padding:40px 0 80px}h1{font-size:clamp(2.4rem,7vw,5rem);letter-spacing:-.06em;margin:0 0 8px}h2,h3{line-height:1.15}.muted{color:var(--muted)}.panel{margin-top:22px;padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--panel)}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}.stat{padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:2rem}.cards{display:grid;gap:12px}.card{padding:16px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.025)}.card h3{margin:0 0 5px}.meta{color:var(--muted);font-size:.88rem}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}button,input,select,textarea{font:inherit}input,select,textarea{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#03070d;color:var(--text)}input[type=file]{padding:10px}textarea{min-height:120px;resize:vertical}label{display:grid;gap:6px;color:var(--muted);font-size:.88rem}button,.button{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-weight:800;cursor:pointer;text-decoration:none}.primary{background:var(--accent);color:#071018;border-color:var(--accent)}.danger{border-color:var(--danger)}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between}.toolbar button{white-space:nowrap}.status{margin-top:14px;padding:12px;border-radius:12px;background:rgba(216,255,99,.08);color:var(--muted)}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.tab.active{background:var(--accent);color:#071018;border-color:var(--accent)}.view[hidden],[hidden]{display:none!important}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(216,255,99,.1);color:var(--accent);font-size:.75rem;font-weight:800}.contact-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.preview{width:100%;max-width:280px;aspect-ratio:4/3;object-fit:cover;border:1px solid var(--line);border-radius:14px;background:#03070d}.help{font-size:.78rem;color:var(--muted)}.photo-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}.preview-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.grid,.form-grid,.photo-pair,.preview-pair{grid-template-columns:1fr}.full{grid-column:auto}.toolbar,.section-head{align-items:stretch;flex-direction:column}.stats{grid-template-columns:1fr 1fr}}
+    :root{color-scheme:dark;--bg:#03060c;--panel:#0a1320;--panel2:#0e1a2a;--line:rgba(255,255,255,.12);--text:#f5f7fb;--muted:#9eabba;--accent:#d8ff63;--danger:#ff8585}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}.wrap{width:min(1380px,calc(100% - 28px));margin:auto;padding:36px 0 80px}h1{font-size:clamp(2.4rem,7vw,5rem);letter-spacing:-.06em;margin:0 0 8px}h2,h3{line-height:1.15}.muted{color:var(--muted)}.panel{margin-top:22px;padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--panel)}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}.stat{padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--panel2)}.stat strong{display:block;font-size:1.8rem;letter-spacing:-.04em}.cards{display:grid;gap:12px}.card{padding:16px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.025)}.card h3{margin:0 0 5px}.meta{color:var(--muted);font-size:.88rem}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}button,input,select,textarea{font:inherit}input,select,textarea{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#03070d;color:var(--text)}textarea{min-height:120px;resize:vertical}label{display:grid;gap:6px;color:var(--muted);font-size:.88rem}button,.button{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--text);font-weight:800;cursor:pointer;text-decoration:none}.primary{background:var(--accent);color:#071018;border-color:var(--accent)}.danger{border-color:var(--danger)}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between}.status{margin-top:14px;padding:12px;border-radius:12px;background:rgba(216,255,99,.08);color:var(--muted)}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;position:sticky;top:8px;z-index:20;padding:8px;border:1px solid var(--line);border-radius:999px;background:rgba(3,6,12,.92);backdrop-filter:blur(14px)}.tab.active{background:var(--accent);color:#071018;border-color:var(--accent)}.view[hidden],[hidden]{display:none!important}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(216,255,99,.1);color:var(--accent);font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}.contact-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.preview{width:100%;max-width:280px;aspect-ratio:4/3;object-fit:cover;border:1px solid var(--line);border-radius:14px;background:#03070d}.help{font-size:.78rem;color:var(--muted)}.photo-pair,.preview-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}.command-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.command-item{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:15px;border-bottom:1px solid var(--line)}.command-item:last-child{border-bottom:0}.command-item h3{margin:6px 0 3px}.empty-state{padding:28px;text-align:center;border:1px dashed var(--line);border-radius:15px}.finance-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.mini-stat{padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--panel2)}.mini-stat span{display:block;color:var(--muted);font-size:.82rem}.mini-stat strong{display:block;font-size:1.5rem;margin-top:5px}.activity-row{display:flex;justify-content:space-between;gap:15px;padding:12px 0;border-bottom:1px solid var(--line)}.activity-row:last-child{border-bottom:0}.activity-row time{color:var(--muted);white-space:nowrap}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:15px}table{width:100%;border-collapse:collapse;min-width:820px}th,td{padding:14px;text-align:left;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}td small{display:block;color:var(--muted)}tbody tr:last-child td{border-bottom:0}@media(max-width:1000px){.stats,.finance-summary{grid-template-columns:repeat(2,1fr)}.command-grid{grid-template-columns:1fr}}@media(max-width:760px){.grid,.form-grid,.photo-pair,.preview-pair{grid-template-columns:1fr}.full{grid-column:auto}.toolbar,.section-head{align-items:stretch;flex-direction:column}.stats,.finance-summary{grid-template-columns:1fr 1fr}.tabs{border-radius:20px}.activity-row{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <p class="muted">WHITE LINE ENTERTAINMENT</p>
-    <h1>Admin dashboard</h1>
-    <p class="muted">Review submissions, upload media, publish talent, manage casting calls, and track agency activity.</p>
-
-    <section id="login-panel" class="panel">
-      <h2>Sign in</h2>
-      <form id="login-form" class="grid">
-        <label>Email<input name="email" type="email" autocomplete="username" required></label>
-        <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
-        <div><button class="primary" type="submit">Sign in</button></div>
-      </form>
-      <div id="login-status" class="status" hidden></div>
-    </section>
-
+    <p class="muted">WHITE LINE ENTERTAINMENT</p><h1>Command center</h1><p class="muted">Run talent, bookings, payments, payouts and casting operations from one secure dashboard.</p>
+    <section id="login-panel" class="panel"><h2>Sign in</h2><form id="login-form" class="grid"><label>Email<input name="email" type="email" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><div><button class="primary" type="submit">Sign in</button></div></form><div id="login-status" class="status" hidden></div></section>
     <section id="dashboard" hidden>
-      <div class="panel toolbar"><strong id="admin-email"></strong><div class="actions"><a class="button" href="whiteline.html" target="_blank" rel="noopener">Open public page</a><a class="button" href="whiteline-talent-login.html" target="_blank" rel="noopener">Open talent portal</a><button id="logout">Sign out</button></div></div>
-      <div class="stats">
-        <div class="stat"><span class="muted">New applications</span><strong id="stat-applications">0</strong></div>
-        <div class="stat"><span class="muted">New requests</span><strong id="stat-requests">0</strong></div>
-        <div class="stat"><span class="muted">Published talent</span><strong id="stat-talent">0</strong></div>
-        <div class="stat"><span class="muted">Open castings</span><strong id="stat-castings">0</strong></div>
-      </div>
-
-      <nav class="tabs" aria-label="Admin sections">
-        <button class="tab active" data-view="inbox">Inbox</button>
-        <button class="tab" data-view="talent">Talent roster</button>
-        <button class="tab" data-view="castings">Casting calls</button>
-      </nav>
-
-      <section id="view-inbox" class="view">
-        <div class="grid">
-          <section class="panel"><div class="section-head"><h2>Talent applications</h2><button data-refresh>Refresh</button></div><div id="applications" class="cards"></div></section>
-          <section class="panel"><div class="section-head"><h2>Client requests</h2><button data-refresh>Refresh</button></div><div id="requests" class="cards"></div></section>
-        </div>
-      </section>
-
-      <section id="view-talent" class="view" hidden>
-        <div class="grid">
-          <section class="panel">
-            <h2>Add talent profile</h2>
-            <form id="talent-profile-form" class="form-grid">
-              <label>Full name<input name="full_name" required></label>
-              <label>Stage name<input name="stage_name"></label>
-              <label>Category<input name="category" placeholder="Dancer, Model, DJ…" required></label>
-              <label>City<input name="city" value="Kingston"></label>
-              <label class="full">Short bio<textarea name="short_bio" required></textarea></label>
-              <div class="full photo-pair">
-                <label>Upload headshot<input id="profile-image-file" name="profile_image_file" type="file" accept="image/jpeg,image/png,image/webp"><span class="help">Primary roster photo, maximum 8 MB.</span></label>
-                <label>Upload full body shot<input id="body-image-file" name="body_image_file" type="file" accept="image/jpeg,image/png,image/webp"><span class="help">Second switchable photo, maximum 8 MB.</span></label>
-              </div>
-              <div class="full photo-pair">
-                <label>Or use a headshot URL<input name="profile_image_url" type="url" placeholder="https://…"></label>
-                <label>Or use a body-shot URL<input name="body_image_url" type="url" placeholder="https://…"></label>
-              </div>
-              <div class="full preview-pair"><img id="profile-image-preview" class="preview" alt="Headshot preview" hidden><img id="body-image-preview" class="preview" alt="Body shot preview" hidden></div>
-              <label>Instagram URL<input name="instagram_url" type="url" placeholder="https://instagram.com/…"></label>
-              <label>TikTok URL<input name="tiktok_url" type="url" placeholder="https://tiktok.com/@…"></label>
-              <label>YouTube URL<input name="youtube_url" type="url" placeholder="https://youtube.com/@…"></label>
-              <label>Facebook URL<input name="facebook_url" type="url" placeholder="https://facebook.com/…"></label>
-              <label>X / Twitter URL<input name="x_url" type="url" placeholder="https://x.com/…"></label>
-              <label>Website URL<input name="website_url" type="url"></label>
-              <label class="full">Portfolio / reel URL<input name="portfolio_url" type="url"></label>
-              <label>Status<select name="status"><option value="draft">Draft</option><option value="approved">Approved / public</option></select></label>
-              <label><span>Featured</span><select name="featured"><option value="false">No</option><option value="true">Yes</option></select></label>
-              <div class="full"><button class="primary" type="submit">Save talent profile</button></div>
-            </form>
-            <div id="talent-profile-status" class="status" hidden></div>
-          </section>
-          <section class="panel"><div class="section-head"><h2>Current roster</h2><button data-refresh>Refresh</button></div><div id="talent-profiles" class="cards"></div></section>
-        </div>
-      </section>
-
-      <section id="view-castings" class="view" hidden>
-        <div class="grid">
-          <section class="panel">
-            <h2>Create casting call</h2>
-            <form id="casting-form" class="form-grid">
-              <label class="full">Title<input name="title" required></label>
-              <label>Category<input name="category" placeholder="Music video, campaign…"></label>
-              <label>Location<input name="location" value="Kingston, Jamaica"></label>
-              <label>Event date<input name="event_date" type="date"></label>
-              <label>Deadline<input name="application_deadline" type="datetime-local"></label>
-              <label class="full">Description<textarea name="description" required></textarea></label>
-              <label class="full">Requirements<textarea name="requirements"></textarea></label>
-              <label>Compensation<input name="compensation" placeholder="JMD $10,000"></label>
-              <label>Status<select name="status"><option value="draft">Draft</option><option value="open">Open / public</option></select></label>
-              <div class="full"><button class="primary" type="submit">Save casting call</button></div>
-            </form>
-            <div id="casting-status" class="status" hidden></div>
-          </section>
-          <section class="panel"><div class="section-head"><h2>Current casting calls</h2><button data-refresh>Refresh</button></div><div id="casting-calls" class="cards"></div></section>
-        </div>
-      </section>
+      <div class="panel toolbar"><div><strong id="admin-email"></strong><div class="meta">White Line administrator</div></div><div class="actions"><button data-command-refresh>Refresh dashboard</button><a class="button" href="whiteline.html" target="_blank" rel="noopener">Public page</a><a class="button" href="whiteline-talent-login.html" target="_blank" rel="noopener">Talent portal</a><button id="logout">Sign out</button></div></div>
+      <div class="stats"><div class="stat"><span class="muted">New applications</span><strong id="stat-applications">0</strong></div><div class="stat"><span class="muted">Active requests</span><strong id="stat-requests">0</strong></div><div class="stat"><span class="muted">Published talent</span><strong id="stat-talent">0</strong></div><div class="stat"><span class="muted">Open castings</span><strong id="stat-castings">0</strong></div><div class="stat"><span class="muted">Revenue collected</span><strong id="stat-revenue">$0</strong></div><div class="stat"><span class="muted">Agency commission</span><strong id="stat-commission">$0</strong></div><div class="stat"><span class="muted">Payout action</span><strong id="stat-payouts">0</strong></div><div class="stat"><span class="muted">Upcoming bookings</span><strong id="stat-upcoming">0</strong></div></div>
+      <nav class="tabs" aria-label="Admin sections"><button class="tab active" data-view="overview">Overview</button><button class="tab" data-view="inbox">Inbox</button><button class="tab" data-view="bookings">Bookings</button><button class="tab" data-view="finance">Finance</button><button class="tab" data-view="talent">Talent roster</button><button class="tab" data-view="castings">Casting calls</button></nav>
+      <section id="view-overview" class="view"><div class="command-grid"><section class="panel"><div class="section-head"><h2>Action center</h2><button data-command-refresh>Refresh</button></div><div id="command-actions"></div></section><section class="panel"><h2>Recent activity</h2><div id="command-activity"></div></section></div><section class="panel"><div class="section-head"><div><h2>Booking pipeline</h2><p class="muted">Every live client request and its current payment state.</p></div></div><div id="command-bookings"></div></section></section>
+      <section id="view-inbox" class="view" hidden><div class="grid"><section class="panel"><div class="section-head"><h2>Talent applications</h2><button data-refresh>Refresh</button></div><div id="applications" class="cards"></div></section><section class="panel"><div class="section-head"><h2>Client requests</h2><button data-refresh>Refresh</button></div><div id="requests" class="cards"></div></section></div></section>
+      <section id="view-bookings" class="view" hidden><section class="panel"><div class="section-head"><div><h2>All bookings</h2><p class="muted">Portfolio view across enquiry, quote, confirmation, payment and completion.</p></div><button data-command-refresh>Refresh</button></div><div id="command-bookings"></div><p class="help">Open Inbox for full booking controls, talent assignment and payment links.</p></section></section>
+      <section id="view-finance" class="view" hidden><section class="panel"><div class="section-head"><div><h2>Finance overview</h2><p class="muted">PayPal collections, agency commission and talent liabilities.</p></div><button data-command-refresh>Refresh</button></div><div id="finance-summary" class="finance-summary"></div></section><section class="panel"><h2>Talent payout ledger</h2><div id="command-finance"></div></section></section>
+      <section id="view-talent" class="view" hidden><div class="grid"><section class="panel"><h2>Add talent profile</h2><form id="talent-profile-form" class="form-grid"><label>Full name<input name="full_name" required></label><label>Stage name<input name="stage_name"></label><label>Category<input name="category" placeholder="Dancer, Model, DJ…" required></label><label>City<input name="city" value="Kingston"></label><label class="full">Short bio<textarea name="short_bio" required></textarea></label><div class="full photo-pair"><label>Upload headshot<input id="profile-image-file" name="profile_image_file" type="file" accept="image/jpeg,image/png,image/webp"><span class="help">Primary roster photo, maximum 8 MB.</span></label><label>Upload full body shot<input id="body-image-file" name="body_image_file" type="file" accept="image/jpeg,image/png,image/webp"><span class="help">Second switchable photo, maximum 8 MB.</span></label></div><div class="full photo-pair"><label>Or use a headshot URL<input name="profile_image_url" type="url" placeholder="https://…"></label><label>Or use a body-shot URL<input name="body_image_url" type="url" placeholder="https://…"></label></div><div class="full preview-pair"><img id="profile-image-preview" class="preview" alt="Headshot preview" hidden><img id="body-image-preview" class="preview" alt="Body shot preview" hidden></div><label>Instagram URL<input name="instagram_url" type="url"></label><label>TikTok URL<input name="tiktok_url" type="url"></label><label>YouTube URL<input name="youtube_url" type="url"></label><label>Facebook URL<input name="facebook_url" type="url"></label><label>X / Twitter URL<input name="x_url" type="url"></label><label>Website URL<input name="website_url" type="url"></label><label class="full">Portfolio / reel URL<input name="portfolio_url" type="url"></label><label>Status<select name="status"><option value="draft">Draft</option><option value="approved">Approved / public</option></select></label><label><span>Featured</span><select name="featured"><option value="false">No</option><option value="true">Yes</option></select></label><div class="full"><button class="primary" type="submit">Save talent profile</button></div></form><div id="talent-profile-status" class="status" hidden></div></section><section class="panel"><div class="section-head"><h2>Current roster</h2><button data-refresh>Refresh</button></div><div id="talent-profiles" class="cards"></div></section></div></section>
+      <section id="view-castings" class="view" hidden><div class="grid"><section class="panel"><h2>Create casting call</h2><form id="casting-form" class="form-grid"><label class="full">Title<input name="title" required></label><label>Category<input name="category"></label><label>Location<input name="location" value="Kingston, Jamaica"></label><label>Event date<input name="event_date" type="date"></label><label>Deadline<input name="application_deadline" type="datetime-local"></label><label class="full">Description<textarea name="description" required></textarea></label><label class="full">Requirements<textarea name="requirements"></textarea></label><label>Compensation<input name="compensation"></label><label>Status<select name="status"><option value="draft">Draft</option><option value="open">Open / public</option></select></label><div class="full"><button class="primary" type="submit">Save casting call</button></div></form><div id="casting-status" class="status" hidden></div></section><section class="panel"><div class="section-head"><h2>Current casting calls</h2><button data-refresh>Refresh</button></div><div id="casting-calls" class="cards"></div></section></div></section>
     </section>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/js/whiteline-supabase-config.js"></script>
-  <script src="assets/js/whiteline-admin.js"></script>
-  <script src="assets/js/whiteline-admin-media.js"></script>
-  <script src="assets/js/whiteline-admin-operations.js"></script>
-  <script src="assets/js/whiteline-admin-portal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/whiteline-supabase-config.js"></script><script src="assets/js/whiteline-payments-config.js"></script><script src="assets/js/whiteline-admin.js"></script><script src="assets/js/whiteline-admin-media.js"></script><script src="assets/js/whiteline-admin-operations.js"></script><script src="assets/js/whiteline-admin-portal.js"></script><script src="assets/js/whiteline-admin-onboarding.js"></script><script src="assets/js/whiteline-admin-payments.js"></script><script src="assets/js/whiteline-admin-payouts.js"></script><script src="assets/js/whiteline-admin-dashboard.js"></script>
 </body>
 </html>

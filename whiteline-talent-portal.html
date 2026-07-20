@@ -13,53 +13,12 @@
   <main class="wrap">
     <div class="toolbar"><div><p class="muted">WHITE LINE ENTERTAINMENT</p><h1>Talent dashboard</h1></div><div class="actions"><a class="button" href="whiteline.html">Public roster</a><button id="logout">Sign out</button></div></div>
     <div id="portal-status" class="status">Loading your account…</div>
-
-    <nav class="tabs" aria-label="Talent portal sections">
-      <button class="tab active" data-view="dashboard">Dashboard</button>
-      <button class="tab" data-view="profile">My profile</button>
-      <button class="tab" data-view="castings">Casting calls</button>
-      <button class="tab" data-view="bookings">Bookings</button>
-    </nav>
-
-    <section id="view-dashboard" class="view">
-      <div class="grid">
-        <section class="panel"><h2 id="welcome-name">Welcome</h2><p class="muted">Manage your professional information and respond to White Line opportunities.</p><div id="profile-summary"></div></section>
-        <section class="panel"><h2>Latest profile submission</h2><div id="change-status" class="cards"></div></section>
-      </div>
-    </section>
-
-    <section id="view-profile" class="view" hidden>
-      <section class="panel">
-        <h2>Submit profile updates</h2>
-        <p class="muted">Your public profile will not change until White Line reviews and approves this submission.</p>
-        <form id="profile-form" class="form-grid">
-          <label>Full name<input name="full_name" required></label>
-          <label>Stage name<input name="stage_name"></label>
-          <label>Category<input name="category" required></label>
-          <label>Location<input name="city"></label>
-          <label class="full">Biography<textarea name="short_bio" required></textarea></label>
-          <label class="full">Skills / credits<textarea name="skills" placeholder="One item per line"></textarea></label>
-          <label>Instagram<input name="instagram_url" type="url"></label>
-          <label>TikTok<input name="tiktok_url" type="url"></label>
-          <label>YouTube<input name="youtube_url" type="url"></label>
-          <label>Facebook<input name="facebook_url" type="url"></label>
-          <label>X / Twitter<input name="x_url" type="url"></label>
-          <label>Website<input name="website_url" type="url"></label>
-          <label class="full">Portfolio / reel<input name="portfolio_url" type="url"></label>
-          <label>New headshot<input id="headshot-file" type="file" accept="image/jpeg,image/png,image/webp"></label>
-          <label>New body shot<input id="body-file" type="file" accept="image/jpeg,image/png,image/webp"></label>
-          <label>Availability<select name="availability_status"><option value="available">Available</option><option value="limited">Limited availability</option><option value="unavailable">Unavailable</option></select></label>
-          <div class="full"><button class="primary" type="submit">Submit changes for review</button></div>
-        </form>
-        <div id="profile-message" class="status" hidden></div>
-      </section>
-    </section>
-
+    <nav class="tabs" aria-label="Talent portal sections"><button class="tab active" data-view="dashboard">Dashboard</button><button class="tab" data-view="profile">My profile</button><button class="tab" data-view="castings">Casting calls</button><button class="tab" data-view="bookings">Bookings</button></nav>
+    <section id="view-dashboard" class="view"><div class="grid"><section class="panel"><h2 id="welcome-name">Welcome</h2><p class="muted">Manage your professional information and respond to White Line opportunities.</p><div id="profile-summary"></div></section><section class="panel"><h2>Latest profile submission</h2><div id="change-status" class="cards"></div></section></div></section>
+    <section id="view-profile" class="view" hidden><section class="panel"><h2>Submit profile updates</h2><p class="muted">Your public profile will not change until White Line reviews and approves this submission.</p><form id="profile-form" class="form-grid"><label>Full name<input name="full_name" required></label><label>Stage name<input name="stage_name"></label><label>Category<input name="category" required></label><label>Location<input name="city"></label><label class="full">Biography<textarea name="short_bio" required></textarea></label><label class="full">Skills / credits<textarea name="skills" placeholder="One item per line"></textarea></label><label>Instagram<input name="instagram_url" type="url"></label><label>TikTok<input name="tiktok_url" type="url"></label><label>YouTube<input name="youtube_url" type="url"></label><label>Facebook<input name="facebook_url" type="url"></label><label>X / Twitter<input name="x_url" type="url"></label><label>Website<input name="website_url" type="url"></label><label class="full">Portfolio / reel<input name="portfolio_url" type="url"></label><label>New headshot<input id="headshot-file" type="file" accept="image/jpeg,image/png,image/webp"></label><label>New body shot<input id="body-file" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Availability<select name="availability_status"><option value="available">Available</option><option value="limited">Limited availability</option><option value="unavailable">Unavailable</option></select></label><div class="full"><button class="primary" type="submit">Submit changes for review</button></div></form><div id="profile-message" class="status" hidden></div></section></section>
     <section id="view-castings" class="view" hidden><section class="panel"><h2>Open casting calls</h2><div id="casting-list" class="cards"></div></section></section>
     <section id="view-bookings" class="view" hidden><section class="panel"><h2>Assigned bookings</h2><div id="booking-list" class="cards"></div></section></section>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="assets/js/whiteline-supabase-config.js"></script>
-  <script src="assets/js/whiteline-talent-portal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="assets/js/whiteline-supabase-config.js"></script><script src="assets/js/whiteline-talent-portal.js"></script><script src="assets/js/whiteline-talent-payouts.js"></script>
 </body>
 </html>

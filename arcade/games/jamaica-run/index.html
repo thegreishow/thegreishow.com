@@ -43,7 +43,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   <div class="card">
     <h1>🇯🇲 Jamaica Run 🇯🇲</h1>
     <p>Run through tropical vibes. Collect coins, avoid obstacles, and feel the rhythm.</p>
-    <p><strong>Space / ↑ / Tap</strong> — Jump<br><strong>Hold longer</strong> — Higher jump<br><strong>Double tap</strong> — Double jump</p>
+    <p><strong>Shift / ↑ / Tap</strong> — Jump (hold longer = higher jump)<br><strong>Double tap / DOUBLE button</strong> — Double jump</p>
     <button class="btn" id="startBtn">Press Start</button>
   </div>
 </section>
@@ -77,17 +77,17 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     double: -12.5,
     speed: 6,
     speedInc: 0.0018,
-    obstacleEvery: 95,
-    powerEvery: 280,
-    cloudEvery: 190
+    obstacleEvery: 92,
+    powerEvery: 270,
+    cloudEvery: 185
   };
 
   let groundY = 320;
   let started = false, paused = false, over = false;
-  let frames = 0, score = 0, distance = 0, multiplier = 1, nextLevel = 1000;
+  let frames = 0, score = 0, distance = 0, multiplier = 1, nextLevel = 1000, stage = 0;
   let startTime = 0, lastTap = 0, best = Number(localStorage.getItem('jamaicaRunHighScore') || 0);
   
-  let obstacles = [], powerUps = [], particles = [], clouds = [];
+  let obstacles = [], powerUps = [], particles = [], clouds = [], playerTrail = [];
   let jumpBuffer = 0, coyoteTime = 0;
   let jumpHeld = false, jumpHoldTime = 0;
   let screenShake = 0;
@@ -144,11 +144,11 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     },
     jump(held = false) {
       if (this.jumps === 0 || coyoteTime > 0) {
-        const power = held ? CONFIG.jump * 1.15 : CONFIG.jump;
+        const power = held ? CONFIG.jump * 1.18 : CONFIG.jump;
         this.vy = power;
         this.jumps = 1;
         this.state = 'jump';
-        burst(this.x + 32, this.y + 64, '255,215,0', 10);
+        burst(this.x + 32, this.y + 64, '255,215,0', 12);
         coyoteTime = 0;
       }
     },
@@ -157,7 +157,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
         this.vy = CONFIG.double;
         this.jumps = 2;
         this.state = 'double';
-        burst(this.x + 32, this.y + 64, '0,255,0', 15);
+        burst(this.x + 32, this.y + 64, '0,255,0', 18);
       }
     },
     update() {
@@ -169,22 +169,33 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
         this.vy = 0;
         this.jumps = 0;
         this.state = 'run';
-        coyoteTime = 6; // frames of coyote time
+        coyoteTime = 7;
       } else {
         if (coyoteTime > 0) coyoteTime--;
       }
 
       if (this.invincible > 0) this.invincible--;
 
-      this.frame += 0.22;
+      this.frame += 0.23;
       const set = frameSets[this.state] || frameSets.run;
       this.anim = set[Math.floor(this.frame) % set.length];
     },
     draw() {
+      // Simple trail effect
+      if (playerTrail.length > 0 && this.state === 'run') {
+        ctx.globalAlpha = 0.25;
+        for (let i = 0; i < playerTrail.length; i++) {
+          const t = playerTrail[i];
+          ctx.fillStyle = '#ffeb3b';
+          ctx.fillRect(t.x, t.y + 8, this.w * 0.7, this.h * 0.6);
+        }
+        ctx.globalAlpha = 1;
+      }
+
       if (sprite.complete && sprite.naturalWidth) {
         const row = Math.floor(this.anim / 6);
         const col = this.anim % 6;
-        if (this.invincible && Math.floor(this.invincible / 5) % 2 === 0) ctx.globalAlpha = 0.45;
+        if (this.invincible && Math.floor(this.invincible / 5) % 2 === 0) ctx.globalAlpha = 0.4;
         ctx.drawImage(sprite, col * fw, row * fh, fw, fh, this.x, this.y, this.w, this.h);
         ctx.globalAlpha = 1;
       } else {
@@ -198,9 +209,9 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     for (let i = 0; i < count; i++) {
       particles.push({
         x, y,
-        vx: (Math.random() - 0.5) * 5,
-        vy: (Math.random() - 1.8) * 5,
-        a: 1, c: color, s: 3 + Math.random() * 4
+        vx: (Math.random() - 0.5) * 5.5,
+        vy: (Math.random() - 1.9) * 5.5,
+        a: 1, c: color, s: 3.5 + Math.random() * 4.5
       });
     }
   }
@@ -219,15 +230,23 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   }
 
   function background() {
+    // Visual progression based on stage
+    let skyTop = '#64b5f6';
+    let skyBottom = '#87ceeb';
+    let sunColor = '#ffeb3b';
+
+    if (stage >= 1) { skyTop = '#f4a261'; skyBottom = '#e76f51'; sunColor = '#f4d35e'; }
+    if (stage >= 2) { skyTop = '#2d3436'; skyBottom = '#636e72'; sunColor = '#ffeaa7'; }
+
     const g = ctx.createLinearGradient(0, 0, 0, groundY);
-    g.addColorStop(0, '#64b5f6');
-    g.addColorStop(1, '#87ceeb');
+    g.addColorStop(0, skyTop);
+    g.addColorStop(1, skyBottom);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 800, groundY);
 
-    ctx.fillStyle = '#ffeb3b';
+    ctx.fillStyle = sunColor;
     ctx.beginPath();
-    ctx.arc(700, 80, 40, 0, Math.PI * 2);
+    ctx.arc(700, 80, 38, 0, Math.PI * 2);
     ctx.fill();
 
     for (let i = 0; i < 3; i++) {
@@ -243,10 +262,11 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
     for (const p of layers[3].e) palm(p.x, groundY, p.s);
 
-    // Ground pattern
+    // Ground
+    const groundColors = stage >= 2 ? ['#2d3436','#636e72','#2d3436'] : ['#3b7a57','#4c9141','#2e8b57'];
     for (let x = -(distance % 40); x < 800; x += 40) {
       for (let y = groundY; y < 400; y += 20) {
-        ctx.fillStyle = ['#3b7a57','#4c9141','#2e8b57'][Math.abs(Math.floor(x/40 + y/20)) % 3];
+        ctx.fillStyle = groundColors[Math.abs(Math.floor(x/40 + y/20)) % 3];
         ctx.fillRect(x, y, 40, 20);
       }
     }
@@ -262,7 +282,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   }
 
   function spawnObstacle() {
-    const types = ['🥥', '🛢️', '🥁', '🔊']; // Added speaker for Jamaican flavor
+    const types = ['🥥', '🛢️', '🥁', '🔊'];
     obstacles.push({
       x: 820,
       y: groundY - 42,
@@ -273,7 +293,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   }
 
   function spawnPower() {
-    const types = ['🪙', '🍁', '⚡']; // Coin, invincibility, speed boost
+    const types = ['🪙', '🍁', '⚡'];
     powerUps.push({
       x: 820,
       y: groundY - 95,
@@ -288,7 +308,6 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   }
 
   function updateObjects() {
-    // Obstacles
     for (const o of obstacles) {
       o.x -= CONFIG.speed;
       ctx.font = '32px sans-serif';
@@ -296,12 +315,11 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
       if (!player.invincible && collide(player, o)) {
         over = true;
-        screenShake = 12;
+        screenShake = 14;
       }
     }
     obstacles = obstacles.filter(o => o.x + 40 > 0);
 
-    // Power-ups
     for (const p of powerUps) {
       p.x -= CONFIG.speed;
       p.y += Math.sin(frames * 0.12) * 0.6;
@@ -310,29 +328,35 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
       if (collide(player, p)) {
         if (p.t === '🍁') {
-          player.invincible = 140;
+          player.invincible = 145;
           multiplier = Math.min(multiplier + 1, 5);
         } else if (p.t === '⚡') {
-          CONFIG.speed = Math.min(CONFIG.speed + 1.8, 11);
-          setTimeout(() => { if (started) CONFIG.speed = Math.max(6, CONFIG.speed - 1.5); }, 4200);
+          CONFIG.speed = Math.min(CONFIG.speed + 2, 11.5);
+          setTimeout(() => { if (started) CONFIG.speed = Math.max(6, CONFIG.speed - 1.6); }, 4500);
           multiplier = Math.min(multiplier + 1, 5);
         } else {
-          // Coin
-          score += 80 * multiplier;
-          multiplier = Math.min(multiplier + 0.5, 6);
+          score += 85 * multiplier;
+          multiplier = Math.min(multiplier + 0.6, 6.5);
         }
         p.dead = true;
-        burst(p.x + 15, p.y + 15, '255,215,0', 18);
+        burst(p.x + 15, p.y + 15, '255,215,0', 20);
       }
     }
     powerUps = powerUps.filter(p => !p.dead && p.x + 32 > 0);
 
-    // Particles
+    // Player trail
+    if (player.state === 'run' && frames % 2 === 0) {
+      playerTrail.push({x: player.x, y: player.y});
+      if (playerTrail.length > 6) playerTrail.shift();
+    } else {
+      playerTrail = [];
+    }
+
     for (const p of particles) {
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.12;
-      p.a -= 0.028;
+      p.vy += 0.13;
+      p.a -= 0.03;
       ctx.fillStyle = `rgba(${p.c},${p.a})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
@@ -340,10 +364,9 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     }
     particles = particles.filter(p => p.a > 0);
 
-    // Clouds
     for (const c of clouds) {
       c.x -= c.speed;
-      ctx.fillStyle = 'rgba(255,255,255,.75)';
+      ctx.fillStyle = 'rgba(255,255,255,.72)';
       ctx.beginPath();
       ctx.ellipse(c.x, c.y, c.w/2, c.h/2, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -351,8 +374,17 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     clouds = clouds.filter(c => c.x + c.w > 0);
   }
 
+  function updateStage() {
+    const newStage = Math.floor(distance / 3200);
+    if (newStage !== stage) {
+      stage = newStage;
+      // Optional: small speed boost on stage change
+      if (stage > 0) CONFIG.speed = Math.min(CONFIG.speed + 0.4, 10);
+    }
+  }
+
   function hud() {
-    score = Math.floor(frames / 4.8);
+    score = Math.floor(frames / 4.7);
     scoreText.textContent = `Score: ${score}`;
     bestText.textContent = `Best: ${best} ×${multiplier.toFixed(1)}`;
     fill.style.width = ((distance % nextLevel) / nextLevel * 100) + '%';
@@ -368,9 +400,10 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     }
 
     background();
+    updateStage();
 
     if (frames % CONFIG.cloudEvery === 0) {
-      clouds.push({x: 820, y: Math.random()*140, w: 75 + Math.random()*55, h: 38 + Math.random()*18, speed: 1.1 + Math.random()*1.6});
+      clouds.push({x: 820, y: Math.random()*135, w: 72 + Math.random()*58, h: 36 + Math.random()*20, speed: 1.15 + Math.random()*1.5});
     }
     if (frames % CONFIG.obstacleEvery === 0) spawnObstacle();
     if (frames % CONFIG.powerEvery === 0) spawnPower();
@@ -378,7 +411,6 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     updateLayers();
     updateObjects();
 
-    // Jump buffering
     if (jumpBuffer > 0) jumpBuffer--;
     if (jumpBuffer > 0 && (player.jumps === 0 || coyoteTime > 0)) {
       player.jump(jumpHoldTime > 8);
@@ -392,8 +424,8 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
     distance += CONFIG.speed;
     if (distance >= nextLevel) {
-      nextLevel += 950;
-      CONFIG.speed = Math.min(CONFIG.speed + 0.7, 10.5);
+      nextLevel += 920;
+      CONFIG.speed = Math.min(CONFIG.speed + 0.65, 10.8);
     }
     CONFIG.speed += CONFIG.speedInc;
 
@@ -415,11 +447,13 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     distance = 0;
     multiplier = 1;
     nextLevel = 1000;
+    stage = 0;
     CONFIG.speed = 6;
     obstacles = [];
     powerUps = [];
     particles = [];
     clouds = [];
+    playerTrail = [];
     jumpBuffer = 0;
     coyoteTime = 0;
     jumpHoldTime = 0;
@@ -450,13 +484,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
       const r = await fetch(API + '/api/leaderboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          game: GAME,
-          name,
-          score,
-          level: Math.max(1, Math.floor(distance / 950) + 1),
-          duration
-        })
+        body: JSON.stringify({ game: GAME, name, score, level: Math.max(1, Math.floor(distance / 920) + 1), duration })
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Sync failed');
@@ -466,7 +494,6 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     }
   }
 
-  // Input handling
   function doJump(held = false) {
     if (!started || over) return;
     if (player.jumps === 0 || coyoteTime > 0) {
@@ -511,28 +538,28 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
   addEventListener('keydown', e => {
     if (!started || over) return;
-    if (['Space', 'ArrowUp'].includes(e.code)) {
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'ArrowUp') {
       e.preventDefault();
       if (!jumpHeld) {
         jumpHeld = true;
         jumpHoldTime = 0;
-        doJump(false);
+        doJump(e.code === 'ShiftLeft' || e.code === 'ShiftRight');
       }
     }
   });
 
   addEventListener('keyup', e => {
-    if (['Space', 'ArrowUp'].includes(e.code)) {
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
       jumpHeld = false;
     }
   });
 
-  // Variable jump height while holding
+  // Variable jump height
   setInterval(() => {
     if (jumpHeld && started && player.jumps === 1 && player.vy < 0) {
       jumpHoldTime++;
-      if (jumpHoldTime < 18 && player.vy > -18) {
-        player.vy -= 0.35;
+      if (jumpHoldTime < 19 && player.vy > -19) {
+        player.vy -= 0.38;
       }
     }
   }, 16);
@@ -542,7 +569,6 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     if (!paused && started) requestAnimationFrame(frame);
   });
 
-  // Boot
   initLayers();
   background();
   player.draw();

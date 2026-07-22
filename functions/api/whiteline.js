@@ -15,6 +15,7 @@ async function supabase(path, options = {}) {
     ...options,
     headers: {
       apikey: PUBLISHABLE_KEY,
+      Authorization: `Bearer ${PUBLISHABLE_KEY}`,
       Accept: 'application/json',
       ...(options.headers || {})
     }

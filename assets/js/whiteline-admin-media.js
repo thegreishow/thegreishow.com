@@ -31,7 +31,7 @@
     const originalLabel = submitButton?.textContent || "Save talent profile";
     const data = new FormData(profileForm);
     const fullName = text(data, "full_name");
-    const publicName = text(data, "stage_name") || fullName;
+    const slug = slugify(text(data, "stage_name") || fullName) + "-" + Date.now().toString().slice(-5);
     const headshot = data.get("profile_image_file");
     const bodyshot = data.get("body_image_file");
     const status = document.getElementById("talent-profile-status");
@@ -42,7 +42,6 @@
         submitButton.textContent = "Saving…";
       }
       await requireAdminSession();
-      const slug = await createUniqueSlug(publicName);
       show(status, headshot?.size || bodyshot?.size ? "Uploading photos…" : "Saving talent profile…");
       const headshotUrl = headshot?.size ? await upload(headshot, slug, "headshot") : nullable(data, "profile_image_url");
       const bodyshotUrl = bodyshot?.size ? await upload(bodyshot, slug, "bodyshot") : nullable(data, "body_image_url");
@@ -71,7 +70,7 @@
       preview.removeAttribute("src");
       bodyPreview.hidden = true;
       bodyPreview.removeAttribute("src");
-      show(status, `Talent profile saved. Public URL: ${window.location.origin}/${slug}`);
+      show(status, "Talent profile and both photo slots saved.");
       document.querySelector("[data-refresh]")?.click();
     } catch (error) {
       show(status, friendlyError(error));
@@ -93,18 +92,6 @@
       .maybeSingle();
     if (membershipError || !membership) throw new Error("ADMIN_ACCESS_REQUIRED");
     return session;
-  }
-
-  async function createUniqueSlug(name) {
-    const base = compactSlugify(name);
-    let candidate = base;
-    for (let suffix = 2; suffix < 100; suffix += 1) {
-      const { data, error } = await db.from("talent_profiles").select("id").eq("slug", candidate).maybeSingle();
-      if (error) throw error;
-      if (!data) return candidate;
-      candidate = `${base}${suffix}`;
-    }
-    return `${base}${Date.now().toString().slice(-5)}`;
   }
 
   async function upload(file, slug, label) {
@@ -130,13 +117,12 @@
       links.insertAdjacentHTML("beforeend", socials(apps[i]));
     }
 
-    const { data: profiles } = await db.from("talent_profiles").select("slug,profile_image_url,body_image_url,instagram_url,tiktok_url,youtube_url,facebook_url,x_url,website_url").order("created_at", { ascending: false });
+    const { data: profiles } = await db.from("talent_profiles").select("profile_image_url,body_image_url,instagram_url,tiktok_url,youtube_url,facebook_url,x_url,website_url").order("created_at", { ascending: false });
     const rosterCards = [...roster.querySelectorAll(".card")];
     for (let i = 0; i < Math.min(rosterCards.length, profiles?.length || 0); i++) {
       if (rosterCards[i].dataset.mediaDecorated) continue;
       rosterCards[i].dataset.mediaDecorated = "true";
       const links = rosterCards[i].querySelector(".contact-links") || rosterCards[i];
-      if (profiles[i].slug) links.insertAdjacentHTML("beforeend", button(`/${profiles[i].slug}`, "Public profile"));
       if (profiles[i].profile_image_url) links.insertAdjacentHTML("beforeend", button(profiles[i].profile_image_url, "Headshot"));
       if (profiles[i].body_image_url) links.insertAdjacentHTML("beforeend", button(profiles[i].body_image_url, "Body shot"));
       links.insertAdjacentHTML("beforeend", socials(profiles[i]));
@@ -158,54 +144,18 @@
     if (message === "ADMIN_ACCESS_REQUIRED" || /row-level security|rls|42501/i.test(message)) {
       return "Supabase did not recognize this save as an authorized admin action. Sign out, sign back in, then retry. Your form was not published.";
     }
-    if (/duplicate key|talent_profiles_slug_key/i.test(message)) {
-      return "That public profile URL is already in use. Please retry and a unique URL will be generated.";
-    }
     return message || "Could not save profile.";
   }
 
   function socials(row) {
-    return [["Instagram", row.instagram_url], ["TikTok", row.tiktok_url], ["YouTube", row.youtube_url], ["Facebook", row.facebook_url], ["X", row.x_url], ["Website", row.website_url]]
-      .filter(([, url]) => url)
-      .map(([label, url]) => button(url, label))
-      .join("");
+    return [["Instagram",row.instagram_url],["TikTok",row.tiktok_url],["YouTube",row.youtube_url],["Facebook",row.facebook_url],["X",row.x_url],["Website",row.website_url]].filter(([,url]) => url).map(([label,url]) => button(url,label)).join("");
   }
-
-  function button(url, label) {
-    return `<a class="button" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
-  }
-  function previewFile(input, image) {
-    const file = input.files?.[0];
-    if (!file) {
-      image.hidden = true;
-      image.removeAttribute("src");
-      return;
-    }
-    image.src = URL.createObjectURL(file);
-    image.hidden = false;
-  }
-  function validate(file, label) {
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) throw new Error(`${label} must be JPG, PNG or WebP.`);
-    if (file.size > 8 * 1024 * 1024) throw new Error(`${label} must be under 8 MB.`);
-  }
-  function show(element, message) {
-    element.hidden = false;
-    element.textContent = message;
-  }
-  function text(data, name) {
-    return String(data.get(name) || "").trim();
-  }
-  function nullable(data, name) {
-    return text(data, name) || null;
-  }
-  function compactSlugify(value) {
-    return String(value || "talent")
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "") || "talent";
-  }
-  function esc(value) {
-    return String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-  }
+  function button(url, label) { return `<a class="button" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`; }
+  function previewFile(input, image) { const file = input.files?.[0]; if (!file) { image.hidden = true; image.removeAttribute("src"); return; } image.src = URL.createObjectURL(file); image.hidden = false; }
+  function validate(file, label) { if (!["image/jpeg","image/png","image/webp"].includes(file.type)) throw new Error(`${label} must be JPG, PNG or WebP.`); if (file.size > 8*1024*1024) throw new Error(`${label} must be under 8 MB.`); }
+  function show(element, message) { element.hidden = false; element.textContent = message; }
+  function text(data, name) { return String(data.get(name) || "").trim(); }
+  function nullable(data, name) { return text(data, name) || null; }
+  function slugify(value) { return String(value || "item").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "item"; }
+  function esc(value) { return String(value || "").replace(/[&<>"']/g, (char) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[char])); }
 })();

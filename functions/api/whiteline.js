@@ -30,9 +30,11 @@ async function supabase(path, options = {}) {
 export async function onRequestGet({ request }) {
   const url = new URL(request.url);
   const slug = (url.searchParams.get('slug') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const id = (url.searchParams.get('id') || '').trim();
 
-  if (slug) {
-    const result = await supabase(`talent_profiles?select=*&status=eq.approved&slug=eq.${encodeURIComponent(slug)}&limit=1`);
+  if (slug || id) {
+    const filter = slug ? `slug=eq.${encodeURIComponent(slug)}` : `id=eq.${encodeURIComponent(id)}`;
+    const result = await supabase(`talent_profiles?select=*&status=eq.approved&${filter}&limit=1`);
     if (result.error) return json({ error: 'Profile service unavailable' }, result.status);
     const profile = result.data?.[0] || null;
     return profile ? json(profile) : json({ error: 'Profile not found' }, 404);

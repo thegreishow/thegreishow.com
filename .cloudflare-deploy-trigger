@@ -1,3 +1,4 @@
 Cloudflare Pages redeploy requested for main
-Source commit: df2a8e12ba4b92a0abe42b490d28ab5f698ba2f1
-Supabase key fix included: fa07d06285606e223822a31440f0bdedf5c5cfbc
+Requested again: 2026-07-22
+Current main before trigger: 105ff567e0b1beb07c4f49d0dfc70f9a89010359
+Supabase auth fix: fa07d06285606e223822a31440f0bdedf5c5cfbc

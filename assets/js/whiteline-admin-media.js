@@ -1,7 +1,7 @@
 (() => {
   const config = window.WHITE_LINE_SUPABASE || {};
   if (!window.supabase?.createClient) return;
-  const db = window.supabase.createClient(config.url, config.anonKey);
+  const db = window.WHITE_LINE_DB || window.supabase.createClient(config.url, config.anonKey);
   const form = document.getElementById("talent-profile-form");
   if (!form) return;
 
@@ -27,14 +27,22 @@
 
   async function saveProfile(event) {
     event.preventDefault();
+    const submitButton = profileForm.querySelector('[type="submit"]');
+    const originalLabel = submitButton?.textContent || "Save talent profile";
     const data = new FormData(profileForm);
     const fullName = text(data, "full_name");
     const slug = slugify(text(data, "stage_name") || fullName) + "-" + Date.now().toString().slice(-5);
     const headshot = data.get("profile_image_file");
     const bodyshot = data.get("body_image_file");
     const status = document.getElementById("talent-profile-status");
+
     try {
-      show(status, "Uploading photos…");
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Saving…";
+      }
+      await requireAdminSession();
+      show(status, headshot?.size || bodyshot?.size ? "Uploading photos…" : "Saving talent profile…");
       const headshotUrl = headshot?.size ? await upload(headshot, slug, "headshot") : nullable(data, "profile_image_url");
       const bodyshotUrl = bodyshot?.size ? await upload(bodyshot, slug, "bodyshot") : nullable(data, "body_image_url");
       const { error } = await db.from("talent_profiles").insert({
@@ -59,12 +67,31 @@
       if (error) throw error;
       profileForm.reset();
       preview.hidden = true;
+      preview.removeAttribute("src");
       bodyPreview.hidden = true;
+      bodyPreview.removeAttribute("src");
       show(status, "Talent profile and both photo slots saved.");
       document.querySelector("[data-refresh]")?.click();
     } catch (error) {
-      show(status, error.message || "Could not save profile.");
+      show(status, friendlyError(error));
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalLabel;
+      }
     }
+  }
+
+  async function requireAdminSession() {
+    const { data: { session }, error: sessionError } = await db.auth.getSession();
+    if (sessionError || !session?.user) throw new Error("ADMIN_SESSION_REQUIRED");
+    const { data: membership, error: membershipError } = await db
+      .from("whiteline_admins")
+      .select("user_id")
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+    if (membershipError || !membership) throw new Error("ADMIN_ACCESS_REQUIRED");
+    return session;
   }
 
   async function upload(file, slug, label) {
@@ -109,12 +136,23 @@
     return data?.signedUrl || null;
   }
 
+  function friendlyError(error) {
+    const message = String(error?.message || error || "");
+    if (message === "ADMIN_SESSION_REQUIRED" || /jwt|session|not authenticated/i.test(message)) {
+      return "Your admin session expired. Sign out, sign back in, and try again.";
+    }
+    if (message === "ADMIN_ACCESS_REQUIRED" || /row-level security|rls|42501/i.test(message)) {
+      return "Supabase did not recognize this save as an authorized admin action. Sign out, sign back in, then retry. Your form was not published.";
+    }
+    return message || "Could not save profile.";
+  }
+
   function socials(row) {
     return [["Instagram",row.instagram_url],["TikTok",row.tiktok_url],["YouTube",row.youtube_url],["Facebook",row.facebook_url],["X",row.x_url],["Website",row.website_url]].filter(([,url]) => url).map(([label,url]) => button(url,label)).join("");
   }
   function button(url, label) { return `<a class="button" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`; }
-  function previewFile(input, image) { const file = input.files?.[0]; if (!file) { image.hidden = true; return; } image.src = URL.createObjectURL(file); image.hidden = false; }
-  function validate(file, label) { if (!['image/jpeg','image/png','image/webp'].includes(file.type)) throw new Error(`${label} must be JPG, PNG or WebP.`); if (file.size > 8*1024*1024) throw new Error(`${label} must be under 8 MB.`); }
+  function previewFile(input, image) { const file = input.files?.[0]; if (!file) { image.hidden = true; image.removeAttribute("src"); return; } image.src = URL.createObjectURL(file); image.hidden = false; }
+  function validate(file, label) { if (!["image/jpeg","image/png","image/webp"].includes(file.type)) throw new Error(`${label} must be JPG, PNG or WebP.`); if (file.size > 8*1024*1024) throw new Error(`${label} must be under 8 MB.`); }
   function show(element, message) { element.hidden = false; element.textContent = message; }
   function text(data, name) { return String(data.get(name) || "").trim(); }
   function nullable(data, name) { return text(data, name) || null; }

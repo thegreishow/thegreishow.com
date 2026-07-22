@@ -1,6 +1,8 @@
 const SUPABASE_URL = 'https://dkvbeizjlgxqjuxnlqho.supabase.co';
 
-// Prefer Cloudflare Pages env var (set in dashboard). Falls back to the working anon JWT.
+// Server-side (Cloudflare Function) should prefer service_role for full access (bypasses RLS).
+// Browser uses anon key + RLS. Set these in Cloudflare Pages env vars.
+const getServiceRoleKey = (env) => env?.SUPABASE_SERVICE_ROLE_KEY || null;
 const getAnonKey = (env) => env?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrdmJlaXpqbGd4cWp1eG5scWhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0MDMzNjIsImV4cCI6MjA5OTk3OTM2Mn0.LEoOB6rdDwYh9ViogHuZCJ2gBx6fu78RDzyPBwTe4YE';
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
@@ -12,13 +14,16 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
   }
 });
 
-async function supabase(path, options = {}, env) {
-  const ANON_KEY = getAnonKey(env);
+async function supabase(path, options = {}, env, useServiceRole = false) {
+  const key = useServiceRole ? getServiceRoleKey(env) : getAnonKey(env);
+  if (!key) {
+    return { error: true, status: 500, text: 'Missing Supabase key' };
+  }
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
     headers: {
-      apikey: ANON_KEY,
-      Authorization: `Bearer ${ANON_KEY}`,
+      apikey: key,
+      Authorization: `Bearer ${key}`,
       Accept: 'application/json',
       ...(options.headers || {})
     }
@@ -36,9 +41,12 @@ export async function onRequestGet({ request, env }) {
   const slug = (url.searchParams.get('slug') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   const id = (url.searchParams.get('id') || '').trim();
 
+  // Use service_role for server-side public queries to avoid RLS permission issues with is_whiteline_admin()
+  const useService = !!getServiceRoleKey(env);
+
   if (slug || id) {
     const filter = slug ? `slug=eq.${encodeURIComponent(slug)}` : `id=eq.${encodeURIComponent(id)}`;
-    const result = await supabase(`talent_profiles?select=*&status=eq.approved&${filter}&limit=1`, {}, env);
+    const result = await supabase(`talent_profiles?select=*&status=eq.approved&${filter}&limit=1`, {}, env, useService);
     if (result.error) {
       return json({ error: 'Profile service unavailable', details: result.text || result.status }, result.status || 500);
     }
@@ -47,7 +55,7 @@ export async function onRequestGet({ request, env }) {
   }
 
   const fields = 'id,slug,full_name,stage_name,category,secondary_categories,short_bio,city,country,profile_image_url,body_image_url,instagram_url,tiktok_url,youtube_url,facebook_url,x_url,website_url,portfolio_url,featured,availability_status';
-  const result = await supabase(`talent_profiles?select=${fields}&status=eq.approved&order=featured.desc,stage_name.asc`, {}, env);
+  const result = await supabase(`talent_profiles?select=${fields}&status=eq.approved&order=featured.desc,stage_name.asc`, {}, env, useService);
   if (result.error) {
     return json({ error: 'Roster service unavailable', details: result.text || result.status }, result.status || 500);
   }
@@ -68,7 +76,7 @@ export async function onRequestPost({ request, env }) {
     method: 'POST',
     headers: { 'content-type': 'application/json', Prefer: 'return=minimal' },
     body: JSON.stringify(clean)
-  }, env);
+  }, env, true); // POSTs use service_role
   if (result.error) return json({ error: 'Could not submit booking request', details: result.text || result.status }, result.status || 500);
   return json({ ok: true }, 201);
 }

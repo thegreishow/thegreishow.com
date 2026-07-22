@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://dkvbeizjlgxqjuxnlqho.supabase.co';
-const PUBLISHABLE_KEY = 'sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrdmJlaXpqbGd4cWp1eG5scWhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0MDMzNjIsImV4cCI6MjA5OTk3OTM2Mn0.LEoOB6rdDwYh9ViogHuZCJ2gBx6fu78RDzyPBwTe4YE';
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
@@ -14,8 +14,8 @@ async function supabase(path, options = {}) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
     headers: {
-      apikey: PUBLISHABLE_KEY,
-      Authorization: `Bearer ${PUBLISHABLE_KEY}`,
+      apikey: ANON_KEY,
+      Authorization: `Bearer ${ANON_KEY}`,
       Accept: 'application/json',
       ...(options.headers || {})
     }

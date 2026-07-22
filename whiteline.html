@@ -39,9 +39,14 @@
     <section id="talent" class="section alt">
       <div class="wrap">
         <div class="section-head"><div><p class="kicker">Approved roster</p><h2 class="heading">Discover the talent.</h2></div><p class="copy">Search by name, discipline or location. Open a profile to view biography, portfolio links, availability and booking options.</p></div>
-        <div class="tools"><input id="talent-search" class="search" type="search" placeholder="Search talent, country or discipline…" aria-label="Search the White Line roster"><span id="talent-count" class="meta" aria-live="polite"></span></div>
-        <div id="talent-filters" class="filters" aria-label="Filter talent by discipline"></div>
-        <div id="talent-grid" class="grid" aria-live="polite"></div>
+        <div class="tools"><input id="talent-search" class="search" type="search" placeholder="Search talent, country or discipline…" aria-label="Search the White Line roster"><span id="talent-count" class="meta" aria-live="polite">1 profile</span></div>
+        <div id="talent-filters" class="filters" aria-label="Filter talent by discipline"><button class="filter active" data-filter="All">All</button><button class="filter" data-filter="Dancer">Dancer</button></div>
+        <div id="talent-grid" class="grid" aria-live="polite">
+          <article class="card talent-card" tabindex="0" role="link" data-id="9f01366c-b323-4c1e-9707-74f93807113f" onclick="location.href='/legendarycolocolo'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();location.href='/legendarycolocolo'}">
+            <img class="talent-image" src="https://dkvbeizjlgxqjuxnlqho.supabase.co/storage/v1/object/public/talent-media/profiles/legendary-colo-colo-49742/headshot.png" alt="Legendary Colo Colo">
+            <div class="card-body"><h3>Legendary Colo Colo</h3><div class="meta">Kingston, Jamaica · available</div><div class="tags"><span class="tag">Dancer</span></div></div>
+          </article>
+        </div>
       </div>
     </section>
 

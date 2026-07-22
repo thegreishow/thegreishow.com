@@ -24,20 +24,31 @@
   }
 
   async function loadDashboard(){
-    const [bookings,payments,subscribers]=await Promise.all([
+    const openStages=['completed','cancelled'];
+    const [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows]=await Promise.all([
       db.from('client_requests').select('id,client_name,company_name,project_name,project_type,event_date,booking_stage,status,payment_status,quoted_amount,amount_paid,currency,created_at').order('created_at',{ascending:false}).limit(25),
       db.from('booking_payments').select('id,payment_type,amount,currency,status,description,paid_at,created_at').order('created_at',{ascending:false}).limit(25),
-      db.from('release_list_subscribers').select('id,email,first_name,country,status,subscribed_at,welcome_sent_at').order('subscribed_at',{ascending:false}).limit(25)
+      db.from('release_list_subscribers').select('id,email,first_name,country,status,subscribed_at,welcome_sent_at').order('subscribed_at',{ascending:false}).limit(25),
+      db.from('client_requests').select('*',{count:'exact',head:true}),
+      db.from('release_list_subscribers').select('*',{count:'exact',head:true}).eq('status','subscribed'),
+      db.from('client_requests').select('id,booking_stage,status'),
+      db.from('booking_payments').select('amount,currency,status,paid_at')
     ]);
-    for(const result of [bookings,payments,subscribers]) if(result.error) throw result.error;
+    for(const result of [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows]) if(result.error) throw result.error;
 
-    const allBookings=bookings.data||[], allPayments=payments.data||[], allSubscribers=subscribers.data||[];
-    $('metric-bookings').textContent=allBookings.length;
-    $('metric-open').textContent=allBookings.filter(x=>!['completed','cancelled'].includes(String(x.booking_stage||x.status||'').toLowerCase())).length;
-    const paid=allPayments.filter(x=>String(x.status).toLowerCase()==='paid'||x.paid_at).reduce((sum,x)=>sum+Number(x.amount||0),0);
-    const currency=allPayments.find(x=>x.currency)?.currency||'USD';
-    $('metric-revenue').textContent=new Intl.NumberFormat(undefined,{style:'currency',currency}).format(paid);
-    $('metric-subscribers').textContent=allSubscribers.filter(x=>x.status==='subscribed').length;
+    const allBookings=bookingRows.data||[], allPayments=paymentRows.data||[], allSubscribers=subscriberRows.data||[];
+    const openBookings=(openCount.data||[]).filter(x=>!openStages.includes(String(x.booking_stage||x.status||'').toLowerCase())).length;
+    const paidTransactions=(paidRows.data||[]).filter(x=>String(x.status).toLowerCase()==='paid'||x.paid_at);
+    const revenueByCurrency=paidTransactions.reduce((totals,x)=>{
+      const currency=String(x.currency||'USD').toUpperCase();
+      totals[currency]=(totals[currency]||0)+Number(x.amount||0);
+      return totals;
+    },{});
+
+    $('metric-bookings').textContent=bookingCount.count??0;
+    $('metric-open').textContent=openBookings;
+    $('metric-revenue').textContent=formatRevenue(revenueByCurrency);
+    $('metric-subscribers').textContent=subscriberCount.count??0;
 
     $('bookings-body').innerHTML=allBookings.map(x=>row([
       date(x.created_at), esc(x.company_name||x.client_name||'—'), esc(x.project_name||x.project_type||'—'), esc(x.event_date||'—'), pill(x.booking_stage||x.status||'new'), pill(x.payment_status||'unpaid')
@@ -49,9 +60,9 @@
       date(x.subscribed_at), esc(x.first_name||'—'), esc(x.email), esc(x.country||'—'), pill(x.welcome_sent_at?'sent':'pending')
     ])).join('')||empty(5);
 
-    $('bookings-status').textContent=`${allBookings.length} shown`;
-    $('payments-status').textContent=`${allPayments.length} shown`;
-    $('subscribers-status').textContent=`${allSubscribers.length} shown`;
+    $('bookings-status').textContent=`${allBookings.length} most recent`;
+    $('payments-status').textContent=`${allPayments.length} most recent`;
+    $('subscribers-status').textContent=`${allSubscribers.length} most recent`;
   }
 
   function row(cells){return `<tr>${cells.map(v=>`<td>${v}</td>`).join('')}</tr>`;}
@@ -59,5 +70,10 @@
   function pill(v){return `<span class="pill">${esc(String(v))}</span>`;}
   function date(v){return v?esc(new Date(v).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})):'—';}
   function money(v,c='USD'){return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(v||0));}
+  function formatRevenue(totals){
+    const entries=Object.entries(totals);
+    if(!entries.length) return money(0,'USD');
+    return entries.map(([currency,amount])=>money(amount,currency)).join(' · ');
+  }
   function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 })();

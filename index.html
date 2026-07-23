@@ -45,7 +45,7 @@
   </script>
 
   <style>
-    /* Compact Songstats display – reuses existing design tokens */
+    /* Compact Songstats display */
     .songstats-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -79,30 +79,103 @@
       color: rgba(255,255,255,0.55);
     }
 
-    /* Streaming platforms row */
-    .home-platforms {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 8px;
-      margin: 16px 0 4px;
-    }
-    .home-platforms a {
+    /* Social links */
+    .home-socials {
       display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .home-socials a {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 42px;
-      padding: 0 6px;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 10px;
-      background: rgba(255,255,255,0.04);
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 800;
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.85);
+      font-size: 0.78rem;
+      font-weight: 700;
       text-decoration: none;
-      letter-spacing: 0.02em;
       transition: background 0.2s ease, border-color 0.2s ease;
     }
-    .home-platforms a:hover {
+    .home-socials a:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(216,255,99,0.4);
+      color: #fff;
+    }
+
+    /* Platform modal (same spirit as music page) */
+    .stream-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(16px);
+    }
+    .stream-modal.open { display: grid; }
+    .modal-card {
+      width: min(480px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      padding: 28px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      background: #090b10;
+      box-shadow: 0 30px 100px rgba(0,0,0,0.65);
+    }
+    .modal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    .modal-top h2 {
+      margin: 4px 0 6px;
+      font-size: clamp(1.8rem, 6vw, 2.4rem);
+      letter-spacing: -0.03em;
+    }
+    .modal-top p {
+      margin: 0;
+      color: rgba(255,255,255,0.55);
+      font-size: 0.9rem;
+    }
+    .modal-close {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .modal-platforms {
+      display: grid;
+      gap: 10px;
+    }
+    .modal-platforms a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      min-height: 56px;
+      padding: 0 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      color: #fff;
+      background: rgba(255,255,255,0.045);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .modal-platforms a:hover {
       background: rgba(255,255,255,0.09);
       border-color: rgba(216,255,99,0.35);
     }
@@ -114,9 +187,6 @@
       }
       .songstats-row .stat-value {
         font-size: 1.15rem;
-      }
-      .home-platforms {
-        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -244,19 +314,17 @@
               </a>
             </div>
 
-            <!-- Streaming platforms (same set as music page) -->
-            <div class="home-platforms" aria-label="Listen on all platforms">
-              <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - Spotify">Spotify</a>
-              <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - Apple Music">Apple</a>
-              <a href="https://music.youtube.com/@thegreishxw" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - YouTube Music">YouTube</a>
-              <a href="https://tidal.com/artist/47307553/u" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - TIDAL">TIDAL</a>
-              <a href="https://soundcloud.com/thegreishow" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - SoundCloud">SoundCloud</a>
-              <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - Bandcamp">Bandcamp</a>
+            <div class="offer-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;">
+              <button class="home-button primary" type="button" id="open-platforms" data-track="choose_platform" data-track-label="Home - Choose platform">Choose your platform</button>
+              <a class="home-button" href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Support - Full Songstats">Full Songstats</a>
             </div>
 
-            <div class="offer-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;">
-              <a class="home-button" href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="bandcamp" data-track-label="Support - Bandcamp">Visit Bandcamp</a>
-              <a class="home-button" href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Support - Full Songstats">Full Songstats</a>
+            <!-- Social links -->
+            <div class="home-socials" aria-label="Social profiles">
+              <a href="https://instagram.com/thegreishow" target="_blank" rel="noopener" data-track="social" data-track-label="Home - Instagram">Instagram</a>
+              <a href="https://youtube.com/@thegreishxw" target="_blank" rel="noopener" data-track="social" data-track-label="Home - YouTube">YouTube</a>
+              <a href="https://x.com/thegreishow" target="_blank" rel="noopener" data-track="social" data-track-label="Home - X">X</a>
+              <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="social" data-track-label="Home - Bandcamp">Bandcamp</a>
             </div>
           </div>
         </article>
@@ -355,7 +423,55 @@
     </footer>
   </main>
 
+  <!-- Platform chooser modal -->
+  <div class="stream-modal" id="stream-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-top">
+        <div>
+          <p class="section-kicker" style="margin:0 0 6px;color:var(--home-lime,#d8ff63)">Listen your way</p>
+          <h2 id="modal-title">Choose a platform</h2>
+          <p>Select your preferred streaming service.</p>
+        </div>
+        <button class="modal-close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="modal-platforms">
+        <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener">Spotify <strong>Open ↗</strong></a>
+        <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener">Apple Music <strong>Open ↗</strong></a>
+        <a href="https://music.youtube.com/@thegreishxw" target="_blank" rel="noopener">YouTube Music <strong>Open ↗</strong></a>
+        <a href="https://tidal.com/artist/47307553/u" target="_blank" rel="noopener">TIDAL <strong>Open ↗</strong></a>
+        <a href="https://soundcloud.com/thegreishow" target="_blank" rel="noopener">SoundCloud <strong>Open ↗</strong></a>
+        <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener">Bandcamp <strong>Open ↗</strong></a>
+      </div>
+    </div>
+  </div>
+
   <script src="shared/nav.js"></script>
   <script src="assets/js/newsletter.js"></script>
+  <script>
+    (function () {
+      const modal = document.getElementById('stream-modal');
+      const openBtn = document.getElementById('open-platforms');
+      if (!modal || !openBtn) return;
+
+      function openModal() {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        modal.querySelector('.modal-close').focus();
+      }
+      function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      openBtn.addEventListener('click', openModal);
+      modal.querySelector('.modal-close').addEventListener('click', closeModal);
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+      });
+    })();
+  </script>
 </body>
 </html>

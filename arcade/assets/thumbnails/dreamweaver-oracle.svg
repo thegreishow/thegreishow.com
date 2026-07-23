@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
-  <title id="title">Dreamweaver Oracle</title>
-  <desc id="desc">A luminous gold dream-thread moving through a violet cosmic field toward a cyan oracle symbol.</desc>
+  <title id="title">Dreamweaver</title>
+  <desc id="desc">A luminous gold dream-thread moving through a violet cosmic field toward a cyan dream symbol.</desc>
   <defs>
     <radialGradient id="bg" cx="55%" cy="42%" r="75%">
       <stop offset="0" stop-color="#2b1755"/>

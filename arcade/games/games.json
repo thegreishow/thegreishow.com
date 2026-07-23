@@ -1,9 +1,9 @@
 [
   {
     "id": "dreamweaver-oracle",
-    "title": "Dreamweaver Oracle",
+    "title": "Dreamweaver",
     "creator": "The Grei Show",
-    "description": "Collect story fragments, survive corrupted memories, and let the Oracle reshape each dream.",
+    "description": "Collect story fragments, survive corrupted memories, and shape a different dream every run.",
     "version": "1.0",
     "type": "native",
     "entry": "arcade/games/dreamweaver-oracle/index.html",

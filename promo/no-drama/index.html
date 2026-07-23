@@ -3,109 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>No Drama — DJ & Press Promo | The Grei Show</title>
-  <meta name="description" content="Official DJ, radio and press promo page for No Drama by Jamaican artist The Grei Show. Download the broadcast-ready MP3, cover art and press assets.">
+  <title>No Drama — Official Promo | The Grei Show</title>
+  <meta name="description" content="Official promo page for No Drama by The Grei Show. Choose your preferred platform, watch the video or access professional release assets from Wheel It! Records.">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#03060c">
   <link rel="canonical" href="https://thegreishow.com/promo/no-drama/">
-  <meta property="og:title" content="No Drama — The Grei Show | Official DJ & Press Promo">
-  <meta property="og:description" content="Download the broadcast-ready MP3, official artwork and press assets from Wheel It! Records.">
+  <meta property="og:title" content="No Drama — The Grei Show">
+  <meta property="og:description" content="A contemporary Jamaican release about protecting your peace and refusing unnecessary conflict.">
   <meta property="og:type" content="music.song">
   <meta property="og:url" content="https://thegreishow.com/promo/no-drama/">
   <meta property="og:image" content="https://thegreishow.com/assets/img/no-drama.webp">
-  <meta property="og:image:alt" content="No Drama single cover by The Grei Show">
   <meta name="twitter:card" content="summary_large_image">
-
   <link rel="stylesheet" href="../../assets/css/base.css">
   <link rel="stylesheet" href="../../assets/css/layout.css">
   <link rel="stylesheet" href="../../assets/css/components.css">
   <link rel="stylesheet" href="../../assets/css/theme.css">
   <link rel="stylesheet" href="../../assets/css/home.css">
-
   <style>
-    .promo-page { --home-lime:#d8ff63; }
-    .promo { position:relative; z-index:1; width:min(1180px,calc(100% - 40px)); margin:0 auto; }
-    .promo-hero { min-height:calc(100svh - 64px); display:grid; grid-template-columns:minmax(0,1.03fr) minmax(360px,.97fr); gap:clamp(36px,7vw,92px); align-items:center; padding:64px 0 78px; }
-    .promo-copy { max-width:680px; }
-    .promo-title { margin:0; font-size:clamp(4.5rem,11vw,9.5rem); line-height:.78; letter-spacing:-.075em; text-shadow:0 12px 64px rgba(0,0,0,.48); }
-    .promo-title span { display:block; margin:0 0 .12em .08em; color:rgba(255,255,255,.58); font-size:.22em; letter-spacing:.28em; text-transform:uppercase; }
-    .promo-lead { max-width:600px; margin:30px 0 0; color:rgba(255,255,255,.8); font-size:clamp(1.06rem,2vw,1.27rem); line-height:1.65; }
-    .promo-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
-    .promo-art { position:relative; min-height:570px; display:grid; place-items:center; }
-    .promo-art::before { position:absolute; width:78%; aspect-ratio:1; border-radius:50%; content:""; background:rgba(0,200,255,.18); filter:blur(72px); }
-    .promo-cover { z-index:2; width:min(430px,86%); aspect-ratio:1; overflow:hidden; border:1px solid rgba(255,255,255,.2); border-radius:22px; background:#07101a; box-shadow:0 34px 90px rgba(0,0,0,.58); transform:rotate(2.5deg); }
-    .promo-cover img { width:100%; height:100%; object-fit:cover; }
-    .promo-stamp { position:absolute; z-index:4; top:46px; left:-10px; width:124px; aspect-ratio:1; display:grid; place-items:center; border:1px solid rgba(255,255,255,.24); border-radius:50%; color:#06101a; background:var(--home-lime); font-size:.72rem; font-weight:900; letter-spacing:.08em; text-align:center; text-transform:uppercase; transform:rotate(-10deg); box-shadow:0 16px 50px rgba(216,255,99,.18); }
-    .promo-section { padding:96px 0; }
-    .promo-heading { max-width:780px; margin-bottom:38px; }
-    .promo-heading h2 { margin:0; font-size:clamp(2.4rem,5vw,4.8rem); line-height:.92; letter-spacing:-.05em; }
-    .promo-heading p:last-child { max-width:650px; color:rgba(255,255,255,.68); font-size:1.05rem; }
-    .asset-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
-    .asset-card,.meta-panel,.quote-panel,.contact-panel { border:1px solid var(--home-border); border-radius:18px; background:var(--home-surface); box-shadow:0 24px 70px rgba(0,0,0,.28); backdrop-filter:blur(16px); }
-    .asset-card { padding:28px; min-height:250px; display:flex; flex-direction:column; }
-    .asset-card h3 { margin:6px 0 12px; font-size:1.45rem; }
-    .asset-card p { margin:0 0 24px; color:rgba(255,255,255,.65); }
-    .asset-card .home-button { margin-top:auto; align-self:flex-start; }
-    .detail-grid { display:grid; grid-template-columns:1.25fr .75fr; gap:18px; }
-    .meta-panel,.quote-panel { padding:30px; }
-    .metadata { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin:0; }
-    .metadata div { padding:16px 0; border-bottom:1px solid rgba(255,255,255,.09); }
-    .metadata dt { color:rgba(255,255,255,.48); font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
-    .metadata dd { margin:4px 0 0; font-weight:800; }
-    .quote-panel blockquote { margin:12px 0 24px; font-size:clamp(1.45rem,2.6vw,2.25rem); line-height:1.25; letter-spacing:-.03em; }
-    .quote-panel p { color:rgba(255,255,255,.65); }
-    .contact-panel { display:flex; align-items:center; justify-content:space-between; gap:28px; padding:34px; }
-    .contact-panel h2 { margin:0 0 10px; font-size:clamp(2rem,4vw,3.6rem); line-height:.95; letter-spacing:-.04em; }
-    .contact-panel p { margin:0; color:rgba(255,255,255,.65); }
-    .promo-footer { display:flex; justify-content:space-between; gap:24px; padding:32px 0 42px; border-top:1px solid var(--home-border); color:rgba(255,255,255,.52); font-size:.85rem; }
-    @media (max-width:900px){ .promo-hero{grid-template-columns:1fr;min-height:auto}.promo-art{min-height:500px}.asset-grid,.detail-grid{grid-template-columns:1fr}.contact-panel{align-items:flex-start;flex-direction:column} }
-    @media (max-width:620px){ .promo{width:min(100% - 24px,1180px)}.promo-hero{padding-top:36px}.promo-art{min-height:390px}.promo-stamp{top:18px;left:0;width:104px}.promo-actions{display:grid}.promo-actions .home-button{width:100%}.metadata{grid-template-columns:1fr}.promo-footer{flex-direction:column} }
+    .promo-page{--home-lime:#d8ff63;background:radial-gradient(circle at 76% 34%,rgba(0,200,255,.17),transparent 35%),#03060c}
+    .promo{position:relative;z-index:1;width:min(1120px,calc(100% - 36px));margin:0 auto}.promo-hero{min-height:calc(100svh - 64px);display:grid;grid-template-columns:minmax(0,.9fr) minmax(380px,1.1fr);gap:clamp(30px,6vw,72px);align-items:center;padding:42px 0 56px}
+    .promo-copy{max-width:620px}.hero-kicker{margin:0 0 18px;color:rgba(255,255,255,.52);font-size:.74rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.promo-title{margin:0;font-size:clamp(4.3rem,10vw,8.5rem);line-height:.84;letter-spacing:-.072em}.promo-title span{display:block;margin:0 0 .18em .08em;color:rgba(255,255,255,.48);font-size:.2em;letter-spacing:.24em;text-transform:uppercase}
+    .promo-lead{max-width:570px;margin:24px 0 0;color:rgba(255,255,255,.72);font-size:clamp(1.02rem,1.8vw,1.18rem);line-height:1.65}.promo-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}.promo-art{display:grid;place-items:center;min-height:520px}.promo-cover{width:min(500px,92%);aspect-ratio:1;overflow:hidden;border-radius:28px;background:#07101a;box-shadow:0 44px 110px rgba(0,0,0,.6)}.promo-cover img{width:100%;height:100%;object-fit:cover;display:block}
+    .promo-strip{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:18px 0 24px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.48);font-size:.74rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.promo-info{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;padding:54px 0 68px}.info-card{padding:28px;border:1px solid rgba(255,255,255,.09);border-radius:20px;background:rgba(255,255,255,.035);backdrop-filter:blur(14px)}.info-card h2{margin:0 0 12px;font-size:clamp(2rem,4vw,3.4rem);letter-spacing:-.045em}.info-card p{margin:0;color:rgba(255,255,255,.62);line-height:1.65}.asset-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 22px;margin-top:24px}.meta div{padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}.meta dt{color:rgba(255,255,255,.38);font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.meta dd{margin:6px 0 0;font-weight:800}.promo-footer{display:flex;justify-content:space-between;gap:20px;padding:28px 0 40px;border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.38);font-size:.8rem}
+    .stream-modal{position:fixed;inset:0;z-index:1000;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.82);backdrop-filter:blur(16px)}.stream-modal.open{display:grid}.modal-card{width:min(520px,100%);max-height:90vh;overflow:auto;padding:28px;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:#090b10;box-shadow:0 30px 100px rgba(0,0,0,.7)}.modal-top{display:flex;justify-content:space-between;gap:18px;align-items:start}.modal-top h2{margin:4px 0 6px;font-size:clamp(2rem,7vw,3rem)}.modal-top p{margin:0;color:rgba(255,255,255,.5)}.modal-close{width:42px;height:42px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:1.3rem;cursor:pointer}.modal-platforms{display:grid;gap:10px;margin-top:24px}.modal-platforms a{display:flex;justify-content:space-between;align-items:center;min-height:58px;padding:0 18px;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;background:rgba(255,255,255,.045);text-decoration:none;font-weight:850}.modal-platforms a:hover{background:rgba(255,255,255,.09)}
+    @media(max-width:860px){.promo-hero,.promo-info{grid-template-columns:1fr}.promo-art{min-height:420px}.promo-copy{max-width:none}}@media(max-width:620px){.promo{width:min(100% - 22px,1120px)}.promo-title{font-size:clamp(3.4rem,17vw,5.7rem)}.promo-cover{width:100%;border-radius:20px}.promo-actions,.asset-actions{display:grid}.promo-actions .home-button,.asset-actions .home-button{width:100%}.meta{grid-template-columns:1fr}.promo-footer{flex-direction:column}}
   </style>
-
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"MusicRecording","name":"No Drama","byArtist":{"@type":"MusicGroup","name":"The Grei Show"},"datePublished":"2026-07-03","publisher":{"@type":"Organization","name":"Wheel It! Records"},"url":"https://thegreishow.com/promo/no-drama/","image":"https://thegreishow.com/assets/img/no-drama.webp"}</script>
 </head>
 <body class="home-page promo-page">
   <div id="site-header"></div>
   <main class="promo">
     <section class="promo-hero" aria-labelledby="promo-title">
-      <div class="promo-copy">
-        <p class="hero-kicker">Official DJ & press service · Wheel It! Records</p>
-        <h1 id="promo-title" class="promo-title"><span>The Grei Show</span>No Drama</h1>
-        <p class="promo-lead">A contemporary Jamaican release about protecting your peace, maintaining emotional discipline and refusing unnecessary conflict—built for reggae, dancehall, Afro-fusion and global independent-music programming.</p>
-        <div class="promo-actions">
-          <a class="home-button primary" href="https://drive.google.com/uc?export=download&amp;id=1RiTGwG_XRhWC95bh5aQ3DLIAtC-aHTxx" data-track="promo_download_mp3">Download broadcast MP3</a>
-          <a class="home-button" href="https://drive.google.com/drive/folders/1nVNfPVc2LovxnC-FNpTdyKepW-KgnEbn" target="_blank" rel="noopener" data-track="promo_press_folder">Open press folder</a>
-          <a class="home-button" href="https://distrokid.com/hyperfollow/thegreishow/no-drama" target="_blank" rel="noopener" data-track="promo_listen">Listen everywhere</a>
-          <a class="home-button" href="https://www.youtube.com/watch?v=3KAd6CWxHBs" target="_blank" rel="noopener" data-track="promo_video">Watch video</a>
-        </div>
-        <ul class="hero-proof" aria-label="Release assets"><li>6.8 MB MP3</li><li>Full-resolution artwork</li><li>Artist & label logos</li></ul>
-      </div>
-      <div class="promo-art" aria-label="No Drama official artwork">
-        <span class="promo-stamp">Official<br>DJ service</span>
-        <figure class="promo-cover"><img src="../../assets/img/no-drama.webp" alt="No Drama single cover by The Grei Show" width="1200" height="1200"></figure>
-      </div>
+      <div class="promo-copy"><p class="hero-kicker">Official release · Wheel It! Records</p><h1 id="promo-title" class="promo-title"><span>The Grei Show</span>No Drama</h1><p class="promo-lead">A contemporary Jamaican release about protecting your peace, maintaining discipline and refusing unnecessary conflict.</p><div class="promo-actions"><button class="home-button primary" type="button" id="open-platforms">Choose your platform</button><a class="home-button" href="https://www.youtube.com/watch?v=3KAd6CWxHBs" target="_blank" rel="noopener">Watch video</a><a class="home-button" href="mailto:wheelitrecords@gmail.com?subject=No%20Drama%20-%20Professional%20Request">Professional request</a></div></div>
+      <div class="promo-art"><figure class="promo-cover"><img src="../../assets/img/no-drama.webp" alt="No Drama single cover by The Grei Show" width="1200" height="1200"></figure></div>
     </section>
-
-    <div class="signal-strip" aria-label="Promo services"><span>Radio</span><span>DJs</span><span>Press</span><span>Playlists</span></div>
-
-    <section class="promo-section" aria-labelledby="assets-title">
-      <div class="promo-heading"><p class="section-kicker">One-click access</p><h2 id="assets-title">Everything needed to play, post or premiere.</h2><p>Download the broadcast file directly or open the complete Wheel It! Records asset folder for artwork and branding.</p></div>
-      <div class="asset-grid">
-        <article class="asset-card"><p class="card-kicker">Audio</p><h3>Broadcast MP3</h3><p>Official high-quality MP3 for radio rotation, DJ sets and playlist servicing.</p><a class="home-button primary" href="https://drive.google.com/uc?export=download&amp;id=1RiTGwG_XRhWC95bh5aQ3DLIAtC-aHTxx">Download MP3</a></article>
-        <article class="asset-card"><p class="card-kicker">Visual</p><h3>Official artwork</h3><p>Full-resolution single cover for editorial, radio, playlist and social promotion.</p><a class="home-button" href="https://drive.google.com/file/d/1usYltRL-34w6_0ZFaTd-VseXiEkLOI7B/view" target="_blank" rel="noopener">Open artwork</a></article>
-        <article class="asset-card"><p class="card-kicker">Complete kit</p><h3>Press folder</h3><p>MP3, cover artwork, The Grei Show logo and Wheel It! Records logo in one place.</p><a class="home-button" href="https://drive.google.com/drive/folders/1nVNfPVc2LovxnC-FNpTdyKepW-KgnEbn" target="_blank" rel="noopener">View all assets</a></article>
-      </div>
+    <div class="promo-strip"><span>Radio</span><span>DJs</span><span>Press</span><span>Dubplates</span></div>
+    <section class="promo-info">
+      <article class="info-card"><p class="hero-kicker">Release assets</p><h2>Ready for professional use.</h2><p>Broadcast audio, artwork and label assets are available for DJs, radio and media.</p><div class="asset-actions"><a class="home-button primary" href="https://drive.google.com/uc?export=download&amp;id=1RiTGwG_XRhWC95bh5aQ3DLIAtC-aHTxx">Download MP3</a><a class="home-button" href="https://drive.google.com/drive/folders/1nVNfPVc2LovxnC-FNpTdyKepW-KgnEbn" target="_blank" rel="noopener">Open press folder</a></div></article>
+      <article class="info-card"><p class="hero-kicker">Details</p><dl class="meta"><div><dt>Artist</dt><dd>The Grei Show</dd></div><div><dt>Title</dt><dd>No Drama</dd></div><div><dt>Released</dt><dd>July 3, 2026</dd></div><div><dt>Label</dt><dd>Wheel It! Records</dd></div><div><dt>Country</dt><dd>Jamaica</dd></div><div><dt>Genre</dt><dd>Reggae · Dancehall</dd></div></dl></article>
     </section>
-
-    <section class="promo-section detail-grid" aria-labelledby="metadata-title">
-      <article class="meta-panel"><p class="section-kicker">Release information</p><h2 id="metadata-title">Official metadata</h2><dl class="metadata"><div><dt>Artist</dt><dd>The Grei Show</dd></div><div><dt>Title</dt><dd>No Drama</dd></div><div><dt>Release date</dt><dd>July 3, 2026</dd></div><div><dt>Label</dt><dd>Wheel It! Records</dd></div><div><dt>Writer</dt><dd>Gamel Reid</dd></div><div><dt>Country</dt><dd>Jamaica</dd></div><div><dt>Genres</dt><dd>Reggae · Dancehall · Afro-fusion</dd></div><div><dt>Availability</dt><dd>Radio · DJ · Press · Interviews</dd></div></dl></article>
-      <aside class="quote-panel"><p class="section-kicker">The signal</p><blockquote>“Protect your peace. Maintain your discipline. Refuse unnecessary conflict.”</blockquote><p>Available for radio play, DJ support, playlist placement, premieres, interviews and editorial coverage.</p></aside>
-    </section>
-
-    <section class="promo-section"><div class="contact-panel"><div><p class="section-kicker">Bookings, interviews & servicing</p><h2>Connect with Wheel It! Records.</h2><p>Request alternate formats, drops, dubplates, interviews or additional information.</p></div><a class="home-button primary" href="mailto:wheelitrecords@gmail.com?subject=No%20Drama%20-%20DJ%20%2F%20Media%20Request">Email the label</a></div></section>
-
     <footer class="promo-footer"><span>THE GREI SHOW · WHEEL IT! RECORDS</span><span>Kingston, Jamaica · © 2026</span></footer>
   </main>
+  <div class="stream-modal" id="stream-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-card"><div class="modal-top"><div><p class="hero-kicker">Listen your way</p><h2 id="modal-title">No Drama</h2><p>Choose the service you use.</p></div><button class="modal-close" type="button" aria-label="Close">×</button></div><div class="modal-platforms">
+    <a href="https://open.spotify.com/search/The%20Grei%20Show%20No%20Drama" target="_blank" rel="noopener">Spotify <span>↗</span></a>
+    <a href="https://music.apple.com/jm/search?term=The%20Grei%20Show%20No%20Drama" target="_blank" rel="noopener">Apple Music <span>↗</span></a>
+    <a href="https://music.youtube.com/search?q=The%20Grei%20Show%20No%20Drama" target="_blank" rel="noopener">YouTube Music <span>↗</span></a>
+    <a href="https://www.deezer.com/search/The%20Grei%20Show%20No%20Drama" target="_blank" rel="noopener">Deezer <span>↗</span></a>
+    <a href="https://music.amazon.com/search/The%20Grei%20Show%20No%20Drama" target="_blank" rel="noopener">Amazon Music <span>↗</span></a>
+  </div></div></div>
   <script src="../../shared/nav.js"></script>
+  <script>const modal=document.getElementById('stream-modal');document.getElementById('open-platforms').addEventListener('click',()=>modal.classList.add('open'));modal.querySelector('.modal-close').addEventListener('click',()=>modal.classList.remove('open'));modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open')});</script>
 </body>
 </html>

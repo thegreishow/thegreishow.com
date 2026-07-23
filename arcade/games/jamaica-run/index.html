@@ -5,654 +5,80 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>Jamaica Run | The Grei Show Arcade</title>
 <style>
+:root{--yellow:#ffd54a;--green:#1fbf62;--ink:#07140d;--panel:rgba(4,15,10,.82)}
 *{box-sizing:border-box}
-html,body{margin:0;background:#87ceeb;font-family:Arial Rounded MT Bold,Arial,sans-serif;overflow:hidden;touch-action:none;user-select:none}
+html,body{margin:0;background:#78c8ee;font-family:Arial Rounded MT Bold,Arial,sans-serif;overflow:hidden;touch-action:none;user-select:none}
 body{min-height:100vh}
-#game{display:block;width:100vw;height:calc(100vh - 62px);background:#87ceeb;touch-action:none}
-.screen{position:fixed;inset:62px 0 0;z-index:20;display:grid;place-items:center;padding:20px;background:linear-gradient(#1e5799,#207cca);color:#fff;text-align:center}
+button{font:inherit}
+#game{display:block;width:100vw;height:calc(100vh - 62px);background:#78c8ee;touch-action:none}
+.screen{position:fixed;inset:62px 0 0;z-index:20;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,rgba(9,73,108,.92),rgba(7,35,24,.94));color:#fff;text-align:center}
 .screen[hidden]{display:none}
-.card{max-width:600px;padding:28px;border-radius:20px;background:rgba(0,0,0,.68);box-shadow:0 24px 80px rgba(0,0,0,.35)}
-h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px #000}
-.card p{line-height:1.5}
-.btn{min-height:52px;padding:0 25px;border:0;border-radius:14px;background:linear-gradient(#4caf50,#2e8b57);box-shadow:0 5px #236d3c;color:#fff;font-size:20px;font-weight:900;cursor:pointer}
-.hud{position:fixed;top:72px;left:12px;right:12px;z-index:8;display:flex;justify-content:space-between;pointer-events:none}
-.scorebox{padding:9px 12px;border-radius:12px;background:rgba(0,0,0,.52);color:#fff;font-weight:900;text-shadow:1px 1px #000}
-.progress{position:fixed;top:76px;left:50%;z-index:8;width:min(230px,42vw);height:14px;transform:translateX(-50%);border-radius:99px;overflow:hidden;background:rgba(0,0,0,.3)}
-.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#4caf50,#cddc39)}
-.stage-toast{position:fixed;left:50%;top:110px;transform:translateX(-50%);z-index:9;padding:8px 16px;border-radius:999px;background:rgba(0,0,0,.72);color:#ffd700;font-weight:900;font-size:14px;opacity:0;transition:.25s;pointer-events:none;text-shadow:1px 1px #000}
-.stage-toast.show{opacity:1}
-.controls{position:fixed;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));z-index:10;display:flex;justify-content:space-around;pointer-events:none}
-.controls button{width:92px;height:92px;border:1px solid rgba(255,255,255,.65);border-radius:50%;background:rgba(255,255,255,.76);color:#173321;font-weight:900;font-size:15px;box-shadow:0 8px 22px rgba(0,0,0,.25);pointer-events:auto;touch-action:none}
+.card{width:min(620px,100%);padding:clamp(22px,5vw,36px);border:1px solid rgba(255,255,255,.18);border-radius:24px;background:var(--panel);box-shadow:0 24px 80px rgba(0,0,0,.4)}
+h1{margin:0;color:var(--yellow);font-size:clamp(2.4rem,10vw,5rem);line-height:.95;text-shadow:3px 3px #000}
+.card p{line-height:1.55}
+.instructions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:22px 0;text-align:left}
+.instructions span{padding:10px;border-radius:12px;background:rgba(255,255,255,.08);font-size:.84rem}
+.btn{min-height:54px;padding:0 26px;border:0;border-radius:14px;background:linear-gradient(#39cf73,#168f45);box-shadow:0 6px #0f6430;color:#fff;font-size:19px;font-weight:900;cursor:pointer}
+.btn:active{transform:translateY(3px);box-shadow:0 3px #0f6430}
+.hud{position:fixed;top:72px;left:12px;right:12px;z-index:8;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+.hud-side{display:flex;gap:8px;align-items:center}
+.scorebox{padding:9px 12px;border:1px solid rgba(255,255,255,.16);border-radius:12px;background:rgba(0,0,0,.58);color:#fff;font-weight:900;text-shadow:1px 1px #000;backdrop-filter:blur(8px)}
+.progress{position:fixed;top:76px;left:50%;z-index:8;width:min(240px,38vw);height:14px;transform:translateX(-50%);border:2px solid rgba(255,255,255,.7);border-radius:99px;overflow:hidden;background:rgba(0,0,0,.35)}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#19b956,#f5d742)}
+.stage-label{position:fixed;top:98px;left:50%;z-index:8;transform:translateX(-50%);padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.48);color:#fff;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+.controls{position:fixed;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));z-index:10;display:flex;justify-content:center;gap:22px;pointer-events:none}
+.controls button{width:94px;height:94px;border:2px solid rgba(255,255,255,.76);border-radius:50%;background:rgba(255,255,255,.82);color:#173321;font-weight:900;font-size:14px;box-shadow:0 8px 22px rgba(0,0,0,.28);pointer-events:auto;touch-action:none}
+.controls button:active{transform:scale(.95);background:#fff}
+#doubleBtn{background:rgba(255,213,74,.9)}
 @media(min-width:850px){.controls{display:none}}
+@media(max-width:560px){.hud{top:68px;left:8px;right:8px}.scorebox{font-size:12px;padding:8px}.progress{top:106px;width:54vw}.stage-label{top:128px}.instructions{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <script src="../../engine/game-shell.js"></script>
-<canvas id="game" width="800" height="400"></canvas>
-
-<div class="hud">
-  <div class="scorebox" id="scoreText">Score: 0</div>
-  <div class="scorebox" id="bestText">Best: 0 ×1</div>
-</div>
+<canvas id="game" width="800" height="400" aria-label="Jamaica Run game"></canvas>
+<div class="hud"><div class="hud-side"><div class="scorebox" id="scoreText">Score: 0</div><div class="scorebox" id="coinText">Coins: 0</div></div><div class="hud-side"><div class="scorebox" id="livesText">❤️❤️❤️</div><div class="scorebox" id="bestText">Best: 0</div></div></div>
 <div class="progress"><span id="distanceFill"></span></div>
-<div class="stage-toast" id="stageToast"></div>
-
-<div class="controls">
-  <button id="jumpBtn">JUMP</button>
-  <button id="doubleBtn">DOUBLE</button>
-</div>
-
-<section class="screen" id="startScreen">
-  <div class="card">
-    <h1>🇯🇲 Jamaica Run 🇯🇲</h1>
-    <p>Run from Kingston to the hills. Collect coins, dodge obstacles, feel the island rhythm.</p>
-    <p><strong>Shift / ↑ / Tap</strong> — Jump (hold = higher)<br><strong>Double tap / DOUBLE</strong> — Double jump</p>
-    <button class="btn" id="startBtn">Press Start</button>
-  </div>
-</section>
-
-<section class="screen" id="endScreen" hidden>
-  <div class="card">
-    <h1>GAME OVER</h1>
-    <p id="endMessage">Submitting score…</p>
-    <button class="btn" id="restartBtn">Run Again</button>
-  </div>
-</section>
-
+<div class="stage-label" id="stageText">Kingston Streets</div>
+<div class="controls"><button id="jumpBtn" type="button">JUMP</button><button id="doubleBtn" type="button">DOUBLE</button></div>
+<section class="screen" id="startScreen"><div class="card"><h1>🇯🇲 Jamaica Run</h1><p>Run across Jamaica, collect coins, build your combo, and survive eight changing stages.</p><div class="instructions"><span><strong>Tap / Space / ↑</strong><br>Jump</span><span><strong>Tap again in air</strong><br>Double jump</span><span><strong>Hold briefly</strong><br>Jump higher</span></div><button class="btn" id="startBtn" type="button">Start Run</button></div></section>
+<section class="screen" id="endScreen" hidden><div class="card"><h1>RUN OVER</h1><p id="endMessage">Calculating score…</p><button class="btn" id="restartBtn" type="button">Run Again</button></div></section>
 <script>
 (() => {
-  const API = 'https://grei-arcade-api.thegreishow.workers.dev';
-  const GAME = 'jamaica-run';
-  const STAGES = [
-    { name: 'Kingston Streets', at: 0 },
-    { name: 'Portmore Road', at: 3200 },
-    { name: 'Spanish Town', at: 6400 },
-    { name: 'Blue Mountains', at: 9600 },
-    { name: 'Negril Sunset', at: 12800 },
-    { name: 'Montego Bay', at: 16000 },
-    { name: 'Port Royal Night', at: 19200 },
-    { name: 'Yardie Dream', at: 24000 }
+  const API='https://grei-arcade-api.thegreishow.workers.dev', GAME='jamaica-run', WORLD_W=800, WORLD_H=400, BASE_SPEED=6;
+  const canvas=document.getElementById('game'),ctx=canvas.getContext('2d',{alpha:false}),scoreText=document.getElementById('scoreText'),coinText=document.getElementById('coinText'),livesText=document.getElementById('livesText'),bestText=document.getElementById('bestText'),fill=document.getElementById('distanceFill'),stageText=document.getElementById('stageText'),startScreen=document.getElementById('startScreen'),endScreen=document.getElementById('endScreen'),endMessage=document.getElementById('endMessage');
+  const CONFIG={gravity:.82,jump:-14.8,doubleJump:-12.2,maxSpeed:10.6,acceleration:.00075,minObstacleGap:88,maxObstacleGap:142,powerGap:250,cloudGap:170};
+  const STAGES=[
+    {name:'Kingston Streets',at:0,top:'#58b9ed',bottom:'#b9e6f7',hills:['#315d43','#467552','#5c964d'],ground:['#5d8f45','#72a95a','#47753b']},
+    {name:'Portmore Road',at:3200,top:'#75c6f2',bottom:'#d7effb',hills:['#3c6250','#537a5e','#6a9868'],ground:['#648b4a','#7aa85c','#4d723c']},
+    {name:'Spanish Town',at:6400,top:'#f3ba73',bottom:'#f8ddb3',hills:['#685b4a','#826f54','#a38b61'],ground:['#98643f','#b87b50','#794c31']},
+    {name:'Blue Mountains',at:9600,top:'#8fb3d6',bottom:'#d8e6f2',hills:['#243f39','#365a4e','#4d7460'],ground:['#3c624f','#4f7e64','#2c493c']},
+    {name:'Negril Sunset',at:12800,top:'#f29f67',bottom:'#f6d18a',hills:['#5a4c47','#766153','#98734c'],ground:['#a56b3f','#c48752','#805032']},
+    {name:'Montego Bay',at:16000,top:'#57c4dd',bottom:'#c3f3ef',hills:['#2d6c67','#45877b','#65a38e'],ground:['#4c8c63','#62aa7a','#39714f']},
+    {name:'Port Royal Night',at:19200,top:'#172743',bottom:'#465f7f',hills:['#172c28','#24443a','#315b46'],ground:['#263f34','#345646','#1b3028']},
+    {name:'Yardie Dream',at:24000,top:'#2b1b4d',bottom:'#6f4c92',hills:['#241b37','#39284e','#4f3866'],ground:['#473b59','#5b4a70','#322b40']}
   ];
-
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
-  const scoreText = document.getElementById('scoreText');
-  const bestText = document.getElementById('bestText');
-  const fill = document.getElementById('distanceFill');
-  const stageToast = document.getElementById('stageToast');
-  const startScreen = document.getElementById('startScreen');
-  const endScreen = document.getElementById('endScreen');
-  const endMessage = document.getElementById('endMessage');
-
-  // —— Sound ——
-  const sound = (() => {
-    let ctx, enabled = true;
-    function unlock() {
-      const A = window.AudioContext || window.webkitAudioContext;
-      if (!A) return null;
-      if (!ctx) ctx = new A();
-      if (ctx.state === 'suspended') ctx.resume();
-      return ctx;
-    }
-    function tone(freq, dur = 0.15, { type = 'sine', gain = 0.08, slide = 0 } = {}) {
-      if (!enabled) return;
-      const a = unlock(); if (!a) return;
-      const t = a.currentTime;
-      const o = a.createOscillator(), g = a.createGain();
-      o.type = type;
-      o.frequency.setValueAtTime(freq, t);
-      if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, slide), t + dur);
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g); g.connect(a.destination);
-      o.start(t); o.stop(t + dur + 0.02);
-    }
-    function noise(dur = 0.12, { gain = 0.04, cutoff = 1200 } = {}) {
-      if (!enabled) return;
-      const a = unlock(); if (!a) return;
-      const t = a.currentTime;
-      const buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
-      const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
-      src.buffer = buf; f.type = 'bandpass'; f.frequency.value = cutoff;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(gain, t + 0.008);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      src.connect(f); f.connect(g); g.connect(a.destination);
-      src.start(t); src.stop(t + dur + 0.02);
-    }
-    return {
-      unlock,
-      jump: () => { tone(420, 0.12, { type: 'triangle', gain: 0.09, slide: 280 }); noise(0.08, { gain: 0.025, cutoff: 900 }); },
-      double: () => { tone(620, 0.14, { type: 'square', gain: 0.07, slide: 900 }); tone(310, 0.1, { type: 'sine', gain: 0.05, slide: 520 }); },
-      coin: () => { tone(880, 0.1, { type: 'sine', gain: 0.08, slide: 1320 }); tone(1320, 0.08, { type: 'triangle', gain: 0.04 }); },
-      power: () => { tone(523, 0.2, { type: 'triangle', gain: 0.09, slide: 784 }); tone(659, 0.18, { type: 'sine', gain: 0.05 }); },
-      hit: () => { tone(90, 0.28, { type: 'sawtooth', gain: 0.12, slide: 45 }); noise(0.22, { gain: 0.08, cutoff: 400 }); },
-      stage: () => { tone(392, 0.18, { type: 'triangle', gain: 0.07, slide: 523 }); tone(523, 0.22, { type: 'sine', gain: 0.05, slide: 659 }); }
-    };
-  })();
-  addEventListener('pointerdown', () => sound.unlock(), { once: true, passive: true });
-  addEventListener('keydown', () => sound.unlock(), { once: true });
-
-  const CONFIG = {
-    size: 64,
-    gravity: 0.85,
-    jump: -15.5,
-    double: -12.5,
-    speed: 6,
-    speedInc: 0.0018,
-    obstacleEvery: 92,
-    powerEvery: 270,
-    cloudEvery: 185
-  };
-
-  let groundY = 320;
-  let started = false, paused = false, over = false;
-  let frames = 0, score = 0, distance = 0, multiplier = 1, nextLevel = 1000, stage = 0;
-  let startTime = 0, lastTap = 0, best = Number(localStorage.getItem('jamaicaRunHighScore') || 0);
-  let toastTimer = 0;
-
-  let obstacles = [], powerUps = [], particles = [], clouds = [], playerTrail = [];
-  let jumpBuffer = 0, coyoteTime = 0;
-  let jumpHeld = false, jumpHoldTime = 0;
-  let screenShake = 0;
-
-  bestText.textContent = `Best: ${best} ×1`;
-
-  const layers = [
-    { speed: 0.2, e: [] },
-    { speed: 0.4, e: [] },
-    { speed: 0.6, e: [] },
-    { speed: 0.8, e: [] }
-  ];
-
-  function resize() {
-    const rect = canvas.getBoundingClientRect();
-    const ratio = Math.min(devicePixelRatio || 1, 2);
-    canvas.width = Math.max(800, Math.round(rect.width * ratio));
-    canvas.height = Math.max(400, Math.round(rect.height * ratio));
-    ctx.setTransform(canvas.width / 800, 0, 0, canvas.height / 400, 0, 0);
-    groundY = 320;
-  }
-  addEventListener('resize', resize);
-  resize();
-
-  function initLayers() {
-    layers[0].e = [{x:0,w:300,h:180,c:'#2d5a3d'},{x:400,w:350,h:200,c:'#2d5a3d'},{x:800,w:280,h:170,c:'#2d5a3d'}];
-    layers[1].e = [{x:150,w:250,h:150,c:'#3d6b4f'},{x:500,w:300,h:160,c:'#3d6b4f'},{x:900,w:270,h:155,c:'#3d6b4f'}];
-    layers[2].e = [{x:200,w:200,h:120,c:'#4c9141'},{x:550,w:220,h:130,c:'#4c9141'},{x:950,w:180,h:110,c:'#4c9141'}];
-    layers[3].e = [{x:100,s:1.2},{x:400,s:1},{x:700,s:1.1},{x:1100,s:.9}];
-  }
-
-  const frameSets = {
-    idle: [0,1,2,3,4,5],
-    run: [6,7,8,9,10,11,12,13,14,15,16,17],
-    jump: [18,19,20,21,22,23],
-    double: [24,25,26,27,28,29]
-  };
-
-  const sprite = new Image();
-  sprite.src = './assets/IMG_3408.png';
-  sprite.onerror = () => { sprite.src = 'https://raw.githubusercontent.com/thegreishow/thegreishow.com/main/arcade/games/jamaica-run/assets/IMG_3408.png'; };
-  let fw = 128, fh = 128;
-  sprite.onload = () => { fw = sprite.width / 6; fh = sprite.height / 6; };
-
-  function showStage(name) {
-    stageToast.textContent = name;
-    stageToast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => stageToast.classList.remove('show'), 1800);
-    sound.stage();
-  }
-
-  const player = {
-    x: 120, y: 256, w: 64, h: 64,
-    vy: 0, jumps: 0, state: 'idle', frame: 0, anim: 0, invincible: 0,
-    reset() {
-      this.y = groundY - this.h;
-      this.vy = 0;
-      this.jumps = 0;
-      this.state = 'idle';
-      this.frame = 0;
-      this.invincible = 0;
-    },
-    jump(held = false) {
-      if (this.jumps === 0 || coyoteTime > 0) {
-        const power = held ? CONFIG.jump * 1.18 : CONFIG.jump;
-        this.vy = power;
-        this.jumps = 1;
-        this.state = 'jump';
-        burst(this.x + 32, this.y + 64, '255,215,0', 12);
-        coyoteTime = 0;
-        sound.jump();
-      }
-    },
-    doubleJump() {
-      if (this.jumps === 1) {
-        this.vy = CONFIG.double;
-        this.jumps = 2;
-        this.state = 'double';
-        burst(this.x + 32, this.y + 64, '0,255,0', 18);
-        sound.double();
-      }
-    },
-    update() {
-      this.vy += CONFIG.gravity;
-      this.y += this.vy;
-
-      if (this.y + this.h >= groundY) {
-        this.y = groundY - this.h;
-        this.vy = 0;
-        this.jumps = 0;
-        this.state = 'run';
-        coyoteTime = 7;
-      } else {
-        if (coyoteTime > 0) coyoteTime--;
-      }
-
-      if (this.invincible > 0) this.invincible--;
-
-      this.frame += 0.23;
-      const set = frameSets[this.state] || frameSets.run;
-      this.anim = set[Math.floor(this.frame) % set.length];
-    },
-    draw() {
-      if (playerTrail.length > 0 && this.state === 'run') {
-        ctx.globalAlpha = 0.25;
-        for (let i = 0; i < playerTrail.length; i++) {
-          const t = playerTrail[i];
-          ctx.fillStyle = '#ffeb3b';
-          ctx.fillRect(t.x, t.y + 8, this.w * 0.7, this.h * 0.6);
-        }
-        ctx.globalAlpha = 1;
-      }
-
-      if (sprite.complete && sprite.naturalWidth) {
-        const row = Math.floor(this.anim / 6);
-        const col = this.anim % 6;
-        if (this.invincible && Math.floor(this.invincible / 5) % 2 === 0) ctx.globalAlpha = 0.4;
-        ctx.drawImage(sprite, col * fw, row * fh, fw, fh, this.x, this.y, this.w, this.h);
-        ctx.globalAlpha = 1;
-      } else {
-        ctx.fillStyle = '#e8432f';
-        ctx.fillRect(this.x, this.y, this.w, this.h);
-      }
-    }
-  };
-
-  function burst(x, y, color, count) {
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x, y,
-        vx: (Math.random() - 0.5) * 5.5,
-        vy: (Math.random() - 1.9) * 5.5,
-        a: 1, c: color, s: 3.5 + Math.random() * 4.5
-      });
-    }
-  }
-
-  function palm(x, y, s = 1) {
-    ctx.fillStyle = '#8b4513';
-    ctx.fillRect(x, y - 40 * s, 10 * s, 40 * s);
-    ctx.fillStyle = '#2e7d32';
-    for (const dy of [60, 50]) {
-      ctx.beginPath();
-      ctx.moveTo(x + 5 * s, y - 40 * s);
-      ctx.lineTo(x - 15 * s, y - dy * s);
-      ctx.lineTo(x + 25 * s, y - dy * s);
-      ctx.fill();
-    }
-  }
-
-  function background() {
-    let skyTop = '#64b5f6', skyBottom = '#87ceeb', sunColor = '#ffeb3b';
-    if (stage >= 1) { skyTop = '#f4a261'; skyBottom = '#e76f51'; sunColor = '#f4d35e'; }
-    if (stage >= 2) { skyTop = '#2d3436'; skyBottom = '#636e72'; sunColor = '#ffeaa7'; }
-    if (stage >= 4) { skyTop = '#ff9f43'; skyBottom = '#ee5a24'; sunColor = '#feca57'; }
-    if (stage >= 6) { skyTop = '#0c2461'; skyBottom = '#1e3799'; sunColor = '#f8c291'; }
-
-    const g = ctx.createLinearGradient(0, 0, 0, groundY);
-    g.addColorStop(0, skyTop);
-    g.addColorStop(1, skyBottom);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 800, groundY);
-
-    ctx.fillStyle = sunColor;
-    ctx.beginPath();
-    ctx.arc(700, 80, 38, 0, Math.PI * 2);
-    ctx.fill();
-
-    for (let i = 0; i < 3; i++) {
-      for (const m of layers[i].e) {
-        ctx.fillStyle = m.c;
-        ctx.beginPath();
-        ctx.moveTo(m.x, groundY);
-        ctx.lineTo(m.x + m.w / 2, groundY - m.h);
-        ctx.lineTo(m.x + m.w, groundY);
-        ctx.fill();
-      }
-    }
-
-    for (const p of layers[3].e) palm(p.x, groundY, p.s);
-
-    const groundColors = stage >= 6 ? ['#1e272e','#485460','#1e272e'] : stage >= 2 ? ['#2d3436','#636e72','#2d3436'] : ['#3b7a57','#4c9141','#2e8b57'];
-    for (let x = -(distance % 40); x < 800; x += 40) {
-      for (let y = groundY; y < 400; y += 20) {
-        ctx.fillStyle = groundColors[Math.abs(Math.floor(x/40 + y/20)) % 3];
-        ctx.fillRect(x, y, 40, 20);
-      }
-    }
-  }
-
-  function updateLayers() {
-    for (const l of layers) {
-      for (const e of l.e) {
-        e.x -= CONFIG.speed * l.speed;
-        if (e.x + (e.w || 100) < 0) e.x = 800 + Math.random() * 220;
-      }
-    }
-  }
-
-  function spawnObstacle() {
-    const types = ['🥥', '🛢️', '🥁', '🔊', '🪨'];
-    obstacles.push({
-      x: 820,
-      y: groundY - 42,
-      w: 38,
-      h: 42,
-      t: types[Math.floor(Math.random() * types.length)]
-    });
-  }
-
-  function spawnPower() {
-    const types = ['🪙', '🍁', '⚡'];
-    powerUps.push({
-      x: 820,
-      y: groundY - 95,
-      w: 30,
-      h: 30,
-      t: types[Math.floor(Math.random() * types.length)]
-    });
-  }
-
-  function collide(a, b) {
-    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
-  }
-
-  function updateObjects() {
-    for (const o of obstacles) {
-      o.x -= CONFIG.speed;
-      ctx.font = '32px sans-serif';
-      ctx.fillText(o.t, o.x, o.y + o.h);
-
-      if (!player.invincible && collide(player, o)) {
-        over = true;
-        screenShake = 14;
-        sound.hit();
-      }
-    }
-    obstacles = obstacles.filter(o => o.x + 40 > 0);
-
-    for (const p of powerUps) {
-      p.x -= CONFIG.speed;
-      p.y += Math.sin(frames * 0.12) * 0.6;
-      ctx.font = '30px sans-serif';
-      ctx.fillText(p.t, p.x, p.y + p.h);
-
-      if (collide(player, p)) {
-        if (p.t === '🍁') {
-          player.invincible = 145;
-          multiplier = Math.min(multiplier + 1, 5);
-          sound.power();
-        } else if (p.t === '⚡') {
-          CONFIG.speed = Math.min(CONFIG.speed + 2, 11.5);
-          setTimeout(() => { if (started) CONFIG.speed = Math.max(6, CONFIG.speed - 1.6); }, 4500);
-          multiplier = Math.min(multiplier + 1, 5);
-          sound.power();
-        } else {
-          score += 85 * multiplier;
-          multiplier = Math.min(multiplier + 0.6, 6.5);
-          sound.coin();
-        }
-        p.dead = true;
-        burst(p.x + 15, p.y + 15, '255,215,0', 20);
-      }
-    }
-    powerUps = powerUps.filter(p => !p.dead && p.x + 32 > 0);
-
-    if (player.state === 'run' && frames % 2 === 0) {
-      playerTrail.push({x: player.x, y: player.y});
-      if (playerTrail.length > 6) playerTrail.shift();
-    } else {
-      playerTrail = [];
-    }
-
-    for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.13;
-      p.a -= 0.03;
-      ctx.fillStyle = `rgba(${p.c},${p.a})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    particles = particles.filter(p => p.a > 0);
-
-    for (const c of clouds) {
-      c.x -= c.speed;
-      ctx.fillStyle = 'rgba(255,255,255,.72)';
-      ctx.beginPath();
-      ctx.ellipse(c.x, c.y, c.w/2, c.h/2, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    clouds = clouds.filter(c => c.x + c.w > 0);
-  }
-
-  function updateStage() {
-    let newStage = 0;
-    for (let i = STAGES.length - 1; i >= 0; i--) {
-      if (distance >= STAGES[i].at) { newStage = i; break; }
-    }
-    if (newStage !== stage) {
-      stage = newStage;
-      showStage(STAGES[stage].name);
-      if (stage > 0) CONFIG.speed = Math.min(CONFIG.speed + 0.35, 10.5);
-    }
-  }
-
-  function hud() {
-    score = Math.floor(frames / 4.7);
-    scoreText.textContent = `Score: ${score}`;
-    bestText.textContent = `Best: ${best} ×${multiplier.toFixed(1)}`;
-    fill.style.width = ((distance % nextLevel) / nextLevel * 100) + '%';
-  }
-
-  function frame() {
-    if (!started || paused) return;
-
-    if (screenShake > 0) {
-      ctx.save();
-      ctx.translate(Math.random() * screenShake - screenShake/2, Math.random() * screenShake - screenShake/2);
-      screenShake--;
-    }
-
-    background();
-    updateStage();
-
-    if (frames % CONFIG.cloudEvery === 0) {
-      clouds.push({x: 820, y: Math.random()*135, w: 72 + Math.random()*58, h: 36 + Math.random()*20, speed: 1.15 + Math.random()*1.5});
-    }
-    if (frames % CONFIG.obstacleEvery === 0) spawnObstacle();
-    if (frames % CONFIG.powerEvery === 0) spawnPower();
-
-    updateLayers();
-    updateObjects();
-
-    if (jumpBuffer > 0) jumpBuffer--;
-    if (jumpBuffer > 0 && (player.jumps === 0 || coyoteTime > 0)) {
-      player.jump(jumpHoldTime > 8);
-      jumpBuffer = 0;
-    }
-
-    player.update();
-    player.draw();
-
-    if (screenShake > 0) ctx.restore();
-
-    distance += CONFIG.speed;
-    if (distance >= nextLevel) {
-      nextLevel += 920;
-      CONFIG.speed = Math.min(CONFIG.speed + 0.65, 10.8);
-    }
-    CONFIG.speed += CONFIG.speedInc;
-
-    hud();
-    frames++;
-
-    if (over) return finish();
-    requestAnimationFrame(frame);
-  }
-
-  function start() {
-    startScreen.hidden = true;
-    endScreen.hidden = true;
-    started = true;
-    paused = false;
-    over = false;
-    frames = 0;
-    score = 0;
-    distance = 0;
-    multiplier = 1;
-    nextLevel = 1000;
-    stage = 0;
-    CONFIG.speed = 6;
-    obstacles = [];
-    powerUps = [];
-    particles = [];
-    clouds = [];
-    playerTrail = [];
-    jumpBuffer = 0;
-    coyoteTime = 0;
-    jumpHoldTime = 0;
-    screenShake = 0;
-
-    player.reset();
-    initLayers();
-    startTime = Date.now();
-    showStage(STAGES[0].name);
-    requestAnimationFrame(frame);
-  }
-
-  async function finish() {
-    started = false;
-    best = Math.max(best, score);
-    localStorage.setItem('jamaicaRunHighScore', best);
-
-    endScreen.hidden = false;
-    endMessage.innerHTML = `
-      Final Score: <strong>${score}</strong><br>
-      Multiplier: <strong>×${multiplier.toFixed(1)}</strong><br>
-      Reached: <strong>${STAGES[Math.min(stage, STAGES.length-1)].name}</strong><br>
-      Submitting to global leaderboard…
-    `;
-
-    const name = localStorage.getItem('grei_arcade_player_name') || 'Dreamer';
-    const duration = Math.max(1, Math.round((Date.now() - startTime) / 1000));
-
-    try {
-      const r = await fetch(API + '/api/leaderboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game: GAME, name, score, level: Math.max(1, Math.floor(distance / 920) + 1), duration })
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error || 'Sync failed');
-      endMessage.innerHTML = `Final Score: <strong>${score}</strong> ×${multiplier.toFixed(1)}<br>Reached: <strong>${STAGES[Math.min(stage, STAGES.length-1)].name}</strong><br>Global Rank #${d.rank}`;
-    } catch (e) {
-      endMessage.innerHTML = `Final Score: <strong>${score}</strong> ×${multiplier.toFixed(1)}<br>Reached: <strong>${STAGES[Math.min(stage, STAGES.length-1)].name}</strong><br>Saved locally.`;
-    }
-  }
-
-  function doJump(held = false) {
-    if (!started || over) return;
-    if (player.jumps === 0 || coyoteTime > 0) {
-      player.jump(held);
-    } else if (player.jumps === 1) {
-      player.doubleJump();
-    } else {
-      jumpBuffer = 8;
-      jumpHoldTime = held ? 12 : 0;
-    }
-  }
-
-  function handleJumpStart(e) {
-    e.preventDefault();
-    jumpHeld = true;
-    jumpHoldTime = 0;
-    doJump(false);
-  }
-
-  function handleJumpEnd() {
-    jumpHeld = false;
-  }
-
-  document.getElementById('startBtn').onclick = start;
-  document.getElementById('restartBtn').onclick = start;
-
-  document.getElementById('jumpBtn').onpointerdown = handleJumpStart;
-  document.getElementById('jumpBtn').onpointerup = handleJumpEnd;
-  document.getElementById('doubleBtn').onpointerdown = e => { e.preventDefault(); if (started) player.doubleJump(); };
-
-  canvas.onpointerdown = e => {
-    e.preventDefault();
-    if (!started) return;
-    const now = Date.now();
-    if (now - lastTap < 280) {
-      player.doubleJump();
-    } else {
-      doJump(false);
-    }
-    lastTap = now;
-  };
-
-  addEventListener('keydown', e => {
-    if (!started || over) return;
-    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'ArrowUp' || e.code === 'Space') {
-      e.preventDefault();
-      if (!jumpHeld) {
-        jumpHeld = true;
-        jumpHoldTime = 0;
-        doJump(e.code === 'ShiftLeft' || e.code === 'ShiftRight');
-      }
-    }
-  });
-
-  addEventListener('keyup', e => {
-    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'Space') {
-      jumpHeld = false;
-    }
-  });
-
-  setInterval(() => {
-    if (jumpHeld && started && player.jumps === 1 && player.vy < 0) {
-      jumpHoldTime++;
-      if (jumpHoldTime < 19 && player.vy > -19) {
-        player.vy -= 0.38;
-      }
-    }
-  }, 16);
-
-  addEventListener('grei:pause', e => {
-    paused = e.detail.paused;
-    if (!paused && started) requestAnimationFrame(frame);
-  });
-
-  initLayers();
-  background();
-  player.draw();
+  let groundY=320,running=false,paused=false,gameOver=false,rafId=0,lastTime=0,elapsed=0,distance=0,score=0,bonusScore=0,coins=0,combo=1,stage=0,speed=BASE_SPEED,nextObstacle=90,nextPower=190,nextCloud=80,startTime=0,best=Number(localStorage.getItem('jamaicaRunHighScore')||0),jumpHeld=false,holdFrames=0,screenShake=0,runToken=0;
+  let obstacles=[],powerUps=[],particles=[],clouds=[];
+  const frameSets={idle:[0,1,2,3,4,5],run:[6,7,8,9,10,11,12,13,14,15,16,17],jump:[18,19,20,21,22,23],double:[24,25,26,27,28,29]};
+  const sprite=new Image();sprite.src='./assets/IMG_3408.png';sprite.onerror=()=>{sprite.src='https://raw.githubusercontent.com/thegreishow/thegreishow.com/main/arcade/games/jamaica-run/assets/IMG_3408.png'};let frameW=128,frameH=128;sprite.onload=()=>{frameW=sprite.width/6;frameH=sprite.height/6};
+  const player={x:120,y:256,w:64,h:64,vy:0,jumps:0,state:'idle',frame:0,anim:0,lives:3,invincible:0,boostUntil:0,reset(){this.y=groundY-this.h;this.vy=0;this.jumps=0;this.state='run';this.frame=0;this.lives=3;this.invincible=0;this.boostUntil=0},jump(){if(this.jumps>=2)return;this.vy=this.jumps===0?CONFIG.jump:CONFIG.doubleJump;this.jumps++;this.state=this.jumps===1?'jump':'double';burst(this.x+32,this.y+58,this.jumps===1?'255,213,74':'31,191,98',this.jumps===1?10:16)},update(dt){if(jumpHeld&&this.jumps===1&&this.vy<0&&holdFrames<11){this.vy-=.28*dt;holdFrames+=dt}this.vy+=CONFIG.gravity*dt;this.y+=this.vy*dt;if(this.y+this.h>=groundY){this.y=groundY-this.h;this.vy=0;this.jumps=0;this.state='run'}if(this.invincible>0)this.invincible-=dt;this.frame+=.22*dt;const fs=frameSets[this.state]||frameSets.run;this.anim=fs[Math.floor(this.frame)%fs.length]},draw(){if(this.invincible>0&&Math.floor(this.invincible/5)%2===0)ctx.globalAlpha=.38;if(sprite.complete&&sprite.naturalWidth){const row=Math.floor(this.anim/6),col=this.anim%6;ctx.drawImage(sprite,col*frameW,row*frameH,frameW,frameH,this.x,this.y,this.w,this.h)}else{ctx.fillStyle='#e8432f';ctx.fillRect(this.x,this.y,this.w,this.h)}ctx.globalAlpha=1}};
+  function resize(){const rect=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(WORLD_W,Math.round(rect.width*ratio));canvas.height=Math.max(WORLD_H,Math.round(rect.height*ratio));ctx.setTransform(canvas.width/WORLD_W,0,0,canvas.height/WORLD_H,0,0)}
+  function burst(x,y,color,count){for(let i=0;i<count;i++)particles.push({x,y,vx:(Math.random()-.5)*5,vy:(Math.random()-1.7)*5,alpha:1,color,size:2.5+Math.random()*4})}
+  function intersects(a,b){const ix=a===player?10:2,iy=a===player?6:2;return a.x+ix<b.x+b.w&&a.x+a.w-ix>b.x&&a.y+iy<b.y+b.h&&a.y+a.h-iy>b.y}
+  function spawnObstacle(){const types=['barrel','speaker','coconut'];const t=types[Math.floor(Math.random()*types.length)];obstacles.push({x:830,y:groundY-(t==='speaker'?54:42),w:t==='speaker'?46:38,h:t==='speaker'?54:42,type:t,dead:false})}
+  function spawnPower(){const r=Math.random(),type=r<.68?'coin':r<.86?'shield':'boost';powerUps.push({x:830,y:groundY-(75+Math.random()*70),w:30,h:30,type,phase:Math.random()*6.28,dead:false})}
+  function drawObstacle(o){if(o.type==='barrel'){ctx.fillStyle='#7b4a24';ctx.fillRect(o.x,o.y+4,o.w,o.h-4);ctx.fillStyle='#c08a47';ctx.fillRect(o.x,o.y+10,o.w,5);ctx.fillRect(o.x,o.y+28,o.w,5);ctx.fillStyle='#26170d';ctx.fillRect(o.x+4,o.y,o.w-8,7)}else if(o.type==='speaker'){ctx.fillStyle='#151515';ctx.fillRect(o.x,o.y,o.w,o.h);ctx.strokeStyle='#444';ctx.strokeRect(o.x+.5,o.y+.5,o.w-1,o.h-1);ctx.fillStyle='#777';ctx.beginPath();ctx.arc(o.x+o.w/2,o.y+17,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d3b64d';ctx.beginPath();ctx.arc(o.x+o.w/2,o.y+38,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.arc(o.x+o.w/2,o.y+38,5,0,Math.PI*2);ctx.fill()}else{ctx.fillStyle='#6d4427';ctx.beginPath();ctx.arc(o.x+19,o.y+21,19,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#3a2415';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(o.x+5,o.y+9);ctx.lineTo(o.x+32,o.y+33);ctx.stroke();ctx.fillStyle='#efe6d0';ctx.beginPath();ctx.arc(o.x+14,o.y+15,3,0,Math.PI*2);ctx.arc(o.x+22,o.y+12,3,0,Math.PI*2);ctx.fill()}}
+  function drawPower(p){ctx.save();ctx.translate(p.x+15,p.y+15);ctx.rotate(Math.sin(p.phase+elapsed*.006)*.15);if(p.type==='coin'){ctx.fillStyle='#ffd54a';ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.fillStyle='#9a6b00';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('G',0,1)}else if(p.type==='shield'){ctx.fillStyle='#59c7ff';ctx.beginPath();ctx.moveTo(0,-14);ctx.lineTo(13,-6);ctx.lineTo(9,9);ctx.lineTo(0,15);ctx.lineTo(-9,9);ctx.lineTo(-13,-6);ctx.closePath();ctx.fill()}else{ctx.fillStyle='#ffe04b';ctx.beginPath();ctx.moveTo(3,-15);ctx.lineTo(-8,2);ctx.lineTo(-1,2);ctx.lineTo(-5,15);ctx.lineTo(10,-4);ctx.lineTo(3,-4);ctx.closePath();ctx.fill()}ctx.restore()}
+  function updateObjects(dt){for(const o of obstacles){o.x-=speed*dt;drawObstacle(o);if(!o.dead&&player.invincible<=0&&intersects(player,o)){o.dead=true;player.lives--;player.invincible=90;combo=1;screenShake=10;burst(player.x+30,player.y+34,'255,80,70',22);if(player.lives<=0)gameOver=true}}obstacles=obstacles.filter(o=>!o.dead&&o.x+o.w>-10);for(const p of powerUps){p.x-=speed*dt;p.phase+=.08*dt;drawPower(p);if(!p.dead&&intersects(player,p)){p.dead=true;if(p.type==='coin'){coins++;bonusScore+=Math.round(100*combo);combo=Math.min(8,combo+.25)}else if(p.type==='shield'){player.invincible=Math.max(player.invincible,210);combo=Math.min(8,combo+.5)}else{player.boostUntil=elapsed+4500;combo=Math.min(8,combo+.5)}burst(p.x+15,p.y+15,p.type==='shield'?'80,190,255':'255,213,74',18)}}powerUps=powerUps.filter(p=>!p.dead&&p.x+p.w>-10);for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.12*dt;p.alpha-=.03*dt;ctx.fillStyle=`rgba(${p.color},${Math.max(0,p.alpha)})`;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}particles=particles.filter(p=>p.alpha>0);for(const c of clouds){c.x-=c.speed*dt;ctx.fillStyle='rgba(255,255,255,.72)';ctx.beginPath();ctx.ellipse(c.x,c.y,c.w/2,c.h/2,0,0,Math.PI*2);ctx.fill()}clouds=clouds.filter(c=>c.x+c.w>0)}
+  function drawBackground(){const s=STAGES[stage],g=ctx.createLinearGradient(0,0,0,groundY);g.addColorStop(0,s.top);g.addColorStop(1,s.bottom);ctx.fillStyle=g;ctx.fillRect(0,0,WORLD_W,groundY);ctx.fillStyle=stage>=6?'#f3dca2':'#ffe06a';ctx.beginPath();ctx.arc(700,78,36,0,Math.PI*2);ctx.fill();const offsets=[.16,.32,.5];offsets.forEach((sp,i)=>{ctx.fillStyle=s.hills[i];for(let x=-((distance*sp)%280)-80;x<WORLD_W+280;x+=280){const h=95+i*28;ctx.beginPath();ctx.moveTo(x,groundY);ctx.lineTo(x+140,groundY-h);ctx.lineTo(x+280,groundY);ctx.fill()}});for(let x=-(distance%40);x<WORLD_W;x+=40){for(let y=groundY;y<WORLD_H;y+=20){ctx.fillStyle=s.ground[Math.abs(Math.floor(x/40+y/20))%s.ground.length];ctx.fillRect(x,y,40,20)}}}
+  function updateStage(){let n=0;for(let i=STAGES.length-1;i>=0;i--){if(distance>=STAGES[i].at){n=i;break}}if(n!==stage){stage=n;stageText.textContent=STAGES[stage].name;bonusScore+=500}}
+  function updateHud(){score=Math.floor(distance/8)+bonusScore;scoreText.textContent=`Score: ${score}`;coinText.textContent=`Coins: ${coins} ×${combo.toFixed(2)}`;livesText.textContent='❤️'.repeat(Math.max(0,player.lives))+'🖤'.repeat(Math.max(0,3-player.lives));bestText.textContent=`Best: ${Math.max(best,score)}`;fill.style.width=`${Math.min(100,(distance%3200)/32)}%`}
+  function loop(ts){if(!running||paused)return;const dt=Math.min(2.2,(ts-lastTime)/16.666||1);lastTime=ts;elapsed+=dt*16.666;speed=Math.min(CONFIG.maxSpeed,BASE_SPEED+elapsed*CONFIG.acceleration/16.666+(player.boostUntil>elapsed?1.6:0));drawBackground();updateStage();nextObstacle-=dt;nextPower-=dt;nextCloud-=dt;if(nextObstacle<=0){spawnObstacle();const gap=CONFIG.minObstacleGap+(CONFIG.maxObstacleGap-CONFIG.minObstacleGap)*Math.random();nextObstacle=gap*(BASE_SPEED/speed)}if(nextPower<=0){spawnPower();nextPower=CONFIG.powerGap+Math.random()*80}if(nextCloud<=0){clouds.push({x:840,y:35+Math.random()*110,w:60+Math.random()*70,h:28+Math.random()*20,speed:.6+Math.random()*.9});nextCloud=CONFIG.cloudGap+Math.random()*90}let saved=false;if(screenShake>0){ctx.save();saved=true;ctx.translate((Math.random()-.5)*screenShake,(Math.random()-.5)*screenShake);screenShake=Math.max(0,screenShake-dt)}updateObjects(dt);player.update(dt);player.draw();if(saved)ctx.restore();distance+=speed*dt;updateHud();if(gameOver)return finish();rafId=requestAnimationFrame(loop)}
+  function start(){runToken++;cancelAnimationFrame(rafId);startScreen.hidden=true;endScreen.hidden=true;running=true;paused=false;gameOver=false;lastTime=performance.now();elapsed=distance=score=bonusScore=coins=0;combo=1;stage=0;speed=BASE_SPEED;nextObstacle=90;nextPower=190;nextCloud=80;obstacles=[];powerUps=[];particles=[];clouds=[];jumpHeld=false;holdFrames=0;screenShake=0;player.reset();stageText.textContent=STAGES[0].name;startTime=Date.now();rafId=requestAnimationFrame(loop)}
+  async function finish(){running=false;cancelAnimationFrame(rafId);best=Math.max(best,score);localStorage.setItem('jamaicaRunHighScore',best);endScreen.hidden=false;endMessage.innerHTML=`Final Score: <strong>${score}</strong><br>Coins: <strong>${coins}</strong><br>Reached: <strong>${STAGES[stage].name}</strong><br>Submitting to global leaderboard…`;const name=localStorage.getItem('grei_arcade_player_name')||'Dreamer',duration=Math.max(1,Math.round((Date.now()-startTime)/1000));try{const r=await fetch(API+'/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game:GAME,name,score,level:stage+1,duration})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Sync failed');endMessage.innerHTML=`Final Score: <strong>${score}</strong><br>Coins: <strong>${coins}</strong><br>Reached: <strong>${STAGES[stage].name}</strong><br>Global Rank #${d.rank}`}catch(e){endMessage.innerHTML=`Final Score: <strong>${score}</strong><br>Coins: <strong>${coins}</strong><br>Reached: <strong>${STAGES[stage].name}</strong><br>Saved locally.`}}
+  function jumpStart(e){e.preventDefault();if(!running)return;jumpHeld=true;holdFrames=0;player.jump()}function jumpEnd(){jumpHeld=false}
+  document.getElementById('startBtn').onclick=start;document.getElementById('restartBtn').onclick=start;document.getElementById('jumpBtn').onpointerdown=jumpStart;document.getElementById('jumpBtn').onpointerup=jumpEnd;document.getElementById('jumpBtn').onpointercancel=jumpEnd;document.getElementById('doubleBtn').onpointerdown=e=>{e.preventDefault();if(running&&player.jumps===1)player.jump()};canvas.onpointerdown=e=>{e.preventDefault();if(running){jumpHeld=true;holdFrames=0;player.jump()}};canvas.onpointerup=jumpEnd;canvas.onpointercancel=jumpEnd;addEventListener('keydown',e=>{if(!running)return;if(['Space','ArrowUp','ShiftLeft','ShiftRight'].includes(e.code)){e.preventDefault();if(!jumpHeld){jumpHeld=true;holdFrames=0;player.jump()}}});addEventListener('keyup',e=>{if(['Space','ArrowUp','ShiftLeft','ShiftRight'].includes(e.code))jumpHeld=false});addEventListener('grei:pause',e=>{paused=Boolean(e.detail?.paused);cancelAnimationFrame(rafId);if(!paused&&running){lastTime=performance.now();rafId=requestAnimationFrame(loop)}});addEventListener('resize',resize);resize();drawBackground();player.draw();updateHud();
 })();
 </script>
 </body>

@@ -78,6 +78,35 @@
       text-transform: uppercase;
       color: rgba(255,255,255,0.55);
     }
+
+    /* Streaming platforms row */
+    .home-platforms {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin: 16px 0 4px;
+    }
+    .home-platforms a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .home-platforms a:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(216,255,99,0.35);
+    }
+
     @media (max-width: 680px) {
       .songstats-row {
         gap: 8px;
@@ -85,6 +114,9 @@
       }
       .songstats-row .stat-value {
         font-size: 1.15rem;
+      }
+      .home-platforms {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -210,6 +242,16 @@
                 <span class="stat-value">1.53M</span>
                 <span class="stat-label">Playlist Reach</span>
               </a>
+            </div>
+
+            <!-- Streaming platforms (same set as music page) -->
+            <div class="home-platforms" aria-label="Listen on all platforms">
+              <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - Spotify">Spotify</a>
+              <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - Apple Music">Apple</a>
+              <a href="https://music.youtube.com/@thegreishxw" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - YouTube Music">YouTube</a>
+              <a href="https://tidal.com/artist/47307553/u" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - TIDAL">TIDAL</a>
+              <a href="https://soundcloud.com/thegreishow" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - SoundCloud">SoundCloud</a>
+              <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="platform" data-track-label="Home - Bandcamp">Bandcamp</a>
             </div>
 
             <div class="offer-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;">

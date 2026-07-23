@@ -112,12 +112,12 @@
   function injectEmergencyNav() {
     const mount = document.getElementById('site-header');
     if (!mount || mount.children.length) return;
-    mount.innerHTML = '<header class="site-header"><div class="nav-container"><a class="brand" href="index.html">THE GREI SHOW</a><nav class="site-nav is-open" aria-label="Emergency navigation"><a href="music.html">Music</a><a href="visuals.html">Visuals</a><a href="books.html">Books</a><a href="whiteline.html">Talent Agency</a><a href="ilovekingston.html">Tours &amp; Experiences</a><a href="arcade.html">Arcade</a><a href="about.html">About</a><a href="connect.html">Connect</a></nav></div></header>';
+    mount.innerHTML = '<header class="site-header"><div class="nav-container"><a class="brand" href="/">THE GREI SHOW</a><nav class="site-nav is-open" aria-label="Emergency navigation"><a href="/music.html">Music</a><a href="/visuals.html">Visuals</a><a href="/books.html">Books</a><a href="/whiteline.html">Talent Agency</a><a href="/ilovekingston.html">Tours &amp; Experiences</a><a href="/arcade.html">Arcade</a><a href="/about.html">About</a><a href="/connect.html">Connect</a></nav></div></header>';
   }
 
   async function loadNav() {
     try {
-      const response = await fetch('shared/nav.html', { cache: 'no-cache' });
+      const response = await fetch('/shared/nav.html', { cache: 'no-cache' });
       if (!response.ok) throw new Error('Navigation unavailable');
       const mount = document.getElementById('site-header');
       if (mount) mount.innerHTML = await response.text();

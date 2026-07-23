@@ -4,38 +4,122 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Owner Console | The Grei Show</title>
+  <title>Owner Panel | The Grei Show</title>
   <style>
-    :root{color-scheme:dark;--bg:#03060c;--panel:#0b111b;--line:#202b3a;--text:#f5f7fb;--muted:#91a0b3;--accent:#d8ff63;--danger:#ff7b7b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}main{width:min(1240px,calc(100% - 32px));margin:0 auto;padding:36px 0 64px}.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.18em}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:28px}h1{margin:7px 0 0;font-size:clamp(30px,5vw,52px)}button,input,select{font:inherit}.button{border:0;border-radius:999px;padding:12px 18px;background:var(--accent);color:#03060c;font-weight:800;cursor:pointer}.button.secondary{background:#182231;color:var(--text)}.button:disabled{opacity:.55;cursor:not-allowed}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:20px}.login{max-width:460px;margin:12vh auto}.login input{width:100%;margin:7px 0 14px;padding:13px;border-radius:10px;border:1px solid var(--line);background:#070c13;color:var(--text)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.metric strong{display:block;font-size:31px;margin-top:9px}.metric span,.muted{color:var(--muted)}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:940px}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#182231}.pipeline-select{min-width:140px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#070c13;color:var(--text)}.quick-links{display:flex;gap:7px;flex-wrap:wrap}.quick-link{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--text);text-decoration:none;background:#111a27}.quick-link:hover{border-color:var(--accent)}.success{color:var(--accent)}.error{color:var(--danger)}[hidden]{display:none!important}@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+    :root{color-scheme:dark;--bg:#03060c;--panel:#0b111b;--panel-2:#101927;--line:#202b3a;--text:#f5f7fb;--muted:#91a0b3;--accent:#d8ff63;--danger:#ff7b7b;--warning:#ffd36a;--radius:20px}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 88% 8%,rgba(216,255,99,.08),transparent 28%),var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:26px 18px;border-right:1px solid var(--line);background:rgba(5,9,15,.94);backdrop-filter:blur(18px)}.brand{padding:8px 10px 28px}.brand strong{display:block;font-size:20px;letter-spacing:-.03em}.eyebrow{color:var(--accent);font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}.nav{display:grid;gap:7px}.nav button{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 13px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--muted);text-align:left;cursor:pointer}.nav button:hover,.nav button.active{color:var(--text);background:var(--panel);border-color:var(--line)}.nav small{color:var(--accent)}.sidebar-foot{position:absolute;left:18px;right:18px;bottom:20px;display:grid;gap:8px}.main{width:min(1380px,100%);padding:28px 30px 70px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:24px}.top h1{margin:7px 0 0;font-size:clamp(32px,5vw,58px);letter-spacing:-.055em}.top-actions{display:flex;gap:9px;flex-wrap:wrap}.button{border:0;border-radius:999px;padding:11px 17px;background:var(--accent);color:#03060c;font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.button.secondary{background:#182231;color:var(--text)}.button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}.button:disabled{opacity:.55;cursor:not-allowed}.panel{background:linear-gradient(180deg,rgba(16,25,39,.94),rgba(9,15,24,.94));border:1px solid var(--line);border-radius:var(--radius);padding:22px}.login{max-width:460px;margin:12vh auto}.login input,.field input,.field select,.field textarea{width:100%;margin-top:7px;padding:13px;border-radius:11px;border:1px solid var(--line);background:#070c13;color:var(--text)}.field textarea{min-height:104px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.metric strong{display:block;font-size:31px;margin-top:9px;letter-spacing:-.04em}.metric span,.muted{color:var(--muted)}.section{display:none}.section.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:34px 0 14px}.section-head h2{margin:0;font-size:clamp(24px,3vw,38px);letter-spacing:-.04em}.section-head p{margin:6px 0 0;color:var(--muted)}.table-wrap{overflow:auto}.table-panel{margin-top:14px}table{width:100%;border-collapse:collapse;min-width:940px}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#182231}.pill.ready{background:rgba(216,255,99,.12);color:var(--accent)}.pill.warning{background:rgba(255,211,106,.12);color:var(--warning)}.pipeline-select{min-width:140px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#070c13;color:var(--text)}.quick-links{display:flex;gap:7px;flex-wrap:wrap}.quick-link{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--text);text-decoration:none;background:#111a27}.quick-link:hover{border-color:var(--accent)}.release-grid,.module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.release-card{overflow:hidden;padding:0}.release-art{aspect-ratio:16/9;background:linear-gradient(135deg,#182231,#090d14);display:grid;place-items:center;color:var(--muted);font-weight:900;letter-spacing:.12em;text-transform:uppercase}.release-art img{width:100%;height:100%;object-fit:cover}.release-body{padding:18px}.release-body h3{margin:4px 0 8px;font-size:23px}.release-meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px}.checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:16px 0}.check{padding:9px 10px;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:13px}.check.done{color:var(--accent);border-color:rgba(216,255,99,.25)}.release-actions{display:flex;gap:8px;flex-wrap:wrap}.module-card h3{margin:8px 0;font-size:22px}.module-card p{margin:0 0 18px;color:var(--muted);line-height:1.55}.builder{display:grid;grid-template-columns:1fr .85fr;gap:16px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field.full{grid-column:1/-1}.asset-list{display:grid;gap:9px}.asset-row{display:flex;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#080d15}.asset-row span:last-child{color:var(--muted)}.status-bar{margin-top:14px;color:var(--muted)}.success{color:var(--accent)}.error{color:var(--danger)}[hidden]{display:none!important}@media(max-width:1050px){.shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line)}.nav{grid-template-columns:repeat(3,1fr)}.sidebar-foot{position:static;margin-top:14px}.release-grid,.module-grid{grid-template-columns:repeat(2,1fr)}.builder{grid-template-columns:1fr}}@media(max-width:760px){.main{padding:22px 16px 55px}.grid,.release-grid,.module-grid,.form-grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.nav{grid-template-columns:1fr 1fr}.checklist{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-<main>
-  <section id="login-panel" class="panel login">
-    <div class="eyebrow">PRIVATE OPERATIONS</div>
-    <h1>Owner Console</h1>
-    <p class="muted">Sign in with an authorized White Line administrator account.</p>
-    <form id="owner-login-form">
-      <label>Email<input name="email" type="email" autocomplete="email" required></label>
-      <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
-      <button class="button" type="submit">Sign in</button>
-      <p id="owner-login-status" aria-live="polite"></p>
-    </form>
-  </section>
+<section id="login-panel" class="panel login">
+  <div class="eyebrow">Private operations</div>
+  <h1>Owner Panel</h1>
+  <p class="muted">Sign in with an authorized administrator account.</p>
+  <form id="owner-login-form">
+    <label>Email<input name="email" type="email" autocomplete="email" required></label>
+    <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+    <button class="button" type="submit">Sign in</button>
+    <p id="owner-login-status" aria-live="polite"></p>
+  </form>
+</section>
 
-  <section id="dashboard" hidden>
-    <header class="top"><div><div class="eyebrow">THE GREI SHOW</div><h1>Owner Console</h1></div><div><button id="refresh-dashboard" class="button secondary">Refresh</button> <button id="owner-logout" class="button">Sign out</button></div></header>
-    <div class="grid">
-      <article class="panel metric"><span>Bookings</span><strong id="metric-bookings">—</strong></article>
-      <article class="panel metric"><span>Open pipeline</span><strong id="metric-open">—</strong></article>
-      <article class="panel metric"><span>Paid revenue</span><strong id="metric-revenue">—</strong></article>
-      <article class="panel metric"><span>Subscribers</span><strong id="metric-subscribers">—</strong></article>
-    </div>
-    <section class="panel"><div class="section-head"><h2>Recent bookings</h2><span id="bookings-status" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Client</th><th>Project</th><th>Event</th><th>Stage</th><th>Payment</th><th>Follow-up</th></tr></thead><tbody id="bookings-body"></tbody></table></div></section>
-    <section class="panel"><div class="section-head"><h2>Recent payments</h2><span id="payments-status" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th><th>Description</th></tr></thead><tbody id="payments-body"></tbody></table></div></section>
-    <section class="panel"><div class="section-head"><h2>Recent subscribers</h2><span id="subscribers-status" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>Joined</th><th>Name</th><th>Email</th><th>Country</th><th>Welcome</th></tr></thead><tbody id="subscribers-body"></tbody></table></div></section>
-  </section>
-</main>
+<div id="dashboard" class="shell" hidden>
+  <aside class="sidebar">
+    <div class="brand"><div class="eyebrow">The Grei Show</div><strong>Owner Panel</strong></div>
+    <nav class="nav" aria-label="Owner sections">
+      <button class="active" data-section="overview">Overview</button>
+      <button data-section="releases">Releases <small>3</small></button>
+      <button data-section="builder">New release</button>
+      <button data-section="media">Media vault</button>
+      <button data-section="audience">Audience</button>
+      <button data-section="business">Business</button>
+    </nav>
+    <div class="sidebar-foot"><a class="button ghost" href="/" target="_blank">View website</a><button id="owner-logout" class="button secondary">Sign out</button></div>
+  </aside>
+
+  <main class="main">
+    <header class="top"><div><div class="eyebrow" id="section-eyebrow">Control center</div><h1 id="section-title">Overview</h1></div><div class="top-actions"><button id="refresh-dashboard" class="button secondary">Refresh</button><button class="button" data-open-builder>Create release</button></div></header>
+
+    <section id="section-overview" class="section active">
+      <div class="grid">
+        <article class="panel metric"><span>Bookings</span><strong id="metric-bookings">—</strong></article>
+        <article class="panel metric"><span>Open pipeline</span><strong id="metric-open">—</strong></article>
+        <article class="panel metric"><span>Paid revenue</span><strong id="metric-revenue">—</strong></article>
+        <article class="panel metric"><span>Subscribers</span><strong id="metric-subscribers">—</strong></article>
+      </div>
+      <div class="section-head"><div><h2>Release operations</h2><p>The areas the owner panel will control as the system connects to Drive and Supabase.</p></div></div>
+      <div class="module-grid">
+        <article class="panel module-card"><div class="eyebrow">Catalogue</div><h3>Release manager</h3><p>Create singles, EPs, albums and collaborations. Track artwork, audio, credits and publishing readiness.</p><button class="button secondary" data-jump="releases">Open releases</button></article>
+        <article class="panel module-card"><div class="eyebrow">Assets</div><h3>Media vault</h3><p>Manage masters, radio edits, artwork, videos, press photographs, logos and downloadable EPK files.</p><button class="button secondary" data-jump="media">Open vault</button></article>
+        <article class="panel module-card"><div class="eyebrow">Publishing</div><h3>Promo pages</h3><p>Preview, publish or unpublish every release page and control which platform and professional links appear.</p><button class="button secondary" data-jump="releases">Manage pages</button></article>
+        <article class="panel module-card"><div class="eyebrow">Audience</div><h3>Mailing list</h3><p>Prepare release servicing, segment DJs, press and fans, and track welcome and campaign readiness.</p><button class="button secondary" data-jump="audience">Open audience</button></article>
+        <article class="panel module-card"><div class="eyebrow">Insights</div><h3>Analytics</h3><p>Track promo visits, platform choices, audio downloads, video clicks and professional enquiries.</p><button class="button secondary" disabled>Coming next</button></article>
+        <article class="panel module-card"><div class="eyebrow">Operations</div><h3>Bookings & payments</h3><p>Keep the existing booking pipeline, client follow-ups and payment records inside one command center.</p><button class="button secondary" data-jump="business">Open business</button></article>
+      </div>
+    </section>
+
+    <section id="section-releases" class="section">
+      <div class="section-head"><div><h2>Catalogue</h2><p>Current promo pages and release readiness.</p></div><button class="button" data-open-builder>Add release</button></div>
+      <div id="release-grid" class="release-grid"></div>
+    </section>
+
+    <section id="section-builder" class="section">
+      <div class="section-head"><div><h2>Release builder</h2><p>Prepare the complete record before publishing its promo page.</p></div></div>
+      <div class="builder">
+        <form id="release-form" class="panel form-grid">
+          <label class="field">Title<input name="title" required placeholder="Song title"></label>
+          <label class="field">Slug<input name="slug" required placeholder="song-title"></label>
+          <label class="field">Artist<input name="artist" value="The Grei Show" required></label>
+          <label class="field">Release type<select name="type"><option>Single</option><option>EP</option><option>Album</option><option>Collaboration</option><option>Remix</option></select></label>
+          <label class="field">Release date<input name="date" type="date"></label>
+          <label class="field">Genre<input name="genre" placeholder="Reggae · Dancehall"></label>
+          <label class="field full">Short description<textarea name="description" placeholder="One concise professional release description."></textarea></label>
+          <label class="field full">Artwork URL<input name="artwork" type="url" placeholder="Google Drive or website artwork URL"></label>
+          <label class="field full">Official audio URL<input name="audio" type="url" placeholder="Google Drive official audio URL"></label>
+          <label class="field">Spotify URL<input name="spotify" type="url"></label>
+          <label class="field">Apple Music URL<input name="apple" type="url"></label>
+          <label class="field">YouTube URL<input name="youtube" type="url"></label>
+          <label class="field">Press folder URL<input name="press" type="url"></label>
+          <div class="field full release-actions"><button class="button" type="submit">Save release draft</button><button class="button secondary" type="reset">Clear</button></div>
+          <p id="release-form-status" class="status-bar field full" aria-live="polite"></p>
+        </form>
+        <aside class="panel">
+          <div class="eyebrow">Publish checklist</div><h2>Required assets</h2>
+          <div class="asset-list">
+            <div class="asset-row"><span>Official artwork</span><span>Required</span></div>
+            <div class="asset-row"><span>Official audio</span><span>Required</span></div>
+            <div class="asset-row"><span>Release description</span><span>Required</span></div>
+            <div class="asset-row"><span>Platform links</span><span>Recommended</span></div>
+            <div class="asset-row"><span>Credits & metadata</span><span>Recommended</span></div>
+            <div class="asset-row"><span>Press folder</span><span>Optional</span></div>
+            <div class="asset-row"><span>Music video</span><span>Optional</span></div>
+          </div>
+          <p class="muted">Drafts are stored in this browser for now. The next backend step will save them to Supabase and connect files from Google Drive.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="section-media" class="section">
+      <div class="section-head"><div><h2>Media vault</h2><p>The future home for approved masters and official visual assets.</p></div></div>
+      <div class="module-grid">
+        <article class="panel module-card"><div class="eyebrow">Audio</div><h3>Masters</h3><p>WAV, 320 kbps MP3, radio edits, instrumentals, clean versions and dub-ready files.</p><button class="button secondary" disabled>Connect Drive folder</button></article>
+        <article class="panel module-card"><div class="eyebrow">Visual</div><h3>Artwork</h3><p>Official 3000 × 3000 covers, transparent logos, press photographs and social crops.</p><button class="button secondary" disabled>Connect Drive folder</button></article>
+        <article class="panel module-card"><div class="eyebrow">Video</div><h3>Visual releases</h3><p>Official music videos, visualizers, teasers, thumbnails and vertical campaign content.</p><button class="button secondary" disabled>Connect Drive folder</button></article>
+        <article class="panel module-card"><div class="eyebrow">Documents</div><h3>Press assets</h3><p>Press releases, biographies, credits, lyrics, one-sheets, technical riders and EPKs.</p><button class="button secondary" disabled>Connect Drive folder</button></article>
+      </div>
+    </section>
+
+    <section id="section-audience" class="section">
+      <div class="section-head"><div><h2>Audience</h2><p>Subscribers and future campaign controls.</p></div></div>
+      <section class="panel table-panel"><div class="section-head"><h2>Recent subscribers</h2><span id="subscribers-status" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>Joined</th><th>Name</th><th>Email</th><th>Country</th><th>Welcome</th></tr></thead><tbody id="subscribers-body"></tbody></table></div></section>
+    </section>
+
+    <section id="section-business" class="section">
+      <div class="section-head"><div><h2>Business</h2><p>Bookings, client follow-up and payments.</p></div></div>
+      <section class="panel table-panel"><div class="section-head"><h2>Recent bookings</h2><span id="bookings-status" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Client</th><th>Project</th><th>Event</th><th>Stage</th><th>Payment</th><th>Follow-up</th></tr></thead><tbody id="bookings-body"></tbody></table></div></section>
+      <section class="panel table-panel"><div class="section-head"><h2>Recent payments</h2><span id="payments-status" class="muted"></span></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th><th>Description</th></tr></thead><tbody id="payments-body"></tbody></table></div></section>
+    </section>
+  </main>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/owner-dashboard.js"></script>
 </body>

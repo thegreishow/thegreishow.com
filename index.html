@@ -43,6 +43,51 @@
       ]
     }
   </script>
+
+  <style>
+    /* Compact Songstats display – reuses existing design tokens */
+    .songstats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 22px 0 8px;
+      padding: 16px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.28);
+    }
+    .songstats-row a {
+      text-decoration: none;
+      color: inherit;
+      text-align: center;
+    }
+    .songstats-row .stat-value {
+      display: block;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--home-lime, #d8ff63);
+      line-height: 1.1;
+    }
+    .songstats-row .stat-label {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    @media (max-width: 680px) {
+      .songstats-row {
+        gap: 8px;
+        padding: 14px 10px;
+      }
+      .songstats-row .stat-value {
+        font-size: 1.15rem;
+      }
+    }
+  </style>
 </head>
 
 <body class="home-page">
@@ -147,12 +192,29 @@
         <article class="offer-card">
           <span class="offer-number">02 &middot; Listen</span>
           <div>
-            <p class="card-kicker">Direct support</p>
+            <p class="card-kicker">Direct support + stats</p>
             <h3>Back the music</h3>
-            <p>Stream across every major platform or support the catalogue directly through Bandcamp. Full streaming analytics available on Songstats.</p>
-            <div class="offer-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;">
+            <p>Stream across every major platform or support the catalogue directly through Bandcamp.</p>
+
+            <!-- Live Songstats snapshot (update the numbers anytime) -->
+            <div class="songstats-row" aria-label="Current Songstats snapshot">
+              <a href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Stat - Monthly Listeners">
+                <span class="stat-value">—</span>
+                <span class="stat-label">Monthly Listeners</span>
+              </a>
+              <a href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Stat - Total Streams">
+                <span class="stat-value">—</span>
+                <span class="stat-label">Total Streams</span>
+              </a>
+              <a href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Stat - 30d Growth">
+                <span class="stat-value">—</span>
+                <span class="stat-label">30-day Growth</span>
+              </a>
+            </div>
+
+            <div class="offer-actions" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;">
               <a class="home-button" href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="bandcamp" data-track-label="Support - Bandcamp">Visit Bandcamp</a>
-              <a class="home-button" href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Support - Songstats">Songstats</a>
+              <a class="home-button" href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Support - Full Songstats">Full Songstats</a>
             </div>
           </div>
         </article>

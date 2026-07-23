@@ -38,6 +38,7 @@
         "https://music.apple.com/jm/artist/the-grei-show/885841733",
         "https://youtube.com/@thegreishxw",
         "https://instagram.com/thegreishow",
+        "https://www.tiktok.com/@thegreishow",
         "https://thegreishow.bandcamp.com",
         "https://songstats.com/artist/i34uwf2q/the-grei-show"
       ]
@@ -79,7 +80,7 @@
       color: rgba(255,255,255,0.55);
     }
 
-    /* Social links */
+    /* Social icon buttons */
     .home-socials {
       display: flex;
       flex-wrap: wrap;
@@ -90,24 +91,27 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 38px;
-      padding: 0 14px;
+      width: 42px;
+      height: 42px;
       border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 999px;
+      border-radius: 50%;
       background: rgba(255,255,255,0.05);
       color: rgba(255,255,255,0.85);
-      font-size: 0.78rem;
-      font-weight: 700;
       text-decoration: none;
-      transition: background 0.2s ease, border-color 0.2s ease;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
     .home-socials a:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(216,255,99,0.4);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(216,255,99,0.45);
       color: #fff;
     }
+    .home-socials svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
 
-    /* Platform modal (same spirit as music page) */
+    /* Platform modal */
     .stream-modal {
       position: fixed;
       inset: 0;
@@ -319,12 +323,20 @@
               <a class="home-button" href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noopener" data-track="songstats" data-track-label="Support - Full Songstats">Full Songstats</a>
             </div>
 
-            <!-- Social links -->
+            <!-- Social icon buttons -->
             <div class="home-socials" aria-label="Social profiles">
-              <a href="https://instagram.com/thegreishow" target="_blank" rel="noopener" data-track="social" data-track-label="Home - Instagram">Instagram</a>
-              <a href="https://youtube.com/@thegreishxw" target="_blank" rel="noopener" data-track="social" data-track-label="Home - YouTube">YouTube</a>
-              <a href="https://x.com/thegreishow" target="_blank" rel="noopener" data-track="social" data-track-label="Home - X">X</a>
-              <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener" data-track="social" data-track-label="Home - Bandcamp">Bandcamp</a>
+              <a href="https://instagram.com/thegreishow" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram" data-track="social" data-track-label="Home - Instagram">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.4.4.6.2 1 .5 1.5 1s.8.9 1 1.5c.2.5.4 1.2.4 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.4 2.4-.2.6-.5 1-1 1.5s-.9.8-1.5 1c-.5.2-1.2.4-2.4.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.4-.4-.6-.2-1-.5-1.5-1s-.8-.9-1-1.5c-.2-.5-.4-1.2-.4-2.4-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.9.4-2.4.2-.6.5-1 1-1.5s.9-.8 1.5-1c.5-.2 1.2-.4 2.4-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.2 0-3.5 0-4.8.1-1.1 0-1.7.2-2.1.4-.5.2-.8.4-1.2.8s-.6.7-.8 1.2c-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.8s0 3.5.1 4.8c0 1.1.2 1.7.4 2.1.2.5.4.8.8 1.2s.7.6 1.2.8c.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.8.1s3.5 0 4.8-.1c1.1 0 1.7-.2 2.1-.4.5-.2.8-.4 1.2-.8s.6-.7.8-1.2c.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.8s0-3.5-.1-4.8c0-1.1-.2-1.7-.4-2.1-.2-.5-.4-.8-.8-1.2s-.7-.6-1.2-.8c-.4-.2-1-.3-2.1-.4-1.3-.1-1.6-.1-4.8-.1zm0 3.1a5.1 5.1 0 1 1 0 10.2 5.1 5.1 0 0 1 0-10.2zm0 1.8a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6zm5.3-2.1a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>
+              </a>
+              <a href="https://youtube.com/@thegreishxw" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube" data-track="social" data-track-label="Home - YouTube">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
+              </a>
+              <a href="https://x.com/thegreishow" target="_blank" rel="noopener" title="X" aria-label="X" data-track="social" data-track-label="Home - X">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2H21l-6.6 7.6L22 22h-6.2l-4.8-6.3L5.5 22H2.7l7-8.1L2 2h6.4l4.4 5.8L18.2 2zm-1.1 18h1.7L7 3.9H5.2L17.1 20z"/></svg>
+              </a>
+              <a href="https://www.tiktok.com/@thegreishow" target="_blank" rel="noopener" title="TikTok" aria-label="TikTok" data-track="social" data-track-label="Home - TikTok">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 6.9A5.4 5.4 0 0 1 16.3 6V4.1h-3.1v11.4a2.7 2.7 0 1 1-1.9-2.6v-3.2a5.8 5.8 0 1 0 4.4 5.6V9.4a8.4 8.4 0 0 0 4 1.1V7.4a5.5 5.5 0 0 1-.1-.5z"/></svg>
+              </a>
             </div>
           </div>
         </article>

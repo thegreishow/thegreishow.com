@@ -14,11 +14,13 @@ body{min-height:100vh}
 .card{max-width:600px;padding:28px;border-radius:20px;background:rgba(0,0,0,.68);box-shadow:0 24px 80px rgba(0,0,0,.35)}
 h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px #000}
 .card p{line-height:1.5}
-.btn{min-height:52px;padding:0 25px;border:0;border-radius:14px;background:linear-gradient(#4caf50,#2e8b57);box-shadow:0 5px #236d3c;color:#fff;font-size:20px;font-weight:900}
+.btn{min-height:52px;padding:0 25px;border:0;border-radius:14px;background:linear-gradient(#4caf50,#2e8b57);box-shadow:0 5px #236d3c;color:#fff;font-size:20px;font-weight:900;cursor:pointer}
 .hud{position:fixed;top:72px;left:12px;right:12px;z-index:8;display:flex;justify-content:space-between;pointer-events:none}
 .scorebox{padding:9px 12px;border-radius:12px;background:rgba(0,0,0,.52);color:#fff;font-weight:900;text-shadow:1px 1px #000}
 .progress{position:fixed;top:76px;left:50%;z-index:8;width:min(230px,42vw);height:14px;transform:translateX(-50%);border-radius:99px;overflow:hidden;background:rgba(0,0,0,.3)}
 .progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#4caf50,#cddc39)}
+.stage-toast{position:fixed;left:50%;top:110px;transform:translateX(-50%);z-index:9;padding:8px 16px;border-radius:999px;background:rgba(0,0,0,.72);color:#ffd700;font-weight:900;font-size:14px;opacity:0;transition:.25s;pointer-events:none;text-shadow:1px 1px #000}
+.stage-toast.show{opacity:1}
 .controls{position:fixed;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));z-index:10;display:flex;justify-content:space-around;pointer-events:none}
 .controls button{width:92px;height:92px;border:1px solid rgba(255,255,255,.65);border-radius:50%;background:rgba(255,255,255,.76);color:#173321;font-weight:900;font-size:15px;box-shadow:0 8px 22px rgba(0,0,0,.25);pointer-events:auto;touch-action:none}
 @media(min-width:850px){.controls{display:none}}
@@ -33,6 +35,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   <div class="scorebox" id="bestText">Best: 0 ×1</div>
 </div>
 <div class="progress"><span id="distanceFill"></span></div>
+<div class="stage-toast" id="stageToast"></div>
 
 <div class="controls">
   <button id="jumpBtn">JUMP</button>
@@ -42,8 +45,8 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 <section class="screen" id="startScreen">
   <div class="card">
     <h1>🇯🇲 Jamaica Run 🇯🇲</h1>
-    <p>Run through tropical vibes. Collect coins, avoid obstacles, and feel the rhythm.</p>
-    <p><strong>Shift / ↑ / Tap</strong> — Jump (hold longer = higher jump)<br><strong>Double tap / DOUBLE button</strong> — Double jump</p>
+    <p>Run from Kingston to the hills. Collect coins, dodge obstacles, feel the island rhythm.</p>
+    <p><strong>Shift / ↑ / Tap</strong> — Jump (hold = higher)<br><strong>Double tap / DOUBLE</strong> — Double jump</p>
     <button class="btn" id="startBtn">Press Start</button>
   </div>
 </section>
@@ -60,15 +63,78 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 (() => {
   const API = 'https://grei-arcade-api.thegreishow.workers.dev';
   const GAME = 'jamaica-run';
-  
+  const STAGES = [
+    { name: 'Kingston Streets', at: 0 },
+    { name: 'Portmore Road', at: 3200 },
+    { name: 'Spanish Town', at: 6400 },
+    { name: 'Blue Mountains', at: 9600 },
+    { name: 'Negril Sunset', at: 12800 },
+    { name: 'Montego Bay', at: 16000 },
+    { name: 'Port Royal Night', at: 19200 },
+    { name: 'Yardie Dream', at: 24000 }
+  ];
+
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const scoreText = document.getElementById('scoreText');
   const bestText = document.getElementById('bestText');
   const fill = document.getElementById('distanceFill');
+  const stageToast = document.getElementById('stageToast');
   const startScreen = document.getElementById('startScreen');
   const endScreen = document.getElementById('endScreen');
   const endMessage = document.getElementById('endMessage');
+
+  // —— Sound ——
+  const sound = (() => {
+    let ctx, enabled = true;
+    function unlock() {
+      const A = window.AudioContext || window.webkitAudioContext;
+      if (!A) return null;
+      if (!ctx) ctx = new A();
+      if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    }
+    function tone(freq, dur = 0.15, { type = 'sine', gain = 0.08, slide = 0 } = {}) {
+      if (!enabled) return;
+      const a = unlock(); if (!a) return;
+      const t = a.currentTime;
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, t);
+      if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, slide), t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(a.destination);
+      o.start(t); o.stop(t + dur + 0.02);
+    }
+    function noise(dur = 0.12, { gain = 0.04, cutoff = 1200 } = {}) {
+      if (!enabled) return;
+      const a = unlock(); if (!a) return;
+      const t = a.currentTime;
+      const buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+      const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+      src.buffer = buf; f.type = 'bandpass'; f.frequency.value = cutoff;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(gain, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(f); f.connect(g); g.connect(a.destination);
+      src.start(t); src.stop(t + dur + 0.02);
+    }
+    return {
+      unlock,
+      jump: () => { tone(420, 0.12, { type: 'triangle', gain: 0.09, slide: 280 }); noise(0.08, { gain: 0.025, cutoff: 900 }); },
+      double: () => { tone(620, 0.14, { type: 'square', gain: 0.07, slide: 900 }); tone(310, 0.1, { type: 'sine', gain: 0.05, slide: 520 }); },
+      coin: () => { tone(880, 0.1, { type: 'sine', gain: 0.08, slide: 1320 }); tone(1320, 0.08, { type: 'triangle', gain: 0.04 }); },
+      power: () => { tone(523, 0.2, { type: 'triangle', gain: 0.09, slide: 784 }); tone(659, 0.18, { type: 'sine', gain: 0.05 }); },
+      hit: () => { tone(90, 0.28, { type: 'sawtooth', gain: 0.12, slide: 45 }); noise(0.22, { gain: 0.08, cutoff: 400 }); },
+      stage: () => { tone(392, 0.18, { type: 'triangle', gain: 0.07, slide: 523 }); tone(523, 0.22, { type: 'sine', gain: 0.05, slide: 659 }); }
+    };
+  })();
+  addEventListener('pointerdown', () => sound.unlock(), { once: true, passive: true });
+  addEventListener('keydown', () => sound.unlock(), { once: true });
 
   const CONFIG = {
     size: 64,
@@ -86,7 +152,8 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   let started = false, paused = false, over = false;
   let frames = 0, score = 0, distance = 0, multiplier = 1, nextLevel = 1000, stage = 0;
   let startTime = 0, lastTap = 0, best = Number(localStorage.getItem('jamaicaRunHighScore') || 0);
-  
+  let toastTimer = 0;
+
   let obstacles = [], powerUps = [], particles = [], clouds = [], playerTrail = [];
   let jumpBuffer = 0, coyoteTime = 0;
   let jumpHeld = false, jumpHoldTime = 0;
@@ -128,8 +195,17 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
   const sprite = new Image();
   sprite.src = './assets/IMG_3408.png';
+  sprite.onerror = () => { sprite.src = 'https://raw.githubusercontent.com/thegreishow/thegreishow.com/main/arcade/games/jamaica-run/assets/IMG_3408.png'; };
   let fw = 128, fh = 128;
   sprite.onload = () => { fw = sprite.width / 6; fh = sprite.height / 6; };
+
+  function showStage(name) {
+    stageToast.textContent = name;
+    stageToast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => stageToast.classList.remove('show'), 1800);
+    sound.stage();
+  }
 
   const player = {
     x: 120, y: 256, w: 64, h: 64,
@@ -150,6 +226,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
         this.state = 'jump';
         burst(this.x + 32, this.y + 64, '255,215,0', 12);
         coyoteTime = 0;
+        sound.jump();
       }
     },
     doubleJump() {
@@ -158,6 +235,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
         this.jumps = 2;
         this.state = 'double';
         burst(this.x + 32, this.y + 64, '0,255,0', 18);
+        sound.double();
       }
     },
     update() {
@@ -181,7 +259,6 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
       this.anim = set[Math.floor(this.frame) % set.length];
     },
     draw() {
-      // Simple trail effect
       if (playerTrail.length > 0 && this.state === 'run') {
         ctx.globalAlpha = 0.25;
         for (let i = 0; i < playerTrail.length; i++) {
@@ -230,13 +307,11 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   }
 
   function background() {
-    // Visual progression based on stage
-    let skyTop = '#64b5f6';
-    let skyBottom = '#87ceeb';
-    let sunColor = '#ffeb3b';
-
+    let skyTop = '#64b5f6', skyBottom = '#87ceeb', sunColor = '#ffeb3b';
     if (stage >= 1) { skyTop = '#f4a261'; skyBottom = '#e76f51'; sunColor = '#f4d35e'; }
     if (stage >= 2) { skyTop = '#2d3436'; skyBottom = '#636e72'; sunColor = '#ffeaa7'; }
+    if (stage >= 4) { skyTop = '#ff9f43'; skyBottom = '#ee5a24'; sunColor = '#feca57'; }
+    if (stage >= 6) { skyTop = '#0c2461'; skyBottom = '#1e3799'; sunColor = '#f8c291'; }
 
     const g = ctx.createLinearGradient(0, 0, 0, groundY);
     g.addColorStop(0, skyTop);
@@ -262,8 +337,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
     for (const p of layers[3].e) palm(p.x, groundY, p.s);
 
-    // Ground
-    const groundColors = stage >= 2 ? ['#2d3436','#636e72','#2d3436'] : ['#3b7a57','#4c9141','#2e8b57'];
+    const groundColors = stage >= 6 ? ['#1e272e','#485460','#1e272e'] : stage >= 2 ? ['#2d3436','#636e72','#2d3436'] : ['#3b7a57','#4c9141','#2e8b57'];
     for (let x = -(distance % 40); x < 800; x += 40) {
       for (let y = groundY; y < 400; y += 20) {
         ctx.fillStyle = groundColors[Math.abs(Math.floor(x/40 + y/20)) % 3];
@@ -282,7 +356,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   }
 
   function spawnObstacle() {
-    const types = ['🥥', '🛢️', '🥁', '🔊'];
+    const types = ['🥥', '🛢️', '🥁', '🔊', '🪨'];
     obstacles.push({
       x: 820,
       y: groundY - 42,
@@ -316,6 +390,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
       if (!player.invincible && collide(player, o)) {
         over = true;
         screenShake = 14;
+        sound.hit();
       }
     }
     obstacles = obstacles.filter(o => o.x + 40 > 0);
@@ -330,13 +405,16 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
         if (p.t === '🍁') {
           player.invincible = 145;
           multiplier = Math.min(multiplier + 1, 5);
+          sound.power();
         } else if (p.t === '⚡') {
           CONFIG.speed = Math.min(CONFIG.speed + 2, 11.5);
           setTimeout(() => { if (started) CONFIG.speed = Math.max(6, CONFIG.speed - 1.6); }, 4500);
           multiplier = Math.min(multiplier + 1, 5);
+          sound.power();
         } else {
           score += 85 * multiplier;
           multiplier = Math.min(multiplier + 0.6, 6.5);
+          sound.coin();
         }
         p.dead = true;
         burst(p.x + 15, p.y + 15, '255,215,0', 20);
@@ -344,7 +422,6 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     }
     powerUps = powerUps.filter(p => !p.dead && p.x + 32 > 0);
 
-    // Player trail
     if (player.state === 'run' && frames % 2 === 0) {
       playerTrail.push({x: player.x, y: player.y});
       if (playerTrail.length > 6) playerTrail.shift();
@@ -375,11 +452,14 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   }
 
   function updateStage() {
-    const newStage = Math.floor(distance / 3200);
+    let newStage = 0;
+    for (let i = STAGES.length - 1; i >= 0; i--) {
+      if (distance >= STAGES[i].at) { newStage = i; break; }
+    }
     if (newStage !== stage) {
       stage = newStage;
-      // Optional: small speed boost on stage change
-      if (stage > 0) CONFIG.speed = Math.min(CONFIG.speed + 0.4, 10);
+      showStage(STAGES[stage].name);
+      if (stage > 0) CONFIG.speed = Math.min(CONFIG.speed + 0.35, 10.5);
     }
   }
 
@@ -462,6 +542,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     player.reset();
     initLayers();
     startTime = Date.now();
+    showStage(STAGES[0].name);
     requestAnimationFrame(frame);
   }
 
@@ -474,6 +555,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
     endMessage.innerHTML = `
       Final Score: <strong>${score}</strong><br>
       Multiplier: <strong>×${multiplier.toFixed(1)}</strong><br>
+      Reached: <strong>${STAGES[Math.min(stage, STAGES.length-1)].name}</strong><br>
       Submitting to global leaderboard…
     `;
 
@@ -488,9 +570,9 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || 'Sync failed');
-      endMessage.innerHTML = `Final Score: <strong>${score}</strong> ×${multiplier.toFixed(1)}<br>Global Rank #${d.rank}`;
+      endMessage.innerHTML = `Final Score: <strong>${score}</strong> ×${multiplier.toFixed(1)}<br>Reached: <strong>${STAGES[Math.min(stage, STAGES.length-1)].name}</strong><br>Global Rank #${d.rank}`;
     } catch (e) {
-      endMessage.innerHTML = `Final Score: <strong>${score}</strong> ×${multiplier.toFixed(1)}<br>Saved locally. ${e.message}`;
+      endMessage.innerHTML = `Final Score: <strong>${score}</strong> ×${multiplier.toFixed(1)}<br>Reached: <strong>${STAGES[Math.min(stage, STAGES.length-1)].name}</strong><br>Saved locally.`;
     }
   }
 
@@ -538,7 +620,7 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
 
   addEventListener('keydown', e => {
     if (!started || over) return;
-    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'ArrowUp') {
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'ArrowUp' || e.code === 'Space') {
       e.preventDefault();
       if (!jumpHeld) {
         jumpHeld = true;
@@ -549,12 +631,11 @@ h1{margin:0;color:#ffd700;font-size:clamp(2.5rem,10vw,5rem);text-shadow:3px 3px 
   });
 
   addEventListener('keyup', e => {
-    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'Space') {
       jumpHeld = false;
     }
   });
 
-  // Variable jump height
   setInterval(() => {
     if (jumpHeld && started && player.jumps === 1 && player.vy < 0) {
       jumpHoldTime++;

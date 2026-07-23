@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/arcade/games/jamaica-run/index.html"
+    }
+  ]
+}

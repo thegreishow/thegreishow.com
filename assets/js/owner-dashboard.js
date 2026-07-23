@@ -3,40 +3,164 @@
   const KEY='sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
   const db=window.supabase.createClient(URL,KEY);
   const $=id=>document.getElementById(id);
-  const loginPanel=$('login-panel'), dashboard=$('dashboard'), form=$('owner-login-form'), status=$('owner-login-status');
+  const loginPanel=$('login-panel'),dashboard=$('dashboard'),form=$('owner-login-form'),status=$('owner-login-status');
   const stages=['new','reviewing','quoted','deposit_paid','confirmed','completed','cancelled'];
-  const releaseStorageKey='grei-owner-release-drafts-v1';
-  const builtInReleases=[
-    {title:'No Drama',slug:'no-drama',artist:'The Grei Show',type:'Single',date:'2026-07-03',genre:'Reggae · Dancehall · Afro-fusion',artwork:'/assets/img/no-drama.webp',audio:true,platforms:true,press:true,published:true},
-    {title:'The Vibe',slug:'the-vibe',artist:'The Grei Show',type:'Single',date:'2021',genre:'Reggae',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/7d/0f/94/7d0f9448-e93d-bf08-c89c-bced91866e14/859748745595_cover.jpg/1200x1200bb.jpg',audio:false,platforms:true,press:false,published:true},
-    {title:'Puff Puff Pass',slug:'puff-puff-pass',artist:'The Grei Show',type:'Single',date:'2022',genre:'Reggae · Trap',artwork:'https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/7f/1a/42/7f1a4267-3e9b-8f5f-b66f-f369f7738c40/cover.jpg/1200x1200bb.jpg',audio:false,platforms:true,press:false,published:true}
-  ];
+  let releases=[];
 
-  form.addEventListener('submit',async e=>{e.preventDefault();status.textContent='Signing in…';status.className='muted';const data=new FormData(form);const {error}=await db.auth.signInWithPassword({email:String(data.get('email')).trim(),password:String(data.get('password'))});if(error){status.textContent=error.message;status.className='error';return;}await showDashboard();});
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();status.textContent='Signing in…';status.className='muted';
+    const data=new FormData(form);
+    const {error}=await db.auth.signInWithPassword({email:String(data.get('email')).trim(),password:String(data.get('password'))});
+    if(error){status.textContent=error.message;status.className='error';return;}
+    await showDashboard();
+  });
   $('owner-logout').addEventListener('click',async()=>{await db.auth.signOut();showLogin();});
   $('refresh-dashboard').addEventListener('click',loadDashboard);
   $('bookings-body').addEventListener('change',handleStageChange);
-  $('release-form').addEventListener('submit',saveReleaseDraft);
+  $('release-form').addEventListener('submit',saveRelease);
   $('release-form').addEventListener('input',syncSlug);
   document.addEventListener('click',handleNavigation);
-  db.auth.onAuthStateChange((_event,session)=>{if(session) showDashboard(); else showLogin();});
+  db.auth.onAuthStateChange((_event,session)=>{if(session) showDashboard();else showLogin();});
   db.auth.getSession().then(({data})=>data.session?showDashboard():showLogin());
 
   function showLogin(){loginPanel.hidden=false;dashboard.hidden=true;}
-  async function showDashboard(){loginPanel.hidden=true;dashboard.hidden=false;renderReleases();try{await loadDashboard();}catch(error){dashboard.hidden=true;loginPanel.hidden=false;status.textContent=error.message||String(error);status.className='error';await db.auth.signOut();}}
-  function handleNavigation(event){const sectionButton=event.target.closest('[data-section]');const jump=event.target.closest('[data-jump]');const openBuilder=event.target.closest('[data-open-builder]');const deleteDraft=event.target.closest('[data-delete-draft]');if(sectionButton)switchSection(sectionButton.dataset.section);if(jump)switchSection(jump.dataset.jump);if(openBuilder)switchSection('builder');if(deleteDraft)deleteReleaseDraft(deleteDraft.dataset.deleteDraft);}
-  function switchSection(name){document.querySelectorAll('.section').forEach(section=>section.classList.toggle('active',section.id===`section-${name}`));document.querySelectorAll('[data-section]').forEach(button=>button.classList.toggle('active',button.dataset.section===name));const labels={overview:['Owner command','Overview'],website:['Public ecosystem','Website control'],whiteline:['Agency operations','White Line Admin'],releases:['Catalogue','Releases'],builder:['Release system','New release'],media:['Asset control','Media vault'],audience:['Community','Audience'],business:['Operations','Business'],systems:['Infrastructure','Systems']};const [eyebrow,title]=labels[name]||['Owner OS','Dashboard'];$('section-eyebrow').textContent=eyebrow;$('section-title').textContent=title;window.scrollTo({top:0,behavior:'smooth'});}
-  function getDrafts(){try{return JSON.parse(localStorage.getItem(releaseStorageKey)||'[]');}catch(_){return [];}}
-  function saveDrafts(drafts){localStorage.setItem(releaseStorageKey,JSON.stringify(drafts));}
-  function saveReleaseDraft(event){event.preventDefault();const releaseForm=event.currentTarget;const data=Object.fromEntries(new FormData(releaseForm).entries());data.slug=slugify(data.slug||data.title);data.published=false;data.audio=Boolean(data.audio);data.platforms=Boolean(data.spotify||data.apple||data.youtube);data.press=Boolean(data.press);data.createdAt=new Date().toISOString();const drafts=getDrafts();const existingIndex=drafts.findIndex(item=>item.slug===data.slug);if(existingIndex>=0)drafts[existingIndex]=data;else drafts.unshift(data);saveDrafts(drafts);$('release-form-status').textContent=`${data.title} saved as a local draft.`;$('release-form-status').className='status-bar field full success';releaseForm.reset();releaseForm.elements.artist.value='The Grei Show';renderReleases();setTimeout(()=>switchSection('releases'),500);}
-  function deleteReleaseDraft(slug){saveDrafts(getDrafts().filter(item=>item.slug!==slug));renderReleases();}
-  function syncSlug(event){const releaseForm=event.currentTarget;if(event.target.name==='title'&&!releaseForm.elements.slug.dataset.edited)releaseForm.elements.slug.value=slugify(event.target.value);if(event.target.name==='slug')releaseForm.elements.slug.dataset.edited='true';}
-  function renderReleases(){const releases=[...builtInReleases,...getDrafts()];$('release-grid').innerHTML=releases.map(release=>{const artwork=release.artwork?`<img src="${esc(release.artwork)}" alt="${esc(release.title)} artwork">`:esc(release.type||'Release');const readyCount=[release.artwork,release.audio,release.platforms,release.description,release.press].filter(Boolean).length;const isDraft=!release.published;return `<article class="panel release-card"><div class="release-art">${artwork}</div><div class="release-body"><div class="release-meta"><span>${esc(release.type||'Release')}</span><span class="pill ${release.published?'ready':'warning'}">${release.published?'Published':'Draft'}</span></div><h3>${esc(release.title)}</h3><div class="muted">${esc(release.artist||'The Grei Show')} · ${esc(release.date||'Date pending')}</div><div class="checklist">${check('Artwork',release.artwork)}${check('Audio',release.audio)}${check('Platforms',release.platforms)}${check('Press kit',release.press)}</div><div class="release-meta"><span>${readyCount}/5 core items ready</span><span>${esc(release.genre||'Genre pending')}</span></div><div class="release-actions" style="margin-top:16px">${release.published?`<a class="button secondary" href="/promo/${encodeURIComponent(release.slug)}/" target="_blank">Open promo page</a>`:'<button class="button secondary" disabled>Preview coming next</button>'}${isDraft?`<button class="button ghost" data-delete-draft="${esc(release.slug)}">Delete draft</button>`:''}</div></div></article>`;}).join('');}
-  function check(labelText,value){return `<div class="check ${value?'done':''}">${value?'✓':'○'} ${labelText}</div>`;}
-  function slugify(value){return String(value||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  async function loadDashboard(){const closedStages=['completed','cancelled'];const [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows]=await Promise.all([db.from('client_requests').select('id,client_name,company_name,email,phone,whatsapp,project_name,project_type,event_date,booking_stage,status,payment_status,quoted_amount,amount_paid,currency,created_at').order('created_at',{ascending:false}).limit(25),db.from('booking_payments').select('id,payment_type,amount,currency,status,description,paid_at,created_at').order('created_at',{ascending:false}).limit(25),db.from('release_list_subscribers').select('id,email,first_name,country,status,subscribed_at,welcome_sent_at').order('subscribed_at',{ascending:false}).limit(25),db.from('client_requests').select('*',{count:'exact',head:true}),db.from('release_list_subscribers').select('*',{count:'exact',head:true}).eq('status','subscribed'),db.from('client_requests').select('id,booking_stage,status'),db.from('booking_payments').select('amount,currency,status,paid_at')]);for(const result of [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows])if(result.error)throw result.error;const allBookings=bookingRows.data||[],allPayments=paymentRows.data||[],allSubscribers=subscriberRows.data||[];const openBookings=(openCount.data||[]).filter(x=>!closedStages.includes(String(x.booking_stage||x.status||'').toLowerCase())).length;const paidTransactions=(paidRows.data||[]).filter(x=>String(x.status).toLowerCase()==='paid'||x.paid_at);const revenueByCurrency=paidTransactions.reduce((totals,x)=>{const currency=String(x.currency||'USD').toUpperCase();totals[currency]=(totals[currency]||0)+Number(x.amount||0);return totals;},{});$('metric-bookings').textContent=bookingCount.count??0;$('metric-open').textContent=openBookings;$('metric-revenue').textContent=formatRevenue(revenueByCurrency);$('metric-subscribers').textContent=subscriberCount.count??0;$('bookings-body').innerHTML=allBookings.map(x=>row([date(x.created_at),esc(x.company_name||x.client_name||'—'),esc(x.project_name||x.project_type||'—'),esc(x.event_date||'—'),stageSelect(x),pill(x.payment_status||'unpaid'),followUpLinks(x)])).join('')||empty(7);$('payments-body').innerHTML=allPayments.map(x=>row([date(x.paid_at||x.created_at),esc(x.payment_type||'—'),money(x.amount,x.currency),pill(x.status||'pending'),esc(x.description||'—')])).join('')||empty(5);$('subscribers-body').innerHTML=allSubscribers.map(x=>row([date(x.subscribed_at),esc(x.first_name||'—'),esc(x.email),esc(x.country||'—'),pill(x.welcome_sent_at?'sent':'pending')])).join('')||empty(5);$('bookings-status').textContent=`${allBookings.length} most recent`;$('payments-status').textContent=`${allPayments.length} most recent`;$('subscribers-status').textContent=`${allSubscribers.length} most recent`;}
-  async function handleStageChange(event){const select=event.target.closest('[data-booking-stage]');if(!select)return;const previous=select.dataset.previous;select.disabled=true;select.title='Saving…';const {error}=await db.from('client_requests').update({booking_stage:select.value,updated_at:new Date().toISOString()}).eq('id',select.dataset.bookingId);if(error){select.value=previous;select.title=error.message;select.classList.add('error');window.setTimeout(()=>select.classList.remove('error'),2200);}else{select.dataset.previous=select.value;select.title='Saved';select.classList.add('success');window.setTimeout(()=>select.classList.remove('success'),1400);await loadDashboard();}select.disabled=false;}
-  function stageSelect(x){const value=String(x.booking_stage||x.status||'new').toLowerCase();const options=stages.map(stage=>`<option value="${stage}"${stage===value?' selected':''}>${esc(label(stage))}</option>`).join('');return `<select class="pipeline-select" data-booking-stage data-booking-id="${esc(x.id)}" data-previous="${esc(value)}">${options}</select>`;}
-  function followUpLinks(x){const subject=`The Grei Show booking follow-up — ${x.project_name||x.project_type||'your request'}`;const body=`Hello ${x.client_name||'there'},\n\nThank you for your request regarding ${x.project_name||x.project_type||'your project'}. I am following up with the next steps.\n\nBest,\nThe Grei Show`;const links=[];if(x.email)links.push(`<a class="quick-link" href="mailto:${encodeURIComponent(x.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}">Email</a>`);const phone=String(x.whatsapp||x.phone||'').replace(/\D/g,'');if(phone)links.push(`<a class="quick-link" href="https://wa.me/${encodeURIComponent(phone)}?text=${encodeURIComponent(body)}" target="_blank" rel="noopener">WhatsApp</a>`);return `<div class="quick-links">${links.join('')||'<span class="muted">No contact</span>'}</div>`;}
-  function row(cells){return `<tr>${cells.map(v=>`<td>${v}</td>`).join('')}</tr>`;}function empty(cols){return `<tr><td colspan="${cols}" class="muted">No records yet.</td></tr>`;}function pill(v){return `<span class="pill">${esc(label(String(v)))}</span>`;}function label(v){return String(v||'').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}function date(v){return v?esc(new Date(v).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})):'—';}function money(v,c='USD'){return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(v||0));}function formatRevenue(totals){const entries=Object.entries(totals);if(!entries.length)return money(0,'USD');return entries.map(([currency,amount])=>money(amount,currency)).join(' · ');}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  async function showDashboard(){
+    loginPanel.hidden=true;dashboard.hidden=false;
+    try{await Promise.all([loadDashboard(),loadReleases()]);}
+    catch(error){dashboard.hidden=true;loginPanel.hidden=false;status.textContent=error.message||String(error);status.className='error';await db.auth.signOut();}
+  }
+
+  function handleNavigation(event){
+    const sectionButton=event.target.closest('[data-section]');
+    const jump=event.target.closest('[data-jump]');
+    const openBuilder=event.target.closest('[data-open-builder]');
+    const edit=event.target.closest('[data-edit-release]');
+    const toggle=event.target.closest('[data-toggle-release]');
+    const remove=event.target.closest('[data-delete-release]');
+    if(sectionButton)switchSection(sectionButton.dataset.section);
+    if(jump)switchSection(jump.dataset.jump);
+    if(openBuilder){resetReleaseForm();switchSection('builder');}
+    if(edit)editRelease(edit.dataset.editRelease);
+    if(toggle)toggleRelease(toggle.dataset.toggleRelease,toggle.dataset.nextStatus);
+    if(remove)deleteRelease(remove.dataset.deleteRelease);
+  }
+
+  function switchSection(name){
+    document.querySelectorAll('.section').forEach(section=>section.classList.toggle('active',section.id===`section-${name}`));
+    document.querySelectorAll('[data-section]').forEach(button=>button.classList.toggle('active',button.dataset.section===name));
+    const labels={overview:['Control center','Overview'],website:['Website system','Website control'],whiteline:['Agency operations','White Line Admin'],releases:['Catalogue','Releases'],builder:['Release system','Release editor'],media:['Asset control','Media vault'],audience:['Community','Audience'],business:['Operations','Business'],systems:['Infrastructure','Systems']};
+    const [eyebrow,title]=labels[name]||['Owner OS','Dashboard'];
+    $('section-eyebrow').textContent=eyebrow;$('section-title').textContent=title;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  async function loadReleases(){
+    const {data,error}=await db.from('owner_releases').select('*').order('release_date',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false});
+    if(error)throw error;
+    releases=data||[];
+    renderReleases();
+    const navCount=document.querySelector('[data-section="releases"] small');
+    if(navCount)navCount.textContent=String(releases.length);
+  }
+
+  async function saveRelease(event){
+    event.preventDefault();
+    const releaseForm=event.currentTarget;
+    const raw=Object.fromEntries(new FormData(releaseForm).entries());
+    const id=raw.id||null;
+    const payload={
+      title:String(raw.title||'').trim(),slug:slugify(raw.slug||raw.title),artist:String(raw.artist||'The Grei Show').trim(),
+      release_type:raw.type||'Single',release_date:raw.date||null,genre:raw.genre||null,description:raw.description||null,
+      artwork_url:raw.artwork||null,audio_url:raw.audio||null,spotify_url:raw.spotify||null,apple_url:raw.apple||null,
+      youtube_url:raw.youtube||null,press_url:raw.press||null,status:raw.status||'draft',updated_at:new Date().toISOString()
+    };
+    const submit=releaseForm.querySelector('[type="submit"]');submit.disabled=true;
+    setReleaseStatus('Saving to Owner OS…','muted');
+    const query=id?db.from('owner_releases').update(payload).eq('id',id):db.from('owner_releases').insert(payload);
+    const {error}=await query;
+    submit.disabled=false;
+    if(error){setReleaseStatus(error.message,'error');return;}
+    setReleaseStatus(`${payload.title} saved successfully.`,'success');
+    await loadReleases();
+    setTimeout(()=>{resetReleaseForm();switchSection('releases');},500);
+  }
+
+  function editRelease(id){
+    const release=releases.find(x=>x.id===id);if(!release)return;
+    const f=$('release-form');
+    ensureHiddenId(f);f.elements.id.value=release.id;
+    f.elements.title.value=release.title||'';f.elements.slug.value=release.slug||'';f.elements.slug.dataset.edited='true';
+    f.elements.artist.value=release.artist||'The Grei Show';f.elements.type.value=release.release_type||'Single';
+    f.elements.date.value=release.release_date||'';f.elements.genre.value=release.genre||'';f.elements.description.value=release.description||'';
+    f.elements.artwork.value=release.artwork_url||'';f.elements.audio.value=release.audio_url||'';f.elements.spotify.value=release.spotify_url||'';
+    f.elements.apple.value=release.apple_url||'';f.elements.youtube.value=release.youtube_url||'';f.elements.press.value=release.press_url||'';
+    if(f.elements.status)f.elements.status.value=release.status||'draft';
+    f.querySelector('[type="submit"]').textContent='Save changes';
+    setReleaseStatus(`Editing ${release.title}`,'muted');switchSection('builder');
+  }
+
+  async function toggleRelease(id,nextStatus){
+    const {error}=await db.from('owner_releases').update({status:nextStatus,updated_at:new Date().toISOString()}).eq('id',id);
+    if(error){alert(error.message);return;}await loadReleases();
+  }
+
+  async function deleteRelease(id){
+    const release=releases.find(x=>x.id===id);if(!release)return;
+    if(!confirm(`Delete ${release.title}? This cannot be undone.`))return;
+    const {error}=await db.from('owner_releases').delete().eq('id',id);
+    if(error){alert(error.message);return;}await loadReleases();
+  }
+
+  function renderReleases(){
+    $('release-grid').innerHTML=releases.map(release=>{
+      const artwork=release.artwork_url?`<img src="${esc(release.artwork_url)}" alt="${esc(release.title)} artwork">`:esc(release.release_type||'Release');
+      const platforms=Boolean(release.spotify_url||release.apple_url||release.youtube_url||release.deezer_url||release.amazon_url);
+      const readyCount=[release.artwork_url,release.audio_url,platforms,release.description,release.press_url].filter(Boolean).length;
+      const published=release.status==='published';
+      return `<article class="panel release-card"><div class="release-art">${artwork}</div><div class="release-body">
+        <div class="release-meta"><span>${esc(release.release_type||'Release')}</span><span class="pill ${published?'ready':'warning'}">${esc(label(release.status))}</span></div>
+        <h3>${esc(release.title)}</h3><div class="muted">${esc(release.artist||'The Grei Show')} · ${esc(release.release_date||'Date pending')}</div>
+        <div class="checklist">${check('Artwork',release.artwork_url)}${check('Audio',release.audio_url)}${check('Platforms',platforms)}${check('Press kit',release.press_url)}</div>
+        <div class="release-meta"><span>${readyCount}/5 core items ready</span><span>${esc(release.genre||'Genre pending')}</span></div>
+        <div class="release-actions" style="margin-top:16px">
+          <button class="button secondary" data-edit-release="${release.id}">Edit</button>
+          <button class="button ${published?'ghost':'secondary'}" data-toggle-release="${release.id}" data-next-status="${published?'draft':'published'}">${published?'Unpublish':'Publish'}</button>
+          ${published?`<a class="button ghost" href="/promo/${encodeURIComponent(release.slug)}/" target="_blank">Open promo</a>`:''}
+          <button class="button ghost" data-delete-release="${release.id}">Delete</button>
+        </div></div></article>`;
+    }).join('')||'<article class="panel"><p class="muted">No releases yet.</p></article>';
+  }
+
+  function resetReleaseForm(){const f=$('release-form');f.reset();ensureHiddenId(f);f.elements.id.value='';f.elements.artist.value='The Grei Show';f.elements.slug.dataset.edited='';f.querySelector('[type="submit"]').textContent='Save release';setReleaseStatus('','muted');}
+  function ensureHiddenId(f){if(!f.elements.id){const input=document.createElement('input');input.type='hidden';input.name='id';f.appendChild(input);}}
+  function setReleaseStatus(message,kind){$('release-form-status').textContent=message;$('release-form-status').className=`status-bar field full ${kind||''}`;}
+  function syncSlug(event){const f=event.currentTarget;if(event.target.name==='title'&&!f.elements.slug.dataset.edited)f.elements.slug.value=slugify(event.target.value);if(event.target.name==='slug')f.elements.slug.dataset.edited='true';}
+  function check(t,v){return `<div class="check ${v?'done':''}">${v?'✓':'○'} ${t}</div>`;}
+  function slugify(v){return String(v||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+
+  async function loadDashboard(){
+    const closedStages=['completed','cancelled'];
+    const [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows]=await Promise.all([
+      db.from('client_requests').select('id,client_name,company_name,email,phone,whatsapp,project_name,project_type,event_date,booking_stage,status,payment_status,quoted_amount,amount_paid,currency,created_at').order('created_at',{ascending:false}).limit(25),
+      db.from('booking_payments').select('id,payment_type,amount,currency,status,description,paid_at,created_at').order('created_at',{ascending:false}).limit(25),
+      db.from('release_list_subscribers').select('id,email,first_name,country,status,subscribed_at,welcome_sent_at').order('subscribed_at',{ascending:false}).limit(25),
+      db.from('client_requests').select('*',{count:'exact',head:true}),db.from('release_list_subscribers').select('*',{count:'exact',head:true}).eq('status','subscribed'),
+      db.from('client_requests').select('id,booking_stage,status'),db.from('booking_payments').select('amount,currency,status,paid_at')
+    ]);
+    for(const result of [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows])if(result.error)throw result.error;
+    const allBookings=bookingRows.data||[],allPayments=paymentRows.data||[],allSubscribers=subscriberRows.data||[];
+    const openBookings=(openCount.data||[]).filter(x=>!closedStages.includes(String(x.booking_stage||x.status||'').toLowerCase())).length;
+    const paid=(paidRows.data||[]).filter(x=>String(x.status).toLowerCase()==='paid'||x.paid_at);
+    const totals=paid.reduce((a,x)=>{const c=String(x.currency||'USD').toUpperCase();a[c]=(a[c]||0)+Number(x.amount||0);return a;},{});
+    $('metric-bookings').textContent=bookingCount.count??0;$('metric-open').textContent=openBookings;$('metric-revenue').textContent=formatRevenue(totals);$('metric-subscribers').textContent=subscriberCount.count??0;
+    $('bookings-body').innerHTML=allBookings.map(x=>row([date(x.created_at),esc(x.company_name||x.client_name||'—'),esc(x.project_name||x.project_type||'—'),esc(x.event_date||'—'),stageSelect(x),pill(x.payment_status||'unpaid'),followUpLinks(x)])).join('')||empty(7);
+    $('payments-body').innerHTML=allPayments.map(x=>row([date(x.paid_at||x.created_at),esc(x.payment_type||'—'),money(x.amount,x.currency),pill(x.status||'pending'),esc(x.description||'—')])).join('')||empty(5);
+    $('subscribers-body').innerHTML=allSubscribers.map(x=>row([date(x.subscribed_at),esc(x.first_name||'—'),esc(x.email),esc(x.country||'—'),pill(x.welcome_sent_at?'sent':'pending')])).join('')||empty(5);
+    $('bookings-status').textContent=`${allBookings.length} most recent`;$('payments-status').textContent=`${allPayments.length} most recent`;$('subscribers-status').textContent=`${allSubscribers.length} most recent`;
+  }
+
+  async function handleStageChange(event){const select=event.target.closest('[data-booking-stage]');if(!select)return;const previous=select.dataset.previous;select.disabled=true;const {error}=await db.from('client_requests').update({booking_stage:select.value,updated_at:new Date().toISOString()}).eq('id',select.dataset.bookingId);if(error){select.value=previous;select.title=error.message;}else{select.dataset.previous=select.value;await loadDashboard();}select.disabled=false;}
+  function stageSelect(x){const value=String(x.booking_stage||x.status||'new').toLowerCase();return `<select class="pipeline-select" data-booking-stage data-booking-id="${esc(x.id)}" data-previous="${esc(value)}">${stages.map(s=>`<option value="${s}"${s===value?' selected':''}>${esc(label(s))}</option>`).join('')}</select>`;}
+  function followUpLinks(x){const subject=`The Grei Show booking follow-up — ${x.project_name||x.project_type||'your request'}`;const body=`Hello ${x.client_name||'there'},\n\nThank you for your request regarding ${x.project_name||x.project_type||'your project'}. I am following up with the next steps.\n\nBest,\nThe Grei Show`;const links=[];if(x.email)links.push(`<a class="quick-link" href="mailto:${encodeURIComponent(x.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}">Email</a>`);const phone=String(x.whatsapp||x.phone||'').replace(/\D/g,'');if(phone)links.push(`<a class="quick-link" href="https://wa.me/${phone}?text=${encodeURIComponent(body)}" target="_blank">WhatsApp</a>`);return `<div class="quick-links">${links.join('')||'<span class="muted">No contact</span>'}</div>`;}
+  function row(c){return `<tr>${c.map(v=>`<td>${v}</td>`).join('')}</tr>`;}function empty(n){return `<tr><td colspan="${n}" class="muted">No records yet.</td></tr>`;}function pill(v){return `<span class="pill">${esc(label(v))}</span>`;}function label(v){return String(v||'').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}function date(v){return v?esc(new Date(v).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})):'—';}function money(v,c='USD'){return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(v||0));}function formatRevenue(t){const e=Object.entries(t);return e.length?e.map(([c,a])=>money(a,c)).join(' · '):money(0,'USD');}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 })();

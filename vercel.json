@@ -1,7 +1,17 @@
 {
+  "cleanUrls": false,
+  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/promo/:slug*",
+      "source": "/promo",
+      "destination": "/promo/index.html"
+    },
+    {
+      "source": "/promo/",
+      "destination": "/promo/index.html"
+    },
+    {
+      "source": "/promo/:path*",
       "destination": "/promo/index.html"
     },
     {

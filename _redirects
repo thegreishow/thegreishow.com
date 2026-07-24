@@ -1,1 +1,3 @@
+/promo /promo/index.html 200
+/promo/ /promo/index.html 200
 /promo/* /promo/index.html 200

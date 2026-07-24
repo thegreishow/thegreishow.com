@@ -60,7 +60,8 @@
 
   function cardMarkup(r){
     const image=displayImage(r.artwork_url);
-    return `<a class="release-card" href="/promo/${escAttr(r.slug)}/">
+    const reliableUrl=`/promo/?slug=${encodeURIComponent(r.slug)}`;
+    return `<a class="release-card" href="${escAttr(reliableUrl)}" data-pretty-url="/promo/${escAttr(r.slug)}/">
       <div class="release-art${image?'':' fallback'}" data-title="${escAttr(r.title)}">
         ${image?`<img src="${escAttr(image)}" alt="${escAttr(r.title)} artwork" loading="lazy" data-drive-id="${escAttr(driveId(r.artwork_url)||'')}" data-fallback-step="0">`:''}
       </div>
@@ -112,9 +113,11 @@
   }
 
   function getSlug(){
+    const querySlug=new URLSearchParams(location.search).get('slug');
+    if(querySlug) return querySlug.toLowerCase();
     const parts=location.pathname.split('/').filter(Boolean);
     const i=parts.indexOf('promo');
-    return i>=0&&parts[i+1]?decodeURIComponent(parts[i+1]).toLowerCase():new URLSearchParams(location.search).get('slug')||'';
+    return i>=0&&parts[i+1]?decodeURIComponent(parts[i+1]).toLowerCase():'';
   }
 
   function driveId(url){

@@ -1,0 +1,60 @@
+const SUPABASE_URL='https://dkvbeizjlgxqjuxnlqho.supabase.co';
+const SUPABASE_KEY='sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
+
+export async function onRequestGet({request}){
+  try{
+    const url=new URL(request.url);
+    const slug=String(url.searchParams.get('slug')||'').trim().toLowerCase();
+    const type=String(url.searchParams.get('type')||'audio').trim().toLowerCase();
+    const index=Math.max(0,Number.parseInt(url.searchParams.get('index')||'0',10)||0);
+    const download=url.searchParams.get('download')==='1';
+    if(!slug)return json({error:'Missing release slug'},400);
+
+    const endpoint=`${SUPABASE_URL}/rest/v1/owner_releases?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=title,artist,audio_url,artwork_url,tracks`;
+    const recordResponse=await fetch(endpoint,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
+    if(!recordResponse.ok)return json({error:'Release lookup failed'},502);
+    const records=await recordResponse.json();
+    const release=records[0];
+    if(!release)return json({error:'Release not found'},404);
+
+    let source='',filename='';
+    if(type==='artwork'){
+      source=release.artwork_url||'';
+      filename=`${safeName(release.title||slug)}-artwork${extensionFromUrl(source)||'.jpg'}`;
+    }else if(type==='track'){
+      const tracks=Array.isArray(release.tracks)?release.tracks:[];
+      const track=tracks[index];
+      source=track&&track.url||'';
+      filename=`${safeName(track&&track.title||`${release.title||slug}-track-${index+1}`)}${extensionFromUrl(source)||'.mp3'}`;
+    }else{
+      source=release.audio_url||'';
+      filename=`${safeName(release.title||slug)}${extensionFromUrl(source)||'.mp3'}`;
+    }
+    if(!source||/\/folders\//.test(source))return json({error:'Playable file unavailable'},404);
+
+    const upstreamUrl=toDirectUrl(source);
+    const headers=new Headers({'Accept':'*/*','User-Agent':'Mozilla/5.0'});
+    const range=request.headers.get('Range');
+    if(range)headers.set('Range',range);
+    const upstream=await fetch(upstreamUrl,{headers,redirect:'follow'});
+    if(!upstream.ok&&upstream.status!==206)return json({error:'Media unavailable'},upstream.status);
+
+    const responseHeaders=new Headers();
+    responseHeaders.set('Content-Type',upstream.headers.get('content-type')||contentTypeFor(filename,type));
+    responseHeaders.set('Accept-Ranges',upstream.headers.get('accept-ranges')||'bytes');
+    responseHeaders.set('Cache-Control','public, max-age=3600, s-maxage=86400');
+    responseHeaders.set('X-Content-Type-Options','nosniff');
+    for(const name of ['content-length','content-range']){const value=upstream.headers.get(name);if(value)responseHeaders.set(name,value)}
+    responseHeaders.set('Content-Disposition',`${download?'attachment':'inline'}; filename="${filename.replace(/"/g,'')}"`);
+    return new Response(upstream.body,{status:upstream.status===206?206:200,headers:responseHeaders});
+  }catch(error){
+    console.error('media proxy error',error);
+    return json({error:'Media service unavailable'},500);
+  }
+}
+
+function json(data,status){return new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json;charset=UTF-8'}})}
+function toDirectUrl(url){const value=String(url||'');const match=value.match(/[?&]id=([\w-]+)/)||value.match(/\/d\/([\w-]+)/);if(match&&value.includes('drive.google.com'))return`https://drive.usercontent.google.com/download?id=${match[1]}&export=download&confirm=t`;return value}
+function safeName(value){return String(value||'release').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'release'}
+function extensionFromUrl(url){const m=String(url||'').match(/\.(mp3|wav|flac|m4a|aac|ogg|jpg|jpeg|png|webp)(?:[?#]|$)/i);return m?`.${m[1].toLowerCase()}`:''}
+function contentTypeFor(filename,type){if(type==='artwork')return filename.endsWith('.png')?'image/png':filename.endsWith('.webp')?'image/webp':'image/jpeg';if(filename.endsWith('.wav'))return'audio/wav';if(filename.endsWith('.flac'))return'audio/flac';if(filename.endsWith('.m4a'))return'audio/mp4';return'audio/mpeg'}

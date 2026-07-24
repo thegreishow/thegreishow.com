@@ -19,7 +19,7 @@ async function resend(env,path,init={}){
 export async function onRequestGet({request,env}){
   try{await requireOwner(request)}catch(e){return json({error:e.message},e.message==='UNAUTHORIZED'?401:403)}
   const url=new URL(request.url),resource=url.searchParams.get('resource')||'emails',limit=Math.min(Number(url.searchParams.get('limit')||20),100);
-  const paths={emails:`/emails?limit=${limit}`,contacts:`/audiences/contacts?limit=${limit}`,segments:`/segments?limit=${limit}`,templates:`/templates?limit=${limit}`};
+  const paths={emails:`/emails?limit=${limit}`,contacts:`/contacts?limit=${limit}`,segments:`/segments?limit=${limit}`,templates:`/templates?limit=${limit}`};
   if(!paths[resource])return json({error:'Unsupported resource'},400);
   try{return await resend(env,paths[resource])}catch(e){return json({error:e.message},e.message==='RESEND_NOT_CONFIGURED'?503:500)}
 }

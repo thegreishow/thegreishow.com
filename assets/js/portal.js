@@ -36,6 +36,7 @@
     'ep2': 'ep-2',
     'any-one': 'any-one-a-dem',
     '24-days': '24-days',
+    'halfway': 'halfway',
     'love-alone': 'a-love-alone',
     'ppp-remix': 'puff-puff-pass-remix-bay-c',
     'choppa-talk': 'choppa-talk',

@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/promo/:slug*",
+      "destination": "/promo/index.html"
+    },
+    {
       "source": "/",
       "destination": "/arcade/games/jamaica-run/index.html"
     }

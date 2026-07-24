@@ -1,4 +1,4 @@
-// Grei Site - Global Navigation Injector
+// Grei Site - Global Navigation + Footer Injector
 (function () {
   let initialized = false;
 
@@ -129,6 +129,34 @@
     }
   }
 
+  async function loadFooter() {
+    // Avoid double-injection
+    if (document.querySelector('[data-site-footer]')) return;
+
+    try {
+      const response = await fetch('/shared/footer.html', { cache: 'no-cache' });
+      if (!response.ok) throw new Error('Footer unavailable');
+      const html = await response.text();
+
+      // Prefer an explicit mount point if present
+      let mount = document.getElementById('site-footer');
+      if (mount) {
+        mount.innerHTML = html;
+        return;
+      }
+
+      // Otherwise append after main or at end of body
+      const main = document.querySelector('main');
+      const target = main || document.body;
+      const wrapper = document.createElement('div');
+      wrapper.id = 'site-footer';
+      wrapper.innerHTML = html;
+      target.parentNode.insertBefore(wrapper, target.nextSibling);
+    } catch (error) {
+      console.error('[Footer Loader] Failed to load footer:', error);
+    }
+  }
+
   function enhanceReleaseList() {
     const panel = document.querySelector('.list-panel');
     if (!panel || document.getElementById('release-list-form')) return;
@@ -150,6 +178,7 @@
     ensureFavicon();
     initSiteEvents();
     loadNav();
+    loadFooter();
     enhanceReleaseList();
   }
 

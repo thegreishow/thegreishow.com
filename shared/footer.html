@@ -1,0 +1,127 @@
+<style>
+  .site-footer {
+    margin-top: 80px;
+    padding: 48px 0 36px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    background: rgba(3,6,12,0.92);
+  }
+  .site-footer-inner {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+    display: grid;
+    gap: 32px;
+  }
+  .footer-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 28px;
+  }
+  .footer-brand {
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.22em;
+    color: #fff;
+  }
+  .footer-brand + p {
+    margin: 10px 0 0;
+    max-width: 340px;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+  .footer-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .footer-platforms a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    color: rgba(255,255,255,0.82);
+    background: rgba(255,255,255,0.04);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  .footer-platforms a:hover,
+  .footer-platforms a:focus-visible {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(216,255,99,0.4);
+    color: #fff;
+    outline: none;
+  }
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+  .footer-bottom p {
+    margin: 0;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.82rem;
+  }
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 18px;
+  }
+  .footer-nav a {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .footer-nav a:hover,
+  .footer-nav a:focus-visible {
+    color: #fff;
+    outline: none;
+  }
+  @media (max-width: 640px) {
+    .site-footer { padding: 40px 0 28px; }
+    .footer-top { flex-direction: column; }
+  }
+</style>
+
+<footer class="site-footer" data-site-footer>
+  <div class="site-footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">THE GREI SHOW</div>
+        <p>Independent music, stories and creative worlds from Kingston, Jamaica.</p>
+      </div>
+      <nav class="footer-platforms" aria-label="Platforms and social profiles">
+        <a href="https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k" target="_blank" rel="noopener noreferrer" data-track="footer_platform" data-track-label="Footer - Spotify">Spotify</a>
+        <a href="https://music.apple.com/jm/artist/the-grei-show/885841733" target="_blank" rel="noopener noreferrer" data-track="footer_platform" data-track-label="Footer - Apple Music">Apple Music</a>
+        <a href="https://youtube.com/@thegreishxw" target="_blank" rel="noopener noreferrer" data-track="footer_platform" data-track-label="Footer - YouTube">YouTube</a>
+        <a href="https://thegreishow.bandcamp.com" target="_blank" rel="noopener noreferrer" data-track="footer_platform" data-track-label="Footer - Bandcamp">Bandcamp</a>
+        <a href="https://instagram.com/thegreishow" target="_blank" rel="noopener noreferrer" data-track="footer_platform" data-track-label="Footer - Instagram">Instagram</a>
+        <a href="https://www.facebook.com/TheGreiShow/" target="_blank" rel="noopener noreferrer" data-track="footer_platform" data-track-label="Footer - Facebook">Facebook</a>
+        <a href="https://x.com/TheGreiShow" target="_blank" rel="noopener noreferrer" data-track="footer_platform" data-track-label="Footer - X">X</a>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 The Grei Show · Wheel It! Records</p>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/about.html">About</a>
+        <a href="/press.html">Press</a>
+        <a href="/connect.html">Bookings</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </nav>
+    </div>
+  </div>
+</footer>

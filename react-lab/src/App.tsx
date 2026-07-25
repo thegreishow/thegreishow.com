@@ -10,30 +10,68 @@ type Portal = {
   action: string;
 };
 
+type Game = {
+  id: string;
+  title: string;
+  description: string;
+  version: string;
+  thumbnail: string;
+  tags: string[];
+};
+
+const productionOrigin = 'https://thegreishow.com';
+
 const portals: Portal[] = [
   {
     kicker: 'Listen',
     title: 'Audio Universe',
     description: 'Releases, collaborations, production credits and the signal behind the sound.',
-    href: '/music.html',
-    image: 'https://thegreishow.com/assets/img/no-drama.webp',
+    href: `${productionOrigin}/music.html`,
+    image: `${productionOrigin}/assets/img/no-drama.webp`,
     action: 'Enter the music'
   },
   {
     kicker: 'Read',
     title: 'The Astral Thread',
     description: 'Stories, books and connected worlds from The Infinite Story-verse.',
-    href: '/books.html',
-    image: 'https://thegreishow.com/assets/images/books/astral-thread-cover.jpg',
+    href: `${productionOrigin}/books.html`,
+    image: `${productionOrigin}/assets/images/books/astral-thread-cover.jpg`,
     action: 'Open the story'
   },
   {
     kicker: 'Play',
     title: 'Grei Arcade',
     description: 'Original interactive experiments, Jamaican worlds and games built from the ground up.',
-    href: '/arcade.html',
-    image: 'https://thegreishow.com/assets/img/home-bg.webp',
+    href: `${productionOrigin}/arcade.html`,
+    image: `${productionOrigin}/assets/img/home-bg.webp`,
     action: 'Start a game'
+  }
+];
+
+const games: Game[] = [
+  {
+    id: 'dreamweaver-oracle',
+    title: 'Dreamweaver',
+    description: 'Collect story fragments, survive corrupted memories, and shape a different dream every run.',
+    version: '1.0',
+    thumbnail: `${productionOrigin}/arcade/assets/thumbnails/dreamweaver-oracle.svg`,
+    tags: ['story', 'action', 'astral']
+  },
+  {
+    id: 'signal-runner',
+    title: 'Signal Runner',
+    description: 'Catch clean signals, dodge static, and keep the transmission alive.',
+    version: '0.1',
+    thumbnail: `${productionOrigin}/arcade/assets/thumbnails/signal-runner.svg`,
+    tags: ['reflex', 'music', 'prototype']
+  },
+  {
+    id: 'jamaica-run',
+    title: 'Rasta Runner',
+    description: 'Race across eight Jamaican stages, collect Grei coins, build combos, and survive the island road.',
+    version: '1.2',
+    thumbnail: `${productionOrigin}/arcade/assets/thumbnails/rasta-runner.svg`,
+    tags: ['runner', 'Jamaica', 'featured']
   }
 ];
 
@@ -46,14 +84,14 @@ function App() {
       <div className="ambient ambient-two" aria-hidden="true" />
 
       <header className="topbar">
-        <a className="wordmark" href="/" aria-label="The Grei Show home">
+        <a className="wordmark" href={productionOrigin} aria-label="The Grei Show home">
           THE GREI SHOW
         </a>
         <nav aria-label="Primary navigation">
-          <a href="/music.html">Music</a>
-          <a href="/visuals.html">Visuals</a>
-          <a href="/arcade.html">Arcade</a>
-          <a href="/connect.html">Connect</a>
+          <a href={`${productionOrigin}/music.html`}>Music</a>
+          <a href={`${productionOrigin}/visuals.html`}>Visuals</a>
+          <a href="#arcade">Arcade</a>
+          <a href={`${productionOrigin}/connect.html`}>Connect</a>
         </nav>
       </header>
 
@@ -78,10 +116,15 @@ function App() {
             </p>
 
             <div className="hero-actions">
-              <a className="button button-primary" href="https://snd.click/qnbs">
+              <a
+                className="button button-primary"
+                href="https://snd.click/qnbs"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Choose a Platform
               </a>
-              <a className="button button-quiet" href="/arcade.html">
+              <a className="button button-quiet" href="#arcade">
                 Enter the Arcade
               </a>
             </div>
@@ -96,14 +139,14 @@ function App() {
 
           <motion.a
             className="feature-art"
-            href="/music.html"
+            href={`${productionOrigin}/music.html`}
             initial={reduceMotion ? false : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             whileHover={reduceMotion ? undefined : { y: -6 }}
           >
             <img
-              src="https://thegreishow.com/assets/img/no-drama.webp"
+              src={`${productionOrigin}/assets/img/no-drama.webp`}
               alt="No Drama single cover by The Grei Show"
             />
             <span className="feature-label">
@@ -131,7 +174,7 @@ function App() {
                 transition={{ duration: 0.55, delay: index * 0.08 }}
                 whileHover={reduceMotion ? undefined : { y: -7 }}
               >
-                <img src={portal.image} alt="" />
+                <img src={portal.image} alt="" loading="lazy" />
                 <span className="portal-shade" aria-hidden="true" />
                 <span className="portal-content">
                   <small>{portal.kicker}</small>
@@ -144,8 +187,46 @@ function App() {
           </div>
         </section>
 
+        <section id="arcade" className="arcade-showcase" aria-labelledby="arcade-title">
+          <div className="section-heading">
+            <p className="eyebrow">Playable worlds</p>
+            <h2 id="arcade-title">The arcade is becoming a universe of its own.</h2>
+          </div>
+
+          <div className="arcade-grid">
+            {games.map((game, index) => (
+              <motion.a
+                className="game-card"
+                href={`${productionOrigin}/arcade/game.html?id=${encodeURIComponent(game.id)}`}
+                key={game.id}
+                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.16 }}
+                transition={{ duration: 0.5, delay: index * 0.07 }}
+                whileHover={reduceMotion ? undefined : { y: -6 }}
+              >
+                <span className="game-image">
+                  <img src={game.thumbnail} alt={`${game.title} game thumbnail`} loading="lazy" />
+                  <span className="game-badge">Native · v{game.version}</span>
+                </span>
+                <span className="game-copy">
+                  <small>The Grei Show Arcade</small>
+                  <h3>{game.title}</h3>
+                  <p>{game.description}</p>
+                  <span className="game-tags" aria-label={`${game.title} tags`}>
+                    {game.tags.map((tag) => (
+                      <span key={tag}>{tag}</span>
+                    ))}
+                  </span>
+                  <span className="game-link">Play now →</span>
+                </span>
+              </motion.a>
+            ))}
+          </div>
+        </section>
+
         <section className="lab-note" aria-labelledby="lab-title">
-          <p className="eyebrow">Prototype 01</p>
+          <p className="eyebrow">Prototype 02</p>
           <h2 id="lab-title">React underneath. The Grei Show on top.</h2>
           <p>
             This lab preserves the current website while we test motion, portal cards,
@@ -156,7 +237,7 @@ function App() {
 
       <footer>
         <span>© 2026 The Grei Show</span>
-        <a href="/">Return to the live site</a>
+        <a href={productionOrigin}>Return to the live site</a>
       </footer>
     </div>
   );

@@ -23,7 +23,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  validate:
+  react-build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -71,3 +71,39 @@ jobs:
         if: success()
         working-directory: .
         run: node --check assets/js/react-preview.js
+
+  site-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Run repository site validator
+        run: |
+          set +e
+          node scripts/validate-site.mjs > site-validation.log 2>&1
+          result=$?
+          if [ $result -ne 0 ]; then
+            echo "===== SITE VALIDATION FAILURE ====="
+            tail -n 100 site-validation.log
+            exit $result
+          fi
+          cat site-validation.log
+
+      - name: Post site validation failure to draft PR
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "### Site validation diagnostic"
+            echo
+            echo '```text'
+            tail -n 100 site-validation.log
+            echo '```'
+          } > site-validation-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file site-validation-comment.md

@@ -64,11 +64,11 @@ if (!config.includes('VITE_SITE_ORIGIN') || !config.includes('VITE_NEWSLETTER_EN
 }
 
 const requiredStylesheets = [
-  '/assets/css/base.css',
-  '/assets/css/layout.css',
-  '/assets/css/components.css',
-  '/assets/css/theme.css',
-  '/assets/css/home.css'
+  'assets/css/base.css',
+  'assets/css/layout.css',
+  'assets/css/components.css',
+  'assets/css/theme.css',
+  'assets/css/home.css'
 ];
 
 for (const stylesheet of requiredStylesheets) {

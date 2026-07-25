@@ -60,12 +60,12 @@ jobs:
         run: node --check assets/js/react-preview.js
 
       - name: Post React failure to draft PR
-        if: failure() && github.event_name == 'pull_request'
+        if: ${{ failure() && github.event_name == 'pull_request' }}
+        continue-on-error: true
         working-directory: react-lab
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          FAILED_STEP: ${{ steps.*.outcome }}
         run: |
           {
             echo "### React Lab validation failed"
@@ -102,6 +102,7 @@ jobs:
 
       - name: Post site validation failure to draft PR
         if: failure() && github.event_name == 'pull_request'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}

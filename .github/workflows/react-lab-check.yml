@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   validate:
@@ -38,6 +39,7 @@ jobs:
         run: npm install --silent --no-audit --no-fund
 
       - name: Build Vite prototype
+        id: build
         run: |
           set +e
           npm run build --silent > build.log 2>&1
@@ -49,6 +51,23 @@ jobs:
           fi
           cat build.log
 
+      - name: Post compiler failure to draft PR
+        if: failure() && github.event_name == 'pull_request'
+        working-directory: react-lab
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "### React Lab build diagnostic"
+            echo
+            echo '```text'
+            tail -n 80 build.log
+            echo '```'
+          } > build-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file build-comment.md
+
       - name: Check zero-build preview syntax
+        if: success()
         working-directory: .
         run: node --check assets/js/react-preview.js

@@ -35,8 +35,16 @@ jobs:
         with:
           show-progress: false
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install dependencies
         run: npm install --silent --no-audit --no-fund
+
+      - name: Validate architecture contract
+        run: npm run check:architecture --silent
 
       - name: Build Vite prototype
         id: build
@@ -46,7 +54,7 @@ jobs:
           result=$?
           if [ $result -ne 0 ]; then
             echo "===== REACT LAB BUILD FAILURE ====="
-            tail -n 80 build.log
+            tail -n 100 build.log
             exit $result
           fi
           cat build.log
@@ -62,7 +70,7 @@ jobs:
             echo "### React Lab build diagnostic"
             echo
             echo '```text'
-            tail -n 80 build.log
+            if [ -f build.log ]; then tail -n 100 build.log; else echo 'Architecture or dependency validation failed before build.log was created.'; fi
             echo '```'
           } > build-comment.md
           gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file build-comment.md
@@ -80,6 +88,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Run repository site validator
         run: |

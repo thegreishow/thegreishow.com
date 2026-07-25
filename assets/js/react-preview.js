@@ -16,7 +16,7 @@ const portals = [
   {
     kicker: 'Read',
     title: 'The Astral Thread',
-    description: 'Books and connected worlds from The Infinite Story-verse.',
+    description: 'Stories, books and connected worlds from The Infinite Story-verse.',
     href: '/books.html',
     image: '/assets/images/books/astral-thread-cover.jpg',
     action: 'Open the story'
@@ -157,16 +157,17 @@ function PortalCard({ portal, index, reduceMotion }) {
   return h(
     motion.a,
     {
-      className: 'portal-card',
+      className: `portal-card portal-card-${index + 1}`,
       href: portal.href,
-      initial: reduceMotion ? false : { opacity: 0, y: 28 },
+      initial: reduceMotion ? false : { opacity: 0, y: 34 },
       whileInView: { opacity: 1, y: 0 },
-      viewport: { once: true, amount: 0.2 },
-      transition: { duration: 0.55, delay: index * 0.08 },
-      whileHover: reduceMotion ? undefined : { y: -7 }
+      viewport: { once: true, amount: 0.18 },
+      transition: { duration: 0.62, delay: index * 0.1 },
+      whileHover: reduceMotion ? undefined : { y: -8 }
     },
     h('img', { src: portal.image, alt: '', loading: 'lazy' }),
     h('span', { className: 'portal-shade', 'aria-hidden': 'true' }),
+    h('span', { className: 'portal-order' }, `0${index + 1}`),
     h(
       'span',
       { className: 'portal-content' },
@@ -182,19 +183,20 @@ function GameCard({ game, index, reduceMotion }) {
   return h(
     motion.a,
     {
-      className: 'game-card',
+      className: `game-card game-card-${index + 1}`,
       href: `/arcade/game.html?id=${encodeURIComponent(game.id)}`,
-      initial: reduceMotion ? false : { opacity: 0, y: 24 },
+      initial: reduceMotion ? false : { opacity: 0, y: 28 },
       whileInView: { opacity: 1, y: 0 },
       viewport: { once: true, amount: 0.16 },
-      transition: { duration: 0.5, delay: index * 0.07 },
-      whileHover: reduceMotion ? undefined : { y: -6 }
+      transition: { duration: 0.56, delay: index * 0.09 },
+      whileHover: reduceMotion ? undefined : { y: -7 }
     },
     h(
       'span',
       { className: 'game-image' },
       h('img', { src: game.thumbnail, alt: `${game.title} game thumbnail`, loading: 'lazy' }),
-      h('span', { className: 'game-badge' }, `Native · v${game.version}`)
+      h('span', { className: 'game-badge' }, `Native · v${game.version}`),
+      h('span', { className: 'game-number' }, `0${index + 1}`)
     ),
     h(
       'span',
@@ -207,7 +209,7 @@ function GameCard({ game, index, reduceMotion }) {
         { className: 'game-tags', 'aria-label': `${game.title} tags` },
         ...game.tags.map((tag) => h('span', { key: tag }, tag))
       ),
-      h('span', { className: 'game-link' }, 'Play now →')
+      h('span', { className: 'game-link' }, 'Insert coin →')
     )
   );
 }
@@ -220,11 +222,17 @@ function App() {
     { className: 'preview-shell' },
     h('div', { className: 'ambient ambient-one', 'aria-hidden': 'true' }),
     h('div', { className: 'ambient ambient-two', 'aria-hidden': 'true' }),
+    h('div', { className: 'grain', 'aria-hidden': 'true' }),
 
     h(
       'header',
       { className: 'preview-bar' },
-      h('a', { className: 'wordmark', href: '/', 'aria-label': 'The Grei Show home' }, 'THE GREI SHOW'),
+      h(
+        'a',
+        { className: 'wordmark', href: '/', 'aria-label': 'The Grei Show home' },
+        h('span', { className: 'wordmark-mark' }, 'G'),
+        h('span', null, 'THE GREI SHOW')
+      ),
       h(
         'nav',
         { className: 'preview-nav', 'aria-label': 'Preview navigation' },
@@ -244,48 +252,102 @@ function App() {
         h(
           'div',
           { className: 'hero-copy' },
-          h('p', { className: 'eyebrow' }, 'Jamaican artist · producer · world-builder'),
-          h('h1', { id: 'preview-title', className: 'sr-only' }, 'Enter The Grei Show'),
-          h(BlurText, {
-            text: 'ENTER THE GREI SHOW',
-            delay: reduceMotion ? 0 : 90,
-            animateBy: 'words',
-            direction: 'bottom',
-            className: 'display-title',
-            stepDuration: reduceMotion ? 0 : 0.42
-          }),
-          h('p', { className: 'hero-lead' }, 'Music you can feel. Stories you can enter. Original worlds you can watch, read and play.'),
           h(
             'div',
-            { className: 'hero-actions' },
-            h('a', { className: 'action-button primary', href: 'https://snd.click/qnbs', target: '_blank', rel: 'noopener' }, 'Choose a Platform'),
-            h('a', { className: 'action-button secondary', href: '#arcade' }, 'Enter the Arcade')
+            { className: 'hero-meta', 'aria-label': 'Transmission details' },
+            h('span', null, 'Kingston, Jamaica'),
+            h('span', null, 'Transmission 001'),
+            h('span', null, 'Signal active')
+          ),
+          h('p', { className: 'eyebrow' }, 'Artist · producer · author · world-builder'),
+          h('h1', { id: 'preview-title', className: 'sr-only' }, 'Enter The Grei Show'),
+          h(BlurText, {
+            text: 'ENTER',
+            delay: reduceMotion ? 0 : 95,
+            animateBy: 'letters',
+            direction: 'bottom',
+            className: 'display-title display-title-enter',
+            stepDuration: reduceMotion ? 0 : 0.42
+          }),
+          h(
+            motion.p,
+            {
+              className: 'display-title display-title-name',
+              initial: reduceMotion ? false : { opacity: 0, x: -26 },
+              animate: { opacity: 1, x: 0 },
+              transition: { duration: 0.75, delay: 0.52 }
+            },
+            'THE GREI SHOW'
           ),
           h(
             'div',
-            { className: 'signal-line', 'aria-label': 'Creative disciplines' },
-            h('span', null, 'Sound'),
-            h('span', null, 'Story'),
-            h('span', null, 'Visuals'),
-            h('span', null, 'Interactive')
+            { className: 'hero-manifesto' },
+            h('span', { className: 'hero-index' }, '01'),
+            h('p', { className: 'hero-lead' }, 'Music you can feel. Stories you can enter. Original worlds you can watch, read and play.')
+          ),
+          h(
+            'div',
+            { className: 'hero-actions' },
+            h('a', { className: 'action-button primary', href: 'https://snd.click/qnbs', target: '_blank', rel: 'noopener' }, 'Hear No Drama'),
+            h('a', { className: 'action-button secondary', href: '#portals' }, 'Enter the universe')
           )
         ),
         h(
-          motion.a,
-          {
-            className: 'feature-art',
-            href: '/music.html',
-            initial: reduceMotion ? false : { opacity: 0, y: 24 },
-            animate: { opacity: 1, y: 0 },
-            transition: { duration: 0.8, delay: 0.3 },
-            whileHover: reduceMotion ? undefined : { y: -6 }
-          },
-          h('img', { src: '/assets/img/no-drama.webp', alt: 'No Drama single cover by The Grei Show' }),
+          'div',
+          { className: 'art-stage', 'aria-label': 'Featured Grei Show releases' },
+          h('div', { className: 'vinyl-disc', 'aria-hidden': 'true' }, h('span')),
           h(
-            'span',
-            { className: 'feature-label' },
-            h('small', null, 'Now playing'),
-            h('strong', null, 'No Drama')
+            motion.a,
+            {
+              className: 'art-card art-card-back',
+              href: '/books.html',
+              initial: reduceMotion ? false : { opacity: 0, rotate: -3, x: 36 },
+              animate: { opacity: 1, rotate: 6, x: 0 },
+              transition: { duration: 0.8, delay: 0.42 },
+              whileHover: reduceMotion ? undefined : { rotate: 2, y: -8 }
+            },
+            h('img', { src: '/assets/images/books/astral-thread-cover.jpg', alt: 'The Astral Thread book cover' }),
+            h('span', null, 'Story 01')
+          ),
+          h(
+            motion.a,
+            {
+              className: 'feature-art',
+              href: '/music.html',
+              initial: reduceMotion ? false : { opacity: 0, y: 28, rotate: 2 },
+              animate: { opacity: 1, y: 0, rotate: -2 },
+              transition: { duration: 0.85, delay: 0.24 },
+              whileHover: reduceMotion ? undefined : { y: -9, rotate: 0 }
+            },
+            h('img', { src: '/assets/img/no-drama.webp', alt: 'No Drama single cover by The Grei Show' }),
+            h(
+              'span',
+              { className: 'feature-label' },
+              h('small', null, 'New transmission'),
+              h('strong', null, 'No Drama'),
+              h('em', null, 'Listen everywhere ↗')
+            )
+          ),
+          h(
+            'div',
+            { className: 'release-stamp', 'aria-hidden': 'true' },
+            h('strong', null, 'NO DRAMA'),
+            h('span', null, 'NEW SIGNAL · 2026')
+          ),
+          h('span', { className: 'art-counter' }, '01 / 02')
+        )
+      ),
+
+      h(
+        'div',
+        { className: 'signal-marquee', 'aria-label': 'The Grei Show creative disciplines' },
+        h(
+          'div',
+          null,
+          ...['Music','✦','Books','✦','Games','✦','Film','✦','Photography','✦','Live','✦','Music','✦','Books','✦','Games','✦'].map((item, index) =>
+            item === '✦'
+              ? h('i', { key: `${item}-${index}` }, item)
+              : h('span', { key: `${item}-${index}` }, item)
           )
         )
       ),
@@ -295,13 +357,14 @@ function App() {
         { id: 'portals', className: 'section-block', 'aria-labelledby': 'portals-title' },
         h(
           'div',
-          { className: 'section-heading' },
+          { className: 'section-heading section-heading-numbered' },
+          h('span', { className: 'section-number' }, '02'),
           h('p', { className: 'eyebrow' }, 'Choose your portal'),
-          h('h2', { id: 'portals-title' }, 'One universe. Many ways in.')
+          h('h2', { id: 'portals-title' }, 'One universe.', h('br'), 'Many ways in.')
         ),
         h(
           'div',
-          { className: 'portal-grid' },
+          { className: 'portal-grid portal-grid-editorial' },
           ...portals.map((portal, index) => h(PortalCard, { key: portal.title, portal, index, reduceMotion }))
         )
       ),
@@ -311,30 +374,33 @@ function App() {
         { id: 'arcade', className: 'section-block', 'aria-labelledby': 'arcade-preview-title' },
         h(
           'div',
-          { className: 'section-heading' },
+          { className: 'section-heading section-heading-numbered' },
+          h('span', { className: 'section-number' }, '03'),
           h('p', { className: 'eyebrow' }, 'Playable worlds'),
-          h('h2', { id: 'arcade-preview-title' }, 'The arcade is becoming a universe of its own.')
+          h('h2', { id: 'arcade-preview-title' }, 'Three games.', h('br'), 'One growing mythology.')
         ),
         h(
           'div',
-          { className: 'arcade-grid' },
+          { className: 'arcade-grid arcade-grid-editorial' },
           ...games.map((game, index) => h(GameCard, { key: game.id, game, index, reduceMotion }))
         )
       ),
 
       h(
         'section',
-        { className: 'statement', 'aria-labelledby': 'statement-title' },
-        h('p', { className: 'eyebrow' }, 'Prototype 02'),
-        h('h2', { id: 'statement-title' }, 'React underneath. The Grei Show on top.'),
-        h('p', null, 'This branch preview lets us test animation, visual hierarchy, responsive behavior and future Unity presentation without replacing the current website, Owner CMS or arcade engine.')
+        { className: 'statement statement-v3', 'aria-labelledby': 'statement-title' },
+        h('span', { className: 'section-number' }, '04'),
+        h('p', { className: 'eyebrow' }, 'The signal continues'),
+        h('h2', { id: 'statement-title' }, 'Not a portfolio.', h('br'), 'A world in progress.'),
+        h('p', null, 'Records become stories. Stories become games. Every door leads deeper into the same universe.'),
+        h('a', { className: 'statement-link', href: '/connect.html' }, 'Build something together ↗')
       )
     ),
 
     h(
       'footer',
       { className: 'preview-footer' },
-      h('span', null, '© 2026 The Grei Show'),
+      h('span', null, '© 2026 The Grei Show · Kingston, Jamaica'),
       h('a', { href: '/' }, 'Return to the current site')
     )
   );

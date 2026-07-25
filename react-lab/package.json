@@ -1,7 +1,7 @@
 {
   "name": "the-grei-show-react-lab",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "engines": {
     "node": ">=20.19"
@@ -9,8 +9,10 @@
   "scripts": {
     "dev": "vite",
     "check:architecture": "node scripts/validate-architecture.mjs",
+    "check:parity": "node scripts/validate-live-parity.mjs",
+    "check": "npm run check:architecture && npm run check:parity && npm run typecheck",
     "typecheck": "tsc --noEmit",
-    "build": "npm run check:architecture && npm run typecheck && vite build",
+    "build": "npm run check && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

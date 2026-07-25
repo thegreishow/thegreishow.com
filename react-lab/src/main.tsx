@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import './styles.css';
 import './arcade-preview.css';
+import './design-v3.css';
 
 const root = document.getElementById('root');
 

@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   audit:
@@ -26,4 +27,27 @@ jobs:
         with:
           node-version: '22'
       - name: Audit promo playback
-        run: node scripts/audit-promo-audio.mjs
+        id: audit
+        continue-on-error: true
+        run: |
+          node scripts/audit-promo-audio.mjs > promo-audit.txt 2>&1
+          result=$?
+          cat promo-audit.txt
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+      - name: Publish audit report
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "## Promo audio audit"
+            echo
+            echo '```text'
+            cat promo-audit.txt
+            echo '```'
+          } > promo-audit-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file promo-audit-comment.md
+      - name: Enforce audit result
+        if: steps.audit.outputs.result != '0'
+        run: exit 1

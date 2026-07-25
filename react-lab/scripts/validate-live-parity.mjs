@@ -11,6 +11,20 @@ const [liveHtml, manifest, app, sections, content] = await Promise.all([
 const reactSource = `${app}\n${sections}\n${content}`;
 const errors = [];
 
+function normalize(value) {
+  return value
+    .replaceAll('&middot;', '·')
+    .replaceAll('&amp;', '&')
+    .replace(/^[./]+/, '')
+    .replace(/\\/g, '/')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+const normalizedLive = normalize(liveHtml);
+const normalizedReact = normalize(reactSource);
+
 function extractArray(name) {
   const match = manifest.match(new RegExp(`${name}:\\s*\\[([\\s\\S]*?)\\]`, 'm'));
   if (!match) {
@@ -22,12 +36,20 @@ function extractArray(name) {
 
 for (const group of ['phrases', 'routes', 'assets', 'statistics']) {
   for (const value of extractArray(group)) {
-    if (!liveHtml.includes(value)) errors.push(`Live index.html no longer contains ${group.slice(0, -1)}: ${value}`);
-    if (!reactSource.includes(value)) errors.push(`React source is missing live ${group.slice(0, -1)}: ${value}`);
+    const token = normalize(value);
+    if (!normalizedLive.includes(token)) errors.push(`Live index.html no longer contains ${group.slice(0, -1)}: ${value}`);
+    if (!normalizedReact.includes(token)) errors.push(`React source is missing live ${group.slice(0, -1)}: ${value}`);
   }
 }
 
-const liveSectionOrder = ['hero', 'signal-strip', 'explore', 'support', 'service-panel', 'list-section'];
+const liveSectionOrder = [
+  '<section class="hero"',
+  'class="signal-strip"',
+  'id="explore"',
+  'id="support"',
+  'class="service-panel"',
+  'class="home-section list-section"'
+];
 let lastIndex = -1;
 for (const marker of liveSectionOrder) {
   const index = liveHtml.indexOf(marker);
@@ -43,4 +65,4 @@ if (errors.length) {
 }
 
 console.log('Live homepage parity contract is valid.');
-console.log('Checked copy, routes, assets, statistics and section order against index.html.');
+console.log('Checked normalized copy, route suffixes, asset suffixes, statistics and section order against index.html.');

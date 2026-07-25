@@ -1,0 +1,50 @@
+name: React Lab Check
+
+on:
+  push:
+    branches:
+      - react-bits-lab
+    paths:
+      - 'react-lab/**'
+      - 'react-preview.html'
+      - 'assets/css/react-preview.css'
+      - 'assets/js/react-preview.js'
+      - '.github/workflows/react-lab-check.yml'
+  pull_request:
+    paths:
+      - 'react-lab/**'
+      - 'react-preview.html'
+      - 'assets/css/react-preview.css'
+      - 'assets/js/react-preview.js'
+      - '.github/workflows/react-lab-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: react-lab
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-lab/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build Vite prototype
+        run: npm run build
+
+      - name: Check zero-build preview syntax
+        working-directory: .
+        run: node --check assets/js/react-preview.js

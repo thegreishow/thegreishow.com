@@ -1,6 +1,9 @@
 (()=>{
   'use strict';
 
+  const SUPABASE_URL='https://dkvbeizjlgxqjuxnlqho.supabase.co';
+  const SUPABASE_KEY='sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
+
   function addCmsEntryPoints(){
     const websiteGrid=document.querySelector('#section-website .page-grid');
     if(websiteGrid&&!websiteGrid.querySelector('[data-owner-cms-card]')){
@@ -21,16 +24,44 @@
     }
   }
 
-  function markExternalOwnerLinks(){
-    document.querySelectorAll('a[href="/owner-cms.html"]').forEach(link=>{
-      link.setAttribute('aria-label','Open Website CMS');
-    });
+  async function hydrateReleaseEditor(){
+    const releaseList=document.querySelector('#release-list');
+    if(!releaseList||!window.supabase)return;
+
+    const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const {data:{session}}=await db.auth.getSession();
+    if(!session)return;
+
+    const {data:releases,error}=await db.from('owner_releases').select('*');
+    if(error){
+      console.error('Unable to hydrate Owner CMS releases:',error);
+      return;
+    }
+
+    const applyValues=()=>{
+      for(const release of releases||[]){
+        const box=releaseList.querySelector(`[data-release="${release.id}"]`);
+        if(!box)continue;
+        box.querySelectorAll('[data-r]').forEach(input=>{
+          const value=release[input.dataset.r];
+          if(input.type==='checkbox'){
+            input.checked=Boolean(value);
+          }else if(value!==null&&value!==undefined&&input.value===''){
+            input.value=String(value);
+          }
+        });
+      }
+    };
+
+    applyValues();
+    const observer=new MutationObserver(applyValues);
+    observer.observe(releaseList,{childList:true,subtree:true});
   }
 
   function boot(){
     try{
       addCmsEntryPoints();
-      markExternalOwnerLinks();
+      hydrateReleaseEditor().catch(error=>console.error('Owner CMS release hydration failed:',error));
     }catch(error){
       console.error('Owner CMS integration failed:',error);
     }

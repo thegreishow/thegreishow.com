@@ -1,0 +1,29 @@
+name: Promo Audio Audit
+
+on:
+  push:
+    branches:
+      - live-newsletter-promo-audit
+  pull_request:
+    paths:
+      - 'promo/**'
+      - 'assets/audio/**'
+      - 'scripts/audit-promo-audio.mjs'
+      - '.github/workflows/promo-audio-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit promo playback
+        run: node scripts/audit-promo-audio.mjs

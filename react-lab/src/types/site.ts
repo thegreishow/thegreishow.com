@@ -1,12 +1,6 @@
-export type LinkTarget = '_blank' | '_self';
-
-export type TrackedLink = {
-  label: string;
-  href: string;
-  event: string;
-  eventLabel: string;
-  target?: LinkTarget;
-};
+export type NavigationItem = readonly [label: string, href: string];
+export type StreamingPlatform = readonly [name: string, href: string];
+export type Statistic = readonly [value: string, label: string];
 
 export type Portal = {
   kicker: string;
@@ -14,7 +8,7 @@ export type Portal = {
   href: string;
   image: string;
   action: string;
-  event: string;
+  tracking: string;
 };
 
 export type Offer = {
@@ -23,23 +17,13 @@ export type Offer = {
   title: string;
   body: string;
   action: string;
-  href?: string;
+  href: string;
   primary: boolean;
+  tracking: string;
   actionType: 'link' | 'platform-modal';
 };
 
 export type Service = readonly [number: string, title: string, body: string];
-
-export type StreamingPlatform = {
-  name: string;
-  href: string;
-};
-
-export type Stat = {
-  value: string;
-  label: string;
-  href: string;
-};
 
 export type HomeSectionId =
   | 'hero'

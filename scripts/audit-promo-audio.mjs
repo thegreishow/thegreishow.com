@@ -26,6 +26,7 @@ function extractAttributes(source) {
     /\bdata-(?:audio|src|track|preview)\s*=\s*["']([^"']+)["']/gi,
     /\b(?:audioSrc|trackSrc|previewAudio|fullAudio)\s*[:=]\s*["'`]([^"'`]+)["'`]/gi,
     /\bhref\s*=\s*["']([^"']+\.(?:mp3|m4a|wav|ogg)(?:\?[^"']*)?)["']/gi,
+    /\bhref\s*=\s*["'](https:\/\/drive\.google\.com\/uc\?[^"']+)["']/gi,
   ];
   for (const pattern of patterns) {
     for (const match of source.matchAll(pattern)) values.push(match[1]);
@@ -55,7 +56,9 @@ for (const file of promoFiles) {
   const audioRefs = extractAttributes(source);
   const hasPlayUi = /\bplay\b|aria-label\s*=\s*["'][^"']*play|data-(?:action|control)\s*=\s*["']play/i.test(source);
   const hasAudioElement = /<audio\b/i.test(source);
-  const hasPlaybackCode = /\.play\s*\(|new\s+Audio\s*\(|AudioContext|currentTime/i.test(source);
+  const hasSharedController = /promo-(?:release|static-player)\.js/i.test(source);
+  const hasInlinePlaybackCode = /\.play\s*\(|new\s+Audio\s*\(|AudioContext|currentTime/i.test(source);
+  const hasPlaybackCode = hasSharedController || hasInlinePlaybackCode;
   const missing = [];
 
   for (const ref of audioRefs) {
@@ -65,11 +68,12 @@ for (const file of promoFiles) {
     if (!await exists(target)) missing.push(ref);
   }
 
-  if (hasPlayUi && audioRefs.length === 0) issues.push(`${relative}: has play UI but no discoverable audio source.`);
-  if (hasPlayUi && !hasAudioElement && !hasPlaybackCode) issues.push(`${relative}: has play UI but no audio element or playback code.`);
+  if (hasPlayUi && audioRefs.length === 0 && !hasSharedController) issues.push(`${relative}: has play UI but no discoverable audio source or shared controller.`);
+  if (hasPlayUi && !hasAudioElement && !hasPlaybackCode) issues.push(`${relative}: has play UI but no audio element or playback controller.`);
+  if (/promo-static-player\.js/i.test(source) && audioRefs.length === 0) issues.push(`${relative}: loads the static player but is not attached to a professional audio URL.`);
   for (const ref of missing) issues.push(`${relative}: audio target does not exist: ${ref}`);
 
-  rows.push({ relative, hasPlayUi, hasAudioElement, hasPlaybackCode, audioRefs, missing });
+  rows.push({ relative, hasPlayUi, hasAudioElement, hasPlaybackCode, hasSharedController, audioRefs, missing });
 }
 
 console.log(`PROMO AUDIO AUDIT: ${rows.length} HTML pages`);
@@ -78,14 +82,14 @@ if (issues.length) {
   console.error(`\nPROMO AUDIO ISSUES (${issues.length}):`);
   for (const issue of issues) console.error(`- ${issue}`);
 } else {
-  console.log('\nAll promo playback surfaces have discoverable, existing audio targets.');
+  console.log('\nAll promo playback surfaces have discoverable audio targets and active controllers.');
 }
 
 console.log('\nPROMO PAGE INVENTORY:');
 for (const row of rows) {
   console.log(`- ${row.relative}`);
-  console.log(`  play-ui=${row.hasPlayUi} audio-element=${row.hasAudioElement} playback-code=${row.hasPlaybackCode}`);
-  console.log(`  sources=${row.audioRefs.length ? row.audioRefs.join(', ') : '(none)'}`);
+  console.log(`  play-ui=${row.hasPlayUi} audio-element=${row.hasAudioElement} playback-code=${row.hasPlaybackCode} shared-controller=${row.hasSharedController}`);
+  console.log(`  sources=${row.audioRefs.length ? row.audioRefs.join(', ') : '(dynamic via release data)'}`);
   if (row.missing.length) console.log(`  missing=${row.missing.join(', ')}`);
 }
 

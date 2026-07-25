@@ -31,17 +31,23 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          show-progress: false
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --silent --no-audit --no-fund
 
       - name: Build Vite prototype
-        run: npm run build
+        run: |
+          set +e
+          npm run build --silent > build.log 2>&1
+          result=$?
+          if [ $result -ne 0 ]; then
+            echo "===== REACT LAB BUILD FAILURE ====="
+            tail -n 80 build.log
+            exit $result
+          fi
+          cat build.log
 
       - name: Check zero-build preview syntax
         working-directory: .

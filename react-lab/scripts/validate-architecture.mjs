@@ -6,6 +6,7 @@ const requiredFiles = [
   'src/HomeSections.tsx',
   'src/site-content.ts',
   'src/config.ts',
+  'src/styles.css',
   'src/services/analytics.ts',
   'src/services/newsletter.ts',
   'src/components/ErrorBoundary.tsx'
@@ -21,12 +22,12 @@ for (const file of requiredFiles) {
   }
 }
 
-const [app, sections, main, config, html] = await Promise.all([
+const [app, sections, main, config, styles] = await Promise.all([
   readFile('src/App.tsx', 'utf8'),
   readFile('src/HomeSections.tsx', 'utf8'),
   readFile('src/main.tsx', 'utf8'),
   readFile('src/config.ts', 'utf8'),
-  readFile('index.html', 'utf8')
+  readFile('src/styles.css', 'utf8')
 ]);
 
 const requiredSections = [
@@ -72,8 +73,8 @@ const requiredStylesheets = [
 ];
 
 for (const stylesheet of requiredStylesheets) {
-  if (!html.includes(stylesheet)) {
-    errors.push(`index.html must inherit the live design system stylesheet: ${stylesheet}`);
+  if (!styles.includes(stylesheet)) {
+    errors.push(`src/styles.css must inherit the live design system stylesheet: ${stylesheet}`);
   }
 }
 

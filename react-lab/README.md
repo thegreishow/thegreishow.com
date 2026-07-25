@@ -1,81 +1,138 @@
-# The Grei Show — React Bits Lab
+# The Grei Show — React Enhancement Lab
 
-An isolated Vite + React + TypeScript prototype for gradually introducing React Bits into thegreishow.com without changing the current static site, Owner CMS or arcade engine.
+A Vite + React + TypeScript workspace for progressively enhancing the current thegreishow.com interface without replacing its visual identity, Owner CMS, Supabase workflows or arcade engine.
 
-## Live branch preview
+## Review target
 
-The zero-build review page is deployed from the `react-bits-lab` branch:
+The branch preview is deployed from `react-bits-lab`:
 
 - `https://react-bits-lab.thegreishow-com.pages.dev/react-preview.html`
 
-This preview is intentionally separate from the production homepage. It demonstrates the hero treatment, React Bits text reveal, portal cards and a showcase of the three current Arcade games.
+The zero-build page mirrors the current homepage architecture for easy Cloudflare Pages review. The production-grade React source lives in this directory.
 
-## Run the Vite prototype locally
+## Local development
 
-Use Node.js 20.19 or newer.
+Use Node.js 20.19 or newer. CI uses Node.js 22.
 
 ```bash
 cd react-lab
+cp .env.example .env.local
 npm install
 npm run dev
 ```
 
-Create a production build with:
+Validate and build with:
 
 ```bash
+npm run check:architecture
 npm run build
 ```
 
-The generated site will be written to `react-lab/dist`.
+The compiled application is written to `react-lab/dist`.
 
-## Current prototype content
+## Environment contract
 
-- cinematic No Drama homepage hero
-- official React Bits `BlurText` animation
-- Music, Astral Thread and Grei Arcade portals
-- Dreamweaver, Signal Runner and Rasta Runner cards using the existing live game routes
-- responsive desktop and mobile layouts
-- reduced-motion support
+`VITE_SITE_ORIGIN`
+
+- Optional absolute origin used for site routes and shared assets.
+- Leave blank during branch-preview development to use the current origin.
+- Set to `https://thegreishow.com` for production-equivalent compiled deployments.
+
+`VITE_NEWSLETTER_ENDPOINT`
+
+- Optional JSON POST endpoint for mailing-list submissions.
+- When unset, the form performs client validation but does not transmit personal data.
+
+See `.env.example` for the supported keys. Never commit secrets to Vite environment variables because values prefixed with `VITE_` are exposed to the browser.
+
+## Architecture
+
+```text
+src/
+├── App.tsx                     # page shell and live section order
+├── HomeSections.tsx            # homepage section components
+├── site-content.ts             # typed navigation, offers and platform data
+├── config.ts                   # deployment and endpoint configuration
+├── components/
+│   ├── BlurText.tsx            # React Bits motion enhancement
+│   └── ErrorBoundary.tsx       # render failure fallback
+└── services/
+    ├── analytics.ts            # shared event adapter
+    └── newsletter.ts           # mailing-list transport adapter
+```
+
+The React page deliberately reuses the current production class names and stylesheets:
+
+- `base.css`
+- `layout.css`
+- `components.css`
+- `theme.css`
+- `home.css`
+
+`src/styles.css` contains only React-specific shell, modal, accessibility and fallback rules.
+
+## Architecture contract
+
+`scripts/validate-architecture.mjs` prevents accidental drift by verifying:
+
+- all required section and service files exist
+- homepage sections remain in the same order as the live page
+- each section is exported through the component boundary
+- the application is wrapped in an error boundary
+- deployment environment variables remain centralized
+- all five production design-system stylesheets are inherited
+- React components do not hard-code the production origin
+
+The contract runs during every production build and in GitHub Actions.
+
+## Current React enhancements
+
+- React Bits `BlurText` hero entrance
+- Motion-powered art and card reveals with reduced-motion support
+- accessible streaming-platform chooser with focus restoration and Escape handling
+- centralized analytics events compatible with the existing site, Google Analytics and Plausible
+- newsletter validation and configurable submission transport
+- render error fallback to the live homepage
+- deployment-safe route and asset resolution
+
+## Migration rules
+
+1. Preserve the current homepage section order and content hierarchy unless a deliberate product decision changes it.
+2. Reuse current production assets, class names and routes.
+3. Keep data, configuration, presentation and external services separated.
+4. Move one route at a time only after its React version reaches functional parity.
+5. Keep the current arcade loader, Workers/D1 leaderboard and Supabase-backed Owner CMS until React replacements are independently proven.
+6. Merge infrastructure separately from major visual experiments whenever possible.
 
 ## React Bits
 
-The lab already includes the official TypeScript + Tailwind `BlurText` component and its Motion dependency.
-
-The React Bits shadcn registry is configured in `components.json`. Preview additional components before installing them:
+The React Bits shadcn registry is configured in `components.json`. Inspect components before installing them:
 
 ```bash
 npx shadcn@latest add @react-bits/BorderGlow-TS-TW --dry-run
 ```
 
-Install after reviewing the proposed changes:
-
-```bash
-npx shadcn@latest add @react-bits/BorderGlow-TS-TW
-```
+Only adopt effects that enhance an existing interface role. React Bits components should not redefine the site architecture.
 
 ## Automated validation
 
 The branch workflow verifies:
 
-- the TypeScript/Vite production build
-- the zero-build preview JavaScript syntax
-- all existing HTML titles and local file targets
-- the existing Astral Thread narration mappings
-
-## Migration strategy
-
-1. Keep the existing root website and CMS untouched.
-2. Build and review new interfaces inside `react-lab`.
-3. Reuse the existing routes and production assets.
-4. Move one page at a time only after the React replacement matches or improves current functionality.
-5. Preserve the current arcade loader, Workers/D1 leaderboard integration and Supabase-backed Owner CMS until React equivalents are proven.
+- Node.js runtime consistency
+- the React architecture contract
+- TypeScript correctness
+- the Vite production build
+- zero-build preview JavaScript syntax
+- repository-wide HTML and local-route integrity
+- existing Astral Thread narration mappings
 
 ## Optional isolated Cloudflare Pages project
 
-For a separate compiled Vite preview project, use:
+For a compiled Vite preview project:
 
 - Root directory: `react-lab`
 - Build command: `npm run build`
 - Output directory: `dist`
+- Environment: optionally set `VITE_SITE_ORIGIN=https://thegreishow.com`
 
-Do not change the existing production Pages project while this branch is experimental.
+Do not change the current production Pages project while this branch remains experimental.

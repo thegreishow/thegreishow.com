@@ -46,39 +46,33 @@ jobs:
       - name: Validate architecture contract
         run: npm run check:architecture --silent
 
-      - name: Build Vite prototype
-        id: build
-        run: |
-          set +e
-          npm run build --silent > build.log 2>&1
-          result=$?
-          if [ $result -ne 0 ]; then
-            echo "===== REACT LAB BUILD FAILURE ====="
-            tail -n 100 build.log
-            exit $result
-          fi
-          cat build.log
+      - name: Validate live homepage parity
+        run: npm run check:parity --silent
 
-      - name: Post compiler failure to draft PR
+      - name: Type-check React source
+        run: npm run typecheck --silent
+
+      - name: Bundle Vite prototype
+        run: npx vite build
+
+      - name: Check zero-build preview syntax
+        working-directory: .
+        run: node --check assets/js/react-preview.js
+
+      - name: Post React failure to draft PR
         if: failure() && github.event_name == 'pull_request'
         working-directory: react-lab
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          FAILED_STEP: ${{ steps.*.outcome }}
         run: |
           {
-            echo "### React Lab build diagnostic"
+            echo "### React Lab validation failed"
             echo
-            echo '```text'
-            if [ -f build.log ]; then tail -n 100 build.log; else echo 'Architecture or dependency validation failed before build.log was created.'; fi
-            echo '```'
+            echo "One of the named architecture, parity, type-check, bundle, or preview gates failed. Open the failed Actions step for the exact output."
           } > build-comment.md
           gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file build-comment.md
-
-      - name: Check zero-build preview syntax
-        if: success()
-        working-directory: .
-        run: node --check assets/js/react-preview.js
 
   site-diagnostic:
     runs-on: ubuntu-latest

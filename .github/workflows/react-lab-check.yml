@@ -7,15 +7,21 @@ on:
     paths:
       - 'react-lab/**'
       - 'react-preview.html'
+      - 'react-infrastructure-preview.html'
       - 'assets/css/react-preview.css'
+      - 'assets/css/react-infrastructure-preview.css'
       - 'assets/js/react-preview.js'
+      - 'assets/js/react-infrastructure-preview.js'
       - '.github/workflows/react-lab-check.yml'
   pull_request:
     paths:
       - 'react-lab/**'
       - 'react-preview.html'
+      - 'react-infrastructure-preview.html'
       - 'assets/css/react-preview.css'
+      - 'assets/css/react-infrastructure-preview.css'
       - 'assets/js/react-preview.js'
+      - 'assets/js/react-infrastructure-preview.js'
       - '.github/workflows/react-lab-check.yml'
 
 permissions:
@@ -55,9 +61,11 @@ jobs:
       - name: Bundle Vite prototype
         run: npx vite build
 
-      - name: Check zero-build preview syntax
+      - name: Check public preview syntax
         working-directory: .
-        run: node --check assets/js/react-preview.js
+        run: |
+          node --check assets/js/react-preview.js
+          node --check assets/js/react-infrastructure-preview.js
 
       - name: Post React failure to draft PR
         if: ${{ failure() && github.event_name == 'pull_request' }}

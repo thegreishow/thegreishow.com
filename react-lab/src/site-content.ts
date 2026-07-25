@@ -1,4 +1,5 @@
 import { siteUrl } from '@/config';
+import type { NavigationItem, Offer, Portal, Service, Statistic, StreamingPlatform } from '@/types/site';
 
 export const productionOrigin = siteUrl('/');
 
@@ -7,20 +8,20 @@ export const navigation = [
   ['Books', siteUrl('/books.html')],
   ['Arcade', siteUrl('/arcade.html')],
   ['Connect', siteUrl('/connect.html')]
-] as const;
+] as const satisfies readonly NavigationItem[];
 
 export const platforms = [
   ['Spotify', 'https://open.spotify.com/artist/78LUuzis8k8cGRCalx751k'],
   ['Apple Music', 'https://music.apple.com/jm/artist/the-grei-show/885841733'],
   ['YouTube', 'https://youtube.com/@thegreishxw'],
   ['Bandcamp', 'https://thegreishow.bandcamp.com']
-] as const;
+] as const satisfies readonly StreamingPlatform[];
 
 export const songstats = [
   ['13.9M', 'Streams'],
   ['7.5K', 'Followers'],
   ['1.53M', 'Playlist reach']
-] as const;
+] as const satisfies readonly Statistic[];
 
 export const portals = [
   {
@@ -47,7 +48,7 @@ export const portals = [
     action: 'Start a game',
     tracking: 'explore_arcade'
   }
-] as const;
+] as const satisfies readonly Portal[];
 
 export const offers = [
   {
@@ -58,7 +59,8 @@ export const offers = [
     action: 'Buy the ebook',
     href: 'https://www.amazon.com/dp/B0F7RQ3463',
     primary: true,
-    tracking: 'buy_book'
+    tracking: 'buy_book',
+    actionType: 'link'
   },
   {
     number: '02 · Listen',
@@ -68,7 +70,8 @@ export const offers = [
     action: 'Choose your platform',
     href: '#platforms',
     primary: true,
-    tracking: 'choose_platform'
+    tracking: 'choose_platform',
+    actionType: 'platform-modal'
   },
   {
     number: '03 · Book',
@@ -78,12 +81,13 @@ export const offers = [
     action: 'Check availability & book',
     href: siteUrl('/connect.html?interest=live-performance'),
     primary: false,
-    tracking: 'support_booking'
+    tracking: 'support_booking',
+    actionType: 'link'
   }
-] as const;
+] as const satisfies readonly Offer[];
 
 export const services = [
   ['01', 'Music production', 'Original production, collaboration, development, and release support.'],
   ['02', 'Creative direction', 'A clear visual and narrative system around the work.'],
   ['03', 'Sync & partnerships', 'Music, media, performance, press, and aligned brand conversations.']
-] as const;
+] as const satisfies readonly Service[];

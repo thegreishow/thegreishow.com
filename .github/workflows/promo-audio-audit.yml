@@ -8,6 +8,10 @@ on:
     paths:
       - 'promo/**'
       - 'assets/audio/**'
+      - 'assets/css/newsletter-live-upgrade.css'
+      - 'assets/css/promo-static-player.css'
+      - 'assets/js/newsletter.js'
+      - 'assets/js/promo-static-player.js'
       - 'scripts/audit-promo-audio.mjs'
       - '.github/workflows/promo-audio-audit.yml'
 
@@ -34,20 +38,34 @@ jobs:
           result=$?
           cat promo-audit.txt
           echo "result=$result" >> "$GITHUB_OUTPUT"
-      - name: Publish audit report
+      - name: Validate complete site
+        id: site
+        continue-on-error: true
+        run: |
+          node scripts/validate-site.mjs > site-validation.txt 2>&1
+          result=$?
+          cat site-validation.txt
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+      - name: Publish validation report
         if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           {
-            echo "## Promo audio audit"
+            echo "## Promo and site validation"
             echo
+            echo "### Promo audio"
             echo '```text'
             cat promo-audit.txt
             echo '```'
-          } > promo-audit-comment.md
-          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file promo-audit-comment.md
-      - name: Enforce audit result
-        if: steps.audit.outputs.result != '0'
+            echo
+            echo "### Complete site"
+            echo '```text'
+            cat site-validation.txt
+            echo '```'
+          } > validation-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file validation-comment.md
+      - name: Enforce validation results
+        if: steps.audit.outputs.result != '0' || steps.site.outputs.result != '0'
         run: exit 1

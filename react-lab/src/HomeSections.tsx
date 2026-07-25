@@ -1,7 +1,8 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import BlurText from '@/components/BlurText';
 import { siteUrl } from '@/config';
+import { useModalDialog } from '@/hooks/useModalDialog';
 import { offers, platforms, portals, services, songstats } from '@/site-content';
 import { track } from '@/services/analytics';
 import { submitNewsletter } from '@/services/newsletter';
@@ -76,27 +77,13 @@ export function ExploreSection() {
 }
 
 export function PlatformModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const closeButton = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const previous = document.activeElement as HTMLElement | null;
-    const keydown = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
-    document.addEventListener('keydown', keydown);
-    document.body.style.overflow = 'hidden';
-    closeButton.current?.focus();
-    return () => {
-      document.removeEventListener('keydown', keydown);
-      document.body.style.overflow = '';
-      previous?.focus();
-    };
-  }, [open, onClose]);
-
+  const { dialogRef, initialFocusRef } = useModalDialog(open, onClose);
   return (
     <AnimatePresence>
       {open && (
         <motion.div className="stream-modal open" role="dialog" aria-modal="true" aria-labelledby="platform-title" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-          <motion.div className="modal-card" initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}>
-            <div className="modal-top"><div><p className="section-kicker">Listen your way</p><h2 id="platform-title">Choose a platform</h2><p>Select your preferred streaming service.</p></div><button ref={closeButton} className="modal-close" type="button" aria-label="Close" onClick={onClose}>×</button></div>
+          <motion.div ref={dialogRef} className="modal-card" initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}>
+            <div className="modal-top"><div><p className="section-kicker">Listen your way</p><h2 id="platform-title">Choose a platform</h2><p>Select your preferred streaming service.</p></div><button ref={initialFocusRef} className="modal-close" type="button" aria-label="Close" onClick={onClose}>×</button></div>
             <div className="modal-platforms">{platforms.map(([name, href]) => <a key={name} href={href} target="_blank" rel="noreferrer" onClick={() => track('platform_select', { platform: name })}><span>{name}</span><span>↗</span></a>)}</div>
           </motion.div>
         </motion.div>
@@ -115,8 +102,8 @@ export function SupportSection({ onChoosePlatform }: { onChoosePlatform: () => v
           <motion.article className="offer-card" key={offer.number} initial={reduceMotion ? false : reveal.hidden} whileInView={reveal.visible} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.45, delay: index * 0.06 }}>
             <span className="offer-number">{offer.number}</span>
             <div><p className="card-kicker">{offer.kicker}</p><h3>{offer.title}</h3><p>{offer.body}</p>
-              {index === 1 && <div className="songstats-row" aria-label="Current Songstats snapshot">{songstats.map(([value, label]) => <a key={label} href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noreferrer"><span className="stat-value">{value}</span><span className="stat-label">{label}</span></a>)}</div>}
-              {offer.tracking === 'choose_platform' ? <button className="home-button primary" type="button" onClick={() => { track('choose_platform'); onChoosePlatform(); }}>{offer.action}</button> : <a className={`home-button${offer.primary ? ' primary' : ''}`} href={offer.href} target={offer.href.startsWith('http') ? '_blank' : undefined} rel={offer.href.startsWith('http') ? 'noreferrer' : undefined} onClick={() => track(offer.tracking)}>{offer.action}</a>}
+              {offer.actionType === 'platform-modal' && <div className="songstats-row" aria-label="Current Songstats snapshot">{songstats.map(([value, label]) => <a key={label} href="https://songstats.com/artist/i34uwf2q/the-grei-show" target="_blank" rel="noreferrer"><span className="stat-value">{value}</span><span className="stat-label">{label}</span></a>)}</div>}
+              {offer.actionType === 'platform-modal' ? <button className="home-button primary" type="button" onClick={() => { track(offer.tracking); onChoosePlatform(); }}>{offer.action}</button> : <a className={`home-button${offer.primary ? ' primary' : ''}`} href={offer.href} target={offer.href.startsWith('http') ? '_blank' : undefined} rel={offer.href.startsWith('http') ? 'noreferrer' : undefined} onClick={() => track(offer.tracking)}>{offer.action}</a>}
             </div>
           </motion.article>
         ))}

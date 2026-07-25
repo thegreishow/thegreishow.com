@@ -72,7 +72,16 @@ for (const file of promoFiles) {
   rows.push({ relative, hasPlayUi, hasAudioElement, hasPlaybackCode, audioRefs, missing });
 }
 
-console.log(`PROMO AUDIO AUDIT: ${rows.length} HTML pages\n`);
+console.log(`PROMO AUDIO AUDIT: ${rows.length} HTML pages`);
+
+if (issues.length) {
+  console.error(`\nPROMO AUDIO ISSUES (${issues.length}):`);
+  for (const issue of issues) console.error(`- ${issue}`);
+} else {
+  console.log('\nAll promo playback surfaces have discoverable, existing audio targets.');
+}
+
+console.log('\nPROMO PAGE INVENTORY:');
 for (const row of rows) {
   console.log(`- ${row.relative}`);
   console.log(`  play-ui=${row.hasPlayUi} audio-element=${row.hasAudioElement} playback-code=${row.hasPlaybackCode}`);
@@ -80,10 +89,4 @@ for (const row of rows) {
   if (row.missing.length) console.log(`  missing=${row.missing.join(', ')}`);
 }
 
-if (issues.length) {
-  console.error(`\nPROMO AUDIO ISSUES (${issues.length}):`);
-  for (const issue of issues) console.error(`- ${issue}`);
-  process.exitCode = 1;
-} else {
-  console.log('\nAll promo playback surfaces have discoverable, existing audio targets.');
-}
+if (issues.length) process.exitCode = 1;

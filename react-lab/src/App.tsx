@@ -82,10 +82,12 @@ function App() {
     <div className="site-shell">
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
+      <div className="grain" aria-hidden="true" />
 
       <header className="topbar">
         <a className="wordmark" href={productionOrigin} aria-label="The Grei Show home">
-          THE GREI SHOW
+          <span className="wordmark-mark">G</span>
+          <span>THE GREI SHOW</span>
         </a>
         <nav aria-label="Primary navigation">
           <a href={`${productionOrigin}/music.html`}>Music</a>
@@ -98,22 +100,40 @@ function App() {
       <main>
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow">Jamaican artist · producer · world-builder</p>
+            <div className="hero-meta" aria-label="Transmission details">
+              <span>Kingston, Jamaica</span>
+              <span>Transmission 001</span>
+              <span>Signal active</span>
+            </div>
+
+            <p className="eyebrow">Artist · producer · author · world-builder</p>
             <h1 id="hero-title" className="sr-only">
               Enter The Grei Show
             </h1>
             <BlurText
-              text="ENTER THE GREI SHOW"
-              delay={reduceMotion ? 0 : 90}
-              animateBy="words"
+              text="ENTER"
+              delay={reduceMotion ? 0 : 95}
+              animateBy="letters"
               direction="bottom"
-              className="display-title"
+              className="display-title display-title-enter"
               stepDuration={reduceMotion ? 0 : 0.42}
             />
-            <p className="hero-lead">
-              Music you can feel. Stories you can enter. Original worlds you can watch,
-              read and play.
-            </p>
+            <motion.p
+              className="display-title display-title-name"
+              initial={reduceMotion ? false : { opacity: 0, x: -26 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.75, delay: 0.52 }}
+            >
+              THE GREI SHOW
+            </motion.p>
+
+            <div className="hero-manifesto">
+              <span className="hero-index">01</span>
+              <p className="hero-lead">
+                Music you can feel. Stories you can enter. Original worlds you can watch,
+                read and play.
+              </p>
+            </div>
 
             <div className="hero-actions">
               <a
@@ -122,60 +142,91 @@ function App() {
                 target="_blank"
                 rel="noreferrer"
               >
-                Choose a Platform
+                Hear No Drama
               </a>
-              <a className="button button-quiet" href="#arcade">
-                Enter the Arcade
+              <a className="button button-quiet" href="#portals">
+                Enter the universe
               </a>
-            </div>
-
-            <div className="signal-line" aria-label="Creative disciplines">
-              <span>Sound</span>
-              <span>Story</span>
-              <span>Visuals</span>
-              <span>Interactive</span>
             </div>
           </div>
 
-          <motion.a
-            className="feature-art"
-            href={`${productionOrigin}/music.html`}
-            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            whileHover={reduceMotion ? undefined : { y: -6 }}
-          >
-            <img
-              src={`${productionOrigin}/assets/img/no-drama.webp`}
-              alt="No Drama single cover by The Grei Show"
-            />
-            <span className="feature-label">
-              <small>Now playing</small>
-              <strong>No Drama</strong>
-            </span>
-          </motion.a>
+          <div className="art-stage" aria-label="Featured Grei Show releases">
+            <div className="vinyl-disc" aria-hidden="true">
+              <span />
+            </div>
+
+            <motion.a
+              className="art-card art-card-back"
+              href={`${productionOrigin}/books.html`}
+              initial={reduceMotion ? false : { opacity: 0, rotate: -3, x: 36 }}
+              animate={{ opacity: 1, rotate: 6, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.42 }}
+              whileHover={reduceMotion ? undefined : { rotate: 2, y: -8 }}
+            >
+              <img
+                src={`${productionOrigin}/assets/images/books/astral-thread-cover.jpg`}
+                alt="The Astral Thread book cover"
+              />
+              <span>Story 01</span>
+            </motion.a>
+
+            <motion.a
+              className="feature-art"
+              href={`${productionOrigin}/music.html`}
+              initial={reduceMotion ? false : { opacity: 0, y: 28, rotate: 2 }}
+              animate={{ opacity: 1, y: 0, rotate: -2 }}
+              transition={{ duration: 0.85, delay: 0.24 }}
+              whileHover={reduceMotion ? undefined : { y: -9, rotate: 0 }}
+            >
+              <img
+                src={`${productionOrigin}/assets/img/no-drama.webp`}
+                alt="No Drama single cover by The Grei Show"
+              />
+              <span className="feature-label">
+                <small>New transmission</small>
+                <strong>No Drama</strong>
+                <em>Listen everywhere ↗</em>
+              </span>
+            </motion.a>
+
+            <div className="release-stamp" aria-hidden="true">
+              <strong>NO DRAMA</strong>
+              <span>NEW SIGNAL · 2026</span>
+            </div>
+            <span className="art-counter">01 / 02</span>
+          </div>
         </section>
 
-        <section className="portal-section" aria-labelledby="portal-title">
-          <div className="section-heading">
+        <div className="signal-marquee" aria-label="The Grei Show creative disciplines">
+          <div>
+            <span>Music</span><i>✦</i><span>Books</span><i>✦</i><span>Games</span><i>✦</i>
+            <span>Film</span><i>✦</i><span>Photography</span><i>✦</i><span>Live</span><i>✦</i>
+            <span>Music</span><i>✦</i><span>Books</span><i>✦</i><span>Games</span><i>✦</i>
+          </div>
+        </div>
+
+        <section id="portals" className="portal-section" aria-labelledby="portal-title">
+          <div className="section-heading section-heading-numbered">
+            <span className="section-number">02</span>
             <p className="eyebrow">Choose your portal</p>
-            <h2 id="portal-title">One universe. Many ways in.</h2>
+            <h2 id="portal-title">One universe.<br />Many ways in.</h2>
           </div>
 
-          <div className="portal-grid">
+          <div className="portal-grid portal-grid-editorial">
             {portals.map((portal, index) => (
               <motion.a
-                className="portal-card"
+                className={`portal-card portal-card-${index + 1}`}
                 href={portal.href}
                 key={portal.title}
-                initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 34 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.55, delay: index * 0.08 }}
-                whileHover={reduceMotion ? undefined : { y: -7 }}
+                viewport={{ once: true, amount: 0.18 }}
+                transition={{ duration: 0.62, delay: index * 0.1 }}
+                whileHover={reduceMotion ? undefined : { y: -8 }}
               >
                 <img src={portal.image} alt="" loading="lazy" />
                 <span className="portal-shade" aria-hidden="true" />
+                <span className="portal-order">0{index + 1}</span>
                 <span className="portal-content">
                   <small>{portal.kicker}</small>
                   <strong>{portal.title}</strong>
@@ -188,26 +239,28 @@ function App() {
         </section>
 
         <section id="arcade" className="arcade-showcase" aria-labelledby="arcade-title">
-          <div className="section-heading">
+          <div className="section-heading section-heading-numbered">
+            <span className="section-number">03</span>
             <p className="eyebrow">Playable worlds</p>
-            <h2 id="arcade-title">The arcade is becoming a universe of its own.</h2>
+            <h2 id="arcade-title">Three games.<br />One growing mythology.</h2>
           </div>
 
-          <div className="arcade-grid">
+          <div className="arcade-grid arcade-grid-editorial">
             {games.map((game, index) => (
               <motion.a
-                className="game-card"
+                className={`game-card game-card-${index + 1}`}
                 href={`${productionOrigin}/arcade/game.html?id=${encodeURIComponent(game.id)}`}
                 key={game.id}
-                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 28 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.16 }}
-                transition={{ duration: 0.5, delay: index * 0.07 }}
-                whileHover={reduceMotion ? undefined : { y: -6 }}
+                transition={{ duration: 0.56, delay: index * 0.09 }}
+                whileHover={reduceMotion ? undefined : { y: -7 }}
               >
                 <span className="game-image">
                   <img src={game.thumbnail} alt={`${game.title} game thumbnail`} loading="lazy" />
                   <span className="game-badge">Native · v{game.version}</span>
+                  <span className="game-number">0{index + 1}</span>
                 </span>
                 <span className="game-copy">
                   <small>The Grei Show Arcade</small>
@@ -218,25 +271,26 @@ function App() {
                       <span key={tag}>{tag}</span>
                     ))}
                   </span>
-                  <span className="game-link">Play now →</span>
+                  <span className="game-link">Insert coin →</span>
                 </span>
               </motion.a>
             ))}
           </div>
         </section>
 
-        <section className="lab-note" aria-labelledby="lab-title">
-          <p className="eyebrow">Prototype 02</p>
-          <h2 id="lab-title">React underneath. The Grei Show on top.</h2>
+        <section className="lab-note statement-v3" aria-labelledby="lab-title">
+          <span className="section-number">04</span>
+          <p className="eyebrow">The signal continues</p>
+          <h2 id="lab-title">Not a portfolio.<br />A world in progress.</h2>
           <p>
-            This lab preserves the current website while we test motion, portal cards,
-            responsive behavior and future Unity WebGL presentation.
+            Records become stories. Stories become games. Every door leads deeper into the same universe.
           </p>
+          <a className="statement-link" href={`${productionOrigin}/connect.html`}>Build something together ↗</a>
         </section>
       </main>
 
       <footer>
-        <span>© 2026 The Grei Show</span>
+        <span>© 2026 The Grei Show · Kingston, Jamaica</span>
         <a href={productionOrigin}>Return to the live site</a>
       </footer>
     </div>

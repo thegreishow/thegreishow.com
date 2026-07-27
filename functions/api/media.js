@@ -29,7 +29,7 @@ export async function onRequestGet({request}){
     }
     if(!source||/\/folders\//.test(source))return json({error:'Playable file unavailable'},404);
 
-    const upstreamUrl=toDirectUrl(source);
+    const upstreamUrl=new URL(toDirectUrl(source),url.origin).toString();
     const headers=new Headers({'Accept':'*/*','User-Agent':'Mozilla/5.0'});
     const range=request.headers.get('Range');
     if(range)headers.set('Range',range);

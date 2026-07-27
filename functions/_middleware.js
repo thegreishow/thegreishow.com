@@ -1,8 +1,9 @@
 export async function onRequest(context){
-  const response=await context.next();
+  const path=new URL(context.request.url).pathname;
+  const isPromoDetail=/^\/promo\/[^/]+\/?$/.test(path);
+  const response=isPromoDetail?await context.next('/promo/index.html'):await context.next();
   const type=response.headers.get('content-type')||'';
   if(!type.includes('text/html'))return response;
-  const path=new URL(context.request.url).pathname;
   if(path.startsWith('/whiteline-admin'))return response;
   return new HTMLRewriter().on('body',{element(el){
     if(path.startsWith('/owner'))el.append('<script src="/assets/js/owner-cms-enhancements.js" defer></script>',{html:true});

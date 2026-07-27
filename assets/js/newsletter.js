@@ -26,7 +26,7 @@
           email: String(fields.get('email') || '').trim().toLowerCase(),
           first_name: String(fields.get('first_name') || '').trim(),
           country: String(fields.get('country') || '').trim(),
-          marketing_consent: fields.get('consent') === 'on',
+          consent_to_marketing: fields.get('consent') === 'on',
           website: String(fields.get('website') || ''),
           referrer: document.referrer || location.href
         })
@@ -43,7 +43,9 @@
         conversion: true
       });
     } catch (error) {
-      status.textContent = 'The list could not be updated right now. Please try again or email thegreishow@gmail.com.';
+      status.textContent = error.message && error.message !== 'Signup failed'
+        ? error.message
+        : 'The list could not be updated right now. Please try again or email thegreishow@gmail.com.';
       status.dataset.state = 'error';
       console.error('Release-list signup failed', error);
     } finally {

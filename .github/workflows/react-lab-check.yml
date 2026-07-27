@@ -1,0 +1,125 @@
+name: React Lab Check
+
+on:
+  push:
+    branches:
+      - react-bits-lab
+    paths:
+      - 'react-lab/**'
+      - 'react-preview.html'
+      - 'react-infrastructure-preview.html'
+      - 'assets/css/react-preview.css'
+      - 'assets/css/react-infrastructure-preview.css'
+      - 'assets/js/react-preview.js'
+      - 'assets/js/react-infrastructure-preview.js'
+      - '.github/workflows/react-lab-check.yml'
+  pull_request:
+    paths:
+      - 'react-lab/**'
+      - 'react-preview.html'
+      - 'react-infrastructure-preview.html'
+      - 'assets/css/react-preview.css'
+      - 'assets/css/react-infrastructure-preview.css'
+      - 'assets/js/react-preview.js'
+      - 'assets/js/react-infrastructure-preview.js'
+      - '.github/workflows/react-lab-check.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  react-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: react-lab
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --silent --no-audit --no-fund
+
+      - name: Validate architecture contract
+        run: npm run check:architecture --silent
+
+      - name: Validate live homepage parity
+        run: npm run check:parity --silent
+
+      - name: Type-check React source
+        run: npm run typecheck --silent
+
+      - name: Bundle Vite prototype
+        run: npx vite build
+
+      - name: Check public preview syntax
+        working-directory: .
+        run: |
+          node --check assets/js/react-preview.js
+          node --check assets/js/react-infrastructure-preview.js
+
+      - name: Post React failure to draft PR
+        if: ${{ failure() && github.event_name == 'pull_request' }}
+        continue-on-error: true
+        working-directory: react-lab
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "### React Lab validation failed"
+            echo
+            echo "One of the named architecture, parity, type-check, bundle, or preview gates failed. Open the failed Actions step for the exact output."
+          } > build-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file build-comment.md
+
+  site-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run repository site validator
+        run: |
+          set +e
+          node scripts/validate-site.mjs > site-validation.log 2>&1
+          result=$?
+          if [ $result -ne 0 ]; then
+            echo "===== SITE VALIDATION FAILURE ====="
+            tail -n 100 site-validation.log
+            exit $result
+          fi
+          cat site-validation.log
+
+      - name: Post site validation failure to draft PR
+        if: failure() && github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "### Site validation diagnostic"
+            echo
+            echo '```text'
+            tail -n 100 site-validation.log
+            echo '```'
+          } > site-validation-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file site-validation-comment.md

@@ -1,0 +1,33 @@
+{
+  "name": "the-grei-show-react-lab",
+  "private": true,
+  "version": "0.3.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "vite",
+    "check:architecture": "node scripts/validate-architecture.mjs",
+    "check:parity": "node scripts/validate-live-parity.mjs",
+    "check": "npm run check:architecture && npm run check:parity && npm run typecheck",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run check && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "motion": "^12.42.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "^6.0.3",
+    "tailwindcss": "latest",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5"
+  }
+}

@@ -39,12 +39,14 @@ export async function onRequestGet({request}){
     const upstream=await fetch(upstreamUrl,{headers,redirect:'follow'});
     if(!upstream.ok&&upstream.status!==206)return json({error:'Media unavailable'},upstream.status);
 
+    const upstreamType=(upstream.headers.get('content-type')||'').split(';')[0].toLowerCase();
+    const usableType=type==='artwork'?upstreamType.startsWith('image/'):upstreamType.startsWith('audio/');
     const responseHeaders=new Headers();
-    responseHeaders.set('Content-Type',upstream.headers.get('content-type')||contentTypeFor(filename,type));
+    responseHeaders.set('Content-Type',usableType?upstreamType:contentTypeFor(filename,type));
     responseHeaders.set('Accept-Ranges',upstream.headers.get('accept-ranges')||'bytes');
     responseHeaders.set('Cache-Control','public, max-age=3600, s-maxage=86400');
-    responseHeaders.set('X-Content-Type-Options','nosniff');
-    for(const name of ['content-length','content-range']){const value=upstream.headers.get(name);if(value)responseHeaders.set(name,value)}
+    responseHeaders.set('Access-Control-Allow-Origin','*');
+    for(const name of ['content-length','content-range','etag','last-modified']){const value=upstream.headers.get(name);if(value)responseHeaders.set(name,value)}
     responseHeaders.set('Content-Disposition',`${download?'attachment':'inline'}; filename="${filename.replace(/"/g,'')}"`);
     return new Response(upstream.body,{status:upstream.status===206?206:200,headers:responseHeaders});
   }catch(error){
@@ -57,4 +59,4 @@ function json(data,status){return new Response(JSON.stringify(data),{status,head
 function toDirectUrl(url){const value=String(url||'');const match=value.match(/[?&]id=([\w-]+)/)||value.match(/\/d\/([\w-]+)/);if(match&&value.includes('drive.google.com'))return`https://drive.usercontent.google.com/download?id=${match[1]}&export=download&confirm=t`;return value}
 function safeName(value){return String(value||'release').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'release'}
 function extensionFromUrl(url){const m=String(url||'').match(/\.(mp3|wav|flac|m4a|aac|ogg|jpg|jpeg|png|webp)(?:[?#]|$)/i);return m?`.${m[1].toLowerCase()}`:''}
-function contentTypeFor(filename,type){if(type==='artwork')return filename.endsWith('.png')?'image/png':filename.endsWith('.webp')?'image/webp':'image/jpeg';if(filename.endsWith('.wav'))return'audio/wav';if(filename.endsWith('.flac'))return'audio/flac';if(filename.endsWith('.m4a'))return'audio/mp4';return'audio/mpeg'}
+function contentTypeFor(filename,type){if(type==='artwork')return filename.endsWith('.png')?'image/png':filename.endsWith('.webp')?'image/webp':'image/jpeg';if(filename.endsWith('.wav'))return'audio/wav';if(filename.endsWith('.flac'))return'audio/flac';if(filename.endsWith('.m4a'))return'audio/mp4';if(filename.endsWith('.aac'))return'audio/aac';if(filename.endsWith('.ogg'))return'audio/ogg';return'audio/mpeg'}

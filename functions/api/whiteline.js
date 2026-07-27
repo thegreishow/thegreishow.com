@@ -97,6 +97,73 @@ export async function onRequestPost({ request, env }) {
   const challenge = await verifyTurnstile(request, env, payload, 'inquiry');
   if (!challenge.success) return secureJson({ error: 'Human verification failed. Please try again.' }, 400);
 
+  if (Object.prototype.hasOwnProperty.call(payload, 'talent_category')) {
+    const name = cleanText(payload.client_name, 120);
+    const company = cleanText(payload.company_name, 160);
+    const email = validEmail(payload.email);
+    const phone = cleanText(payload.phone, 80);
+    const projectType = cleanText(payload.project_type, 120);
+    const talentCategory = cleanText(payload.talent_category, 160);
+    const brief = cleanText(payload.project_description, 5000);
+    const requirements = cleanText(payload.requirements, 3000);
+    const eventDate = cleanText(payload.event_date, 10);
+    const location = cleanText(payload.location, 200);
+    const currency = cleanText(payload.currency, 3).toUpperCase();
+    const preferredContact = cleanText(payload.preferred_contact_method, 20);
+    const requestedTalentId = cleanText(payload.requested_talent_id, 36);
+    const requestedTalentName = cleanText(payload.requested_talent_name, 160);
+    const currencies = new Set(['USD', 'JMD', 'GBP', 'EUR', 'CAD']);
+    const contactMethods = new Set(['Email', 'WhatsApp', 'Phone']);
+    const budgetMin = payload.budget_min === null || payload.budget_min === '' ? null : Number(payload.budget_min);
+    const budgetMax = payload.budget_max === null || payload.budget_max === '' ? null : Number(payload.budget_max);
+
+    if (name.length < 2) return secureJson({ error: 'Enter your name.' }, 400);
+    if (!email) return secureJson({ error: 'Enter a valid email address.' }, 400);
+    if (phone.length < 5) return secureJson({ error: 'Enter a valid phone or WhatsApp number.' }, 400);
+    if (projectType.length < 2) return secureJson({ error: 'Enter the project type.' }, 400);
+    if (talentCategory.length < 2) return secureJson({ error: 'Enter the talent needed.' }, 400);
+    if (brief.length < 30) return secureJson({ error: 'Please add at least 30 characters about the project.' }, 400);
+    if (location.length < 2) return secureJson({ error: 'Enter the project location.' }, 400);
+    if (eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) return secureJson({ error: 'Enter a valid date.' }, 400);
+    if (!currencies.has(currency)) return secureJson({ error: 'Choose a valid currency.' }, 400);
+    if (preferredContact && !contactMethods.has(preferredContact)) return secureJson({ error: 'Choose a valid contact method.' }, 400);
+    if (requestedTalentId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestedTalentId)) {
+      return secureJson({ error: 'The requested talent profile is invalid.' }, 400);
+    }
+    if (budgetMin !== null && (!Number.isFinite(budgetMin) || budgetMin < 0)) return secureJson({ error: 'Enter a valid minimum budget.' }, 400);
+    if (budgetMax !== null && (!Number.isFinite(budgetMax) || budgetMax < 0)) return secureJson({ error: 'Enter a valid maximum budget.' }, 400);
+    if (budgetMin !== null && budgetMax !== null && budgetMax < budgetMin) {
+      return secureJson({ error: 'Maximum budget must be greater than or equal to the minimum.' }, 400);
+    }
+
+    const clean = {
+      client_name: name,
+      company_name: company || null,
+      email,
+      phone,
+      whatsapp: phone,
+      project_type: projectType,
+      talent_category: talentCategory,
+      project_description: brief,
+      requirements: requirements || null,
+      event_date: eventDate || null,
+      location,
+      budget_min: budgetMin,
+      budget_max: budgetMax,
+      currency,
+      preferred_contact_method: preferredContact || null,
+      requested_talent_id: requestedTalentId || null,
+      requested_talent_name: requestedTalentName || null
+    };
+    const result = await supabase('client_requests', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify(clean)
+    }, env, true);
+    if (result.error) return secureJson({ error: 'Could not submit your booking request right now.' }, 503);
+    return secureJson({ ok: true }, 201);
+  }
+
   const services = {
     'live-performance': 'Live performance',
     'dj-set': 'DJ set',

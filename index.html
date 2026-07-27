@@ -208,13 +208,16 @@
   <main class="home">
     <section class="hero" aria-labelledby="home-title">
       <div class="hero-copy">
-        <p class="hero-kicker">Jamaican artist &middot; Producer &middot; World-builder</p>
-        <h1 id="home-title" class="hero-title"><span>Enter</span>The Grei Show</h1>
-        <p class="hero-lead">Music you can feel. Stories you can enter. Original worlds you can watch, read, play, and help bring to life.</p>
+        <div class="hero-intro">
+          <p class="hero-kicker">Independent artist &amp; creative director &middot; Kingston, Jamaica</p>
+          <span class="hero-status"><i aria-hidden="true"></i> New music available now</span>
+        </div>
+        <h1 id="home-title" class="hero-title"><span>Music. Stories. Worlds.</span>The Grei Show</h1>
+        <p class="hero-lead">An independent creative universe shaped through music, storytelling, visual direction, and interactive experiences.</p>
 
         <div class="hero-actions">
-          <a class="home-button primary" href="https://snd.click/qnbs" target="_blank" rel="noopener" data-track="listen" data-track-label="Hero - No Drama">Hear No Drama</a>
-          <a class="home-button" href="connect.html?interest=live-performance" data-track="hero_booking" data-track-label="Hero - Request booking">Request a booking</a>
+          <a class="home-button primary" href="https://snd.click/qnbs" target="_blank" rel="noopener" data-track="listen" data-track-label="Hero - No Drama">Listen to No Drama</a>
+          <a class="home-button" href="connect.html?interest=live-performance" data-track="hero_booking" data-track-label="Hero - Request booking">Bookings &amp; collaborations</a>
           <a class="home-button internal" href="#explore" data-track="explore" data-track-label="Hero - Explore">Explore the universe</a>
         </div>
 
@@ -227,14 +230,13 @@
       </div>
 
       <div class="hero-art" aria-label="Featured releases">
-        <span class="play-stamp">Now playing<br>No Drama</span>
         <figure class="art-card album">
           <img src="assets/img/no-drama.webp" alt="No Drama single cover by The Grei Show" width="1200" height="1200" loading="lazy" decoding="async">
-          <figcaption>Featured release &middot; No Drama</figcaption>
+          <figcaption><span>Featured release</span><strong>No Drama</strong></figcaption>
         </figure>
         <figure class="art-card book">
           <img src="assets/images/books/astral-thread-cover.jpg" alt="The Astral Thread book cover" width="960" height="1200" loading="lazy" decoding="async">
-          <figcaption>Book 01</figcaption>
+          <figcaption><span>Book 01</span><strong>The Astral Thread</strong></figcaption>
         </figure>
       </div>
     </section>
@@ -383,39 +385,51 @@
     <section class="home-section list-section" aria-labelledby="list-title">
       <div class="list-panel">
         <div class="list-copy">
-          <p class="section-kicker">Stay close to the signal</p>
-          <h2 id="list-title">Get the next transmission.</h2>
-          <p>Join for early access to new chapters, exclusive tracks, visual drops and arcade unlocks. We respect your inbox.</p>
+          <p class="section-kicker">The release list</p>
+          <h2 id="list-title">Stay close to what comes next.</h2>
+          <p>Receive new music, story chapters, visual releases, and selected behind-the-scenes notes directly from The Grei Show.</p>
+          <ul class="list-benefits" aria-label="Newsletter benefits">
+            <li>New releases and project announcements</li>
+            <li>Occasional notes from inside the creative process</li>
+            <li>Early access to selected drops and experiences</li>
+          </ul>
+          <p class="list-frequency">Sent occasionally. No noise, no sold data, and one-click unsubscribe.</p>
+        </div>
 
+        <div class="newsletter-card">
           <form id="release-list-form" class="newsletter-form" novalidate>
+            <div class="newsletter-heading">
+              <span>Join the community</span>
+              <strong>Be first to receive the next release.</strong>
+            </div>
             <div class="form-row">
               <div class="form-field">
                 <label for="first_name">First name</label>
-                <input type="text" id="first_name" name="first_name" placeholder="Your first name" autocomplete="given-name">
+                <input type="text" id="first_name" name="first_name" placeholder="First name" autocomplete="given-name">
               </div>
               <div class="form-field">
-                <label for="email">Email <span class="req">*</span></label>
-                <input type="email" id="email" name="email" placeholder="you@domain.com" required autocomplete="email">
+                <label for="email">Email address <span class="req" aria-hidden="true">*</span></label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-field">
                 <label for="country">Country / Region</label>
-                <input type="text" id="country" name="country" placeholder="Jamaica or anywhere" autocomplete="country">
+                <input type="text" id="country" name="country" placeholder="Where are you listening from?" autocomplete="country-name">
               </div>
             </div>
 
             <div class="form-consent">
               <label class="consent-label">
                 <input type="checkbox" name="consent" checked>
-                <span>I’d like occasional updates about releases and projects. You can unsubscribe anytime.</span>
+                <span>I agree to receive occasional release and project updates.</span>
               </label>
             </div>
 
             <div class="form-actions">
               <button type="submit" class="home-button primary">Join the list</button>
-              <div id="release-list-status" class="form-status" aria-live="polite"></div>
+              <div id="release-list-status" class="form-status" role="status" aria-live="polite"></div>
             </div>
 
             <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">

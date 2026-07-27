@@ -44,7 +44,8 @@ export async function onRequestGet({request}){
     responseHeaders.set('Cache-Control','public, max-age=3600, s-maxage=86400');
     responseHeaders.set('Access-Control-Allow-Origin','*');
     for(const name of ['content-length','content-range','etag','last-modified']){const value=upstream.headers.get(name);if(value)responseHeaders.set(name,value)}
-    responseHeaders.set('Content-Disposition',`${download?'attachment':'inline'}; filename="${filename.replace(/"/g,'')}"`);
+    const responseFilename=filenameForContentType(filename,upstreamType);
+    responseHeaders.set('Content-Disposition',`${download?'attachment':'inline'}; filename="${responseFilename.replace(/"/g,'')}"`);
     return new Response(upstream.body,{status:upstream.status===206?206:200,headers:responseHeaders});
   }catch(error){
     console.error('media proxy error',error);
@@ -72,4 +73,5 @@ function json(data,status){return new Response(JSON.stringify(data),{status,head
 function toDirectUrl(url){const value=String(url||'');const match=value.match(/[?&]id=([\w-]+)/)||value.match(/\/d\/([\w-]+)/);if(match&&value.includes('drive.google.com'))return`https://drive.usercontent.google.com/download?id=${match[1]}&export=download&confirm=t`;return value}
 function safeName(value){return String(value||'release').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'release'}
 function extensionFromUrl(url){const m=String(url||'').match(/\.(mp3|wav|flac|m4a|aac|ogg|jpg|jpeg|png|webp)(?:[?#]|$)/i);return m?`.${m[1].toLowerCase()}`:''}
+function filenameForContentType(filename,type){const extensions={'audio/mpeg':'.mp3','audio/wav':'.wav','audio/x-wav':'.wav','audio/flac':'.flac','audio/mp4':'.m4a','audio/aac':'.aac','audio/ogg':'.ogg','image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp'},extension=extensions[String(type||'').toLowerCase()];return extension?String(filename).replace(/\.(?:mp3|wav|flac|m4a|aac|ogg|jpe?g|png|webp)$/i,'')+extension:filename}
 function contentTypeFor(filename,type){if(type==='artwork')return filename.endsWith('.png')?'image/png':filename.endsWith('.webp')?'image/webp':'image/jpeg';if(filename.endsWith('.wav'))return'audio/wav';if(filename.endsWith('.flac'))return'audio/flac';if(filename.endsWith('.m4a'))return'audio/mp4';if(filename.endsWith('.aac'))return'audio/aac';if(filename.endsWith('.ogg'))return'audio/ogg';return'audio/mpeg'}

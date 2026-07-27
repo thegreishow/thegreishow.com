@@ -28,30 +28,7 @@
 
   const promoUrl=slug=>`/promo/${encodeURIComponent(slug)}/`;
 
-  function addPromoLink(card,slug){
-    if(!card||!slug||card.querySelector('.official-promo-link'))return;
-    const row=card.querySelector('.button-row')||card;
-    const link=document.createElement('a');
-    link.className='music-cta official-promo-link';
-    link.href=promoUrl(slug);
-    link.textContent='Official promo';
-    link.setAttribute('aria-label',`Open official promo page for ${card.querySelector('h3')?.textContent||'this release'}`);
-    const portal=row.querySelector('.open-portal');
-    if(portal)row.insertBefore(link,portal);else row.appendChild(link);
-  }
-
   function init(){
-    document.querySelectorAll('[data-release]').forEach(card=>addPromoLink(card,PROMO_SLUGS[card.dataset.release]));
-
-    const featured=document.querySelector('.release-stage .button-row');
-    if(featured&&!featured.querySelector('.official-promo-link')){
-      const link=document.createElement('a');
-      link.className='music-cta official-promo-link';
-      link.href='/promo/no-drama/';
-      link.textContent='Official promo';
-      featured.prepend(link);
-    }
-
     document.querySelectorAll('.project-art, .single-art').forEach(art=>{
       const card=art.closest('[data-release]');
       const slug=card&&PROMO_SLUGS[card.dataset.release];

@@ -49,8 +49,9 @@ module.exports=async function handler(req,res){
     res.setHeader('X-Content-Type-Options','nosniff');
     if(contentLength)res.setHeader('Content-Length',contentLength);
     if(contentRange)res.setHeader('Content-Range',contentRange);
-    if(download)res.setHeader('Content-Disposition',`attachment; filename="${filename.replace(/"/g,'')}"`);
-    else res.setHeader('Content-Disposition',`inline; filename="${filename.replace(/"/g,'')}"`);
+    const responseFilename=filenameForContentType(filename,contentType);
+    if(download)res.setHeader('Content-Disposition',`attachment; filename="${responseFilename.replace(/"/g,'')}"`);
+    else res.setHeader('Content-Disposition',`inline; filename="${responseFilename.replace(/"/g,'')}"`);
 
     if(!upstream.body)return res.end();
     const reader=upstream.body.getReader();
@@ -75,4 +76,5 @@ function toDirectUrl(url){
 }
 function safeName(value){return String(value||'release').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'release'}
 function extensionFromUrl(url){const m=String(url||'').match(/\.(mp3|wav|flac|m4a|aac|ogg|jpg|jpeg|png|webp)(?:[?#]|$)/i);return m?`.${m[1].toLowerCase()}`:''}
+function filenameForContentType(filename,type){const mime=String(type||'').split(';')[0].toLowerCase(),extensions={'audio/mpeg':'.mp3','audio/wav':'.wav','audio/x-wav':'.wav','audio/flac':'.flac','audio/mp4':'.m4a','audio/aac':'.aac','audio/ogg':'.ogg','image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp'},extension=extensions[mime];return extension?String(filename).replace(/\.(?:mp3|wav|flac|m4a|aac|ogg|jpe?g|png|webp)$/i,'')+extension:filename}
 function contentTypeFor(filename,type){if(type==='artwork')return filename.endsWith('.png')?'image/png':filename.endsWith('.webp')?'image/webp':'image/jpeg';if(filename.endsWith('.wav'))return'audio/wav';if(filename.endsWith('.flac'))return'audio/flac';if(filename.endsWith('.m4a'))return'audio/mp4';return'audio/mpeg'}

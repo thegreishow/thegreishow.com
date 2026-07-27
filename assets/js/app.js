@@ -72,10 +72,26 @@ function renderMusic(cms) {
     container.innerHTML = '';
     cms.music.tracks.forEach(track => {
       const el = document.createElement('div');
-      el.innerHTML = `
-        <p>${track.name}</p>
-        <audio controls src="${track.url}"></audio>
-      `;
+      const title = document.createElement('p');
+      const audio = document.createElement('audio');
+      const source = document.createElement('source');
+
+      title.textContent = track.name;
+      audio.controls = true;
+      audio.preload = 'metadata';
+      source.src = track.url;
+      source.type = 'audio/mpeg';
+      audio.append(source);
+      audio.append('Your browser does not support audio playback.');
+      el.append(title, audio);
+
+      if (track.download) {
+        const download = document.createElement('a');
+        download.href = track.download;
+        download.download = track.filename || `${track.name}.mp3`;
+        download.textContent = 'Download MP3';
+        el.append(download);
+      }
       container.appendChild(el);
     });
   }

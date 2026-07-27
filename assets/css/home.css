@@ -1170,6 +1170,10 @@
   cursor: pointer;
 }
 
+.cta-short {
+  display: none;
+}
+
 .hero-actions .open-platforms-trigger::after {
   content: '\2197';
 }
@@ -1286,7 +1290,15 @@
     min-height: 46px;
     flex: 1 1 0;
     padding-inline: 6px;
-    font-size: 0.68rem;
+    font-size: 0.78rem;
+  }
+
+  .hero-actions .cta-full {
+    display: none;
+  }
+
+  .hero-actions .cta-short {
+    display: inline;
   }
 
   .hero-visual {

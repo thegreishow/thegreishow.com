@@ -1,6 +1,7 @@
 import { open, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
@@ -35,6 +36,43 @@ async function findHtmlFiles(directory) {
   }
 
   return files;
+}
+
+async function findJavaScriptFiles(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    if (entry.isDirectory() && ignoredDirectories.has(entry.name)) continue;
+    const entryPath = path.join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      files.push(...(await findJavaScriptFiles(entryPath)));
+    } else if (entry.isFile() && /\.(?:js|mjs)$/i.test(entry.name)) {
+      files.push(entryPath);
+    }
+  }
+
+  return files;
+}
+
+async function validateJavaScriptSyntax() {
+  const files = (await findJavaScriptFiles(projectRoot)).sort();
+
+  for (const filePath of files) {
+    const result = spawnSync(process.execPath, ["--check", filePath], {
+      cwd: projectRoot,
+      encoding: "utf8",
+    });
+
+    if (result.status !== 0) {
+      const source = await readFile(filePath, "utf8");
+      const message = (result.stderr || result.stdout || "JavaScript syntax check failed.")
+        .split("\n")
+        .find((line) => /SyntaxError:/.test(line)) || "JavaScript syntax check failed.";
+      report(filePath, 0, source, message.trim());
+    }
+  }
 }
 
 function isHtmlDocument(source) {
@@ -305,6 +343,7 @@ for (const filePath of htmlFiles) {
 }
 
 await validateAstralThreadAudio();
+await validateJavaScriptSyntax();
 
 issues.sort(
   (left, right) =>

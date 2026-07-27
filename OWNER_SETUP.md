@@ -69,3 +69,14 @@ This document tracks the remaining owner-side setup items needed to fully launch
 - You already have strong backend infrastructure (Supabase + PayPal webhooks + talent payouts). These front-end pieces will complete the revenue loop.
 
 Once these are filled in, the site will be fully revenue-ready.
+# Form protection
+
+Public newsletter and booking forms use honeypots, strict server-side validation,
+origin checks and per-client throttling by default. Cloudflare Turnstile activates
+automatically when both of these Cloudflare Pages variables are configured:
+
+- `TURNSTILE_SITE_KEY` — public widget site key.
+- `TURNSTILE_SECRET_KEY` — private server-side validation secret.
+
+Set `TURNSTILE_SECRET_KEY` on the Supabase `subscribe-release-list` Edge Function
+as well so direct requests to that function require the same verification.

@@ -23,7 +23,7 @@
     if(Object.prototype.hasOwnProperty.call(config,'hidden'))node.hidden=Boolean(config.hidden);
     if(config.className)node.className=config.className;
   };
-  const applyTheme=settings={})=>{
+  const applyTheme=(settings={})=>{
     const root=document.documentElement.style;
     const map={accent:'--cms-accent',background:'--cms-background',surface:'--cms-surface',text:'--cms-text',muted:'--cms-muted',radius:'--cms-radius',headingFont:'--cms-heading-font',bodyFont:'--cms-body-font'};
     Object.entries(map).forEach(([k,v])=>settings[k]&&root.setProperty(v,settings[k]));

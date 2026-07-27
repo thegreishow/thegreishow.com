@@ -213,9 +213,9 @@
         <p class="hero-lead">Music, stories, and worlds without limits.</p>
 
         <div class="hero-actions">
-          <button class="home-button primary open-platforms-trigger" type="button" data-track="choose_platform" data-track-label="Hero - Choose platform">Choose your platform</button>
-          <a class="home-button internal" href="#explore" data-track="explore" data-track-label="Hero - Explore">Explore the work</a>
-          <a class="home-button primary visuals-cta" href="visuals.html" data-track="hero_visuals" data-track-label="Hero - Visuals">View visuals</a>
+          <button class="home-button primary open-platforms-trigger" type="button" aria-label="Choose your platform" data-track="choose_platform" data-track-label="Hero - Choose platform"><span class="cta-full">Choose your platform</span><span class="cta-short" aria-hidden="true">Listen</span></button>
+          <a class="home-button internal" href="#explore" aria-label="Explore the work" data-track="explore" data-track-label="Hero - Explore"><span class="cta-full">Explore the work</span><span class="cta-short" aria-hidden="true">Explore</span></a>
+          <a class="home-button primary visuals-cta" href="visuals.html" aria-label="View visuals" data-track="hero_visuals" data-track-label="Hero - Visuals"><span class="cta-full">View visuals</span><span class="cta-short" aria-hidden="true">Visuals</span></a>
         </div>
       </div>
 
@@ -413,6 +413,8 @@
               </label>
             </div>
 
+            <div class="form-verification" data-turnstile-action="newsletter" aria-label="Human verification"></div>
+            <input type="hidden" name="turnstile_token">
             <div class="form-actions">
               <button type="submit" class="home-button primary">Join the list</button>
               <div id="release-list-status" class="form-status" role="status" aria-live="polite"></div>
@@ -448,6 +450,7 @@
   </div>
 
   <script src="shared/nav.js"></script>
+  <script src="assets/js/form-security.js" defer></script>
   <script src="assets/js/newsletter.js?v=20260727-2"></script>
   <script>
     (function () {

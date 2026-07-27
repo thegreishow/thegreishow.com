@@ -1,5 +1,10 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
+Disallow: /admin
+Disallow: /owner
+Disallow: /owner-cms
+Disallow: /whiteline-admin
+Disallow: /whiteline-talent-login
+Disallow: /whiteline-talent-portal
 
 Sitemap: https://thegreishow.com/sitemap.xml

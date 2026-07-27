@@ -172,5 +172,29 @@
     "press_url": "https://drive.google.com/drive/folders/15Kv70pCl0fzkYjmU51P10-kHtX8HuVRF",
     "featured": false,
     "status": "published"
+  },
+  {
+    "slug": "pineapples-and-hot-sauce",
+    "title": "Pineapples & Hot Sauce",
+    "artist": "The Grei Show",
+    "release_type": "EP",
+    "genre": "Reggae",
+    "release_date": "2017-01-01",
+    "description": "Two-track release featuring Pineapples and Hot Sauce.",
+    "artwork_url": "https://drive.google.com/file/d/1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz/view",
+    "audio_url": "https://drive.google.com/drive/folders/1yRlF1-zBqBx0LNC70LAuA_nSO8s6pODb",
+    "tracks": [
+      {
+        "title": "Pineapples",
+        "url": "https://drive.google.com/file/d/1LJLmeuz3rTiGgUXRZmsjbEv6vWCN5Ncg/view"
+      },
+      {
+        "title": "Hot Sauce",
+        "url": "https://drive.google.com/file/d/1Y1-SD9D3ku_wlnLMb5pG-9VIaXU5oSX5/view"
+      }
+    ],
+    "press_url": "https://drive.google.com/drive/folders/1yRlF1-zBqBx0LNC70LAuA_nSO8s6pODb",
+    "featured": false,
+    "status": "published"
   }
 ]

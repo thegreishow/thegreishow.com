@@ -55,17 +55,18 @@ export async function onRequestGet({request}){
 
 async function findRelease(origin,slug){
   const candidates=slugCandidates(slug);
+  let remoteRelease=null;
   try{
     const filter=candidates.map(value=>`slug.eq.${encodeURIComponent(value)}`).join(',');
     const endpoint=`${SUPABASE_URL}/rest/v1/owner_releases?or=(${filter})&status=eq.published&select=title,artist,slug,audio_url,artwork_url,tracks`;
     const response=await fetch(endpoint,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
-    if(response.ok){const records=await response.json();const found=records.find(record=>candidates.includes(normalizeSlug(record.slug)));if(found)return found}
+    if(response.ok){const records=await response.json();remoteRelease=records.find(record=>candidates.includes(normalizeSlug(record.slug)))||null}
   }catch(error){console.warn('Remote media lookup failed',error)}
   try{
     const response=await fetch(`${origin}/assets/data/promo-releases.json`,{headers:{Accept:'application/json'}});
-    if(response.ok){const records=await response.json();return records.find(record=>record&&record.status==='published'&&candidates.includes(normalizeSlug(record.slug)))||null}
+    if(response.ok){const records=await response.json();const localRelease=records.find(record=>record&&record.status==='published'&&candidates.includes(normalizeSlug(record.slug)))||null;if(remoteRelease&&localRelease)return{...localRelease,...remoteRelease,tracks:Array.isArray(remoteRelease.tracks)&&remoteRelease.tracks.length?remoteRelease.tracks:localRelease.tracks,audio_url:remoteRelease.audio_url||localRelease.audio_url,artwork_url:remoteRelease.artwork_url||localRelease.artwork_url};return remoteRelease||localRelease}
   }catch(error){console.warn('Local media lookup failed',error)}
-  return null;
+  return remoteRelease;
 }
 function normalizeSlug(value){return String(value||'').trim().toLowerCase().replace(/[’']/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
 function slugCandidates(value){const normalized=normalizeSlug(value);return [...new Set([normalized,...(ALIASES[normalized]||[]).map(normalizeSlug)])]}

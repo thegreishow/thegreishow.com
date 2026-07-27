@@ -1,20 +1,17 @@
 const SUPABASE_URL='https://dkvbeizjlgxqjuxnlqho.supabase.co';
 const SUPABASE_KEY='sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
+const ALIASES={'puff-puff-pass-remix':['puff-puff-pass-remix-feat-bay-c','puff-puff-pass-remix-bay-c'],'puff-puff-pass-remix-feat-bay-c':['puff-puff-pass-remix-feat-bay-c','puff-puff-pass-remix-bay-c'],'puff-puff-pass-remix-bay-c':['puff-puff-pass-remix-bay-c','puff-puff-pass-remix-feat-bay-c'],'theres-nothing-to-believe-in-ep':['theres-nothing-to-believe-in-ep','theres-nothing-to-believe-in'],'theres-nothing-to-believe-in':['theres-nothing-to-believe-in','theres-nothing-to-believe-in-ep'],'1122':['1122','1122-ep'],'1122-ep':['1122-ep','1122']};
 
 export async function onRequestGet({request}){
   try{
     const url=new URL(request.url);
-    const slug=String(url.searchParams.get('slug')||'').trim().toLowerCase();
+    const slug=normalizeSlug(url.searchParams.get('slug'));
     const type=String(url.searchParams.get('type')||'audio').trim().toLowerCase();
     const index=Math.max(0,Number.parseInt(url.searchParams.get('index')||'0',10)||0);
     const download=url.searchParams.get('download')==='1';
     if(!slug)return json({error:'Missing release slug'},400);
 
-    const endpoint=`${SUPABASE_URL}/rest/v1/owner_releases?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=title,artist,audio_url,artwork_url,tracks`;
-    const recordResponse=await fetch(endpoint,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
-    if(!recordResponse.ok)return json({error:'Release lookup failed'},502);
-    const records=await recordResponse.json();
-    const release=records[0];
+    const release=await findRelease(url.origin,slug);
     if(!release)return json({error:'Release not found'},404);
 
     let source='',filename='';
@@ -55,7 +52,23 @@ export async function onRequestGet({request}){
   }
 }
 
-function json(data,status){return new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json;charset=UTF-8'}})}
+async function findRelease(origin,slug){
+  const candidates=slugCandidates(slug);
+  try{
+    const filter=candidates.map(value=>`slug.eq.${encodeURIComponent(value)}`).join(',');
+    const endpoint=`${SUPABASE_URL}/rest/v1/owner_releases?or=(${filter})&status=eq.published&select=title,artist,slug,audio_url,artwork_url,tracks`;
+    const response=await fetch(endpoint,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
+    if(response.ok){const records=await response.json();const found=records.find(record=>candidates.includes(normalizeSlug(record.slug)));if(found)return found}
+  }catch(error){console.warn('Remote media lookup failed',error)}
+  try{
+    const response=await fetch(`${origin}/assets/data/promo-releases.json`,{headers:{Accept:'application/json'}});
+    if(response.ok){const records=await response.json();return records.find(record=>record&&record.status==='published'&&candidates.includes(normalizeSlug(record.slug)))||null}
+  }catch(error){console.warn('Local media lookup failed',error)}
+  return null;
+}
+function normalizeSlug(value){return String(value||'').trim().toLowerCase().replace(/[’']/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
+function slugCandidates(value){const normalized=normalizeSlug(value);return [...new Set([normalized,...(ALIASES[normalized]||[]).map(normalizeSlug)])]}
+function json(data,status){return new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json;charset=UTF-8','cache-control':'no-store'}})}
 function toDirectUrl(url){const value=String(url||'');const match=value.match(/[?&]id=([\w-]+)/)||value.match(/\/d\/([\w-]+)/);if(match&&value.includes('drive.google.com'))return`https://drive.usercontent.google.com/download?id=${match[1]}&export=download&confirm=t`;return value}
 function safeName(value){return String(value||'release').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'release'}
 function extensionFromUrl(url){const m=String(url||'').match(/\.(mp3|wav|flac|m4a|aac|ogg|jpg|jpeg|png|webp)(?:[?#]|$)/i);return m?`.${m[1].toLowerCase()}`:''}

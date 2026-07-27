@@ -1122,8 +1122,8 @@
   display: block;
   content: '';
   background:
-    linear-gradient(90deg, rgba(3, 6, 12, 0.96) 0%, rgba(3, 6, 12, 0.78) 43%, rgba(3, 6, 12, 0.26) 72%, rgba(3, 6, 12, 0.52) 100%),
-    linear-gradient(180deg, rgba(3, 6, 12, 0.05), rgba(3, 6, 12, 0.62));
+    linear-gradient(90deg, rgba(3, 6, 12, 0.9) 0%, rgba(3, 6, 12, 0.66) 42%, rgba(3, 6, 12, 0.08) 73%, rgba(3, 6, 12, 0.3) 100%),
+    linear-gradient(180deg, rgba(3, 6, 12, 0.02), rgba(3, 6, 12, 0.42));
 }
 
 .hero::after {
@@ -1217,11 +1217,14 @@
 }
 
 .hero-visual-caption {
+  position: absolute;
+  inset: auto 0 0;
   display: flex;
   justify-content: space-between;
   gap: 18px;
-  margin-top: 16px;
-  color: rgba(255, 255, 255, 0.48);
+  padding: 46px 18px 16px;
+  color: rgba(255, 255, 255, 0.68);
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.86));
   font-size: 0.68rem;
   font-weight: 850;
   letter-spacing: 0.13em;

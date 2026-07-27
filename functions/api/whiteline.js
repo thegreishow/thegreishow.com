@@ -79,13 +79,6 @@ export async function onRequestPost({ request, env }) {
   const length = Number(request.headers.get('content-length') || 0);
   if (length > 20_000) return secureJson({ error: 'Request too large' }, 413);
 
-  const rate = await checkRateLimit(request, 'public-inquiry', 5, 600);
-  if (!rate.allowed) {
-    return secureJson({ error: 'Too many requests. Please try again later.' }, 429, {
-      'retry-after': String(rate.retryAfter)
-    });
-  }
-
   let payload;
   try {
     payload = await request.json();
@@ -134,6 +127,13 @@ export async function onRequestPost({ request, env }) {
     if (budgetMax !== null && (!Number.isFinite(budgetMax) || budgetMax < 0)) return secureJson({ error: 'Enter a valid maximum budget.' }, 400);
     if (budgetMin !== null && budgetMax !== null && budgetMax < budgetMin) {
       return secureJson({ error: 'Maximum budget must be greater than or equal to the minimum.' }, 400);
+    }
+
+    const rate = await checkRateLimit(request, 'whiteline-booking', 8, 600);
+    if (!rate.allowed) {
+      return secureJson({ error: 'Too many booking requests. Please try again later.' }, 429, {
+        'retry-after': String(rate.retryAfter)
+      });
     }
 
     const clean = {
@@ -198,6 +198,13 @@ export async function onRequestPost({ request, env }) {
   if (!timelines.has(timeline)) return secureJson({ error: 'Choose a valid timeline.' }, 400);
   if (!budgets.has(budget)) return secureJson({ error: 'Choose a valid budget range.' }, 400);
   if (eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) return secureJson({ error: 'Enter a valid date.' }, 400);
+
+  const rate = await checkRateLimit(request, 'public-inquiry', 5, 600);
+  if (!rate.allowed) {
+    return secureJson({ error: 'Too many requests. Please try again later.' }, 429, {
+      'retry-after': String(rate.retryAfter)
+    });
+  }
 
   const details = [
     brief,

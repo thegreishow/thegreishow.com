@@ -168,7 +168,7 @@
     form.innerHTML = '<label><span>First name</span><input name="first_name" type="text" autocomplete="given-name"></label><label><span>Email</span><input name="email" type="email" autocomplete="email" required></label><label><span>Country</span><input name="country" type="text" autocomplete="country-name"></label><label class="release-consent"><input name="consent" type="checkbox" required><span>I agree to receive release news and can unsubscribe at any time.</span></label><button class="home-button primary" type="submit">Join the list</button><p id="release-list-status" class="form-note" role="status" aria-live="polite"></p>';
     placeholder?.replaceWith(form);
     const script = document.createElement('script');
-    script.src = 'assets/js/newsletter.js';
+    script.src = 'assets/js/newsletter.js?v=20260727-2';
     document.body.appendChild(script);
   }
 

@@ -207,35 +207,23 @@
 
   <main class="home">
     <section class="hero" aria-labelledby="home-title">
-      <div class="hero-rail" aria-label="Studio profile">
-        <span>The Grei Show</span>
-        <span>Kingston, Jamaica</span>
-        <span>Independent since 2012</span>
-      </div>
-
       <div class="hero-copy">
-        <p class="hero-kicker">Artist &middot; Producer &middot; Creative Director</p>
-        <h1 id="home-title" class="hero-title"><span>The</span>Grei<br>Show</h1>
-        <p class="hero-lead">A Jamaican creative practice building distinctive work across music, narrative, visual culture, and interactive media.</p>
+        <p class="hero-kicker">Independent artist &middot; Kingston, Jamaica</p>
+        <h1 id="home-title" class="hero-title">The Grei Show</h1>
+        <p class="hero-lead">Music, stories, and worlds without limits.</p>
 
         <div class="hero-actions">
-          <a class="home-button primary" href="#explore" data-track="explore" data-track-label="Hero - Explore">Explore selected work</a>
-          <a class="home-button" href="connect.html?interest=live-performance" data-track="hero_booking" data-track-label="Hero - Request booking">Start a conversation</a>
+          <button class="home-button primary open-platforms-trigger" type="button" data-track="choose_platform" data-track-label="Hero - Choose platform">Choose your platform</button>
+          <a class="home-button internal" href="#explore" data-track="explore" data-track-label="Hero - Explore">Explore the work</a>
         </div>
       </div>
 
-      <aside class="hero-feature" aria-label="Current featured release">
-        <a href="https://snd.click/qnbs" target="_blank" rel="noopener" data-track="listen" data-track-label="Hero feature - No Drama">
-          <figure>
-          <img src="assets/img/no-drama.webp" alt="No Drama single cover by The Grei Show" width="1200" height="1200" loading="lazy" decoding="async">
-          </figure>
-          <span class="hero-feature-copy"><small>Current release</small><strong>No Drama</strong><em>Listen now ↗</em></span>
-        </a>
-      </aside>
-
-      <div class="hero-disciplines" aria-label="Creative disciplines">
-        <span>Music</span><span>Stories</span><span>Direction</span><span>Experiences</span>
-      </div>
+      <figure class="hero-visual">
+        <div class="hero-visual-frame">
+          <img src="assets/img/no-drama.webp" alt="No Drama by The Grei Show" width="1200" height="1200" decoding="async">
+        </div>
+        <figcaption><span>Latest release</span><strong>No Drama</strong></figcaption>
+      </figure>
     </section>
 
     <div class="signal-strip" aria-label="The Grei Show universe">
@@ -459,12 +447,12 @@
   </div>
 
   <script src="shared/nav.js"></script>
-  <script src="assets/js/newsletter.js"></script>
+  <script src="assets/js/newsletter.js?v=20260727-2"></script>
   <script>
     (function () {
       const modal = document.getElementById('stream-modal');
-      const openBtn = document.getElementById('open-platforms');
-      if (!modal || !openBtn) return;
+      const openButtons = document.querySelectorAll('#open-platforms, .open-platforms-trigger');
+      if (!modal || !openButtons.length) return;
 
       function openModal() {
         modal.classList.add('open');
@@ -476,7 +464,7 @@
         document.body.style.overflow = '';
       }
 
-      openBtn.addEventListener('click', openModal);
+      openButtons.forEach(function (button) { button.addEventListener('click', openModal); });
       modal.querySelector('.modal-close').addEventListener('click', closeModal);
       modal.addEventListener('click', function (e) {
         if (e.target === modal) closeModal();

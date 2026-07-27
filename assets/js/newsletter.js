@@ -3,7 +3,7 @@
   const status = document.getElementById('release-list-status');
   if (!form || !status) return;
 
-  const endpoint = 'https://dkvbeizjlgxqjuxnlqho.supabase.co/functions/v1/subscribe-release-list';
+  const endpoint = '/api/newsletter';
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -28,6 +28,7 @@
           country: String(fields.get('country') || '').trim(),
           consent_to_marketing: fields.get('consent') === 'on',
           website: String(fields.get('website') || ''),
+          turnstile_token: String(fields.get('turnstile_token') || ''),
           source: 'homepage-release-list',
           referrer: document.referrer || location.href
         })

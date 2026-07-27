@@ -145,6 +145,9 @@
             <textarea id="brief" name="brief" minlength="30" placeholder="Share the event, project, audience, deliverables, current stage, and the outcome you want." required></textarea>
           </div>
 
+          <div class="field full" data-turnstile-action="inquiry" aria-label="Human verification"></div>
+          <input type="hidden" name="turnstile_token">
+          <input type="text" name="website" hidden tabindex="-1" autocomplete="off">
           <button class="prepare-button" type="submit">Submit request</button>
           <p class="form-note">Your request is submitted securely to White Line Entertainment.</p>
 
@@ -192,6 +195,7 @@
   </main>
 
   <script src="shared/nav.js"></script>
+  <script src="assets/js/form-security.js" defer></script>
   <script src="assets/js/contact.js"></script>
 </body>
 </html>

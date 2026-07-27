@@ -7,10 +7,6 @@
   const serviceCards = [...document.querySelectorAll('[data-interest]')];
   if (!form || !interest || !date || !prepared || !emailLink) return;
 
-  const SUPABASE_URL = 'https://dkvbeizjlgxqjuxnlqho.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
-  let dbPromise;
-
   const interestAliases = {
     'creative-project': 'creative-direction',
     production: 'music-production',
@@ -77,52 +73,26 @@
     ].join('\n\n');
 
     try {
-      const db = await getDatabase();
-      if (interest.value === 'press') {
-        const { error } = await db.from('whiteline_contact_inquiries').insert({
-          inquiry_type: 'press',
-          name: String(fields.get('name')).trim(),
-          email: String(fields.get('email')).trim().toLowerCase(),
-          subject: `Press inquiry — ${serviceLabel}`,
-          message: details,
-          source: 'thegreishow.com/connect',
-          user_agent: navigator.userAgent,
-          referrer: document.referrer || null
-        });
-        if (error) throw error;
-      } else if (['sync-licensing', 'partnership', 'other'].includes(interest.value)) {
-        const { error } = await db.from('whiteline_contact_inquiries').insert({
-          inquiry_type: 'general',
-          name: String(fields.get('name')).trim(),
-          email: String(fields.get('email')).trim().toLowerCase(),
-          subject: `${serviceLabel} inquiry`,
-          message: details,
-          source: 'thegreishow.com/connect',
-          user_agent: navigator.userAgent,
-          referrer: document.referrer || null
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await db.from('client_requests').insert({
+      const selectedService = interest.value;
+      const response = await fetch('/api/whiteline', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
           client_name: String(fields.get('name')).trim(),
           email: String(fields.get('email')).trim().toLowerCase(),
-          phone: String(fields.get('phone') || '').trim() || null,
-          whatsapp: String(fields.get('phone') || '').trim() || null,
-          project_type: serviceLabel,
-          project_name: serviceLabel,
-          project_description: details,
-          event_date: fields.get('date') || null,
-          location: String(fields.get('location') || '').trim() || null,
-          currency: 'USD',
-          preferred_contact_method: fields.get('phone') ? 'WhatsApp' : 'Email',
-          consent_to_store_data: true,
-          consent_to_contact: true,
-          source: 'thegreishow.com/connect',
-          user_agent: navigator.userAgent,
-          referrer: document.referrer || null
-        });
-        if (error) throw error;
-      }
+          phone: String(fields.get('phone') || '').trim(),
+          project_type: selectedService,
+          project_description: String(fields.get('brief') || '').trim(),
+          timeline: String(fields.get('timeline') || ''),
+          budget: String(fields.get('budget') || ''),
+          event_date: String(fields.get('date') || ''),
+          location: String(fields.get('location') || '').trim(),
+          website: String(fields.get('website') || ''),
+          turnstile_token: String(fields.get('turnstile_token') || '')
+        })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Request could not be submitted.');
 
       form.reset();
       syncServiceCards('');
@@ -130,7 +100,7 @@
       prepared.querySelector('p').textContent = 'Request received. Check your inbox for an automatic confirmation from White Line Entertainment.';
       emailLink.hidden = true;
       prepared.focus();
-      window.greiTrack?.('grei_lead_submitted', { service: interest.value });
+      window.greiTrack?.('grei_lead_submitted', { service: selectedService });
     } catch (error) {
       const subject = `Inquiry - ${serviceLabel}`;
       const body = `Name: ${fields.get('name')}\nEmail: ${fields.get('email')}\n\n${details}`;
@@ -147,21 +117,4 @@
     }
   });
 
-  function getDatabase() {
-    if (dbPromise) return dbPromise;
-    dbPromise = new Promise((resolve, reject) => {
-      const connect = () => {
-        try { resolve(window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)); }
-        catch (error) { reject(error); }
-      };
-      if (window.supabase?.createClient) return connect();
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-      script.crossOrigin = 'anonymous';
-      script.onload = connect;
-      script.onerror = () => reject(new Error('Could not load secure form service.'));
-      document.head.appendChild(script);
-    });
-    return dbPromise;
-  }
 })();

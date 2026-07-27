@@ -64,11 +64,12 @@ async function findRelease(origin,slug){
   }catch(error){console.warn('Remote media lookup failed',error)}
   try{
     const response=await fetch(`${origin}/assets/data/promo-releases.json`,{headers:{Accept:'application/json'}});
-    if(response.ok){const records=await response.json();const localRelease=records.find(record=>record&&record.status==='published'&&candidates.includes(normalizeSlug(record.slug)))||null;if(remoteRelease&&localRelease)return{...localRelease,...remoteRelease,tracks:Array.isArray(remoteRelease.tracks)&&remoteRelease.tracks.length?remoteRelease.tracks:localRelease.tracks,audio_url:remoteRelease.audio_url||localRelease.audio_url,artwork_url:remoteRelease.artwork_url||localRelease.artwork_url};return remoteRelease||localRelease}
+    if(response.ok){const records=await response.json();const localRelease=records.find(record=>record&&record.status==='published'&&candidates.includes(normalizeSlug(record.slug)))||null;if(remoteRelease&&localRelease)return{...localRelease,...remoteRelease,tracks:Array.isArray(localRelease.tracks)&&localRelease.tracks.length?localRelease.tracks:remoteRelease.tracks,audio_url:isFirstPartyAsset(localRelease.audio_url)?localRelease.audio_url:remoteRelease.audio_url||localRelease.audio_url,artwork_url:isFirstPartyAsset(localRelease.artwork_url)?localRelease.artwork_url:remoteRelease.artwork_url||localRelease.artwork_url,audio_status:localRelease.audio_status||remoteRelease.audio_status,audio_notice:localRelease.audio_notice||remoteRelease.audio_notice};return remoteRelease||localRelease}
   }catch(error){console.warn('Local media lookup failed',error)}
   return remoteRelease;
 }
 function normalizeSlug(value){return String(value||'').trim().toLowerCase().replace(/[’']/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
+function isFirstPartyAsset(value){return /^\/assets\//.test(String(value||''))}
 function slugCandidates(value){const normalized=normalizeSlug(value);return [...new Set([normalized,...(ALIASES[normalized]||[]).map(normalizeSlug)])]}
 function json(data,status){return new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json;charset=UTF-8','cache-control':'no-store'}})}
 function toDirectUrl(url){const value=String(url||'');const match=value.match(/[?&]id=([\w-]+)/)||value.match(/\/d\/([\w-]+)/);if(match&&value.includes('drive.google.com'))return`https://drive.usercontent.google.com/download?id=${match[1]}&export=download&confirm=t`;return value}

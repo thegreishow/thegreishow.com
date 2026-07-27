@@ -1,3 +1,14 @@
+import {
+  checkRateLimit,
+  cleanText,
+  isHoneypotTriggered,
+  isJsonRequest,
+  requireTrustedOrigin,
+  secureJson,
+  validEmail,
+  verifyTurnstile
+} from '../_lib/security.js';
+
 const SUPABASE_URL = 'https://dkvbeizjlgxqjuxnlqho.supabase.co';
 
 // Server-side (Cloudflare Function) should prefer service_role for full access (bypasses RLS).
@@ -63,20 +74,88 @@ export async function onRequestGet({ request, env }) {
 }
 
 export async function onRequestPost({ request, env }) {
+  if (!requireTrustedOrigin(request)) return secureJson({ error: 'Origin not allowed' }, 403);
+  if (!isJsonRequest(request)) return secureJson({ error: 'JSON request required' }, 415);
+  const length = Number(request.headers.get('content-length') || 0);
+  if (length > 20_000) return secureJson({ error: 'Request too large' }, 413);
+
+  const rate = await checkRateLimit(request, 'public-inquiry', 5, 600);
+  if (!rate.allowed) {
+    return secureJson({ error: 'Too many requests. Please try again later.' }, 429, {
+      'retry-after': String(rate.retryAfter)
+    });
+  }
+
   let payload;
   try {
     payload = await request.json();
   } catch {
-    return json({ error: 'Invalid request body' }, 400);
+    return secureJson({ error: 'Invalid request body' }, 400);
   }
 
-  const allowed = ['client_name','company_name','email','phone','whatsapp','project_type','talent_category','project_description','requirements','event_date','location','budget_min','budget_max','currency','status','booking_stage','payment_status'];
-  const clean = Object.fromEntries(allowed.filter(key => key in payload).map(key => [key, payload[key]]));
+  if (isHoneypotTriggered(payload)) return secureJson({ ok: true }, 201);
+  const challenge = await verifyTurnstile(request, env, payload, 'inquiry');
+  if (!challenge.success) return secureJson({ error: 'Human verification failed. Please try again.' }, 400);
+
+  const services = {
+    'live-performance': 'Live performance',
+    'dj-set': 'DJ set',
+    'studio-session': 'Studio session / production consultation',
+    'music-production': 'Music production',
+    'creative-direction': 'Creative direction',
+    'artist-development': 'Artist development',
+    'photo-video': 'Photography / video',
+    'talent-booking': 'Talent booking',
+    'kingston-experience': 'Kingston experience / tour',
+    'sync-licensing': 'Sync or licensing',
+    press: 'Press or interview',
+    partnership: 'Brand or creative partnership',
+    other: 'Other'
+  };
+  const timelines = new Set(['As soon as possible', 'Within 1 month', 'Within 1-3 months', '3+ months', 'Flexible / exploring']);
+  const budgets = new Set(['Not sure yet', 'Under $250', '$250-$500', '$500-$1,500', '$1,500-$5,000', '$5,000+']);
+  const name = cleanText(payload.client_name, 120);
+  const email = validEmail(payload.email);
+  const serviceKey = cleanText(payload.project_type, 60);
+  const brief = cleanText(payload.project_description, 5000);
+  const timeline = cleanText(payload.timeline, 80);
+  const budget = cleanText(payload.budget, 80);
+  const eventDate = cleanText(payload.event_date, 10);
+  const location = cleanText(payload.location, 200);
+  const phone = cleanText(payload.phone, 80);
+
+  if (name.length < 2) return secureJson({ error: 'Enter your name.' }, 400);
+  if (!email) return secureJson({ error: 'Enter a valid email address.' }, 400);
+  if (!services[serviceKey]) return secureJson({ error: 'Choose a valid request type.' }, 400);
+  if (brief.length < 30) return secureJson({ error: 'Please add at least 30 characters about the project.' }, 400);
+  if (!timelines.has(timeline)) return secureJson({ error: 'Choose a valid timeline.' }, 400);
+  if (!budgets.has(budget)) return secureJson({ error: 'Choose a valid budget range.' }, 400);
+  if (eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) return secureJson({ error: 'Enter a valid date.' }, 400);
+
+  const details = [
+    brief,
+    `Timeline: ${timeline}`,
+    `Budget range: ${budget}`,
+    `Preferred date: ${eventDate || 'Not applicable'}`,
+    `Location / venue: ${location || 'Not applicable'}`,
+    `WhatsApp / phone: ${phone || 'Not provided'}`
+  ].join('\n\n');
+  const clean = {
+    client_name: name,
+    email,
+    phone: phone || null,
+    whatsapp: phone || null,
+    project_type: services[serviceKey],
+    project_description: details,
+    event_date: eventDate || null,
+    location: location || null,
+    currency: 'USD'
+  };
   const result = await supabase('client_requests', {
     method: 'POST',
     headers: { 'content-type': 'application/json', Prefer: 'return=minimal' },
     body: JSON.stringify(clean)
   }, env, true); // POSTs use service_role
-  if (result.error) return json({ error: 'Could not submit booking request', details: result.text || result.status }, result.status || 500);
-  return json({ ok: true }, 201);
+  if (result.error) return secureJson({ error: 'Could not submit your request right now.' }, 503);
+  return secureJson({ ok: true }, 201);
 }

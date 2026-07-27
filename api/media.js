@@ -3,17 +3,24 @@ const SUPABASE_KEY='sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
 
 module.exports=async function handler(req,res){
   try{
-    const slug=String(req.query.slug||'').trim().toLowerCase();
+    const slug=normalizeSlug(req.query.slug);
     const type=String(req.query.type||'audio').trim().toLowerCase();
     const index=Math.max(0,Number.parseInt(req.query.index||'0',10)||0);
     const download=String(req.query.download||'')==='1';
     if(!slug)return res.status(400).json({error:'Missing release slug'});
 
-    const endpoint=`${SUPABASE_URL}/rest/v1/owner_releases?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=title,artist,audio_url,artwork_url,tracks`;
+    const endpoint=`${SUPABASE_URL}/rest/v1/owner_releases?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=title,artist,slug,audio_url,artwork_url,tracks`;
     const recordResponse=await fetch(endpoint,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
     if(!recordResponse.ok)return res.status(502).json({error:'Release lookup failed'});
     const records=await recordResponse.json();
-    const release=records[0];
+    const remoteRelease=records[0]||null;
+    let localRelease=null;
+    try{
+      const origin=`${req.headers['x-forwarded-proto']||'https'}://${req.headers.host}`;
+      const localResponse=await fetch(`${origin}/assets/data/promo-releases.json`);
+      if(localResponse.ok){const localRecords=await localResponse.json();localRelease=localRecords.find(record=>record&&record.status==='published'&&normalizeSlug(record.slug)===slug)||null}
+    }catch(error){console.warn('Local media lookup failed',error)}
+    const release=remoteRelease&&localRelease?{...localRelease,...remoteRelease,tracks:Array.isArray(remoteRelease.tracks)&&remoteRelease.tracks.length?remoteRelease.tracks:localRelease.tracks,audio_url:remoteRelease.audio_url||localRelease.audio_url,artwork_url:remoteRelease.artwork_url||localRelease.artwork_url}:remoteRelease||localRelease;
     if(!release)return res.status(404).json({error:'Release not found'});
 
     let source='';
@@ -68,6 +75,7 @@ module.exports=async function handler(req,res){
   }
 };
 
+function normalizeSlug(value){return String(value||'').trim().toLowerCase().replace(/[’']/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
 function toDirectUrl(url){
   const value=String(url||'');
   const match=value.match(/[?&]id=([\w-]+)/)||value.match(/\/d\/([\w-]+)/);

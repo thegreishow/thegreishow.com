@@ -28,6 +28,7 @@
           country: String(fields.get('country') || '').trim(),
           consent_to_marketing: fields.get('consent') === 'on',
           website: String(fields.get('website') || ''),
+          source: 'homepage-release-list',
           referrer: document.referrer || location.href
         })
       });

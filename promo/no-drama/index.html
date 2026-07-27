@@ -30,6 +30,9 @@
     .promo-title { margin:0; font-size:clamp(4.5rem,11vw,9.5rem); line-height:.78; letter-spacing:-.075em; text-shadow:0 12px 64px rgba(0,0,0,.48); }
     .promo-title span { display:block; margin:0 0 .12em .08em; color:rgba(255,255,255,.58); font-size:.22em; letter-spacing:.28em; text-transform:uppercase; }
     .promo-lead { max-width:600px; margin:30px 0 0; color:rgba(255,255,255,.8); font-size:clamp(1.06rem,2vw,1.27rem); line-height:1.65; }
+    .promo-player { max-width:600px; margin-top:26px; padding:18px; border:1px solid var(--home-border); border-radius:16px; background:rgba(0,0,0,.32); }
+    .promo-player audio { display:block; width:100%; }
+    .promo-player p { margin:9px 0 0; color:rgba(255,255,255,.58); font-size:.8rem; }
     .promo-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
     .promo-art { position:relative; min-height:570px; display:grid; place-items:center; }
     .promo-art::before { position:absolute; width:78%; aspect-ratio:1; border-radius:50%; content:""; background:rgba(0,200,255,.18); filter:blur(72px); }
@@ -72,8 +75,15 @@
         <p class="hero-kicker">Official DJ & press service · Wheel It! Records</p>
         <h1 id="promo-title" class="promo-title"><span>The Grei Show</span>No Drama</h1>
         <p class="promo-lead">A contemporary Jamaican release about protecting your peace, maintaining emotional discipline and refusing unnecessary conflict—built for reggae, dancehall, Afro-fusion and global independent-music programming.</p>
+        <div class="promo-player">
+          <audio controls preload="metadata">
+            <source src="../../assets/audio/music/no-drama.mp3" type="audio/mpeg">
+            Your browser does not support audio playback. <a href="../../assets/audio/music/no-drama.mp3">Open the MP3 directly</a>.
+          </audio>
+          <p>Official 320 kbps broadcast MP3 · hosted directly by The Grei Show</p>
+        </div>
         <div class="promo-actions">
-          <a class="home-button primary" href="https://drive.google.com/uc?export=download&amp;id=1RiTGwG_XRhWC95bh5aQ3DLIAtC-aHTxx" data-track="promo_download_mp3">Download broadcast MP3</a>
+          <a class="home-button primary" href="../../assets/audio/music/no-drama.mp3" download="The Grei Show - No Drama.mp3" data-track="promo_download_mp3">Download broadcast MP3</a>
           <a class="home-button" href="https://drive.google.com/drive/folders/1nVNfPVc2LovxnC-FNpTdyKepW-KgnEbn" target="_blank" rel="noopener" data-track="promo_press_folder">Open press folder</a>
           <a class="home-button" href="https://distrokid.com/hyperfollow/thegreishow/no-drama" target="_blank" rel="noopener" data-track="promo_listen">Listen everywhere</a>
           <a class="home-button" href="https://www.youtube.com/watch?v=3KAd6CWxHBs" target="_blank" rel="noopener" data-track="promo_video">Watch video</a>
@@ -91,7 +101,7 @@
     <section class="promo-section" aria-labelledby="assets-title">
       <div class="promo-heading"><p class="section-kicker">One-click access</p><h2 id="assets-title">Everything needed to play, post or premiere.</h2><p>Download the broadcast file directly or open the complete Wheel It! Records asset folder for artwork and branding.</p></div>
       <div class="asset-grid">
-        <article class="asset-card"><p class="card-kicker">Audio</p><h3>Broadcast MP3</h3><p>Official high-quality MP3 for radio rotation, DJ sets and playlist servicing.</p><a class="home-button primary" href="https://drive.google.com/uc?export=download&amp;id=1RiTGwG_XRhWC95bh5aQ3DLIAtC-aHTxx">Download MP3</a></article>
+        <article class="asset-card"><p class="card-kicker">Audio</p><h3>Broadcast MP3</h3><p>Official high-quality MP3 for radio rotation, DJ sets and playlist servicing.</p><a class="home-button primary" href="../../assets/audio/music/no-drama.mp3" download="The Grei Show - No Drama.mp3">Download MP3</a></article>
         <article class="asset-card"><p class="card-kicker">Visual</p><h3>Official artwork</h3><p>Full-resolution single cover for editorial, radio, playlist and social promotion.</p><a class="home-button" href="https://drive.google.com/file/d/1usYltRL-34w6_0ZFaTd-VseXiEkLOI7B/view" target="_blank" rel="noopener">Open artwork</a></article>
         <article class="asset-card"><p class="card-kicker">Complete kit</p><h3>Press folder</h3><p>MP3, cover artwork, The Grei Show logo and Wheel It! Records logo in one place.</p><a class="home-button" href="https://drive.google.com/drive/folders/1nVNfPVc2LovxnC-FNpTdyKepW-KgnEbn" target="_blank" rel="noopener">View all assets</a></article>
       </div>

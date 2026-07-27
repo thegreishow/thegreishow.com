@@ -12,12 +12,20 @@
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://thegreishow.com/assets/img/home-bg.webp">
   <meta name="twitter:card" content="summary_large_image">
-
-  <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/layout.css">
-  <link rel="stylesheet" href="assets/css/components.css">
-  <link rel="stylesheet" href="assets/css/theme.css">
-
+  <script>
+    (function(){
+      var parts=location.pathname.split('/').filter(Boolean);
+      var promoIndex=parts.indexOf('promo');
+      if(promoIndex>=0&&parts[promoIndex+1]){
+        var slug=decodeURIComponent(parts[promoIndex+1]);
+        location.replace('/promo/?slug='+encodeURIComponent(slug));
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/layout.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/theme.css">
   <style>
     .error-page{position:relative;z-index:1;width:min(1080px,calc(100% - 28px));min-height:calc(100vh - 70px);display:grid;place-items:center;margin:0 auto;padding:70px 0}
     .error-shell{width:100%;padding:clamp(30px,7vw,80px);border:1px solid rgba(255,255,255,.12);border-radius:20px;background:radial-gradient(circle at 80% 10%,rgba(0,200,255,.12),transparent 40%),rgba(0,0,0,.5);box-shadow:var(--shadow-md);text-align:center}
@@ -40,19 +48,17 @@
       <p class="eyebrow">Signal not found</p>
       <h1 id="error-title">This portal moved, changed, or never existed.</h1>
       <p class="error-copy">The creative universe is still online. Choose another destination below, or return to the main entrance.</p>
-
       <div class="portal-grid" aria-label="Popular destinations">
-        <a class="portal" href="music.html"><small>Listen</small><strong>Music &amp; Discography</strong></a>
-        <a class="portal" href="visuals.html"><small>Watch</small><strong>Visual Universe</strong></a>
-        <a class="portal" href="books.html"><small>Read</small><strong>Books</strong></a>
-        <a class="portal" href="arcade.html"><small>Play</small><strong>Grei Arcade</strong></a>
-        <a class="portal" href="press.html"><small>Discover</small><strong>Press &amp; Credits</strong></a>
-        <a class="portal" href="connect.html"><small>Connect</small><strong>Bookings &amp; Projects</strong></a>
+        <a class="portal" href="/music.html"><small>Listen</small><strong>Music &amp; Discography</strong></a>
+        <a class="portal" href="/visuals.html"><small>Watch</small><strong>Visual Universe</strong></a>
+        <a class="portal" href="/books.html"><small>Read</small><strong>Books</strong></a>
+        <a class="portal" href="/arcade.html"><small>Play</small><strong>Grei Arcade</strong></a>
+        <a class="portal" href="/press.html"><small>Discover</small><strong>Press &amp; Credits</strong></a>
+        <a class="portal" href="/connect.html"><small>Connect</small><strong>Bookings &amp; Projects</strong></a>
       </div>
-
-      <a class="home-link" href="index.html">Return home</a>
+      <a class="home-link" href="/index.html">Return home</a>
     </section>
   </main>
-  <script src="shared/nav.js"></script>
+  <script src="/shared/nav.js"></script>
 </body>
 </html>

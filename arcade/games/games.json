@@ -23,13 +23,13 @@
   },
   {
     "id": "jamaica-run",
-    "title": "Jamaica Run",
+    "title": "Rasta Runner",
     "creator": "The Grei Show",
-    "description": "Collect coins, dodge tropical obstacles, and run across Jamaica using the original animated runner sprite.",
-    "version": "1.0",
+    "description": "Race across eight Jamaican stages, collect Grei coins, build combos, and survive the island road.",
+    "version": "1.2",
     "type": "native",
     "entry": "arcade/games/jamaica-run/index.html",
-    "thumbnail": "arcade/assets/thumbnails/jamaica-run.svg",
-    "tags": ["runner", "Jamaica", "mobile", "action"]
+    "thumbnail": "arcade/assets/thumbnails/rasta-runner.svg",
+    "tags": ["runner", "Jamaica", "mobile", "action", "featured"]
   }
 ]

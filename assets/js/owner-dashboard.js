@@ -1,126 +1,28 @@
 (function(){
-  const URL='https://dkvbeizjlgxqjuxnlqho.supabase.co';
-  const KEY='sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS';
-  const db=window.supabase.createClient(URL,KEY);
-  const $=id=>document.getElementById(id);
-  const loginPanel=$('login-panel'), dashboard=$('dashboard'), form=$('owner-login-form'), status=$('owner-login-status');
-  const stages=['new','reviewing','quoted','deposit_paid','confirmed','completed','cancelled'];
-
-  form.addEventListener('submit',async e=>{
-    e.preventDefault(); status.textContent='Signing in…'; status.className='muted';
-    const data=new FormData(form);
-    const {error}=await db.auth.signInWithPassword({email:String(data.get('email')).trim(),password:String(data.get('password'))});
-    if(error){status.textContent=error.message;status.className='error';return;}
-    await showDashboard();
-  });
-  $('owner-logout').addEventListener('click',async()=>{await db.auth.signOut();showLogin();});
-  $('refresh-dashboard').addEventListener('click',loadDashboard);
-  $('bookings-body').addEventListener('change',handleStageChange);
-  db.auth.onAuthStateChange((_event,session)=>{if(session) showDashboard(); else showLogin();});
-  db.auth.getSession().then(({data})=>data.session?showDashboard():showLogin());
-
-  function showLogin(){loginPanel.hidden=false;dashboard.hidden=true;}
-  async function showDashboard(){
-    loginPanel.hidden=true; dashboard.hidden=false;
-    try{await loadDashboard();}catch(error){dashboard.hidden=true;loginPanel.hidden=false;status.textContent=error.message||String(error);status.className='error';await db.auth.signOut();}
-  }
-
-  async function loadDashboard(){
-    const closedStages=['completed','cancelled'];
-    const [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows]=await Promise.all([
-      db.from('client_requests').select('id,client_name,company_name,email,phone,whatsapp,project_name,project_type,event_date,booking_stage,status,payment_status,quoted_amount,amount_paid,currency,created_at').order('created_at',{ascending:false}).limit(25),
-      db.from('booking_payments').select('id,payment_type,amount,currency,status,description,paid_at,created_at').order('created_at',{ascending:false}).limit(25),
-      db.from('release_list_subscribers').select('id,email,first_name,country,status,subscribed_at,welcome_sent_at').order('subscribed_at',{ascending:false}).limit(25),
-      db.from('client_requests').select('*',{count:'exact',head:true}),
-      db.from('release_list_subscribers').select('*',{count:'exact',head:true}).eq('status','subscribed'),
-      db.from('client_requests').select('id,booking_stage,status'),
-      db.from('booking_payments').select('amount,currency,status,paid_at')
-    ]);
-    for(const result of [bookingRows,paymentRows,subscriberRows,bookingCount,subscriberCount,openCount,paidRows]) if(result.error) throw result.error;
-
-    const allBookings=bookingRows.data||[], allPayments=paymentRows.data||[], allSubscribers=subscriberRows.data||[];
-    const openBookings=(openCount.data||[]).filter(x=>!closedStages.includes(String(x.booking_stage||x.status||'').toLowerCase())).length;
-    const paidTransactions=(paidRows.data||[]).filter(x=>String(x.status).toLowerCase()==='paid'||x.paid_at);
-    const revenueByCurrency=paidTransactions.reduce((totals,x)=>{
-      const currency=String(x.currency||'USD').toUpperCase();
-      totals[currency]=(totals[currency]||0)+Number(x.amount||0);
-      return totals;
-    },{});
-
-    $('metric-bookings').textContent=bookingCount.count??0;
-    $('metric-open').textContent=openBookings;
-    $('metric-revenue').textContent=formatRevenue(revenueByCurrency);
-    $('metric-subscribers').textContent=subscriberCount.count??0;
-
-    $('bookings-body').innerHTML=allBookings.map(x=>row([
-      date(x.created_at),
-      esc(x.company_name||x.client_name||'—'),
-      esc(x.project_name||x.project_type||'—'),
-      esc(x.event_date||'—'),
-      stageSelect(x),
-      pill(x.payment_status||'unpaid'),
-      followUpLinks(x)
-    ])).join('')||empty(7);
-    $('payments-body').innerHTML=allPayments.map(x=>row([
-      date(x.paid_at||x.created_at), esc(x.payment_type||'—'), money(x.amount,x.currency), pill(x.status||'pending'), esc(x.description||'—')
-    ])).join('')||empty(5);
-    $('subscribers-body').innerHTML=allSubscribers.map(x=>row([
-      date(x.subscribed_at), esc(x.first_name||'—'), esc(x.email), esc(x.country||'—'), pill(x.welcome_sent_at?'sent':'pending')
-    ])).join('')||empty(5);
-
-    $('bookings-status').textContent=`${allBookings.length} most recent`;
-    $('payments-status').textContent=`${allPayments.length} most recent`;
-    $('subscribers-status').textContent=`${allSubscribers.length} most recent`;
-  }
-
-  async function handleStageChange(event){
-    const select=event.target.closest('[data-booking-stage]');
-    if(!select) return;
-    const previous=select.dataset.previous;
-    select.disabled=true;
-    select.title='Saving…';
-    const {error}=await db.from('client_requests').update({booking_stage:select.value,updated_at:new Date().toISOString()}).eq('id',select.dataset.bookingId);
-    if(error){
-      select.value=previous;
-      select.title=error.message;
-      select.classList.add('error');
-      window.setTimeout(()=>select.classList.remove('error'),2200);
-    }else{
-      select.dataset.previous=select.value;
-      select.title='Saved';
-      select.classList.add('success');
-      window.setTimeout(()=>select.classList.remove('success'),1400);
-      await loadDashboard();
-    }
-    select.disabled=false;
-  }
-
-  function stageSelect(x){
-    const value=String(x.booking_stage||x.status||'new').toLowerCase();
-    const options=stages.map(stage=>`<option value="${stage}"${stage===value?' selected':''}>${esc(label(stage))}</option>`).join('');
-    return `<select class="pipeline-select" data-booking-stage data-booking-id="${esc(x.id)}" data-previous="${esc(value)}" aria-label="Update booking stage for ${esc(x.client_name||x.company_name||'client')}">${options}</select>`;
-  }
-
-  function followUpLinks(x){
-    const subject=`The Grei Show booking follow-up — ${x.project_name||x.project_type||'your request'}`;
-    const body=`Hello ${x.client_name||'there'},\n\nThank you for your request regarding ${x.project_name||x.project_type||'your project'}. I am following up with the next steps.\n\nBest,\nThe Grei Show`;
-    const links=[];
-    if(x.email) links.push(`<a class="quick-link" href="mailto:${encodeURIComponent(x.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}">Email</a>`);
-    const phone=String(x.whatsapp||x.phone||'').replace(/\D/g,'');
-    if(phone) links.push(`<a class="quick-link" href="https://wa.me/${encodeURIComponent(phone)}?text=${encodeURIComponent(body)}" target="_blank" rel="noopener">WhatsApp</a>`);
-    return `<div class="quick-links">${links.join('')||'<span class="muted">No contact</span>'}</div>`;
-  }
-
-  function row(cells){return `<tr>${cells.map(v=>`<td>${v}</td>`).join('')}</tr>`;}
-  function empty(cols){return `<tr><td colspan="${cols}" class="muted">No records yet.</td></tr>`;}
-  function pill(v){return `<span class="pill">${esc(label(String(v)))}</span>`;}
-  function label(v){return String(v||'').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
-  function date(v){return v?esc(new Date(v).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})):'—';}
-  function money(v,c='USD'){return new Intl.NumberFormat(undefined,{style:'currency',currency:c||'USD'}).format(Number(v||0));}
-  function formatRevenue(totals){
-    const entries=Object.entries(totals);
-    if(!entries.length) return money(0,'USD');
-    return entries.map(([currency,amount])=>money(amount,currency)).join(' · ');
-  }
-  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const URL='https://dkvbeizjlgxqjuxnlqho.supabase.co',KEY='sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS',BUCKET='release-media',MAX_UPLOAD=50*1024*1024;
+const db=window.supabase.createClient(URL,KEY),$=id=>document.getElementById(id),loginPanel=$('login-panel'),dashboard=$('dashboard'),form=$('owner-login-form'),status=$('owner-login-status');
+const stages=['new','reviewing','quoted','deposit_paid','confirmed','completed','cancelled'];let releases=[];
+form.addEventListener('submit',async e=>{e.preventDefault();status.textContent='Signing in…';const d=new FormData(form),{error}=await db.auth.signInWithPassword({email:String(d.get('email')).trim(),password:String(d.get('password'))});if(error){status.textContent=error.message;status.className='error';return}await showDashboard()});
+$('owner-logout').onclick=async()=>{await db.auth.signOut();showLogin()};$('refresh-dashboard').onclick=()=>Promise.all([loadDashboard(),loadReleases()]);$('bookings-body').addEventListener('change',handleStageChange);$('release-form').addEventListener('submit',saveRelease);$('release-form').addEventListener('input',syncSlug);document.addEventListener('click',handleNavigation);document.addEventListener('change',handleAssetUpload);db.auth.onAuthStateChange((_e,s)=>s?showDashboard():showLogin());db.auth.getSession().then(({data})=>data.session?showDashboard():showLogin());
+function showLogin(){loginPanel.hidden=false;dashboard.hidden=true}async function showDashboard(){loginPanel.hidden=true;dashboard.hidden=false;installEditorFields();try{await Promise.all([loadDashboard(),loadReleases()])}catch(e){dashboard.hidden=true;loginPanel.hidden=false;status.textContent=e.message||String(e);status.className='error';await db.auth.signOut()}}
+function installEditorFields(){const f=$('release-form');if(!f||f.dataset.editorReady)return;f.dataset.editorReady='true';const description=f.elements.description,artwork=f.elements.artwork,audio=f.elements.audio,press=f.elements.press;
+description.closest('label').insertAdjacentHTML('afterend',`<label class="field full">Story behind the release<textarea name="story" placeholder="Long-form project or song story shown on the promo page"></textarea></label><label class="field full">Credits JSON<textarea name="credits" placeholder='[{"role":"Produced by","name":"The Grei Show"}]'></textarea><span class="muted">Use a JSON list of role/name pairs.</span></label>`);
+artwork.closest('label').insertAdjacentHTML('afterend',uploadField('artwork','Upload artwork','image/jpeg,image/png,image/webp,image/gif','JPG, PNG, WebP or GIF · up to 50 MB'));audio.closest('label').insertAdjacentHTML('afterend',uploadField('audio','Upload official MP3 / WAV / FLAC','audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/flac,audio/x-flac,audio/mp4,audio/aac,.mp3,.wav,.flac,.m4a,.aac','Public download asset · up to 50 MB'));
+const youtube=f.elements.youtube;youtube.closest('label').insertAdjacentHTML('afterend',`<label class="field">Deezer URL<input name="deezer" type="url" placeholder="Direct release URL"></label><label class="field">Amazon Music URL<input name="amazon" type="url" placeholder="Direct release URL"></label><label class="field full">Tracklist JSON<textarea name="tracks" placeholder='[{"title":"Track 1","url":"https://..."}]'></textarea><span class="muted">For EPs and albums. Keep the tracks in playback order.</span></label>`);
+press.closest('label').insertAdjacentHTML('afterend',`<div class="field full panel" style="padding:16px"><div class="eyebrow">Editorial control</div><strong style="display:block;margin:7px 0">Everything here updates the live promo page</strong><div class="checklist"><div class="check done">✓ Date and genre</div><div class="check done">✓ Description and story</div><div class="check done">✓ Credits and tracklist</div><div class="check done">✓ Exact platform URLs</div></div><p class="muted" style="margin:0">Use direct album or track URLs. Search-result links are intentionally hidden from public promo pages.</p></div>`)}
+function uploadField(k,t,a,h){return `<label class="field full" data-upload-box="${k}">${t}<input type="file" data-release-upload="${k}" accept="${a}"><span class="muted" style="font-size:12px">${h}</span><span class="status-bar" data-upload-status="${k}"></span><div data-upload-preview="${k}"></div></label>`}
+async function handleAssetUpload(e){const input=e.target.closest('[data-release-upload]');if(!input)return;const file=input.files?.[0];if(!file)return;const kind=input.dataset.releaseUpload,target=$('release-form').elements[kind],out=document.querySelector(`[data-upload-status="${kind}"]`),preview=document.querySelector(`[data-upload-preview="${kind}"]`);try{validateUpload(file,kind);input.disabled=true;out.textContent=`Uploading ${file.name}…`;const slug=slugify($('release-form').elements.slug.value||$('release-form').elements.title.value||'untitled-release'),ext=(file.name.split('.').pop()||'bin').toLowerCase(),base=safeFileName(file.name.replace(/\.[^.]+$/,'')),path=`${slug}/${kind}/${Date.now()}-${base}.${ext}`;const {data,error}=await db.storage.from(BUCKET).upload(path,file,{contentType:file.type||mimeFromExt(ext),cacheControl:'3600'});if(error)throw error;const {data:p}=db.storage.from(BUCKET).getPublicUrl(data.path);target.value=p.publicUrl;out.textContent=`Uploaded: ${file.name}`;out.className='status-bar success';preview.innerHTML=kind==='artwork'?`<img src="${esc(p.publicUrl)}" style="display:block;width:min(220px,100%);aspect-ratio:1;object-fit:cover;border-radius:14px;margin-top:10px">`:`<audio controls src="${esc(p.publicUrl)}" style="width:100%;margin-top:10px"></audio>`}catch(err){out.textContent=err.message;out.className='status-bar error'}finally{input.disabled=false}}
+function validateUpload(f,k){if(f.size>MAX_UPLOAD)throw new Error('File exceeds 50 MB.');const x=(f.name.split('.').pop()||'').toLowerCase(),ok=k==='artwork'?['jpg','jpeg','png','webp','gif']:['mp3','wav','flac','m4a','aac'];if(!ok.includes(x))throw new Error(`Unsupported ${k} file type.`)}function safeFileName(v){return String(v||'file').normalize('NFKD').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)||'file'}function mimeFromExt(e){return({jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif',mp3:'audio/mpeg',wav:'audio/wav',flac:'audio/flac',m4a:'audio/mp4',aac:'audio/aac'})[e]||'application/octet-stream'}
+function handleNavigation(e){const section=e.target.closest('[data-section]'),jump=e.target.closest('[data-jump]'),open=e.target.closest('[data-open-builder]'),edit=e.target.closest('[data-edit-release]'),toggle=e.target.closest('[data-toggle-release]'),remove=e.target.closest('[data-delete-release]'),copy=e.target.closest('[data-copy-promo]');if(section)switchSection(section.dataset.section);if(jump)switchSection(jump.dataset.jump);if(open){resetReleaseForm();switchSection('builder')}if(edit)editRelease(edit.dataset.editRelease);if(toggle)toggleRelease(toggle.dataset.toggleRelease,toggle.dataset.nextStatus);if(remove)deleteRelease(remove.dataset.deleteRelease);if(copy)copyPromo(copy.dataset.copyPromo,copy)}
+function switchSection(n){document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===`section-${n}`));document.querySelectorAll('[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===n));const labels={overview:['Control center','Overview'],website:['Website system','Website control'],whiteline:['Agency operations','White Line Admin'],releases:['Catalogue','Releases'],builder:['Release system','Release editor'],media:['Asset control','Media vault'],audience:['Community','Audience'],business:['Operations','Business'],systems:['Infrastructure','Systems']},[a,b]=labels[n]||['Owner OS','Dashboard'];$('section-eyebrow').textContent=a;$('section-title').textContent=b;scrollTo({top:0,behavior:'smooth'})}
+async function loadReleases(){const {data,error}=await db.from('owner_releases').select('*').order('release_date',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false});if(error)throw error;releases=data||[];renderReleases();const c=document.querySelector('[data-section="releases"] small');if(c)c.textContent=releases.length}
+function parseJson(value,labelName){if(!String(value||'').trim())return null;try{return JSON.parse(value)}catch{throw new Error(`${labelName} must be valid JSON.`)}}
+async function saveRelease(e){e.preventDefault();const f=e.currentTarget,raw=Object.fromEntries(new FormData(f).entries()),id=raw.id||null;let tracks,credits;try{tracks=parseJson(raw.tracks,'Tracklist');credits=parseJson(raw.credits,'Credits')}catch(err){setReleaseStatus(err.message,'error');return}const payload={title:String(raw.title||'').trim(),slug:slugify(raw.slug||raw.title),artist:String(raw.artist||'The Grei Show').trim(),release_type:raw.type||'Single',release_date:raw.date||null,genre:raw.genre||null,description:raw.description||null,story:raw.story||null,credits:credits||[],tracks:tracks||[],artwork_url:raw.artwork||null,audio_url:raw.audio||null,spotify_url:cleanPlatform(raw.spotify),apple_url:cleanPlatform(raw.apple),youtube_url:cleanPlatform(raw.youtube),deezer_url:cleanPlatform(raw.deezer),amazon_url:cleanPlatform(raw.amazon),press_url:raw.press||null,status:raw.status||'draft',updated_at:new Date().toISOString()};const submit=f.querySelector('[type="submit"]');submit.disabled=true;setReleaseStatus('Saving editorial changes…','muted');const {error}=await(id?db.from('owner_releases').update(payload).eq('id',id):db.from('owner_releases').insert(payload));submit.disabled=false;if(error){setReleaseStatus(error.message,'error');return}setReleaseStatus(`${payload.title} saved and connected to its promo page.`,'success');await loadReleases();setTimeout(()=>{resetReleaseForm();switchSection('releases')},600)}
+function cleanPlatform(v){const s=String(v||'').trim();return s||null}
+function editRelease(id){const r=releases.find(x=>x.id===id);if(!r)return;const f=$('release-form');ensureHiddenId(f);const vals={id:r.id,title:r.title,slug:r.slug,artist:r.artist||'The Grei Show',type:r.release_type||'Single',date:r.release_date||'',genre:r.genre||'',description:r.description||'',story:r.story||'',credits:JSON.stringify(r.credits||[],null,2),tracks:JSON.stringify(r.tracks||[],null,2),artwork:r.artwork_url||'',audio:r.audio_url||'',spotify:r.spotify_url||'',apple:r.apple_url||'',youtube:r.youtube_url||'',deezer:r.deezer_url||'',amazon:r.amazon_url||'',press:r.press_url||''};Object.entries(vals).forEach(([k,v])=>{if(f.elements[k])f.elements[k].value=v||''});f.elements.slug.dataset.edited='true';f.querySelector('[type="submit"]').textContent='Save changes';setReleaseStatus(`Editing ${r.title}`,'muted');switchSection('builder')}
+async function toggleRelease(id,next){const r=releases.find(x=>x.id===id);if(next==='published'&&r&&(!r.artwork_url||!r.audio_url)&&!confirm('Artwork or audio is missing. Publish anyway?'))return;const {error}=await db.from('owner_releases').update({status:next,updated_at:new Date().toISOString()}).eq('id',id);if(error)alert(error.message);else await loadReleases()}async function deleteRelease(id){const r=releases.find(x=>x.id===id);if(!r||!confirm(`Delete ${r.title}?`))return;const {error}=await db.from('owner_releases').delete().eq('id',id);if(error)alert(error.message);else await loadReleases()}async function copyPromo(slug,b){const u=`${location.origin}/promo/${encodeURIComponent(slug)}/`;try{await navigator.clipboard.writeText(u);const o=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=o,1200)}catch{prompt('Copy promo URL',u)}}
+function renderReleases(){$('release-grid').innerHTML=releases.map(r=>{const art=r.artwork_url?`<img src="${esc(r.artwork_url)}" alt="${esc(r.title)} artwork">`:esc(r.release_type||'Release'),platforms=[r.spotify_url,r.apple_url,r.youtube_url,r.deezer_url,r.amazon_url].filter(isDirectPlatform).length,published=r.status==='published';return `<article class="panel release-card"><div class="release-art">${art}</div><div class="release-body"><div class="release-meta"><span>${esc(r.release_type||'Release')}</span><span class="pill ${published?'ready':'warning'}">${esc(label(r.status))}</span></div><h3>${esc(r.title)}</h3><div class="muted">${esc(r.artist||'The Grei Show')} · ${esc(r.release_date||'Date pending')}</div><div class="checklist">${check('Artwork',r.artwork_url)}${check('Audio',r.audio_url)}${check('Direct platforms',platforms)}${check('Editorial',r.description||r.story)}</div><div class="release-actions" style="margin-top:16px"><button class="button secondary" data-edit-release="${r.id}">Edit editorial</button><button class="button ${published?'ghost':'secondary'}" data-toggle-release="${r.id}" data-next-status="${published?'draft':'published'}">${published?'Unpublish':'Publish'}</button>${published?`<a class="button ghost" href="/promo/${encodeURIComponent(r.slug)}/" target="_blank">Open promo</a><button class="button ghost" data-copy-promo="${esc(r.slug)}">Copy link</button>`:''}<button class="button ghost" data-delete-release="${r.id}">Delete</button></div></div></article>`}).join('')||'<article class="panel"><p class="muted">No releases yet.</p></article>'}
+function isDirectPlatform(u){return Boolean(u)&&!/(\/search(?:\/|\?)|[?&](?:q|term)=)/i.test(String(u))}function resetReleaseForm(){const f=$('release-form');f.reset();ensureHiddenId(f);f.elements.id.value='';f.elements.artist.value='The Grei Show';f.elements.slug.dataset.edited='';f.querySelector('[type="submit"]').textContent='Save release';document.querySelectorAll('[data-upload-status]').forEach(x=>x.textContent='');document.querySelectorAll('[data-upload-preview]').forEach(x=>x.innerHTML='');setReleaseStatus('','muted')}function ensureHiddenId(f){if(!f.elements.id){const i=document.createElement('input');i.type='hidden';i.name='id';f.appendChild(i)}}function setReleaseStatus(m,k){$('release-form-status').textContent=m;$('release-form-status').className=`status-bar field full ${k||''}`}function syncSlug(e){const f=e.currentTarget;if(e.target.name==='title'&&!f.elements.slug.dataset.edited)f.elements.slug.value=slugify(e.target.value);if(e.target.name==='slug')f.elements.slug.dataset.edited='true'}function check(t,v){return `<div class="check ${v?'done':''}">${v?'✓':'○'} ${t}</div>`}function slugify(v){return String(v||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+async function loadDashboard(){const closed=['completed','cancelled'];const [br,pr,sr,bc,sc,oc,paid]=await Promise.all([db.from('client_requests').select('*').order('created_at',{ascending:false}).limit(25),db.from('booking_payments').select('*').order('created_at',{ascending:false}).limit(25),db.from('release_list_subscribers').select('*').order('subscribed_at',{ascending:false}).limit(25),db.from('client_requests').select('*',{count:'exact',head:true}),db.from('release_list_subscribers').select('*',{count:'exact',head:true}).eq('status','subscribed'),db.from('client_requests').select('id,booking_stage,status'),db.from('booking_payments').select('amount,currency,status,paid_at')]);for(const x of[br,pr,sr,bc,sc,oc,paid])if(x.error)throw x.error;const open=(oc.data||[]).filter(x=>!closed.includes(String(x.booking_stage||x.status||'').toLowerCase())).length,totals=(paid.data||[]).filter(x=>String(x.status).toLowerCase()==='paid'||x.paid_at).reduce((a,x)=>{const c=String(x.currency||'USD').toUpperCase();a[c]=(a[c]||0)+Number(x.amount||0);return a},{});$('metric-bookings').textContent=bc.count??0;$('metric-open').textContent=open;$('metric-revenue').textContent=formatRevenue(totals);$('metric-subscribers').textContent=sc.count??0;$('bookings-body').innerHTML=(br.data||[]).map(x=>row([date(x.created_at),esc(x.company_name||x.client_name||'—'),esc(x.project_name||x.project_type||'—'),esc(x.event_date||'—'),stageSelect(x),pill(x.payment_status||'unpaid'),followUpLinks(x)])).join('')||empty(7);$('payments-body').innerHTML=(pr.data||[]).map(x=>row([date(x.paid_at||x.created_at),esc(x.payment_type||'—'),money(x.amount,x.currency),pill(x.status||'pending'),esc(x.description||'—')])).join('')||empty(5);$('subscribers-body').innerHTML=(sr.data||[]).map(x=>row([date(x.subscribed_at),esc(x.first_name||'—'),esc(x.email),esc(x.country||'—'),pill(x.welcome_sent_at?'sent':'pending')])).join('')||empty(5)}
+async function handleStageChange(e){const s=e.target.closest('[data-booking-stage]');if(!s)return;const p=s.dataset.previous;s.disabled=true;const {error}=await db.from('client_requests').update({booking_stage:s.value,updated_at:new Date().toISOString()}).eq('id',s.dataset.bookingId);if(error)s.value=p;else{s.dataset.previous=s.value;await loadDashboard()}s.disabled=false}function stageSelect(x){const v=String(x.booking_stage||x.status||'new').toLowerCase();return `<select class="pipeline-select" data-booking-stage data-booking-id="${esc(x.id)}" data-previous="${esc(v)}">${stages.map(s=>`<option value="${s}"${s===v?' selected':''}>${esc(label(s))}</option>`).join('')}</select>`}function followUpLinks(x){const body=`Hello ${x.client_name||'there'},\n\nThank you for your request. I am following up with the next steps.\n\nBest,\nThe Grei Show`,links=[];if(x.email)links.push(`<a class="quick-link" href="mailto:${encodeURIComponent(x.email)}?body=${encodeURIComponent(body)}">Email</a>`);const phone=String(x.whatsapp||x.phone||'').replace(/\D/g,'');if(phone)links.push(`<a class="quick-link" href="https://wa.me/${phone}?text=${encodeURIComponent(body)}" target="_blank">WhatsApp</a>`);return `<div class="quick-links">${links.join('')||'<span class="muted">No contact</span>'}</div>`}function row(c){return `<tr>${c.map(v=>`<td>${v}</td>`).join('')}</tr>`}function empty(n){return `<tr><td colspan="${n}" class="muted">No records yet.</td></tr>`}function pill(v){return `<span class="pill">${esc(label(v))}</span>`}function label(v){return String(v||'').replace(/[_-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}function date(v){return v?esc(new Date(v).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})):'—'}function money(v,c='USD'){return new Intl.NumberFormat('en-JM',{style:'currency',currency:c||'USD'}).format(Number(v||0))}function formatRevenue(t){const e=Object.entries(t);return e.length?e.map(([c,a])=>money(a,c)).join(' · '):money(0,'USD')}function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 })();

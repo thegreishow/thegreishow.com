@@ -1,0 +1,22 @@
+{
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/promo",
+      "destination": "/promo/index.html"
+    },
+    {
+      "source": "/promo/",
+      "destination": "/promo/index.html"
+    },
+    {
+      "source": "/promo/:path*",
+      "destination": "/promo/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/arcade/games/jamaica-run/index.html"
+    }
+  ]
+}

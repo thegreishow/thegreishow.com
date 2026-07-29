@@ -104,7 +104,7 @@
 
   <script src="shared/nav.js"></script><script src="assets/js/portal.js"></script>
   <script>
-    const icon=(name)=>({spotify:'<svg class="platform-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/></svg>',apple:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="M16.5 3v12.1a3.4 3.4 0 1 1-1.7-3V6.6L8.5 8v9.1a3.4 3.4 0 1 1-1.7-3V6.5L16.5 3z"/></svg>',youtube:'<svg class="platform-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5 16 12l-6 3.5z"/></svg>',tidal:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="m6 4 3 3-3 3-3-3zm6 0 3 3-3 3-3-3zm6 0 3 3-3 3-3-3zM9 10l3 3-3 3-3-3zm6 0 3 3-3 3-3-3zm-3 6 3 3-3 3-3-3z"/></svg>',deezer:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="M3 15h4v3H3zm0-4h4v3H3zm5 4h4v3H8zm0-8h4v3H8zm5 8h4v3h-4zm0-4h4v3h-4zm5 4h4v3h-4z"/></svg>',amazon:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="M5 16c4 2.8 9.8 3 14-.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="m16 17 3-1-.5 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'}[name]||'');
+    const icon=(name)=>({spotify:'<svg class="platform-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11"/></svg>',apple:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="M16.5 3v12.1a3.4 3.4 0 1 1-1.7-3V6.6L8.5 8v9.1a3.4 3.4 0 1 1-1.7-3V6.5L16.5 3z"/></svg>',youtube:'<svg class="platform-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5 16 12l-6 3.5z"/></svg>',tidal:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="m6 4 3 3-3 3-3-3zm6 0 3 3-3 3-3-3zm6 0 3 3-3 3-3-3zM9 10l3 3-3 3-3-3zm6 0 3 3-3 3-3-3zm-3 6 3 3-3 3-3-3z"/></svg>',deezer:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="M2 15h4v3H2zm5-3h4v6H7zm5-5h4v11h-4zm5 3h4v8h-4z"/></svg>',amazon:'<svg class="platform-icon" viewBox="0 0 24 24"><path d="M4 16c4 2.5 10 2.8 16-.3l1.2 1.8C15 21.2 8 21 3 18zM15.4 6.3c-1.1-.8-3.3-.9-4.7-.2-.8.4-1.3 1.1-1.2 1.9h-3c-.1-2 1.1-3.8 3.2-4.7 2.6-1.1 6-.8 7.8.5 1.2.9 1.8 2.2 1.8 3.8v5.7c0 1 .3 1.7 1 2.3l-2.4 1.7c-.7-.5-1.2-1.1-1.5-1.8-1.1 1.3-2.8 2-4.8 2-3.2 0-5.4-1.8-5.4-4.5 0-3.7 3.7-5 9.9-4.4V8c0-.8-.2-1.3-.7-1.7zm.7 4.5c-4.3-.5-6.7.1-6.7 2.1 0 1.2 1 2 2.7 2 2.5 0 4-1.5 4-3.7z"/></svg>'})[name]||'';
     const q=(title)=>encodeURIComponent('The Grei Show '+title);
     const releases={
       'dark-side':{title:'Dark Side of the Moon',artId:'1849838344',apple:'https://music.apple.com/jm/album/dark-side-of-the-moon-ep/1849838344'},
@@ -143,9 +143,20 @@
     Object.values(releases).forEach(r=>{r.spotify=r.spotify||'https://open.spotify.com/search/'+q(r.title);r.youtube=r.youtube||'https://music.youtube.com/search?q='+q(r.title);r.tidal=r.tidal||'https://listen.tidal.com/search?q='+q(r.title);r.deezer=r.deezer||'https://www.deezer.com/search/'+q(r.title);r.apple=r.apple||'https://music.apple.com/jm/search?term='+q(r.title);r.amazon=r.amazon||'https://music.amazon.com/search/'+q(r.title)});
 
     const catalogue=document.getElementById('single-catalogue');
-    catalogue.innerHTML=singles.map(s=>'<article class="catalogue-row" data-release="'+s.key+'"><img class="single-art" '+(s.artId?'data-art-id="'+s.artId+'"':'data-search-art="The Grei Show '+s.title+'"')+' alt="'+s.title+' cover"><div class="catalogue-year">'+s.year+'</div><div><h3>'+s.title+'</h3><p>'+s.detail+'</p></div><button class="music-cta open-portal" type="button">Choose platform</button></article>').join('');
+    catalogue.innerHTML=singles.map(s=>'<article class="catalogue-row" data-release="'+s.key+'"><img class="single-art" src="'+(s.artId?'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/00/00/00/00000000-0000-0000-0000-000000000000/'+s.artId+'-source/800x800bb.jpg':'assets/img/no-drama.webp')+'" data-art-id="'+(s.artId||'')+'" data-search-art="'+(!s.artId?'The Grei Show '+s.title:'')+'" alt="'+s.title+' cover"><div class="catalogue-year">'+s.year+'</div><div><h3>'+s.title+'</h3><p>'+s.detail+'</p></div><button class="music-cta open-portal" type="button">Choose platform</button></article>').join('');
 
-    async function loadArt(img){try{let url=img.dataset.artId?'https://itunes.apple.com/lookup?id='+img.dataset.artId+'&entity=album':'https://itunes.apple.com/search?term='+encodeURIComponent(img.dataset.searchArt)+'&entity=album&limit=1';const data=await fetch(url).then(r=>r.json());const item=data.results.find(x=>x.artworkUrl100);if(item)img.src=item.artworkUrl100.replace('100x100bb','800x800bb')}catch(e){console.warn('Artwork unavailable',e)}}
+    async function loadArt(img){
+      const fallback='assets/img/no-drama.webp';
+      try{
+        let url=img.dataset.artId?'https://itunes.apple.com/lookup?id='+img.dataset.artId+'&entity=album':'https://itunes.apple.com/search?term='+encodeURIComponent(img.dataset.searchArt)+'&entity=album&limit=1';
+        const response=await fetch(url);
+        if(!response.ok)throw new Error('Artwork lookup failed');
+        const data=await response.json();
+        const item=data.results.find(x=>x.artworkUrl100);
+        img.src=item?item.artworkUrl100.replace('100x100bb','800x800bb'):fallback;
+      }catch(e){img.src=fallback;console.warn('Artwork unavailable',e)}
+      img.onerror=()=>{img.onerror=null;img.src=fallback};
+    }
     document.querySelectorAll('[data-art-id],[data-search-art]').forEach(loadArt);
 
     const modal=document.getElementById('stream-modal'),modalTitle=document.getElementById('modal-title'),modalSub=document.getElementById('modal-subtitle'),modalArt=document.getElementById('modal-art'),modalPlatforms=document.getElementById('modal-platforms');
@@ -155,6 +166,6 @@
 
     const sections=document.querySelectorAll('.section');if('IntersectionObserver'in window&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.1});sections.forEach(section=>observer.observe(section))}else sections.forEach(section=>section.classList.add('visible'));
   </script>
-  <script src="assets/js/music-support.js?v=20260729-1"></script>
+  <script src="assets/js/music-support.js?v=20260729-2"></script>
 </body>
 </html>

@@ -24,7 +24,6 @@
   const paypal = document.getElementById("support-paypal");
   const free = document.getElementById("support-free");
 
-  restoreOfficialArtwork();
   if (modal && form) init();
 
   async function init() {
@@ -39,73 +38,6 @@
       console.warn("Music support catalogue unavailable", error);
       wireButtons();
     }
-  }
-
-  function appleJsonp(endpoint) {
-    return new Promise((resolve, reject) => {
-      const callbackName = `__greiArtwork_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-      const script = document.createElement("script");
-      let finished = false;
-      const timeout = setTimeout(() => finish(new Error("Artwork lookup timed out")), 12000);
-
-      function finish(error, data) {
-        if (finished) return;
-        finished = true;
-        clearTimeout(timeout);
-        try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
-        script.remove();
-        error ? reject(error) : resolve(data);
-      }
-
-      window[callbackName] = (data) => finish(null, data);
-      script.onerror = () => finish(new Error("Artwork lookup failed"));
-      script.src = `${endpoint}${endpoint.includes("?") ? "&" : "?"}callback=${encodeURIComponent(callbackName)}&_=${Date.now()}`;
-      document.head.appendChild(script);
-    });
-  }
-
-  async function lookupArtwork(artId, searchArt) {
-    const countries = ["jm", "us", "gb"];
-    for (const country of countries) {
-      const endpoint = artId
-        ? `https://itunes.apple.com/lookup?id=${encodeURIComponent(artId)}&entity=album&country=${country}`
-        : `https://itunes.apple.com/search?term=${encodeURIComponent(searchArt)}&entity=album&limit=10&country=${country}`;
-      try {
-        const data = await appleJsonp(endpoint);
-        const item = (data.results || []).find((result) => result.artworkUrl100);
-        if (item) return item.artworkUrl100.replace(/100x100bb(?:-\d+)?\.jpg$/, "800x800bb.jpg");
-      } catch (_) {}
-    }
-    throw new Error("No official artwork returned");
-  }
-
-  async function restoreOfficialArtwork() {
-    const images = [...document.querySelectorAll("img[data-art-id], img[data-search-art]")];
-
-    // The old inline loader can briefly assign No Drama to every release. Remove
-    // that incorrect image immediately while the official artwork is requested.
-    images.forEach((img) => {
-      if (img.src && /\/assets\/img\/no-drama\.webp(?:\?|$)/.test(img.src)) {
-        img.removeAttribute("src");
-      }
-      img.onerror = null;
-    });
-
-    await Promise.allSettled(images.map(async (img) => {
-      const artId = img.dataset.artId?.trim();
-      const searchArt = img.dataset.searchArt?.trim();
-      if (!artId && !searchArt) return;
-      try {
-        const officialArtwork = await lookupArtwork(artId, searchArt);
-        img.onerror = null;
-        img.src = officialArtwork;
-        img.dataset.officialArtwork = "true";
-      } catch (error) {
-        // Never substitute No Drama for another release.
-        img.removeAttribute("src");
-        console.warn("Official artwork unavailable", artId || searchArt, error);
-      }
-    }));
   }
 
   function isDownloadable(release) {

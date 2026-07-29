@@ -25,8 +25,8 @@
 
   if (!modal || !form) return;
 
-  repairArtwork();
   init();
+  restoreOfficialArtwork();
 
   async function init() {
     try {
@@ -42,42 +42,35 @@
     }
   }
 
+  async function restoreOfficialArtwork() {
+    const images = [...document.querySelectorAll("img[data-art-id], img[data-search-art]")];
+    await Promise.all(images.map(async (img) => {
+      const artId = img.dataset.artId?.trim();
+      const searchArt = img.dataset.searchArt?.trim();
+      if (!artId && !searchArt) return;
+      try {
+        const endpoint = artId
+          ? `https://itunes.apple.com/lookup?id=${encodeURIComponent(artId)}&entity=album&country=jm`
+          : `https://itunes.apple.com/search?term=${encodeURIComponent(searchArt)}&entity=album&limit=5&country=jm`;
+        const response = await fetch(endpoint, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Artwork lookup failed (${response.status})`);
+        const data = await response.json();
+        const item = (data.results || []).find((result) => result.artworkUrl100);
+        if (!item) throw new Error("No official artwork returned");
+        const officialArtwork = item.artworkUrl100.replace(/100x100bb(?:-\d+)?\.jpg$/, "800x800bb.jpg");
+        img.onerror = null;
+        img.src = officialArtwork;
+        img.dataset.officialArtwork = "true";
+      } catch (error) {
+        console.warn("Official artwork unavailable", artId || searchArt, error);
+      }
+    }));
+  }
+
   function isDownloadable(release) {
     const tracks = Array.isArray(release?.tracks) ? release.tracks : [];
     return release?.status === "published" &&
       ((release.audio_url && !String(release.audio_url).includes("/folders/")) || tracks.some((track) => track?.url));
-  }
-
-  function artworkPlaceholder(img) {
-    const card = img.closest("[data-release]");
-    const releaseTitle = card?.querySelector("h3")?.textContent?.trim() || img.alt?.replace(/\s+(album|ep|single)?\s*cover.*$/i, "").trim() || "The Grei Show";
-    const safeTitle = releaseTitle.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#141824"/><stop offset="1" stop-color="#05070b"/></linearGradient></defs><rect width="800" height="800" fill="url(#g)"/><circle cx="400" cy="330" r="170" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="3"/><text x="400" y="320" fill="#ffffff" font-family="Arial,sans-serif" font-size="34" font-weight="700" text-anchor="middle">THE GREI SHOW</text><text x="400" y="382" fill="#ffffff" fill-opacity=".72" font-family="Arial,sans-serif" font-size="26" text-anchor="middle">${safeTitle}</text></svg>`;
-    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-  }
-
-  async function repairArtwork() {
-    const images = [...document.querySelectorAll("img[data-art-id],img[data-search-art]")];
-    await Promise.all(images.map(async (img) => {
-      const placeholder = artworkPlaceholder(img);
-      img.onerror = () => {
-        img.onerror = null;
-        img.src = placeholder;
-      };
-      if (!img.src || img.src.includes("assets/img/no-drama.webp") || img.src.includes("00000000-0000-0000")) img.src = placeholder;
-      try {
-        const query = img.dataset.artId
-          ? `https://itunes.apple.com/lookup?id=${encodeURIComponent(img.dataset.artId)}&entity=album`
-          : `https://itunes.apple.com/search?term=${encodeURIComponent(img.dataset.searchArt || img.alt)}&entity=album&limit=1`;
-        const response = await fetch(query);
-        if (!response.ok) return;
-        const data = await response.json();
-        const item = data.results?.find((result) => result.artworkUrl100);
-        if (item?.artworkUrl100) img.src = item.artworkUrl100.replace("100x100bb", "800x800bb");
-      } catch (error) {
-        console.warn("Artwork lookup unavailable", error);
-      }
-    }));
   }
 
   function addCatalogueButtons() {

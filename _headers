@@ -1,0 +1,8 @@
+/music
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/music.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/assets/js/music-support.js
+  Cache-Control: no-cache, no-store, must-revalidate

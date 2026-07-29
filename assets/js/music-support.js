@@ -42,6 +42,24 @@
     }
   }
 
+  function appleJsonp(endpoint) {
+    return new Promise((resolve, reject) => {
+      const callbackName = `__greiArtwork_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const script = document.createElement("script");
+      const timeout = setTimeout(() => cleanup(new Error("Artwork lookup timed out")), 10000);
+      function cleanup(error, data) {
+        clearTimeout(timeout);
+        delete window[callbackName];
+        script.remove();
+        error ? reject(error) : resolve(data);
+      }
+      window[callbackName] = (data) => cleanup(null, data);
+      script.onerror = () => cleanup(new Error("Artwork lookup failed"));
+      script.src = `${endpoint}${endpoint.includes("?") ? "&" : "?"}callback=${encodeURIComponent(callbackName)}`;
+      document.head.appendChild(script);
+    });
+  }
+
   async function restoreOfficialArtwork() {
     const images = [...document.querySelectorAll("img[data-art-id], img[data-search-art]")];
     await Promise.all(images.map(async (img) => {
@@ -52,9 +70,7 @@
         const endpoint = artId
           ? `https://itunes.apple.com/lookup?id=${encodeURIComponent(artId)}&entity=album&country=jm`
           : `https://itunes.apple.com/search?term=${encodeURIComponent(searchArt)}&entity=album&limit=5&country=jm`;
-        const response = await fetch(endpoint, { cache: "no-store" });
-        if (!response.ok) throw new Error(`Artwork lookup failed (${response.status})`);
-        const data = await response.json();
+        const data = await appleJsonp(endpoint);
         const item = (data.results || []).find((result) => result.artworkUrl100);
         if (!item) throw new Error("No official artwork returned");
         const officialArtwork = item.artworkUrl100.replace(/100x100bb(?:-\d+)?\.jpg$/, "800x800bb.jpg");

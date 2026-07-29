@@ -87,6 +87,7 @@
           budget: String(fields.get('budget') || ''),
           event_date: String(fields.get('date') || ''),
           location: String(fields.get('location') || '').trim(),
+          consent: fields.get('consent') === 'on',
           website: String(fields.get('website') || ''),
           turnstile_token: String(fields.get('turnstile_token') || '')
         })

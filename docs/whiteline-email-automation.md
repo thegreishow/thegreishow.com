@@ -16,7 +16,7 @@ The queue is visible in **White Line Admin → Emails**. Failed messages use exp
 
 The Edge Function uses Resend through its HTTPS API. The sender must use a domain verified in Resend. Recommended sender:
 
-`White Line Entertainment <bookings@thegreishow.com>`
+`White Line Entertainment <bookings@mail.thegreishow.com>`
 
 Replies can continue going to `thegreishow@gmail.com` until a dedicated mailbox is created.
 
@@ -25,7 +25,7 @@ Replies can continue going to `thegreishow@gmail.com` until a dedicated mailbox 
 Set these Edge Function secrets:
 
 - `RESEND_API_KEY`
-- `WLE_FROM_EMAIL` — for example `bookings@thegreishow.com`
+- `WLE_FROM_EMAIL` — optional override; defaults to `bookings@mail.thegreishow.com`
 - `WLE_FROM_NAME` — `White Line Entertainment`
 - `WLE_REPLY_TO` — `thegreishow@gmail.com`
 - `EMAIL_CRON_SECRET` — a long random value used only by the scheduler

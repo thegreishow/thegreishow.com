@@ -39,6 +39,7 @@ Deno.serve(async (req: Request) => {
           provider_message_id: providerId,
           sent_at: new Date().toISOString(),
           locked_at: null,
+          last_error: null,
           updated_at: new Date().toISOString(),
         }).eq("id", row.id);
         if (updateError) throw updateError;
@@ -64,6 +65,12 @@ Deno.serve(async (req: Request) => {
 async function authorize(req: Request) {
   const cronSecret = Deno.env.get("EMAIL_CRON_SECRET") || "";
   if (cronSecret && req.headers.get("x-cron-secret") === cronSecret) return;
+  const schedulerToken = req.headers.get("x-cron-token") || "";
+  if (schedulerToken) {
+    const admin = createClient(requiredEnv("SUPABASE_URL"), requiredEnv("SUPABASE_SERVICE_ROLE_KEY"), { auth: { persistSession: false } });
+    const { data: authorized, error } = await admin.rpc("whiteline_authorize_email_cron", { p_token: schedulerToken });
+    if (!error && authorized === true) return;
+  }
   const authHeader = req.headers.get("Authorization") || "";
   if (!authHeader.startsWith("Bearer ")) throw new Error("Authentication required");
   const userClient = createClient(requiredEnv("SUPABASE_URL"), requiredEnv("SUPABASE_ANON_KEY"), { global: { headers: { Authorization: authHeader } } });
@@ -79,7 +86,7 @@ async function sendWithResend(to: string, subject: string, html: string, text: s
     method: "POST",
     headers: { Authorization: `Bearer ${requiredEnv("RESEND_API_KEY")}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: `${Deno.env.get("WLE_FROM_NAME") || "White Line Entertainment"} <${requiredEnv("WLE_FROM_EMAIL")}>`,
+      from: `${Deno.env.get("WLE_FROM_NAME") || "White Line Entertainment"} <${Deno.env.get("WLE_FROM_EMAIL") || "bookings@mail.thegreishow.com"}>`,
       to: [to],
       reply_to: Deno.env.get("WLE_REPLY_TO") || "thegreishow@gmail.com",
       subject,
@@ -129,7 +136,7 @@ function corsHeaders(req: Request) {
   const origin = req.headers.get("Origin") || "";
   return {
     "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://thegreishow.com",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret, x-cron-token",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",

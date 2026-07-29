@@ -2,6 +2,8 @@
   const CHECKOUT_URL = "https://dkvbeizjlgxqjuxnlqho.supabase.co/functions/v1/create-music-support-checkout";
   const RELEASE_KEYS = {
     "no-drama": "no-drama",
+    "dark-side": "dark-side-of-the-moon",
+    "psy-phi": "psy-phi",
     "pineapples": "pineapples-and-hot-sauce",
     "ppp-remix": "puff-puff-pass-remix-feat-bay-c",
     "game-hearts": "game-of-hearts",
@@ -70,7 +72,7 @@
     button.className = "music-cta support-trigger";
     button.dataset.slug = release.slug;
     button.dataset.title = release.title || release.slug;
-    button.textContent = "Support + download";
+    button.textContent = "Name your price · download";
     return button;
   }
 

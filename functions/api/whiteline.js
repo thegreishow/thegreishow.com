@@ -105,6 +105,7 @@ export async function onRequestPost({ request, env }) {
     const preferredContact = cleanText(payload.preferred_contact_method, 20);
     const requestedTalentId = cleanText(payload.requested_talent_id, 36);
     const requestedTalentName = cleanText(payload.requested_talent_name, 160);
+    const consent = payload.consent === true;
     const currencies = new Set(['USD', 'JMD', 'GBP', 'EUR', 'CAD']);
     const contactMethods = new Set(['Email', 'WhatsApp', 'Phone']);
     const budgetMin = payload.budget_min === null || payload.budget_min === '' ? null : Number(payload.budget_min);
@@ -112,6 +113,7 @@ export async function onRequestPost({ request, env }) {
 
     if (name.length < 2) return secureJson({ error: 'Enter your name.' }, 400);
     if (!email) return secureJson({ error: 'Enter a valid email address.' }, 400);
+    if (!consent) return secureJson({ error: 'Please agree to the booking privacy and contact terms.' }, 400);
     if (phone.length < 5) return secureJson({ error: 'Enter a valid phone or WhatsApp number.' }, 400);
     if (projectType.length < 2) return secureJson({ error: 'Enter the project type.' }, 400);
     if (talentCategory.length < 2) return secureJson({ error: 'Enter the talent needed.' }, 400);
@@ -153,7 +155,10 @@ export async function onRequestPost({ request, env }) {
       currency,
       preferred_contact_method: preferredContact || null,
       requested_talent_id: requestedTalentId || null,
-      requested_talent_name: requestedTalentName || null
+      requested_talent_name: requestedTalentName || null,
+      consent_to_store_data: true,
+      consent_to_contact: true,
+      source: 'thegreishow.com/whiteline'
     };
     const result = await supabase('client_requests', {
       method: 'POST',
@@ -190,9 +195,11 @@ export async function onRequestPost({ request, env }) {
   const eventDate = cleanText(payload.event_date, 10);
   const location = cleanText(payload.location, 200);
   const phone = cleanText(payload.phone, 80);
+  const consent = payload.consent === true;
 
   if (name.length < 2) return secureJson({ error: 'Enter your name.' }, 400);
   if (!email) return secureJson({ error: 'Enter a valid email address.' }, 400);
+  if (!consent) return secureJson({ error: 'Please agree to the inquiry privacy and contact terms.' }, 400);
   if (!services[serviceKey]) return secureJson({ error: 'Choose a valid request type.' }, 400);
   if (brief.length < 30) return secureJson({ error: 'Please add at least 30 characters about the project.' }, 400);
   if (!timelines.has(timeline)) return secureJson({ error: 'Choose a valid timeline.' }, 400);
@@ -223,7 +230,10 @@ export async function onRequestPost({ request, env }) {
     project_description: details,
     event_date: eventDate || null,
     location: location || null,
-    currency: 'USD'
+    currency: 'USD',
+    consent_to_store_data: true,
+    consent_to_contact: true,
+    source: 'thegreishow.com/connect'
   };
   const result = await supabase('client_requests', {
     method: 'POST',

@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
-  <link rel="stylesheet" href="assets/css/connect.css">
+  <link rel="stylesheet" href="assets/css/connect.css?v=20260727-3">
 </head>
 <body>
   <div id="site-header"></div>
@@ -145,6 +145,11 @@
             <textarea id="brief" name="brief" minlength="30" placeholder="Share the event, project, audience, deliverables, current stage, and the outcome you want." required></textarea>
           </div>
 
+          <label class="consent-row field full">
+            <input name="consent" type="checkbox" required>
+            <span>I agree that White Line Entertainment may securely store these details and contact me about this request. See the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+          </label>
+
           <div class="field full" data-turnstile-action="inquiry" aria-label="Human verification"></div>
           <input type="hidden" name="turnstile_token">
           <input type="text" name="website" hidden tabindex="-1" autocomplete="off">
@@ -196,6 +201,6 @@
 
   <script src="shared/nav.js"></script>
   <script src="assets/js/form-security.js" defer></script>
-  <script src="assets/js/contact.js"></script>
+  <script src="assets/js/contact.js?v=20260727-3"></script>
 </body>
 </html>

@@ -9,8 +9,9 @@
     "game-hearts": "game-of-hearts",
     "puff-pass": "puff-puff-pass",
     "vibe": "the-vibe",
-    "joy": "joy",
+    "joy": "joy"
   };
+
   let releases = new Map();
   let selected = null;
   let lastFocus = null;
@@ -23,14 +24,12 @@
   const paypal = document.getElementById("support-paypal");
   const free = document.getElementById("support-free");
 
-  if (!modal || !form) return;
-
-  init();
   restoreOfficialArtwork();
+  if (modal && form) init();
 
   async function init() {
     try {
-      const response = await fetch("/assets/data/promo-releases.json", { cache: "no-store" });
+      const response = await fetch(`/assets/data/promo-releases.json?v=${Date.now()}`, { cache: "no-store" });
       const data = response.ok ? await response.json() : [];
       releases = new Map(data.filter(isDownloadable).map((release) => [release.slug, release]));
       addCatalogueButtons();
@@ -46,38 +45,64 @@
     return new Promise((resolve, reject) => {
       const callbackName = `__greiArtwork_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       const script = document.createElement("script");
-      const timeout = setTimeout(() => cleanup(new Error("Artwork lookup timed out")), 10000);
-      function cleanup(error, data) {
+      let finished = false;
+      const timeout = setTimeout(() => finish(new Error("Artwork lookup timed out")), 12000);
+
+      function finish(error, data) {
+        if (finished) return;
+        finished = true;
         clearTimeout(timeout);
-        delete window[callbackName];
+        try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
         script.remove();
         error ? reject(error) : resolve(data);
       }
-      window[callbackName] = (data) => cleanup(null, data);
-      script.onerror = () => cleanup(new Error("Artwork lookup failed"));
-      script.src = `${endpoint}${endpoint.includes("?") ? "&" : "?"}callback=${encodeURIComponent(callbackName)}`;
+
+      window[callbackName] = (data) => finish(null, data);
+      script.onerror = () => finish(new Error("Artwork lookup failed"));
+      script.src = `${endpoint}${endpoint.includes("?") ? "&" : "?"}callback=${encodeURIComponent(callbackName)}&_=${Date.now()}`;
       document.head.appendChild(script);
     });
   }
 
+  async function lookupArtwork(artId, searchArt) {
+    const countries = ["jm", "us", "gb"];
+    for (const country of countries) {
+      const endpoint = artId
+        ? `https://itunes.apple.com/lookup?id=${encodeURIComponent(artId)}&entity=album&country=${country}`
+        : `https://itunes.apple.com/search?term=${encodeURIComponent(searchArt)}&entity=album&limit=10&country=${country}`;
+      try {
+        const data = await appleJsonp(endpoint);
+        const item = (data.results || []).find((result) => result.artworkUrl100);
+        if (item) return item.artworkUrl100.replace(/100x100bb(?:-\d+)?\.jpg$/, "800x800bb.jpg");
+      } catch (_) {}
+    }
+    throw new Error("No official artwork returned");
+  }
+
   async function restoreOfficialArtwork() {
     const images = [...document.querySelectorAll("img[data-art-id], img[data-search-art]")];
-    await Promise.all(images.map(async (img) => {
+
+    // The old inline loader can briefly assign No Drama to every release. Remove
+    // that incorrect image immediately while the official artwork is requested.
+    images.forEach((img) => {
+      if (img.src && /\/assets\/img\/no-drama\.webp(?:\?|$)/.test(img.src)) {
+        img.removeAttribute("src");
+      }
+      img.onerror = null;
+    });
+
+    await Promise.allSettled(images.map(async (img) => {
       const artId = img.dataset.artId?.trim();
       const searchArt = img.dataset.searchArt?.trim();
       if (!artId && !searchArt) return;
       try {
-        const endpoint = artId
-          ? `https://itunes.apple.com/lookup?id=${encodeURIComponent(artId)}&entity=album&country=jm`
-          : `https://itunes.apple.com/search?term=${encodeURIComponent(searchArt)}&entity=album&limit=5&country=jm`;
-        const data = await appleJsonp(endpoint);
-        const item = (data.results || []).find((result) => result.artworkUrl100);
-        if (!item) throw new Error("No official artwork returned");
-        const officialArtwork = item.artworkUrl100.replace(/100x100bb(?:-\d+)?\.jpg$/, "800x800bb.jpg");
+        const officialArtwork = await lookupArtwork(artId, searchArt);
         img.onerror = null;
         img.src = officialArtwork;
         img.dataset.officialArtwork = "true";
       } catch (error) {
+        // Never substitute No Drama for another release.
+        img.removeAttribute("src");
         console.warn("Official artwork unavailable", artId || searchArt, error);
       }
     }));
@@ -119,18 +144,19 @@
   }
 
   function wireButtons() {
+    if (!modal || !form || modal.dataset.wired === "true") return;
+    modal.dataset.wired = "true";
     document.addEventListener("click", (event) => {
       const trigger = event.target.closest(".support-trigger");
-      if (trigger) {
-        event.preventDefault();
-        event.stopPropagation();
-        openModal(trigger.dataset.slug, trigger.dataset.title, trigger);
-      }
+      if (!trigger) return;
+      event.preventDefault();
+      event.stopPropagation();
+      openModal(trigger.dataset.slug, trigger.dataset.title, trigger);
     });
-    modal.querySelector(".support-close").addEventListener("click", closeModal);
+    modal.querySelector(".support-close")?.addEventListener("click", closeModal);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
     document.addEventListener("keydown", (event) => { if (event.key === "Escape" && modal.classList.contains("open")) closeModal(); });
-    free.addEventListener("click", () => startDownload(selected));
+    free?.addEventListener("click", () => startDownload(selected));
     form.addEventListener("submit", beginCheckout);
   }
 
@@ -159,10 +185,7 @@
       message.textContent = "Enter an amount from $0 to $500 USD.";
       return;
     }
-    if (value === 0) {
-      startDownload(selected);
-      return;
-    }
+    if (value === 0) return startDownload(selected);
     if (value < 1) {
       message.textContent = "PayPal contributions start at $1. Choose $0 to download free.";
       return;
@@ -173,7 +196,7 @@
       const response = await fetch(CHECKOUT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: selected.slug, amount: value, website: "" }),
+        body: JSON.stringify({ slug: selected.slug, amount: value, website: "" })
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || !data.url) throw new Error(data.error || "PayPal checkout is unavailable.");

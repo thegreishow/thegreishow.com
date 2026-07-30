@@ -10,10 +10,21 @@
     "1831857830":"1KUUxrmjPlpXXlvf6S63J_TVnCF-Zzxdl",
     "1767170663":"1aEG5YkNeHgHiHta5Zerz3IMAQ1pwBrDg",
     "1760518363":"1ndUC7e02uZylbhdTs8IjAc6P2EvPLqCY",
-    "1742100290":"1T2AEorwOTeBJOHbqYXYW0AaU6lXz8osN"
+    "1742100290":"1T2AEorwOTeBJOHbqYXYW0AaU6lXz8osN",
+    "1587832103":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
+    "1563429468":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5"
   };
   const DRIVE_ART_BY_TITLE = {
-    "pineapples & hot sauce":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz"
+    "pineapples & hot sauce":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz",
+    "a love alone":"10dsD1gYOYFoe-5HwvD6OLrhmtm6Df_wO",
+    "game of hearts":"127SpeX5EyUgBavdk5xpI6pGk6eKa7u0K",
+    "puff puff pass":"1MuSYnDIqswVonT1QID7MHzCdR7F6ZG3f",
+    "puff puff pass (remix)":"1aEG5YkNeHgHiHta5Zerz3IMAQ1pwBrDg",
+    "the flame":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
+    "the vibe":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5",
+    "blind without shades":"1SLOsUsxSe2jJMaeW3-aI3WYC83A8f3Mz",
+    "friends":"1IMO5H_5xbrPC2tf7AmasZM5OPq08JQvj",
+    "squad people":"1EPMg0oyk1ndnJE3qcCCa7rQmSxuxafmU"
   };
   let releases = new Map(), selected = null, lastFocus = null;
   const modal=document.getElementById("support-modal"),form=document.getElementById("support-form"),title=document.getElementById("support-title"),amount=document.getElementById("support-amount"),message=document.getElementById("support-message"),paypal=document.getElementById("support-paypal"),free=document.getElementById("support-free");
@@ -81,7 +92,7 @@
     const params=new URLSearchParams();
     if(artId)params.set("id",artId);
     if(searchArt)params.set("term",searchArt);
-    params.set("v","20260729-6");
+    params.set("v","20260729-7");
     try{
       const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
       const data=await response.json().catch(()=>({}));

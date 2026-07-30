@@ -1,6 +1,16 @@
 (() => {
   const CHECKOUT_URL = "https://dkvbeizjlgxqjuxnlqho.supabase.co/functions/v1/create-music-support-checkout";
-  const RELEASE_KEYS = {"no-drama":"no-drama","dark-side":"dark-side-of-the-moon","psy-phi":"psy-phi","pineapples":"pineapples-and-hot-sauce","ppp-remix":"puff-puff-pass-remix-feat-bay-c","game-hearts":"game-of-hearts","puff-pass":"puff-puff-pass","vibe":"the-vibe","joy":"joy"};
+  const RELEASES_URL = "https://dkvbeizjlgxqjuxnlqho.supabase.co/rest/v1/owner_releases?status=eq.published&select=slug,title,audio_url,artwork_url,tracks,status";
+  const SUPABASE_KEY = "sb_publishable__oa3dCkTrm635ZbAtZTSww_FgVlYGwS";
+  const RELEASE_KEYS = {
+    "no-drama":"no-drama","dark-side":"dark-side-of-the-moon","nothing-believe":"theres-nothing-to-believe-in",
+    "psy-phi":"psy-phi","1122":"1122-ep","pineapples":"pineapples-and-hot-sauce","ep2":"ep-2",
+    "any-one":"any-one-a-dem","24-days":"24-days","halfway":"halfway","love-alone":"a-love-alone",
+    "ppp-remix":"puff-puff-pass-remix-bay-c","choppa-talk":"choppa-talk","river-dreams":"river-of-dreams",
+    "rage":"rage","game-hearts":"game-of-hearts","puff-pass":"puff-puff-pass","flame":"the-flame",
+    "vibe":"the-vibe","interlude":"2020-interlude","friends":"friends","joy":"joy","squad":"squad-people",
+    "blind":"blind-without-shades","full-moon":"full-moon"
+  };
   const DRIVE_ART = {
     byRelease: {
       "dark-side":"1ic726hm4mwgjFKsPt6fEAbPfdMXoBn5G",
@@ -62,6 +72,13 @@
       "full moon":"16VjDkTz887AKFohgq0a45Y_DrBWAvUgM"
     }
   };
+  const DIRECT_ART = {
+    "loosen-remix":"https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/e0/68/eb/e068eb17-e246-9b2e-b717-92d3e7f2d3c2/artwork.jpg/800x800bb.jpg",
+    "ooh-ooh":"https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/2b/4c/dc/2b4cdc4a-c5ac-05dd-acaa-abc07e8a69f1/artwork.jpg/800x800bb.jpg",
+    "loosen-up":"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/a2/25/04/a2250432-ded3-682c-5c55-70eb0b2ca56b/artwork.jpg/800x800bb.jpg",
+    "black-jesus":"https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fe/37/be/fe37bece-f2be-f801-22ce-ec29a331214e/194526935578_cover.jpg/800x800bb.jpg",
+    "wild-heart":"https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/d3/a4/4b/d3a44b32-b3a6-f404-dbdf-a4546be36bd1/888915458884_cover.jpg/800x800bb.jpg"
+  };
   let releases = new Map(), selected = null, lastFocus = null;
   const modal=document.getElementById("support-modal"),form=document.getElementById("support-form"),title=document.getElementById("support-title"),amount=document.getElementById("support-amount"),message=document.getElementById("support-message"),paypal=document.getElementById("support-paypal"),free=document.getElementById("support-free");
 
@@ -81,6 +98,12 @@
     const altTitle=(img.alt||"").replace(/\s+(album|ep|single)?\s*cover( art)?$/i,"").trim();
     const title=(explicitSearch||altTitle).replace(/^The Grei Show\s+/i,"").trim();
     const driveId=DRIVE_ART.byRelease[releaseKey]||DRIVE_ART.byId[artId]||DRIVE_ART.byTitle[title.toLowerCase()];
+    const directArtwork=DIRECT_ART[releaseKey];
+
+    if(directArtwork){
+      const loaded=await setImageSource(img,directArtwork);
+      if(loaded){img.dataset.officialArtwork="apple";return;}
+    }
 
     if(driveId){
       const loaded=await setImageSource(img,`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
@@ -122,11 +145,21 @@
   }
 
   async function init(){
-    try{const response=await fetch(`/assets/data/promo-releases.json?v=${Date.now()}`,{cache:"no-store"});const data=response.ok?await response.json():[];releases=new Map(data.filter(isDownloadable).map(r=>[r.slug,r]));addCatalogueButtons();wireButtons();handleReturn()}catch(error){console.warn("Music support catalogue unavailable",error);wireButtons()}
+    try{const data=await loadCatalogue();releases=new Map(data.filter(isDownloadable).map(r=>[r.slug,r]));addCatalogueButtons();wireButtons();handleReturn()}catch(error){console.warn("Music support catalogue unavailable",error);wireButtons()}
+  }
+  async function loadCatalogue(){
+    const [remoteResult,localResult]=await Promise.allSettled([
+      fetch(RELEASES_URL,{cache:"no-store",headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}}).then(response=>response.ok?response.json():Promise.reject(new Error("Release database unavailable"))),
+      fetch(`/assets/data/promo-releases.json?v=${Date.now()}`,{cache:"no-store"}).then(response=>response.ok?response.json():[])
+    ]);
+    const remote=remoteResult.status==="fulfilled"?remoteResult.value:[],local=localResult.status==="fulfilled"?localResult.value:[];
+    const catalogue=new Map(local.map(release=>[release.slug,release]));
+    remote.forEach(release=>{const fallback=catalogue.get(release.slug)||{};catalogue.set(release.slug,{...fallback,...release,audio_url:release.audio_url||fallback.audio_url,tracks:Array.isArray(release.tracks)&&release.tracks.length?release.tracks:fallback.tracks})});
+    return [...catalogue.values()];
   }
   function isDownloadable(release){const tracks=Array.isArray(release?.tracks)?release.tracks:[];return release?.status==="published"&&((release.audio_url&&!String(release.audio_url).includes("/folders/"))||tracks.some(t=>t?.url))}
   function addCatalogueButtons(){document.querySelectorAll("[data-release]").forEach(card=>{const slug=RELEASE_KEYS[card.dataset.release],release=releases.get(slug);if(!release||card.querySelector(".support-trigger"))return;const button=supportButton(release),row=card.querySelector(".button-row");if(row)row.appendChild(button);else{const portal=card.querySelector(".open-portal");if(!portal)return;const actions=document.createElement("div");actions.className="catalogue-actions";portal.before(actions);actions.append(portal,button)}})}
-  function supportButton(release){const button=document.createElement("button");button.type="button";button.className="music-cta support-trigger";button.dataset.slug=release.slug;button.dataset.title=release.title||release.slug;button.textContent="Name your price · download";return button}
+  function supportButton(release){const button=document.createElement("button");button.type="button";button.className="music-cta support-trigger";button.dataset.slug=release.slug;button.dataset.title=release.title||release.slug;button.textContent="Name your price";return button}
   function wireButtons(){if(!modal||!form||modal.dataset.wired==="true")return;modal.dataset.wired="true";document.addEventListener("click",event=>{const trigger=event.target.closest(".support-trigger");if(!trigger)return;event.preventDefault();event.stopPropagation();openModal(trigger.dataset.slug,trigger.dataset.title,trigger)});modal.querySelector(".support-close")?.addEventListener("click",closeModal);modal.addEventListener("click",event=>{if(event.target===modal)closeModal()});document.addEventListener("keydown",event=>{if(event.key==="Escape"&&modal.classList.contains("open"))closeModal()});free?.addEventListener("click",()=>startDownload(selected));form.addEventListener("submit",beginCheckout)}
   function openModal(slug,releaseTitle,trigger){selected=releases.get(slug)||{slug,title:releaseTitle||"Music download",audio_url:slug==="no-drama"?"/assets/audio/music/no-drama.mp3":""};lastFocus=trigger||document.activeElement;title.textContent=selected.title||releaseTitle||"Name your price";amount.value="3";message.textContent="Enter $0 for a free download, or leave a contribution through PayPal.";paypal.disabled=false;modal.classList.add("open");document.body.style.overflow="hidden";amount.focus()}
   function closeModal(){modal.classList.remove("open");document.body.style.overflow="";lastFocus?.focus?.()}

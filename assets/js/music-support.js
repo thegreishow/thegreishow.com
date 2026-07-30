@@ -1,36 +1,66 @@
 (() => {
   const CHECKOUT_URL = "https://dkvbeizjlgxqjuxnlqho.supabase.co/functions/v1/create-music-support-checkout";
   const RELEASE_KEYS = {"no-drama":"no-drama","dark-side":"dark-side-of-the-moon","psy-phi":"psy-phi","pineapples":"pineapples-and-hot-sauce","ppp-remix":"puff-puff-pass-remix-feat-bay-c","game-hearts":"game-of-hearts","puff-pass":"puff-puff-pass","vibe":"the-vibe","joy":"joy"};
-  const DRIVE_ART_BY_ID = {
-    "1849838344":"1ic726hm4mwgjFKsPt6fEAbPfdMXoBn5G",
-    "1826791782":"1_FCY_ZWpT47H5uTtzN82YYv7Pl6-yOIA",
-    "1651749104":"1Ahb6Lay3S-PzXQSElnW4mAz_Amlr3ziU",
-    "1541447654":"1qJ0iArViNT_1AmOf8IUiqKkFa-XQJ6Q7",
-    "1846007836":"12HUWXFJ3124GbeAve5VV9BYtcTiEUabK",
-    "1844975652":"1AJ9ystzxnq-byfQ6OC2Y1YnztP9dbeT-",
-    "1831857830":"1KUUxrmjPlpXXlvf6S63J_TVnCF-Zzxdl",
-    "1767170663":"1aEG5YkNeHgHiHta5Zerz3IMAQ1pwBrDg",
-    "1760518363":"1ndUC7e02uZylbhdTs8IjAc6P2EvPLqCY",
-    "1742100290":"1T2AEorwOTeBJOHbqYXYW0AaU6lXz8osN",
-    "1587832103":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
-    "1563429468":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5"
-  };
-  const DRIVE_ART_BY_TITLE = {
-    "pineapples & hot sauce":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz",
-    "any one a dem":"12HUWXFJ3124GbeAve5VV9BYtcTiEUabK",
-    "a love alone":"10dsD1gYOYFoe-5HwvD6OLrhmtm6Df_wO",
-    "game of hearts":"127SpeX5EyUgBavdk5xpI6pGk6eKa7u0K",
-    "puff puff pass":"1MuSYnDIqswVonT1QID7MHzCdR7F6ZG3f",
-    "puff puff pass (remix)":"1aEG5YkNeHgHiHta5Zerz3IMAQ1pwBrDg",
-    "the flame":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
-    "the vibe":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5",
-    "2020 (interlude)":"1y4zLKsxkOVIgPqbxLnM4B9jIFx1VmVEQ",
-    "blind without shades":"1SLOsUsxSe2jJMaeW3-aI3WYC83A8f3Mz",
-    "friends":"1IMO5H_5xbrPC2tf7AmasZM5OPq08JQvj",
-    "squad people":"1EPMg0oyk1ndnJE3qcCCa7rQmSxuxafmU",
-    "rage!":"1PTnhGZ0fsXp0v-UEOdHQnE-hovFoCO5X",
-    "joy":"138lseUhuRm0988odMmJrQnkBN2s6pPSp",
-    "full moon":"16VjDkTz887AKFohgq0a45Y_DrBWAvUgM"
+  const DRIVE_ART = {
+    byRelease: {
+      "dark-side":"1ic726hm4mwgjFKsPt6fEAbPfdMXoBn5G",
+      "nothing-believe":"1_FCY_ZWpT47H5uTtzN82YYv7Pl6-yOIA",
+      "psy-phi":"1Ahb6Lay3S-PzXQSElnW4mAz_Amlr3ziU",
+      "1122":"1qJ0iArViNT_1AmOf8IUiqKkFa-XQJ6Q7",
+      "pineapples":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz",
+      "ep2":"1oseFZ57s7QyL5YMyMKiC6HSfP1Hc2-nv",
+      "any-one":"12HUWXFJ3124GbeAve5VV9BYtcTiEUabK",
+      "24-days":"1AJ9ystzxnq-byfQ6OC2Y1YnztP9dbeT-",
+      "halfway":"1KUUxrmjPlpXXlvf6S63J_TVnCF-Zzxdl",
+      "love-alone":"10dsD1gYOYFoe-5HwvD6OLrhmtm6Df_wO",
+      "ppp-remix":"18rWv6pchVRZCjVqKS58wVP5tpXMUQzUC",
+      "choppa-talk":"1ndUC7e02uZylbhdTs8IjAc6P2EvPLqCY",
+      "river-dreams":"1T2AEorwOTeBJOHbqYXYW0AaU6lXz8osN",
+      "rage":"1PTnhGZ0fsXp0v-UEOdHQnE-hovFoCO5X",
+      "game-hearts":"127SpeX5EyUgBavdk5xpI6pGk6eKa7u0K",
+      "puff-pass":"1MuSYnDIqswVonT1QID7MHzCdR7F6ZG3f",
+      "flame":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
+      "vibe":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5",
+      "interlude":"1y4zLKsxkOVIgPqbxLnM4B9jIFx1VmVEQ",
+      "friends":"1IMO5H_5xbrPC2tf7AmasZM5OPq08JQvj",
+      "joy":"138lseUhuRm0988odMmJrQnkBN2s6pPSp",
+      "squad":"1EPMg0oyk1ndnJE3qcCCa7rQmSxuxafmU",
+      "blind":"1SLOsUsxSe2jJMaeW3-aI3WYC83A8f3Mz",
+      "full-moon":"16VjDkTz887AKFohgq0a45Y_DrBWAvUgM"
+    },
+    byId: {
+      "1849838344":"1ic726hm4mwgjFKsPt6fEAbPfdMXoBn5G",
+      "1826791782":"1_FCY_ZWpT47H5uTtzN82YYv7Pl6-yOIA",
+      "1651749104":"1Ahb6Lay3S-PzXQSElnW4mAz_Amlr3ziU",
+      "1541447654":"1qJ0iArViNT_1AmOf8IUiqKkFa-XQJ6Q7",
+      "1846007836":"12HUWXFJ3124GbeAve5VV9BYtcTiEUabK",
+      "1844975652":"1AJ9ystzxnq-byfQ6OC2Y1YnztP9dbeT-",
+      "1831857830":"1KUUxrmjPlpXXlvf6S63J_TVnCF-Zzxdl",
+      "1767170663":"18rWv6pchVRZCjVqKS58wVP5tpXMUQzUC",
+      "1760518363":"1ndUC7e02uZylbhdTs8IjAc6P2EvPLqCY",
+      "1742100290":"1T2AEorwOTeBJOHbqYXYW0AaU6lXz8osN",
+      "1587832103":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
+      "1563429468":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5"
+    },
+    byTitle: {
+      "pineapples & hot sauce":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz",
+      "ep2":"1oseFZ57s7QyL5YMyMKiC6HSfP1Hc2-nv",
+      "any one a dem":"12HUWXFJ3124GbeAve5VV9BYtcTiEUabK",
+      "a love alone":"10dsD1gYOYFoe-5HwvD6OLrhmtm6Df_wO",
+      "game of hearts":"127SpeX5EyUgBavdk5xpI6pGk6eKa7u0K",
+      "puff puff pass":"1MuSYnDIqswVonT1QID7MHzCdR7F6ZG3f",
+      "puff puff pass (remix)":"18rWv6pchVRZCjVqKS58wVP5tpXMUQzUC",
+      "puff puff pass remix feat. bay-c":"18rWv6pchVRZCjVqKS58wVP5tpXMUQzUC",
+      "the flame":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
+      "the vibe":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5",
+      "2020 (interlude)":"1y4zLKsxkOVIgPqbxLnM4B9jIFx1VmVEQ",
+      "blind without shades":"1SLOsUsxSe2jJMaeW3-aI3WYC83A8f3Mz",
+      "friends":"1IMO5H_5xbrPC2tf7AmasZM5OPq08JQvj",
+      "squad people":"1EPMg0oyk1ndnJE3qcCCa7rQmSxuxafmU",
+      "rage!":"1PTnhGZ0fsXp0v-UEOdHQnE-hovFoCO5X",
+      "joy":"138lseUhuRm0988odMmJrQnkBN2s6pPSp",
+      "full moon":"16VjDkTz887AKFohgq0a45Y_DrBWAvUgM"
+    }
   };
   let releases = new Map(), selected = null, lastFocus = null;
   const modal=document.getElementById("support-modal"),form=document.getElementById("support-form"),title=document.getElementById("support-title"),amount=document.getElementById("support-amount"),message=document.getElementById("support-message"),paypal=document.getElementById("support-paypal"),free=document.getElementById("support-free");
@@ -44,11 +74,13 @@
   }
 
   async function loadArtwork(img){
+    const card=img.closest("[data-release]");
+    const releaseKey=card?.dataset.release?.trim();
     const artId=img.dataset.artId?.trim();
     const explicitSearch=img.dataset.searchArt?.trim();
     const altTitle=(img.alt||"").replace(/\s+(album|ep|single)?\s*cover( art)?$/i,"").trim();
     const title=(explicitSearch||altTitle).replace(/^The Grei Show\s+/i,"").trim();
-    const driveId=DRIVE_ART_BY_ID[artId]||DRIVE_ART_BY_TITLE[title.toLowerCase()];
+    const driveId=DRIVE_ART.byRelease[releaseKey]||DRIVE_ART.byId[artId]||DRIVE_ART.byTitle[title.toLowerCase()];
 
     if(driveId){
       const loaded=await setImageSource(img,`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
@@ -72,7 +104,7 @@
     const params=new URLSearchParams();
     if(artId)params.set("id",artId);
     if(searchArt)params.set("term",searchArt);
-    params.set("v","20260730-1");
+    params.set("v","20260730-2");
     try{
       const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
       const data=await response.json().catch(()=>({}));

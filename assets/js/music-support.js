@@ -1,6 +1,15 @@
 (() => {
   const CHECKOUT_URL = "https://dkvbeizjlgxqjuxnlqho.supabase.co/functions/v1/create-music-support-checkout";
   const RELEASE_KEYS = {"no-drama":"no-drama","dark-side":"dark-side-of-the-moon","psy-phi":"psy-phi","pineapples":"pineapples-and-hot-sauce","ppp-remix":"puff-puff-pass-remix-feat-bay-c","game-hearts":"game-of-hearts","puff-pass":"puff-puff-pass","vibe":"the-vibe","joy":"joy"};
+  const DRIVE_ART_BY_ID = {
+    "1849838344":"1ic726hm4mwgjFKsPt6fEAbPfdMXoBn5G",
+    "1826791782":"1_FCY_ZWpT47H5uTtzN82YYv7Pl6-yOIA",
+    "1651749104":"1Ahb6Lay3S-PzXQSElnW4mAz_Amlr3ziU",
+    "1541447654":"1qJ0iArViNT_1AmOf8IUiqKkFa-XQJ6Q7"
+  };
+  const DRIVE_ART_BY_TITLE = {
+    "pineapples & hot sauce":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz"
+  };
   let releases = new Map(), selected = null, lastFocus = null;
   const modal=document.getElementById("support-modal"),form=document.getElementById("support-form"),title=document.getElementById("support-title"),amount=document.getElementById("support-amount"),message=document.getElementById("support-message"),paypal=document.getElementById("support-paypal"),free=document.getElementById("support-free");
 
@@ -9,25 +18,47 @@
 
   async function restoreOfficialArtwork(){
     const images=[...document.querySelectorAll("img[data-art-id],img[data-search-art]")];
-    await Promise.allSettled(images.map(async img=>{
-      const artId=img.dataset.artId?.trim();
-      const explicitSearch=img.dataset.searchArt?.trim();
-      const altSearch=(img.alt||"").replace(/\s+(album|ep|single)?\s*cover( art)?$/i,"").trim();
-      const searchArt=explicitSearch||(`The Grei Show ${altSearch}`.trim());
-      if(!artId&&!searchArt)return;
-      const params=new URLSearchParams();
-      if(artId)params.set("id",artId);
-      if(searchArt)params.set("term",searchArt);
-      params.set("v","20260729-4");
-      try{
-        const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
-        const data=await response.json().catch(()=>({}));
-        if(!response.ok||!data.artwork)throw new Error(data.error||"Artwork unavailable");
-        img.onerror=()=>showArtworkPlaceholder(img);
-        img.src=data.artwork;
-        img.dataset.officialArtwork="true";
-      }catch(error){showArtworkPlaceholder(img);console.warn("Official artwork unavailable",artId||searchArt,error)}
-    }));
+    await Promise.allSettled(images.map(loadArtwork));
+  }
+
+  async function loadArtwork(img){
+    const artId=img.dataset.artId?.trim();
+    const explicitSearch=img.dataset.searchArt?.trim();
+    const altTitle=(img.alt||"").replace(/\s+(album|ep|single)?\s*cover( art)?$/i,"").trim();
+    const title=(explicitSearch||altTitle).replace(/^The Grei Show\s+/i,"").trim();
+    const driveId=DRIVE_ART_BY_ID[artId]||DRIVE_ART_BY_TITLE[title.toLowerCase()];
+
+    if(driveId){
+      const loaded=await setImageSource(img,`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
+      if(loaded){img.dataset.officialArtwork="drive";return;}
+    }
+
+    await loadAppleArtwork(img,artId,explicitSearch||(`The Grei Show ${altTitle}`.trim()));
+  }
+
+  function setImageSource(img,src){
+    return new Promise(resolve=>{
+      const probe=new Image();
+      probe.onload=()=>{img.src=src;resolve(true)};
+      probe.onerror=()=>resolve(false);
+      probe.src=src;
+    });
+  }
+
+  async function loadAppleArtwork(img,artId,searchArt){
+    if(!artId&&!searchArt){showArtworkPlaceholder(img);return;}
+    const params=new URLSearchParams();
+    if(artId)params.set("id",artId);
+    if(searchArt)params.set("term",searchArt);
+    params.set("v","20260729-5");
+    try{
+      const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.artwork)throw new Error(data.error||"Artwork unavailable");
+      const loaded=await setImageSource(img,data.artwork);
+      if(!loaded)throw new Error("Artwork image could not be displayed");
+      img.dataset.officialArtwork="apple";
+    }catch(error){showArtworkPlaceholder(img);console.warn("Official artwork unavailable",artId||searchArt,error)}
   }
 
   function showArtworkPlaceholder(img){

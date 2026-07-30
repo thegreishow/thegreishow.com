@@ -7,15 +7,11 @@ const allowedOrigins = new Set([
   "http://localhost:4173",
   "http://127.0.0.1:4173",
 ]);
-const downloadableReleases: Record<string, string> = {
-  "no-drama": "No Drama",
-  "pineapples-and-hot-sauce": "Pineapples & Hot Sauce",
-  "puff-puff-pass-remix-feat-bay-c": "Puff Puff Pass Remix (feat. Bay-C)",
-  "game-of-hearts": "Game of Hearts",
-  "puff-puff-pass": "Puff Puff Pass",
-  "the-vibe": "The Vibe",
-  "joy": "Joy",
-};
+const excludedReleases = new Set([
+  "loosen-up-remix-ep",
+  "loosen-up",
+  "ooh-ooh",
+]);
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
@@ -30,8 +26,7 @@ Deno.serve(async (req: Request) => {
 
     const slug = normalizeSlug(body.slug);
     const amount = Number(body.amount);
-    const releaseTitle = downloadableReleases[slug];
-    if (!releaseTitle) return json(req, { error: "Choose a downloadable release." }, 400);
+    if (!slug || excludedReleases.has(slug)) return json(req, { error: "Choose a downloadable release." }, 400);
     if (!Number.isFinite(amount) || amount < 1 || amount > 500) {
       return json(req, { error: "Enter an amount from $1 to $500 USD." }, 400);
     }
@@ -39,6 +34,17 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(requiredEnv("SUPABASE_URL"), requiredEnv("SUPABASE_SERVICE_ROLE_KEY"), {
       auth: { persistSession: false },
     });
+    const { data: release, error: releaseError } = await admin
+      .from("owner_releases")
+      .select("title,audio_url")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .maybeSingle();
+    if (releaseError) throw releaseError;
+    if (!release?.title || !String(release.audio_url || "").trim()) {
+      return json(req, { error: "Choose a downloadable release." }, 400);
+    }
+    const releaseTitle = String(release.title);
     const fingerprint = await requestFingerprint(req);
     const since = new Date(Date.now() - 10 * 60_000).toISOString();
     const { count, error: countError } = await admin

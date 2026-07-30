@@ -24,15 +24,14 @@
     "the vibe":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5",
     "blind without shades":"1SLOsUsxSe2jJMaeW3-aI3WYC83A8f3Mz",
     "friends":"1IMO5H_5xbrPC2tf7AmasZM5OPq08JQvj",
-    "squad people":"1EPMg0oyk1ndnJE3qcCCa7rQmSxuxafmU"
+    "squad people":"1EPMg0oyk1ndnJE3qcCCa7rQmSxuxafmU",
+    "rage!":"1PTnhGZ0fsXp0v-UEOdHQnE-hovFoCO5X",
+    "joy":"138lseUhuRm0988odMmJrQnkBN2s6pPSp"
   };
   let releases = new Map(), selected = null, lastFocus = null;
   const modal=document.getElementById("support-modal"),form=document.getElementById("support-form"),title=document.getElementById("support-title"),amount=document.getElementById("support-amount"),message=document.getElementById("support-message"),paypal=document.getElementById("support-paypal"),free=document.getElementById("support-free");
 
   restoreOfficialArtwork();
-  setTimeout(restoreOfficialArtwork,400);
-  setTimeout(restoreOfficialArtwork,1400);
-  watchForLegacyArtworkOverrides();
   if (modal && form) init();
 
   async function restoreOfficialArtwork(){
@@ -40,42 +39,19 @@
     await Promise.allSettled(images.map(loadArtwork));
   }
 
-  function watchForLegacyArtworkOverrides(){
-    const observer=new MutationObserver(records=>{
-      records.forEach(record=>{
-        const img=record.target;
-        if(!(img instanceof HTMLImageElement))return;
-        if(!img.matches("img[data-art-id],img[data-search-art]"))return;
-        if(img.dataset.artLoading==="true")return;
-        const src=img.getAttribute("src")||"";
-        if(src.includes("assets/img/no-drama.webp")||src.includes("00000000-0000-0000-0000-000000000000"))loadArtwork(img);
-      });
-    });
-    document.querySelectorAll("img[data-art-id],img[data-search-art]").forEach(img=>observer.observe(img,{attributes:true,attributeFilter:["src"]}));
-    const catalogue=document.getElementById("single-catalogue");
-    if(catalogue)new MutationObserver(()=>{
-      catalogue.querySelectorAll("img[data-art-id],img[data-search-art]").forEach(img=>{
-        observer.observe(img,{attributes:true,attributeFilter:["src"]});
-        loadArtwork(img);
-      });
-    }).observe(catalogue,{childList:true,subtree:true});
-  }
-
   async function loadArtwork(img){
-    if(img.dataset.artLoading==="true")return;
-    img.dataset.artLoading="true";
     const artId=img.dataset.artId?.trim();
     const explicitSearch=img.dataset.searchArt?.trim();
     const altTitle=(img.alt||"").replace(/\s+(album|ep|single)?\s*cover( art)?$/i,"").trim();
     const title=(explicitSearch||altTitle).replace(/^The Grei Show\s+/i,"").trim();
     const driveId=DRIVE_ART_BY_ID[artId]||DRIVE_ART_BY_TITLE[title.toLowerCase()];
-    try{
-      if(driveId){
-        const loaded=await setImageSource(img,`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
-        if(loaded){img.dataset.officialArtwork="drive";return;}
-      }
-      await loadAppleArtwork(img,artId,explicitSearch||(`The Grei Show ${altTitle}`.trim()));
-    }finally{delete img.dataset.artLoading;}
+
+    if(driveId){
+      const loaded=await setImageSource(img,`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
+      if(loaded){img.dataset.officialArtwork="drive";return;}
+    }
+
+    await loadAppleArtwork(img,artId,explicitSearch||(`The Grei Show ${altTitle}`.trim()));
   }
 
   function setImageSource(img,src){
@@ -92,7 +68,7 @@
     const params=new URLSearchParams();
     if(artId)params.set("id",artId);
     if(searchArt)params.set("term",searchArt);
-    params.set("v","20260729-7");
+    params.set("v","20260729-8");
     try{
       const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
       const data=await response.json().catch(()=>({}));

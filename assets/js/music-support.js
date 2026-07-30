@@ -5,7 +5,12 @@
     "1849838344":"1ic726hm4mwgjFKsPt6fEAbPfdMXoBn5G",
     "1826791782":"1_FCY_ZWpT47H5uTtzN82YYv7Pl6-yOIA",
     "1651749104":"1Ahb6Lay3S-PzXQSElnW4mAz_Amlr3ziU",
-    "1541447654":"1qJ0iArViNT_1AmOf8IUiqKkFa-XQJ6Q7"
+    "1541447654":"1qJ0iArViNT_1AmOf8IUiqKkFa-XQJ6Q7",
+    "1844975652":"1AJ9ystzxnq-byfQ6OC2Y1YnztP9dbeT-",
+    "1831857830":"1KUUxrmjPlpXXlvf6S63J_TVnCF-Zzxdl",
+    "1767170663":"1aEG5YkNeHgHiHta5Zerz3IMAQ1pwBrDg",
+    "1760518363":"1ndUC7e02uZylbhdTs8IjAc6P2EvPLqCY",
+    "1742100290":"1T2AEorwOTeBJOHbqYXYW0AaU6lXz8osN"
   };
   const DRIVE_ART_BY_TITLE = {
     "pineapples & hot sauce":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz"
@@ -14,6 +19,9 @@
   const modal=document.getElementById("support-modal"),form=document.getElementById("support-form"),title=document.getElementById("support-title"),amount=document.getElementById("support-amount"),message=document.getElementById("support-message"),paypal=document.getElementById("support-paypal"),free=document.getElementById("support-free");
 
   restoreOfficialArtwork();
+  setTimeout(restoreOfficialArtwork,400);
+  setTimeout(restoreOfficialArtwork,1400);
+  watchForLegacyArtworkOverrides();
   if (modal && form) init();
 
   async function restoreOfficialArtwork(){
@@ -21,19 +29,42 @@
     await Promise.allSettled(images.map(loadArtwork));
   }
 
+  function watchForLegacyArtworkOverrides(){
+    const observer=new MutationObserver(records=>{
+      records.forEach(record=>{
+        const img=record.target;
+        if(!(img instanceof HTMLImageElement))return;
+        if(!img.matches("img[data-art-id],img[data-search-art]"))return;
+        if(img.dataset.artLoading==="true")return;
+        const src=img.getAttribute("src")||"";
+        if(src.includes("assets/img/no-drama.webp")||src.includes("00000000-0000-0000-0000-000000000000"))loadArtwork(img);
+      });
+    });
+    document.querySelectorAll("img[data-art-id],img[data-search-art]").forEach(img=>observer.observe(img,{attributes:true,attributeFilter:["src"]}));
+    const catalogue=document.getElementById("single-catalogue");
+    if(catalogue)new MutationObserver(()=>{
+      catalogue.querySelectorAll("img[data-art-id],img[data-search-art]").forEach(img=>{
+        observer.observe(img,{attributes:true,attributeFilter:["src"]});
+        loadArtwork(img);
+      });
+    }).observe(catalogue,{childList:true,subtree:true});
+  }
+
   async function loadArtwork(img){
+    if(img.dataset.artLoading==="true")return;
+    img.dataset.artLoading="true";
     const artId=img.dataset.artId?.trim();
     const explicitSearch=img.dataset.searchArt?.trim();
     const altTitle=(img.alt||"").replace(/\s+(album|ep|single)?\s*cover( art)?$/i,"").trim();
     const title=(explicitSearch||altTitle).replace(/^The Grei Show\s+/i,"").trim();
     const driveId=DRIVE_ART_BY_ID[artId]||DRIVE_ART_BY_TITLE[title.toLowerCase()];
-
-    if(driveId){
-      const loaded=await setImageSource(img,`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
-      if(loaded){img.dataset.officialArtwork="drive";return;}
-    }
-
-    await loadAppleArtwork(img,artId,explicitSearch||(`The Grei Show ${altTitle}`.trim()));
+    try{
+      if(driveId){
+        const loaded=await setImageSource(img,`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
+        if(loaded){img.dataset.officialArtwork="drive";return;}
+      }
+      await loadAppleArtwork(img,artId,explicitSearch||(`The Grei Show ${altTitle}`.trim()));
+    }finally{delete img.dataset.artLoading;}
   }
 
   function setImageSource(img,src){
@@ -50,7 +81,7 @@
     const params=new URLSearchParams();
     if(artId)params.set("id",artId);
     if(searchArt)params.set("term",searchArt);
-    params.set("v","20260729-5");
+    params.set("v","20260729-6");
     try{
       const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
       const data=await response.json().catch(()=>({}));

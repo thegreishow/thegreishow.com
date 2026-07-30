@@ -10,12 +10,17 @@
   async function restoreOfficialArtwork(){
     const images=[...document.querySelectorAll("img[data-art-id],img[data-search-art]")];
     await Promise.allSettled(images.map(async img=>{
-      const artId=img.dataset.artId?.trim(),searchArt=img.dataset.searchArt?.trim();
+      const artId=img.dataset.artId?.trim();
+      const explicitSearch=img.dataset.searchArt?.trim();
+      const altSearch=(img.alt||"").replace(/\s+(album|ep|single)?\s*cover( art)?$/i,"").trim();
+      const searchArt=explicitSearch||(`The Grei Show ${altSearch}`.trim());
       if(!artId&&!searchArt)return;
       const params=new URLSearchParams();
-      if(artId)params.set("id",artId);else params.set("term",searchArt);
+      if(artId)params.set("id",artId);
+      if(searchArt)params.set("term",searchArt);
+      params.set("v","20260729-4");
       try{
-        const response=await fetch(`/api/artwork?${params}`,{cache:"force-cache"});
+        const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
         const data=await response.json().catch(()=>({}));
         if(!response.ok||!data.artwork)throw new Error(data.error||"Artwork unavailable");
         img.onerror=()=>showArtworkPlaceholder(img);

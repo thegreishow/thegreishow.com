@@ -6,6 +6,7 @@
     "1826791782":"1_FCY_ZWpT47H5uTtzN82YYv7Pl6-yOIA",
     "1651749104":"1Ahb6Lay3S-PzXQSElnW4mAz_Amlr3ziU",
     "1541447654":"1qJ0iArViNT_1AmOf8IUiqKkFa-XQJ6Q7",
+    "1846007836":"12HUWXFJ3124GbeAve5VV9BYtcTiEUabK",
     "1844975652":"1AJ9ystzxnq-byfQ6OC2Y1YnztP9dbeT-",
     "1831857830":"1KUUxrmjPlpXXlvf6S63J_TVnCF-Zzxdl",
     "1767170663":"1aEG5YkNeHgHiHta5Zerz3IMAQ1pwBrDg",
@@ -16,17 +17,20 @@
   };
   const DRIVE_ART_BY_TITLE = {
     "pineapples & hot sauce":"1laXEuSSVq4wWNQpAGfeoc5A9CCJKFebz",
+    "any one a dem":"12HUWXFJ3124GbeAve5VV9BYtcTiEUabK",
     "a love alone":"10dsD1gYOYFoe-5HwvD6OLrhmtm6Df_wO",
     "game of hearts":"127SpeX5EyUgBavdk5xpI6pGk6eKa7u0K",
     "puff puff pass":"1MuSYnDIqswVonT1QID7MHzCdR7F6ZG3f",
     "puff puff pass (remix)":"1aEG5YkNeHgHiHta5Zerz3IMAQ1pwBrDg",
     "the flame":"16Wlva1x_tQJGbXYkZj3ddik9Mw2S0VXg",
     "the vibe":"156YVBZ7Koxc_G2lftDxykftcSRNYPJs5",
+    "2020 (interlude)":"1y4zLKsxkOVIgPqbxLnM4B9jIFx1VmVEQ",
     "blind without shades":"1SLOsUsxSe2jJMaeW3-aI3WYC83A8f3Mz",
     "friends":"1IMO5H_5xbrPC2tf7AmasZM5OPq08JQvj",
     "squad people":"1EPMg0oyk1ndnJE3qcCCa7rQmSxuxafmU",
     "rage!":"1PTnhGZ0fsXp0v-UEOdHQnE-hovFoCO5X",
-    "joy":"138lseUhuRm0988odMmJrQnkBN2s6pPSp"
+    "joy":"138lseUhuRm0988odMmJrQnkBN2s6pPSp",
+    "full moon":"16VjDkTz887AKFohgq0a45Y_DrBWAvUgM"
   };
   let releases = new Map(), selected = null, lastFocus = null;
   const modal=document.getElementById("support-modal"),form=document.getElementById("support-form"),title=document.getElementById("support-title"),amount=document.getElementById("support-amount"),message=document.getElementById("support-message"),paypal=document.getElementById("support-paypal"),free=document.getElementById("support-free");
@@ -68,7 +72,7 @@
     const params=new URLSearchParams();
     if(artId)params.set("id",artId);
     if(searchArt)params.set("term",searchArt);
-    params.set("v","20260729-8");
+    params.set("v","20260730-1");
     try{
       const response=await fetch(`/api/artwork?${params}`,{cache:"no-store"});
       const data=await response.json().catch(()=>({}));

@@ -25,7 +25,7 @@
     "id": "jamaica-run",
     "title": "Rasta Runner",
     "creator": "The Grei Show",
-    "description": "Race across eight Jamaican stages, collect Grei coins, build combos, and survive the island road.",
+    "description": "Race across eight Jamaican stages, collect vinyl records, build combos, and survive the island road.",
     "version": "1.2",
     "type": "native",
     "entry": "arcade/games/jamaica-run/index.html",

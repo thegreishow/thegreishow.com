@@ -23,12 +23,12 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const instructions={
 'dreamweaver-oracle':['Move through the dream and collect story fragments.','Avoid corrupted memories and survive as long as possible.','Use each run to shape a different version of the dream.'],
 'signal-runner':['Move left and right using A/D, arrow keys or the on-screen controls.','Collect blue signals to build your score.','Avoid red static; losing all three lives ends the transmission.'],
-'jamaica-run':['Run across Jamaica and collect coins.','Jump or dodge tropical obstacles using the on-screen controls.','Keep moving to build distance and set a new personal best.']
+'jamaica-run':['Run across Jamaica and collect records.','Jump with Space, Arrow Up, Shift or the on-screen controls.','Keep moving to build distance and set a new personal best.']
 };
 const goals={
 'dreamweaver-oracle':['First Fragment — complete your first run','Dream Walker — survive a full memory cycle','Dreamweaver — reach a top leaderboard position'],
 'signal-runner':['Clean Signal — collect 10 signals','No Static — survive without losing a life','Transmission Master — score 500+'],
-'jamaica-run':['First Mile — begin your island run','Coin Collector — gather 25 coins','Island Legend — claim a top leaderboard score']
+'jamaica-run':['First Mile — begin your island run','Record Collector — gather 25 records','Island Legend — claim a top leaderboard score']
 };
 async function getScores(id){try{const r=await fetch(`${ARCADE_API_BASE}/api/leaderboard?game=${encodeURIComponent(id)}`);if(!r.ok)throw 0;const d=await r.json();return Array.isArray(d.scores)?d.scores.slice(0,10):[]}catch{return[]}}
 async function init(){
@@ -42,6 +42,8 @@ async function init(){
  const how=instructions[game.id]||['Read the controls shown when the game opens.','Play a full run and chase your personal best.','Submit your score to climb the global leaderboard.'];
  const goalsForGame=goals[game.id]||['First Play — launch the game','Personal Best — improve your score','Top Ten — enter the global leaderboard'];
  root.innerHTML=`<section class="hero"><div class="art"><img src="../${esc(game.thumbnail)}" alt="${esc(game.title)} artwork"></div><div><p class="kicker">${esc(game.creator||'The Grei Show')} · v${esc(game.version||'1.0')}</p><h1>${esc(game.title)}</h1><p class="description">${esc(game.description)}</p><div class="tags">${(game.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div><button class="play" id="play">Play Now</button></div></section><section class="grid"><article class="panel"><h2>How to Play</h2><ol>${how.map(i=>`<li>${esc(i)}</li>`).join('')}</ol></article><article class="panel"><h2>Run Goals</h2><ul>${goalsForGame.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></article><article class="panel"><h2>Top Scores</h2>${scores.length?scores.map((s,i)=>`<div class="score-row"><span>${i+1}</span><strong>${esc(s.name||'Dreamer')}</strong><em>${Number(s.score)||0}</em></div>`).join(''):'<p class="status">No global scores yet. Claim first place.</p>'}</article></section>`;
+ const art=root.querySelector('.art img');
+ art.addEventListener('error',()=>{if(art.dataset.fallback)return;art.dataset.fallback='true';art.src='../arcade/assets/thumbnails/template.svg';art.alt=`${game.title} artwork unavailable`});
  document.getElementById('play').onclick=()=>{recordGameLaunch(game);location.href=game.type==='external'?game.entry:`../${game.entry}`};
 }
 init();

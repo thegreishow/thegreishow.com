@@ -143,21 +143,7 @@
     Object.values(releases).forEach(r=>{r.spotify=r.spotify||'https://open.spotify.com/search/'+q(r.title);r.youtube=r.youtube||'https://music.youtube.com/search?q='+q(r.title);r.tidal=r.tidal||'https://listen.tidal.com/search?q='+q(r.title);r.deezer=r.deezer||'https://www.deezer.com/search/'+q(r.title);r.apple=r.apple||'https://music.apple.com/jm/search?term='+q(r.title);r.amazon=r.amazon||'https://music.amazon.com/search/'+q(r.title)});
 
     const catalogue=document.getElementById('single-catalogue');
-    catalogue.innerHTML=singles.map(s=>'<article class="catalogue-row" data-release="'+s.key+'"><img class="single-art" src="'+(s.artId?'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/00/00/00/00000000-0000-0000-0000-000000000000/'+s.artId+'-source/800x800bb.jpg':'assets/img/no-drama.webp')+'" data-art-id="'+(s.artId||'')+'" data-search-art="'+(!s.artId?'The Grei Show '+s.title:'')+'" alt="'+s.title+' cover"><div class="catalogue-year">'+s.year+'</div><div><h3>'+s.title+'</h3><p>'+s.detail+'</p></div><button class="music-cta open-portal" type="button">Choose platform</button></article>').join('');
-
-    async function loadArt(img){
-      const fallback='assets/img/no-drama.webp';
-      try{
-        let url=img.dataset.artId?'https://itunes.apple.com/lookup?id='+img.dataset.artId+'&entity=album':'https://itunes.apple.com/search?term='+encodeURIComponent(img.dataset.searchArt)+'&entity=album&limit=1';
-        const response=await fetch(url);
-        if(!response.ok)throw new Error('Artwork lookup failed');
-        const data=await response.json();
-        const item=data.results.find(x=>x.artworkUrl100);
-        img.src=item?item.artworkUrl100.replace('100x100bb','800x800bb'):fallback;
-      }catch(e){img.src=fallback;console.warn('Artwork unavailable',e)}
-      img.onerror=()=>{img.onerror=null;img.src=fallback};
-    }
-    document.querySelectorAll('[data-art-id],[data-search-art]').forEach(loadArt);
+    catalogue.innerHTML=singles.map(s=>'<article class="catalogue-row" data-release="'+s.key+'"><img class="single-art" src="assets/img/no-drama.webp" data-art-id="'+(s.artId||'')+'" data-search-art="'+(!s.artId?'The Grei Show '+s.title:'')+'" alt="'+s.title+' cover"><div class="catalogue-year">'+s.year+'</div><div><h3>'+s.title+'</h3><p>'+s.detail+'</p></div><button class="music-cta open-portal" type="button">Choose platform</button></article>').join('');
 
     const modal=document.getElementById('stream-modal'),modalTitle=document.getElementById('modal-title'),modalSub=document.getElementById('modal-subtitle'),modalArt=document.getElementById('modal-art'),modalPlatforms=document.getElementById('modal-platforms');
     function closeModal(){modal.classList.remove('open');document.body.style.overflow=''}
@@ -166,6 +152,6 @@
 
     const sections=document.querySelectorAll('.section');if('IntersectionObserver'in window&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.1});sections.forEach(section=>observer.observe(section))}else sections.forEach(section=>section.classList.add('visible'));
   </script>
-  <script src="assets/js/music-support.js?v=20260729-2"></script>
+  <script src="assets/js/music-support.js?v=20260729-8"></script>
 </body>
 </html>

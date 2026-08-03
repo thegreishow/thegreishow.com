@@ -5,29 +5,37 @@ const ALIASES={'puff-puff-pass-remix':['puff-puff-pass-remix-feat-bay-c','puff-p
 export async function onRequestGet({request}){
   try{
     const url=new URL(request.url);
+    const directId=String(url.searchParams.get('id')||'').trim();
     const slug=normalizeSlug(url.searchParams.get('slug'));
     const type=String(url.searchParams.get('type')||'audio').trim().toLowerCase();
     const index=Math.max(0,Number.parseInt(url.searchParams.get('index')||'0',10)||0);
     const download=url.searchParams.get('download')==='1';
-    if(!slug)return json({error:'Missing release slug'},400);
-
-    const release=await findRelease(url.origin,slug);
-    if(!release)return json({error:'Release not found'},404);
 
     let source='',filename='';
-    if(type==='artwork'){
-      source=release.artwork_url||'';
-      filename=`${safeName(release.title||slug)}-artwork${extensionFromUrl(source)||'.jpg'}`;
-    }else if(type==='track'){
-      const tracks=Array.isArray(release.tracks)?release.tracks:[];
-      const track=tracks[index];
-      source=track&&track.url||'';
-      filename=`${safeName(track&&track.title||`${release.title||slug}-track-${index+1}`)}${extensionFromUrl(source)||'.mp3'}`;
+
+    if(directId){
+      if(!/^[A-Za-z0-9_-]{10,200}$/.test(directId))return json({error:'Invalid media id'},400);
+      source=`https://drive.usercontent.google.com/download?id=${encodeURIComponent(directId)}&export=download&confirm=t`;
+      filename=safeName(url.searchParams.get('filename')||'wheel-it-records-audio')+(type==='artwork'?'.jpg':'.mp3');
     }else{
-      source=release.audio_url||'';
-      filename=`${safeName(release.title||slug)}${extensionFromUrl(source)||'.mp3'}`;
+      if(!slug)return json({error:'Missing release slug'},400);
+      const release=await findRelease(url.origin,slug);
+      if(!release)return json({error:'Release not found'},404);
+
+      if(type==='artwork'){
+        source=release.artwork_url||'';
+        filename=`${safeName(release.title||slug)}-artwork${extensionFromUrl(source)||'.jpg'}`;
+      }else if(type==='track'){
+        const tracks=Array.isArray(release.tracks)?release.tracks:[];
+        const track=tracks[index];
+        source=track&&track.url||'';
+        filename=`${safeName(track&&track.title||`${release.title||slug}-track-${index+1}`)}${extensionFromUrl(source)||'.mp3'}`;
+      }else{
+        source=release.audio_url||'';
+        filename=`${safeName(release.title||slug)}${extensionFromUrl(source)||'.mp3'}`;
+      }
+      if(!source||/\/folders\//.test(source))return json({error:'Playable file unavailable'},404);
     }
-    if(!source||/\/folders\//.test(source))return json({error:'Playable file unavailable'},404);
 
     const upstreamUrl=new URL(toDirectUrl(source),url.origin).toString();
     const headers=new Headers({'Accept':'*/*','User-Agent':'Mozilla/5.0'});

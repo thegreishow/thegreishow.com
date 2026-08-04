@@ -1,107 +1,5 @@
 const LOGO_URL = "https://drive.google.com/thumbnail?id=1P3YUzpVek_ybKq_8Kii8uRjH5gsbJ6JZ&sz=w1000";
-
-const RELEASE_META = {
-  "dinero-code": {
-    artist: "WiggWard & Poseck Jr.",
-    artistBio: "WiggWard and Poseck Jr. are Jamaican dancehall artists working in the contemporary modern-dancehall lane, pairing melodic delivery with street-focused writing and compact digital-era releases.",
-    genre: "Modern Dancehall",
-    released: "October 22, 2025",
-    duration: "2:33",
-    type: "Single",
-    label: "Wheel It! Records",
-    country: "Jamaica",
-    language: "English / Jamaican Patois",
-    copyright: "℗ 2025 Wheel It! Records",
-    description: "WiggWard and Poseck Jr. join forces on “Dinero Code,” a concise modern-dancehall record built around ambition, momentum and the codes surrounding money and survival.",
-    story: "The collaboration places both artists at the centre of the record, with Wheel It! Records providing the release platform and production framework for a focused, contemporary dancehall statement.",
-    platforms: {
-      apple: "https://music.apple.com/jm/album/dinero-code-single/1846468509",
-      amazon: "https://music.amazon.co.jp/albums/B0FWH7J1D1"
-    },
-    credits: [
-      ["Primary Artists", "WiggWard & Poseck Jr."],
-      ["Record Label", "Wheel It! Records"]
-    ]
-  },
-  "dancehall-stylee": {
-    artist: "Swnkah & Sugar Minott",
-    artistBio: "Swnkah is a Jamaican recording artist continuing the musical legacy of her father, reggae and dancehall pioneer Sugar Minott. Sugar Minott was a foundational singer, songwriter and producer whose work helped shape lovers rock, roots reggae and the sound-system culture that fed modern dancehall.",
-    genre: "Modern Dancehall",
-    style: "Dancehall heritage / contemporary reggae",
-    released: "May 20, 2025",
-    duration: "3:03",
-    bpm: "144",
-    language: "English / Jamaican Patois",
-    type: "Single",
-    label: "Wheel It! Records",
-    country: "Jamaica",
-    copyright: "℗ 2025 Wheel It! Records",
-    description: "Swnkah honours her father Sugar Minott and the living spirit of Jamaican dancehall on a cross-generational record that connects heritage with a new era.",
-    story: "“Dancehall Stylee” centres Swnkah’s voice while drawing directly from Sugar Minott’s legacy. The release works as both a family tribute and a forward-looking dancehall single, linking foundational Jamaican music with contemporary production.",
-    platforms: {
-      apple: "https://music.apple.com/us/album/dancehall-stylee-single/1811688370",
-      amazon: "https://music.amazon.com/tracks/B0F72Q9ZD9"
-    },
-    credits: [
-      ["Performing Artists", "Swnkah & Lincoln “Sugar” Minott"],
-      ["Songwriters", "Lincoln “Sugar” Minott & Candice Minott"],
-      ["Producer", "The Grei Show"],
-      ["Synthesizer", "The Grei Show"],
-      ["Executive Producer", "Maxine Stowe"],
-      ["Record Label", "Wheel It! Records"]
-    ]
-  },
-  "skill-riddim-vol-1": {
-    artist: "1Prayz, Brown Chops, Jco Don & Prezidential",
-    artistBio: "Skill Riddim, Vol. 1 brings together four emerging Jamaican voices—1Prayz, Brown Chops, Jco Don and Prezidential—on one shared dancehall production, allowing each artist to approach the same musical foundation from a different lyrical and performance angle.",
-    genre: "Modern Dancehall",
-    style: "Riddim compilation",
-    released: "June 21, 2024",
-    duration: "12 minutes",
-    type: "Riddim Project · 5 Tracks",
-    label: "Wheel It! Records",
-    country: "Jamaica",
-    language: "English / Jamaican Patois",
-    copyright: "℗ 2024 Wheel It! Records",
-    description: "A five-track riddim project featuring 1Prayz, Brown Chops, Jco Don and Prezidential across a shared Wheel It! Records production.",
-    story: "The project follows the classic Jamaican riddim format: multiple artists, one instrumental foundation, distinct songs and identities. The result is a compact showcase of contrasting flows, themes and vocal characters.",
-    platforms: {
-      amazon: "https://music.amazon.com/albums/B0DCF4LQ21"
-    },
-    tracklist: [
-      "Isolation — 1Prayz — 2:27",
-      "Vladamir — Brown Chops — 2:26",
-      "Hit Sound — Jco Don — 2:27",
-      "Money — Prezidential — 2:29",
-      "Skill Riddim, Vol. 1 — 1Prayz, Brown Chops, Jco Don & Prezidential — 2:53"
-    ],
-    credits: [
-      ["Featured Artists", "1Prayz, Brown Chops, Jco Don & Prezidential"],
-      ["Record Label", "Wheel It! Records"]
-    ]
-  },
-  "cash-out": {
-    artist: "Swnkah",
-    artistBio: "Swnkah is a Jamaican recording artist whose work bridges her family’s reggae heritage with a contemporary approach to dancehall, rap and melodic Caribbean music.",
-    genre: "Hip-Hop/Rap",
-    released: "June 22, 2021",
-    duration: "2 minutes",
-    type: "Single",
-    label: "Wheel It! Records",
-    country: "Jamaica",
-    language: "English / Jamaican Patois",
-    copyright: "℗ 2021 Wheel It! Records",
-    description: "“Cash Out” is a concise solo statement from Swnkah, pairing her Jamaican delivery with a rap-oriented release format.",
-    story: "The song presents Swnkah as the central voice, leaning into confidence, independence and financial ambition while retaining a distinctly Jamaican rhythmic identity.",
-    platforms: {
-      apple: "https://music.apple.com/us/album/cash-out-single/1571833861"
-    },
-    credits: [
-      ["Primary Artist", "Swnkah"],
-      ["Record Label", "Wheel It! Records"]
-    ]
-  }
-};
+const RELEASE_META = window.WHEEL_IT_RELEASES || {};
 
 const PLATFORM_LABELS = {
   spotify: "Spotify", apple: "Apple Music", youtube: "YouTube",
@@ -233,24 +131,20 @@ function applyPresentation() {
     let choose = heroActions.querySelector("#choose-platform");
     if (!choose) { choose = document.createElement("button"); choose.id="choose-platform"; choose.className="btn"; choose.type="button"; choose.textContent="Choose a Platform"; heroActions.insertBefore(choose,heroActions.querySelector("#share")); }
     choose.onclick=()=>{modal.hidden=false;document.body.classList.add("modal-open")};
-    const share = heroActions.querySelector("#share");
-    if (share) {
-      share.classList.add("share-icon");
-      share.setAttribute("aria-label","Share page");
-      share.setAttribute("title","Share page");
-      share.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.7 10.6 15.3 6.4M8.7 13.4l6.6 4.2"></path></svg>';
-    }
+  }
+
+  const share = document.querySelector("#share");
+  if (share) {
+    share.classList.add("share-icon");
+    share.setAttribute("aria-label","Share this release");
+    share.setAttribute("title","Share this release");
+    share.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 10.6l6.8-4.1M8.6 13.4l6.8 4.1"></path></svg>';
   }
 
   document.title = `${title} — ${meta.artist || "Wheel It! Records"}`;
   const description = meta.description || `Official release page for ${title} from Wheel It! Records.`;
   document.querySelector('meta[name="description"]')?.setAttribute("content",description);
   document.querySelector('meta[property="og:title"]')?.setAttribute("content",`${title} — ${meta.artist || "Wheel It! Records"}`);
-
-  const schema = document.createElement("script");
-  schema.type="application/ld+json";
-  schema.textContent=JSON.stringify({"@context":"https://schema.org","@type":meta.type?.includes("Tracks")?"MusicAlbum":"MusicRecording",name:title,byArtist:meta.artist?{"@type":"MusicGroup",name:meta.artist}:undefined,genre:meta.genre,datePublished:meta.released,duration:meta.duration,recordLabel:{"@type":"Organization",name:meta.label||"Wheel It! Records"}});
-  document.head.appendChild(schema);
 }
 
 document.querySelectorAll(".brand").forEach(link=>{link.href="/wheelitrecords/";link.innerHTML=`<img class="brand-logo" src="${LOGO_URL}" alt="Wheel It! Records">`});
@@ -261,7 +155,7 @@ const audio=document.querySelector("#audio");let currentButton=null,currentTitle
 function ensureStatus(){let status=document.querySelector("#player-status");if(!status){status=document.createElement("div");status.id="player-status";status.className="player-status";status.setAttribute("aria-live","polite");document.querySelector(".player")?.appendChild(status)}return status}
 function setStatus(message){const status=ensureStatus();if(status)status.textContent=message}
 function syncButtons(){document.querySelectorAll("[data-audio]").forEach(button=>{button.textContent=button===currentButton&&audio&&!audio.paused?"❚❚":"▶"})}
-async function playButton(button){if(!audio)return;const source=button.dataset.audioOriginal||button.dataset.audio;const title=button.dataset.title||"Wheel It! Records";const proxy=proxiedMediaUrl(source,title);const isNew=currentButton!==button||audio.dataset.source!==proxy;if(isNew){audio.pause();audio.dataset.source=proxy;audio.src=proxy;audio.load();currentButton=button;currentTitle=title;const now=document.querySelector("#now-playing");if(now)now.textContent=title}if(!audio.paused&&!isNew){audio.pause();return}setStatus("Loading audio…");try{await audio.play()}catch(error){console.error(error);setStatus("Unable to start playback. Tap play again or use Download Audio.");syncButtons()}}
-document.querySelectorAll("[data-audio]").forEach(button=>{button.dataset.audioOriginal=button.dataset.audio;button.type="button";button.addEventListener("click",()=>playButton(button))});
+async function playButton(button){if(!audio)return;const source=button.dataset.audioOriginal||button.dataset.audio,title=button.dataset.title||"Wheel It! Records",proxy=proxiedMediaUrl(source,title),isNew=currentButton!==button||audio.dataset.source!==proxy;if(isNew){audio.pause();audio.dataset.source=proxy;audio.src=proxy;audio.load();currentButton=button;currentTitle=title;const now=document.querySelector("#now-playing");if(now)now.textContent=title}if(!audio.paused&&!isNew){audio.pause();return}setStatus("Loading audio…");try{await audio.play()}catch(error){console.error(error);setStatus("Unable to start playback. Use Download Audio below.");syncButtons()}}
+document.querySelectorAll("[data-audio]").forEach(button=>{button.dataset.audioOriginal=button.dataset.audio;button.type="button";button.onclick=()=>playButton(button)});
 if(audio){audio.preload="metadata";audio.setAttribute("playsinline","");audio.addEventListener("loadstart",()=>setStatus("Loading audio…"));audio.addEventListener("loadedmetadata",()=>setStatus("Ready to play"));audio.addEventListener("canplay",()=>setStatus(audio.paused?"Ready to play":"Playing"));audio.addEventListener("waiting",()=>setStatus("Buffering…"));audio.addEventListener("playing",()=>{setStatus(`Playing ${currentTitle}`);syncButtons()});audio.addEventListener("pause",()=>{setStatus(audio.currentTime?"Paused":"Ready to play");syncButtons()});audio.addEventListener("ended",()=>{setStatus("Finished");syncButtons()});audio.addEventListener("error",()=>{setStatus("Preview unavailable. Use Download Audio below.");syncButtons()})}
 document.querySelector("#share")?.addEventListener("click",async()=>{const data={title:document.title,url:location.href};try{if(navigator.share)await navigator.share(data);else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);alert("Link copied")}else window.prompt("Copy this link:",location.href)}catch(_){}});

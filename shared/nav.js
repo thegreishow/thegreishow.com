@@ -166,12 +166,12 @@
     document.body.appendChild(script);
   }
 
-  function loadPromoVideoLayer() {
-    if (!location.pathname.startsWith('/promo/') || document.querySelector('script[data-promo-video]')) return;
+  function loadSiteFeatures() {
+    if (document.querySelector('script[data-site-features]')) return;
     const script = document.createElement('script');
-    script.src = '/assets/js/promo-video.js?v=20260803-1';
+    script.src = '/assets/js/core/site-features.js?v=20260804-1';
     script.defer = true;
-    script.dataset.promoVideo = 'true';
+    script.dataset.siteFeatures = 'true';
     document.body.appendChild(script);
   }
 
@@ -183,7 +183,7 @@
     loadNav();
     loadFooter();
     enhanceReleaseList();
-    loadPromoVideoLayer();
+    loadSiteFeatures();
   }
 
   window.markCurrentNavLink = markCurrentNavLink;

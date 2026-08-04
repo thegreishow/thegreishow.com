@@ -3,14 +3,17 @@ const LOGO_URL = "https://drive.google.com/thumbnail?id=1P3YUzpVek_ybKq_8Kii8uRj
 const RELEASE_META = {
   "dinero-code": {
     artist: "WiggWard & Poseck Jr.",
+    artistBio: "WiggWard and Poseck Jr. are Jamaican dancehall artists working in the contemporary modern-dancehall lane, pairing melodic delivery with street-focused writing and compact digital-era releases.",
     genre: "Modern Dancehall",
     released: "October 22, 2025",
     duration: "2:33",
     type: "Single",
     label: "Wheel It! Records",
     country: "Jamaica",
+    language: "English / Jamaican Patois",
     copyright: "℗ 2025 Wheel It! Records",
-    description: "WiggWard and Poseck Jr. join forces on “Dinero Code,” a compact modern dancehall single released through Wheel It! Records.",
+    description: "WiggWard and Poseck Jr. join forces on “Dinero Code,” a concise modern-dancehall record built around ambition, momentum and the codes surrounding money and survival.",
+    story: "The collaboration places both artists at the centre of the record, with Wheel It! Records providing the release platform and production framework for a focused, contemporary dancehall statement.",
     platforms: {
       apple: "https://music.apple.com/jm/album/dinero-code-single/1846468509",
       amazon: "https://music.amazon.co.jp/albums/B0FWH7J1D1"
@@ -22,16 +25,19 @@ const RELEASE_META = {
   },
   "dancehall-stylee": {
     artist: "Swnkah & Sugar Minott",
+    artistBio: "Swnkah is a Jamaican recording artist continuing the musical legacy of her father, reggae and dancehall pioneer Sugar Minott. Sugar Minott was a foundational singer, songwriter and producer whose work helped shape lovers rock, roots reggae and the sound-system culture that fed modern dancehall.",
     genre: "Modern Dancehall",
+    style: "Dancehall heritage / contemporary reggae",
     released: "May 20, 2025",
     duration: "3:03",
     bpm: "144",
-    language: "English",
+    language: "English / Jamaican Patois",
     type: "Single",
     label: "Wheel It! Records",
     country: "Jamaica",
     copyright: "℗ 2025 Wheel It! Records",
-    description: "Swnkah honours her father Sugar Minott and the living spirit of Jamaican dancehall on a cross-generational release that connects heritage with a new era.",
+    description: "Swnkah honours her father Sugar Minott and the living spirit of Jamaican dancehall on a cross-generational record that connects heritage with a new era.",
+    story: "“Dancehall Stylee” centres Swnkah’s voice while drawing directly from Sugar Minott’s legacy. The release works as both a family tribute and a forward-looking dancehall single, linking foundational Jamaican music with contemporary production.",
     platforms: {
       apple: "https://music.apple.com/us/album/dancehall-stylee-single/1811688370",
       amazon: "https://music.amazon.com/tracks/B0F72Q9ZD9"
@@ -46,15 +52,19 @@ const RELEASE_META = {
     ]
   },
   "skill-riddim-vol-1": {
-    artist: "Various Artists",
+    artist: "1Prayz, Brown Chops, Jco Don & Prezidential",
+    artistBio: "Skill Riddim, Vol. 1 brings together four emerging Jamaican voices—1Prayz, Brown Chops, Jco Don and Prezidential—on one shared dancehall production, allowing each artist to approach the same musical foundation from a different lyrical and performance angle.",
     genre: "Modern Dancehall",
+    style: "Riddim compilation",
     released: "June 21, 2024",
     duration: "12 minutes",
     type: "Riddim Project · 5 Tracks",
     label: "Wheel It! Records",
     country: "Jamaica",
+    language: "English / Jamaican Patois",
     copyright: "℗ 2024 Wheel It! Records",
-    description: "A five-track riddim project bringing together 1Prayz, Brown Chops, Jco Don and Prezidential across a shared Wheel It! Records production.",
+    description: "A five-track riddim project featuring 1Prayz, Brown Chops, Jco Don and Prezidential across a shared Wheel It! Records production.",
+    story: "The project follows the classic Jamaican riddim format: multiple artists, one instrumental foundation, distinct songs and identities. The result is a compact showcase of contrasting flows, themes and vocal characters.",
     platforms: {
       amazon: "https://music.amazon.com/albums/B0DCF4LQ21"
     },
@@ -72,14 +82,17 @@ const RELEASE_META = {
   },
   "cash-out": {
     artist: "Swnkah",
+    artistBio: "Swnkah is a Jamaican recording artist whose work bridges her family’s reggae heritage with a contemporary approach to dancehall, rap and melodic Caribbean music.",
     genre: "Hip-Hop/Rap",
     released: "June 22, 2021",
     duration: "2 minutes",
     type: "Single",
     label: "Wheel It! Records",
     country: "Jamaica",
+    language: "English / Jamaican Patois",
     copyright: "℗ 2021 Wheel It! Records",
-    description: "“Cash Out” is a concise solo release from Jamaican artist Swnkah, issued through Wheel It! Records in 2021.",
+    description: "“Cash Out” is a concise solo statement from Swnkah, pairing her Jamaican delivery with a rap-oriented release format.",
+    story: "The song presents Swnkah as the central voice, leaning into confidence, independence and financial ambition while retaining a distinctly Jamaican rhythmic identity.",
     platforms: {
       apple: "https://music.apple.com/us/album/cash-out-single/1571833861"
     },
@@ -164,7 +177,7 @@ function injectStyles() {
   const style = document.createElement("style");
   style.id = "wheelit-press-styles";
   style.textContent = `
-  .release-summary{margin-top:20px}.release-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin-top:22px}.release-meta-row{padding:13px 0;border-top:1px solid rgba(255,255,255,.1)}.release-meta-row span{display:block;color:rgba(255,255,255,.42);font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.release-meta-row strong{display:block;margin-top:6px}.credit-list{margin-top:22px}.credit-line{display:flex;justify-content:space-between;gap:18px;padding:11px 0;border-top:1px solid rgba(255,255,255,.1)}.credit-line span{color:rgba(255,255,255,.45)}.tracklist-copy{margin-top:20px}.tracklist-copy p{padding:10px 0;border-top:1px solid rgba(255,255,255,.08);margin:0!important}.platform-modal{position:fixed;inset:0;z-index:2000;display:grid;place-items:end center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(18px)}.platform-modal[hidden]{display:none}.platform-dialog{position:relative;width:min(520px,100%);padding:28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#0b0d11}.platform-close{position:absolute;right:18px;top:18px;width:42px;height:42px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:1.35rem}.platform-links{display:grid;gap:10px;margin-top:20px}.platform-links a{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 17px;border:1px solid rgba(255,255,255,.11);border-radius:14px;color:#fff;text-decoration:none}.platform-links a:hover{border-color:rgba(216,255,99,.35)}body.modal-open{overflow:hidden}@media(max-width:620px){.release-meta-grid{grid-template-columns:1fr}.credit-line{display:block}.credit-line strong{display:block;margin-top:4px}}
+  .release-summary{margin-top:20px}.release-story,.artist-profile{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}.release-story h3,.artist-profile h3{margin:0 0 10px;font-size:1rem}.release-story p,.artist-profile p{margin:0!important}.release-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin-top:22px}.release-meta-row{padding:13px 0;border-top:1px solid rgba(255,255,255,.1)}.release-meta-row span{display:block;color:rgba(255,255,255,.42);font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.release-meta-row strong{display:block;margin-top:6px}.credit-list{margin-top:22px}.credit-line{display:flex;justify-content:space-between;gap:18px;padding:11px 0;border-top:1px solid rgba(255,255,255,.1)}.credit-line span{color:rgba(255,255,255,.45)}.tracklist-copy{margin-top:20px}.tracklist-copy p{padding:10px 0;border-top:1px solid rgba(255,255,255,.08);margin:0!important}.platform-modal{position:fixed;inset:0;z-index:2000;display:grid;place-items:end center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(18px)}.platform-modal[hidden]{display:none}.platform-dialog{position:relative;width:min(520px,100%);padding:28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#0b0d11}.platform-close{position:absolute;right:18px;top:18px;width:42px;height:42px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:1.35rem}.platform-links{display:grid;gap:10px;margin-top:20px}.platform-links a{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 17px;border:1px solid rgba(255,255,255,.11);border-radius:14px;color:#fff;text-decoration:none}.platform-links a:hover{border-color:rgba(216,255,99,.35)}body.modal-open{overflow:hidden}.share-icon{display:inline-grid;place-items:center;min-width:46px;padding-inline:12px}.share-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}@media(max-width:620px){.release-meta-grid{grid-template-columns:1fr}.credit-line{display:block}.credit-line strong{display:block;margin-top:4px}}
   `;
   document.head.appendChild(style);
 }
@@ -172,9 +185,9 @@ function injectStyles() {
 function metadataRows(meta, title) {
   const values = [
     ["Artist", meta.artist], ["Title", title], ["Release Date", meta.released],
-    ["Release Type", meta.type], ["Genre", meta.genre], ["Duration", meta.duration],
-    ["BPM", meta.bpm], ["Language", meta.language], ["Country", meta.country],
-    ["Record Label", meta.label], ["Copyright", meta.copyright]
+    ["Release Type", meta.type], ["Genre", meta.genre], ["Style", meta.style],
+    ["Duration", meta.duration], ["BPM", meta.bpm], ["Language", meta.language],
+    ["Country", meta.country], ["Record Label", meta.label], ["Copyright", meta.copyright]
   ].filter(([,value]) => value);
   return values.map(([label,value]) => `<div class="release-meta-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
 }
@@ -201,7 +214,7 @@ function applyPresentation() {
   if (trackInfo) trackInfo.innerHTML = `<strong>${escapeHtml(title)}</strong><br><small>${escapeHtml(artist)}</small>`;
 
   if (aboutCard) {
-    aboutCard.innerHTML = `<p class="eyebrow">Release Information</p><h2>${escapeHtml(artist)}</h2><p class="muted release-summary">${escapeHtml(meta.description || "Additional verified release information will be added as it becomes available.")}</p><div class="release-meta-grid">${metadataRows(meta,title)}</div>${Array.isArray(meta.tracklist)?`<div class="tracklist-copy"><p class="eyebrow">Tracklist</p>${meta.tracklist.map(item=>`<p>${escapeHtml(item)}</p>`).join("")}</div>`:""}${Array.isArray(meta.credits)?`<div class="credit-list">${meta.credits.map(([role,name])=>`<div class="credit-line"><span>${escapeHtml(role)}</span><strong>${escapeHtml(name)}</strong></div>`).join("")}</div>`:""}`;
+    aboutCard.innerHTML = `<p class="eyebrow">Release Information</p><h2>${escapeHtml(artist)}</h2><p class="muted release-summary">${escapeHtml(meta.description || "Additional verified release information will be added as it becomes available.")}</p><div class="release-meta-grid">${metadataRows(meta,title)}</div>${meta.story?`<div class="release-story"><h3>Release Story</h3><p class="muted">${escapeHtml(meta.story)}</p></div>`:""}${meta.artistBio?`<div class="artist-profile"><h3>About the Artist${meta.artist.includes("&")||meta.artist.includes(",")?"s":""}</h3><p class="muted">${escapeHtml(meta.artistBio)}</p></div>`:""}${Array.isArray(meta.tracklist)?`<div class="tracklist-copy"><p class="eyebrow">Tracklist</p>${meta.tracklist.map(item=>`<p>${escapeHtml(item)}</p>`).join("")}</div>`:""}${Array.isArray(meta.credits)?`<div class="credit-list">${meta.credits.map(([role,name])=>`<div class="credit-line"><span>${escapeHtml(role)}</span><strong>${escapeHtml(name)}</strong></div>`).join("")}</div>`:""}`;
   }
 
   if (assetsCard) {
@@ -220,6 +233,13 @@ function applyPresentation() {
     let choose = heroActions.querySelector("#choose-platform");
     if (!choose) { choose = document.createElement("button"); choose.id="choose-platform"; choose.className="btn"; choose.type="button"; choose.textContent="Choose a Platform"; heroActions.insertBefore(choose,heroActions.querySelector("#share")); }
     choose.onclick=()=>{modal.hidden=false;document.body.classList.add("modal-open")};
+    const share = heroActions.querySelector("#share");
+    if (share) {
+      share.classList.add("share-icon");
+      share.setAttribute("aria-label","Share page");
+      share.setAttribute("title","Share page");
+      share.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.7 10.6 15.3 6.4M8.7 13.4l6.6 4.2"></path></svg>';
+    }
   }
 
   document.title = `${title} — ${meta.artist || "Wheel It! Records"}`;
@@ -240,8 +260,8 @@ applyPresentation();
 const audio=document.querySelector("#audio");let currentButton=null,currentTitle="";
 function ensureStatus(){let status=document.querySelector("#player-status");if(!status){status=document.createElement("div");status.id="player-status";status.className="player-status";status.setAttribute("aria-live","polite");document.querySelector(".player")?.appendChild(status)}return status}
 function setStatus(message){const status=ensureStatus();if(status)status.textContent=message}
-function syncButtons(){document.querySelectorAll("[data-audio]").forEach(button=>button.textContent=button===currentButton&&audio&&!audio.paused?"❚❚":"▶")}
-async function playButton(button){if(!audio)return;const source=button.dataset.audioOriginal||button.dataset.audio,title=button.dataset.title||"Wheel It! Records",proxy=proxiedMediaUrl(source,title),isNew=currentButton!==button||audio.dataset.source!==proxy;if(isNew){audio.pause();audio.dataset.source=proxy;audio.src=proxy;audio.load();currentButton=button;currentTitle=title;const now=document.querySelector("#now-playing");if(now)now.textContent=title}if(!audio.paused&&!isNew){audio.pause();return}setStatus("Loading audio…");try{await audio.play()}catch(error){console.error(error);setStatus("Unable to start playback. Tap play again or use Download Audio.");syncButtons()}}
+function syncButtons(){document.querySelectorAll("[data-audio]").forEach(button=>{button.textContent=button===currentButton&&audio&&!audio.paused?"❚❚":"▶"})}
+async function playButton(button){if(!audio)return;const source=button.dataset.audioOriginal||button.dataset.audio;const title=button.dataset.title||"Wheel It! Records";const proxy=proxiedMediaUrl(source,title);const isNew=currentButton!==button||audio.dataset.source!==proxy;if(isNew){audio.pause();audio.dataset.source=proxy;audio.src=proxy;audio.load();currentButton=button;currentTitle=title;const now=document.querySelector("#now-playing");if(now)now.textContent=title}if(!audio.paused&&!isNew){audio.pause();return}setStatus("Loading audio…");try{await audio.play()}catch(error){console.error(error);setStatus("Unable to start playback. Tap play again or use Download Audio.");syncButtons()}}
 document.querySelectorAll("[data-audio]").forEach(button=>{button.dataset.audioOriginal=button.dataset.audio;button.type="button";button.addEventListener("click",()=>playButton(button))});
 if(audio){audio.preload="metadata";audio.setAttribute("playsinline","");audio.addEventListener("loadstart",()=>setStatus("Loading audio…"));audio.addEventListener("loadedmetadata",()=>setStatus("Ready to play"));audio.addEventListener("canplay",()=>setStatus(audio.paused?"Ready to play":"Playing"));audio.addEventListener("waiting",()=>setStatus("Buffering…"));audio.addEventListener("playing",()=>{setStatus(`Playing ${currentTitle}`);syncButtons()});audio.addEventListener("pause",()=>{setStatus(audio.currentTime?"Paused":"Ready to play");syncButtons()});audio.addEventListener("ended",()=>{setStatus("Finished");syncButtons()});audio.addEventListener("error",()=>{setStatus("Preview unavailable. Use Download Audio below.");syncButtons()})}
 document.querySelector("#share")?.addEventListener("click",async()=>{const data={title:document.title,url:location.href};try{if(navigator.share)await navigator.share(data);else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);alert("Link copied")}else window.prompt("Copy this link:",location.href)}catch(_){}});

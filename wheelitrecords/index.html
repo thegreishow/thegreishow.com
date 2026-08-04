@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wheel It! Records | Jamaican Music Production & Artist Development</title>
+  <meta name="description" content="Explore Wheel It! Records productions, artist collaborations, official promo pages and creative services from Kingston, Jamaica.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#03060c">
+  <link rel="canonical" href="https://thegreishow.com/wheelitrecords/">
+  <meta property="og:title" content="Wheel It! Records | Productions & Official Releases">
+  <meta property="og:description" content="Music production, artist collaborations and official release pages from Wheel It! Records.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thegreishow.com/wheelitrecords/">
+  <meta property="og:image" content="https://img.youtube.com/vi/2SEYLu8qSNs/maxresdefault.jpg">
+  <link rel="stylesheet" href="/assets/css/base.css" />
+  <link rel="stylesheet" href="/assets/css/layout.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+  <link rel="stylesheet" href="/assets/css/portal.css" />
+  <style>
+    .records-shell{position:relative;z-index:1}.reel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.work-card{display:grid;overflow:hidden;color:var(--text);text-decoration:none}.work-card:hover,.work-card:focus-visible{transform:translateY(-5px);border-color:rgba(0,200,255,.35);opacity:1;outline:none}.work-thumb{aspect-ratio:16/9;background:#050509;border-bottom:1px solid rgba(255,255,255,.1)}.work-thumb img{width:100%;height:100%;display:block;object-fit:cover}.work-content{padding:15px}.work-content h2{margin:0 0 6px;font-size:1.05rem}.work-content p{margin:0;color:var(--text-dim);line-height:1.5}.records-note{margin-top:18px;padding:20px;text-align:center;color:var(--text-dim);line-height:1.65}.records-note a{color:#fff;font-weight:800}.promo-entry{margin:0 0 34px;padding:28px;display:flex;align-items:center;justify-content:space-between;gap:24px}.promo-entry h2{margin:6px 0 10px}.promo-entry p{margin:0;color:var(--text-dim);line-height:1.65;max-width:720px}.promo-entry .home-button{white-space:nowrap}@media(max-width:720px){.promo-entry{display:grid}}
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="page-shell records-shell">
+    <section class="page-hero">
+      <p class="eyebrow">Production house · Kingston, Jamaica</p>
+      <h1>Wheel It! Records</h1>
+      <p>Selected music production, collaborations, official releases, and creative work connected to The Grei Show.</p>
+    </section>
+
+    <section class="section-panel promo-entry" aria-labelledby="promo-title">
+      <div>
+        <p class="eyebrow">Official release room</p>
+        <h2 id="promo-title">Promo Pages & Press Materials</h2>
+        <p>Explore artist-first release pages with full audio previews, platform links, downloadable masters, artwork, credits, biographies and verified metadata.</p>
+      </div>
+      <a class="home-button primary" href="/wheelitrecords/promo/" data-track="wheelit_promo_catalogue">Open Promo Catalogue</a>
+    </section>
+
+    <section class="reel-grid" id="reelGrid" aria-label="Producer reel"></section>
+
+    <section class="section-panel records-note">
+      For production, sync, collaboration, or artist development inquiries, <a href="/connect.html?interest=music-production">prepare a project request</a> or email <a href="mailto:thegreishow@gmail.com">thegreishow@gmail.com</a>.
+    </section>
+  </main>
+  <script src="/shared/nav.js"></script>
+  <script>
+    const works=[
+      {title:'Cash Out',artist:'Swnkah',id:'5V5TJFhyEU4'},
+      {title:'Ultion',artist:'Hink45',id:'1JVlmntajd0'},
+      {title:'Kush & Schweppes',artist:'Blvk H3ro',id:'Gc2dJmPcxOQ'},
+      {title:'Weed & Ting',artist:'Protoje',id:'2SEYLu8qSNs'},
+      {title:'Soundboii Freestyle',artist:'Fyah Roiall',id:'IhJmti8KkMQ'},
+      {title:'Dinero Code',artist:'WiggWard & Poseck Jr.',id:'Dd1zQvb29x4'}
+    ];
+    const thumb=id=>`https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+    document.getElementById('reelGrid').innerHTML=works.map(work=>`
+      <a class="section-panel work-card" href="https://www.youtube.com/watch?v=${work.id}" target="_blank" rel="noopener noreferrer">
+        <span class="work-thumb"><img src="${thumb(work.id)}" alt="${work.title} by ${work.artist} video thumbnail" width="480" height="360" loading="lazy"></span>
+        <span class="work-content"><h2>${work.title}</h2><p>${work.artist}</p></span>
+      </a>`).join('');
+  </script>
+</body>
+</html>

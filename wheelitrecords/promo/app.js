@@ -7,7 +7,10 @@ const RELEASE_META = {
     released: "October 22, 2025",
     type: "Single",
     label: "Wheel It! Records",
-    description: "A modern dancehall collaboration by WiggWard and Poseck Jr., released through Wheel It! Records."
+    description: "A modern dancehall release by WiggWard and Poseck Jr., produced and released through Wheel It! Records.",
+    platforms: {
+      apple: "https://music.apple.com/jm/album/dinero-code-single/1846468509"
+    }
   },
   "dancehall-stylee": {
     artist: "Swnkah & Sugar Minott",
@@ -15,7 +18,7 @@ const RELEASE_META = {
     released: "May 20, 2025",
     type: "Single",
     label: "Wheel It! Records",
-    description: "A cross-generational tribute to Jamaican dancehall heritage, performed by Swnkah and Sugar Minott.",
+    description: "A cross-generational dancehall release connecting Swnkah with the voice and legacy of Sugar Minott, produced by The Grei Show.",
     credits: [
       ["Producer", "The Grei Show"],
       ["Synthesizer", "The Grei Show"],
@@ -23,6 +26,17 @@ const RELEASE_META = {
       ["Songwriters", "Lincoln ‘Sugar’ Minott & Candice Minott"]
     ]
   }
+};
+
+const PLATFORM_LABELS = {
+  spotify: "Spotify",
+  apple: "Apple Music",
+  youtube: "YouTube",
+  tidal: "TIDAL",
+  deezer: "Deezer",
+  amazon: "Amazon Music",
+  soundcloud: "SoundCloud",
+  bandcamp: "Bandcamp"
 };
 
 function slugFromPath() {
@@ -53,7 +67,7 @@ function proxiedMediaUrl(source, title, type = "audio", download = false) {
 }
 
 function addButton(container, label, href, primary = false) {
-  if (!container || !href) return;
+  if (!container || !href) return null;
   const link = document.createElement("a");
   link.className = `btn${primary ? " primary" : ""}`;
   link.href = href;
@@ -63,44 +77,138 @@ function addButton(container, label, href, primary = false) {
     link.rel = "noopener";
   }
   container.appendChild(link);
+  return link;
+}
+
+function buildPlatformModal(meta, title, artist) {
+  const existing = document.querySelector("#platform-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "platform-modal";
+  modal.className = "platform-modal";
+  modal.hidden = true;
+
+  const explicit = meta?.platforms || {};
+  const query = encodeURIComponent(`${artist || ""} ${title}`.trim());
+  const fallback = {
+    spotify: `https://open.spotify.com/search/${query}`,
+    apple: `https://music.apple.com/us/search?term=${query}`,
+    youtube: `https://www.youtube.com/results?search_query=${query}`,
+    tidal: `https://listen.tidal.com/search?q=${query}`,
+    deezer: `https://www.deezer.com/search/${query}`,
+    amazon: `https://music.amazon.com/search/${query}`
+  };
+
+  const links = Object.keys(PLATFORM_LABELS)
+    .map(key => [PLATFORM_LABELS[key], explicit[key] || fallback[key]])
+    .filter(([, url]) => Boolean(url));
+
+  modal.innerHTML = `
+    <div class="platform-dialog" role="dialog" aria-modal="true" aria-labelledby="platform-title">
+      <button class="platform-close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Listen your way</p>
+      <h2 id="platform-title">Choose a platform</h2>
+      <div class="platform-links">
+        ${links.map(([label, url]) => `<a href="${url}" target="_blank" rel="noopener">${label}<span>↗</span></a>`).join("")}
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+  const close = () => { modal.hidden = true; document.body.classList.remove("modal-open"); };
+  modal.querySelector(".platform-close")?.addEventListener("click", close);
+  modal.addEventListener("click", event => { if (event.target === modal) close(); });
+  document.addEventListener("keydown", event => { if (event.key === "Escape") close(); });
+  return modal;
+}
+
+function injectPressReleaseStyles() {
+  if (document.querySelector("#wheelit-press-styles")) return;
+  const style = document.createElement("style");
+  style.id = "wheelit-press-styles";
+  style.textContent = `
+    .press-release-label{margin-top:18px;color:rgba(255,255,255,.58);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase}
+    .credit-list{margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
+    .credit-list p{margin:8px 0!important}
+    .platform-modal{position:fixed;inset:0;z-index:2000;display:grid;place-items:end center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(18px)}
+    .platform-modal[hidden]{display:none}
+    .platform-dialog{position:relative;width:min(520px,100%);padding:28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#0b0d11;box-shadow:0 30px 100px rgba(0,0,0,.7)}
+    .platform-dialog h2{margin:0 0 18px}
+    .platform-close{position:absolute;right:18px;top:18px;width:42px;height:42px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:1.35rem;cursor:pointer}
+    .platform-links{display:grid;gap:10px}.platform-links a{display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:0 17px;border:1px solid rgba(255,255,255,.11);border-radius:14px;background:rgba(255,255,255,.045);color:#fff;text-decoration:none;font-weight:800}.platform-links a:hover{border-color:rgba(216,255,99,.35)}
+    body.modal-open{overflow:hidden}
+  `;
+  document.head.appendChild(style);
 }
 
 function applyMetadata() {
+  injectPressReleaseStyles();
+
   const slug = slugFromPath();
-  const meta = RELEASE_META[slug];
+  const meta = RELEASE_META[slug] || {};
   const title = document.querySelector(".hero h1")?.textContent.trim() || document.title.split("—")[0].trim();
   const cover = document.querySelector(".cover");
   const audioButton = document.querySelector("[data-audio]");
-  const pressActions = document.querySelector(".grid .card:last-child .actions");
+  const pressCard = document.querySelector(".grid .card:last-child");
+  const pressActions = pressCard?.querySelector(".actions");
+  const heroActions = document.querySelector(".hero .actions");
+  const artist = meta.artist || "Various Artists";
 
-  if (audioButton && pressActions) {
-    addButton(pressActions, "Download mastered audio", proxiedMediaUrl(audioButton.dataset.audio, title, "audio", true), true);
-  }
-  if (cover && pressActions) {
-    addButton(pressActions, "Download cover art", proxiedMediaUrl(cover.src, `${title}-cover`, "artwork", true));
+  document.querySelector(".hero .eyebrow")?.replaceChildren(document.createTextNode("Official producer press release"));
+  if (pressCard) {
+    const eyebrow = pressCard.querySelector(".eyebrow");
+    const heading = pressCard.querySelector("h2");
+    const copy = pressCard.querySelector(".muted");
+    if (eyebrow) eyebrow.textContent = "Professional assets";
+    if (heading) heading.textContent = "Release materials";
+    if (copy) copy.textContent = "Approved audio, artwork and release information for DJs, radio, press and industry partners.";
   }
 
-  if (!meta) return;
+  if (pressActions) {
+    [...pressActions.querySelectorAll("a")].forEach(link => link.remove());
+    if (audioButton) addButton(pressActions, "Download Audio", proxiedMediaUrl(audioButton.dataset.audio, title, "audio", true), true);
+    if (cover) addButton(pressActions, "Download Artwork", proxiedMediaUrl(cover.src, `${title}-cover`, "artwork", true));
+  }
+
+  const platformModal = buildPlatformModal(meta, title, artist);
+  if (heroActions) {
+    let platformButton = heroActions.querySelector("#choose-platform");
+    if (!platformButton) {
+      platformButton = document.createElement("button");
+      platformButton.id = "choose-platform";
+      platformButton.className = "btn";
+      platformButton.type = "button";
+      platformButton.textContent = "Choose a Platform";
+      heroActions.insertBefore(platformButton, heroActions.querySelector("#share"));
+    }
+    platformButton.onclick = () => { platformModal.hidden = false; document.body.classList.add("modal-open"); };
+  }
 
   const heroLead = document.querySelector(".hero .lede");
-  if (heroLead) heroLead.textContent = meta.description;
+  if (heroLead) {
+    heroLead.textContent = meta.description || `${title} is an official Wheel It! Records production, created and released from Kingston, Jamaica.`;
+    const label = document.createElement("div");
+    label.className = "press-release-label";
+    label.textContent = "Produced and released by Wheel It! Records";
+    heroLead.insertAdjacentElement("afterend", label);
+  }
 
   const trackInfo = document.querySelector(".track div");
-  if (trackInfo) trackInfo.innerHTML = `<strong>${title}</strong><br><small>${meta.artist}</small>`;
+  if (trackInfo) trackInfo.innerHTML = `<strong>${title}</strong><br><small>${artist}</small>`;
 
   const aboutCard = document.querySelector(".grid .card:first-child");
   if (aboutCard) {
     aboutCard.innerHTML = `
-      <p class="eyebrow">Release details</p>
-      <h2>${meta.artist}</h2>
-      <p class="muted">${meta.genre} · ${meta.type}<br>${meta.released}<br>${meta.label}</p>
-      ${Array.isArray(meta.credits) ? `<div class="credit-list">${meta.credits.map(([role, name]) => `<p><strong>${role}:</strong> ${name}</p>`).join("")}</div>` : ""}
+      <p class="eyebrow">Press release</p>
+      <h2>${artist}</h2>
+      <p class="muted">${meta.genre || "Jamaican Music"} · ${meta.type || "Official Release"}<br>${meta.released || "Release information forthcoming"}<br>${meta.label || "Wheel It! Records"}</p>
+      ${Array.isArray(meta.credits) ? `<div class="credit-list">${meta.credits.map(([role, name]) => `<p><strong>${role}:</strong> ${name}</p>`).join("")}</div>` : `<div class="credit-list"><p><strong>Producer:</strong> The Grei Show</p><p><strong>Label:</strong> Wheel It! Records</p></div>`}
     `;
   }
 
-  document.title = `${title} — ${meta.artist} | Wheel It! Records`;
-  document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
-  document.querySelector('meta[property="og:title"]')?.setAttribute("content", `${title} — ${meta.artist}`);
+  document.title = `${title} — ${artist} | Wheel It! Records Press Release`;
+  document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description || `Official press release for ${title}, produced by The Grei Show and released through Wheel It! Records.`);
+  document.querySelector('meta[property="og:title"]')?.setAttribute("content", `${title} — ${artist}`);
 
   const schema = document.createElement("script");
   schema.type = "application/ld+json";
@@ -108,10 +216,11 @@ function applyMetadata() {
     "@context": "https://schema.org",
     "@type": "MusicRecording",
     name: title,
-    byArtist: { "@type": "MusicGroup", name: meta.artist },
-    genre: meta.genre,
-    datePublished: meta.released,
-    recordLabel: { "@type": "Organization", name: meta.label }
+    byArtist: { "@type": "MusicGroup", name: artist },
+    producer: { "@type": "Person", name: "The Grei Show" },
+    genre: meta.genre || "Jamaican Music",
+    datePublished: meta.released || undefined,
+    recordLabel: { "@type": "Organization", name: meta.label || "Wheel It! Records" }
   });
   document.head.appendChild(schema);
 }
@@ -169,7 +278,7 @@ async function playButton(button) {
   try { await audio.play(); }
   catch (error) {
     console.error("Audio playback failed", error);
-    setStatus("Unable to start playback. Tap play again or use the audio download.");
+    setStatus("Unable to start playback. Tap play again or use Download Audio.");
     syncButtons();
   }
 }
@@ -190,7 +299,7 @@ if (audio) {
   audio.addEventListener("playing", () => { setStatus(`Playing ${currentTitle}`); syncButtons(); });
   audio.addEventListener("pause", () => { setStatus(audio.currentTime ? "Paused" : "Ready to play"); syncButtons(); });
   audio.addEventListener("ended", () => { setStatus("Finished"); syncButtons(); });
-  audio.addEventListener("error", () => { setStatus("Preview unavailable. Use the mastered-audio download below."); syncButtons(); });
+  audio.addEventListener("error", () => { setStatus("Preview unavailable. Use Download Audio below."); syncButtons(); });
 }
 
 document.querySelector("#share")?.addEventListener("click", async () => {

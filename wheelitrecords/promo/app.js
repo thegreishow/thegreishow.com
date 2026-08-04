@@ -1,156 +1,60 @@
-const LOGO_URL = "https://drive.google.com/thumbnail?id=1P3YUzpVek_ybKq_8Kii8uRjH5gsbJ6JZ&sz=w1000";
-const RELEASE_META = window.WHEEL_IT_RELEASES || {};
+const LOGO_URL="https://drive.google.com/thumbnail?id=1P3YUzpVek_ybKq_8Kii8uRjH5gsbJ6JZ&sz=w1000";
+const RELEASE_META=window.WHEEL_IT_RELEASES||{};
+const PLATFORM_LABELS={spotify:"Spotify",apple:"Apple Music",youtube:"YouTube",tidal:"TIDAL",deezer:"Deezer",amazon:"Amazon Music",soundcloud:"SoundCloud",bandcamp:"Bandcamp"};
 
-const PLATFORM_LABELS = {
-  spotify: "Spotify", apple: "Apple Music", youtube: "YouTube",
-  tidal: "TIDAL", deezer: "Deezer", amazon: "Amazon Music",
-  soundcloud: "SoundCloud", bandcamp: "Bandcamp"
-};
+function slugFromPath(){const parts=location.pathname.split("/").filter(Boolean),i=parts.indexOf("promo");return i>=0?(parts[i+1]||""):""}
+function driveId(url){const value=String(url||"");return(value.match(/[?&]id=([\w-]+)/)||value.match(/\/d\/([\w-]+)/)||[])[1]||""}
+function safeName(value){return String(value||"wheel-it-records-media").normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"-").replace(/^-+|-+$/g,"").toLowerCase()||"wheel-it-records-media"}
+function proxiedMediaUrl(source,title,type="audio",download=false){const id=driveId(source);if(!id)return source;const params=new URLSearchParams({id,type,filename:safeName(title)});if(download)params.set("download","1");return`/api/media?${params}`}
+function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]))}
+function addButton(container,label,href,primary=false){if(!container||!href)return;const link=document.createElement("a");link.className=`btn${primary?" primary":""}`;link.href=href;link.textContent=label;if(!href.startsWith("/api/")){link.target="_blank";link.rel="noopener"}container.appendChild(link)}
 
-function slugFromPath() {
-  const parts = location.pathname.split("/").filter(Boolean);
-  const index = parts.indexOf("promo");
-  return index >= 0 ? (parts[index + 1] || "") : "";
+async function installGlobalNavigation(){
+  if(document.getElementById("site-header"))return;
+  const mount=document.createElement("div");mount.id="site-header";document.body.prepend(mount);
+  try{
+    const response=await fetch("/shared/nav.html",{cache:"no-cache"});
+    if(!response.ok)throw new Error("Navigation unavailable");
+    mount.innerHTML=await response.text();
+    const toggle=mount.querySelector(".nav-toggle"),nav=mount.querySelector("#primary-nav");
+    toggle?.addEventListener("click",()=>{const open=nav.classList.toggle("is-open");toggle.setAttribute("aria-expanded",String(open));toggle.textContent=open?"Close":"Menu"});
+    nav?.addEventListener("click",event=>{if(event.target.closest("a")){nav.classList.remove("is-open");toggle?.setAttribute("aria-expanded","false");if(toggle)toggle.textContent="Menu"}});
+    mount.querySelectorAll('.site-nav a').forEach(link=>{if(new URL(link.href,location.href).pathname==="/wheel-it-records.html")link.setAttribute("aria-current","page")});
+  }catch(error){console.error("[Wheel It Nav]",error);mount.remove()}
 }
 
-function driveId(url) {
-  const value = String(url || "");
-  return (value.match(/[?&]id=([\w-]+)/) || value.match(/\/d\/([\w-]+)/) || [])[1] || "";
-}
-
-function safeName(value) {
-  return String(value || "wheel-it-records-media").normalize("NFKD")
-    .replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase() || "wheel-it-records-media";
-}
-
-function proxiedMediaUrl(source, title, type = "audio", download = false) {
-  const id = driveId(source);
-  if (!id) return source;
-  const params = new URLSearchParams({ id, type, filename: safeName(title) });
-  if (download) params.set("download", "1");
-  return `/api/media?${params.toString()}`;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
-}
-
-function addButton(container, label, href, primary = false) {
-  if (!container || !href) return;
-  const link = document.createElement("a");
-  link.className = `btn${primary ? " primary" : ""}`;
-  link.href = href;
-  link.textContent = label;
-  if (!href.startsWith("/api/")) { link.target = "_blank"; link.rel = "noopener"; }
-  container.appendChild(link);
-}
-
-function platformModal(meta, title, artist) {
+function platformModal(meta,title,artist){
   document.querySelector("#platform-modal")?.remove();
-  const query = encodeURIComponent(`${artist} ${title}`);
-  const fallback = {
-    spotify:`https://open.spotify.com/search/${query}`,
-    apple:`https://music.apple.com/us/search?term=${query}`,
-    youtube:`https://www.youtube.com/results?search_query=${query}`,
-    tidal:`https://listen.tidal.com/search?q=${query}`,
-    deezer:`https://www.deezer.com/search/${query}`,
-    amazon:`https://music.amazon.com/search/${query}`
-  };
-  const urls = {...fallback, ...(meta.platforms || {})};
-  const links = Object.entries(PLATFORM_LABELS).filter(([key]) => urls[key]);
-  const modal = document.createElement("div");
-  modal.id = "platform-modal";
-  modal.className = "platform-modal";
-  modal.hidden = true;
-  modal.innerHTML = `<div class="platform-dialog" role="dialog" aria-modal="true"><button class="platform-close" aria-label="Close">×</button><p class="eyebrow">Listen your way</p><h2>Choose a Platform</h2><div class="platform-links">${links.map(([key,label])=>`<a href="${escapeHtml(urls[key])}" target="_blank" rel="noopener">${label}<span>↗</span></a>`).join("")}</div></div>`;
-  document.body.appendChild(modal);
-  const close = () => { modal.hidden = true; document.body.classList.remove("modal-open"); };
-  modal.querySelector(".platform-close").onclick = close;
-  modal.onclick = event => { if (event.target === modal) close(); };
-  return modal;
+  const query=encodeURIComponent(`${artist} ${title}`),fallback={spotify:`https://open.spotify.com/search/${query}`,apple:`https://music.apple.com/us/search?term=${query}`,youtube:`https://www.youtube.com/results?search_query=${query}`,tidal:`https://listen.tidal.com/search?q=${query}`,deezer:`https://www.deezer.com/search/${query}`,amazon:`https://music.amazon.com/search/${query}`},urls={...fallback,...(meta.platforms||{})};
+  const links=Object.entries(PLATFORM_LABELS).filter(([key])=>urls[key]);
+  const modal=document.createElement("div");modal.id="platform-modal";modal.className="platform-modal";modal.hidden=true;modal.innerHTML=`<div class="platform-dialog" role="dialog" aria-modal="true"><button class="platform-close" aria-label="Close">×</button><p class="eyebrow">Listen your way</p><h2>Choose a Platform</h2><div class="platform-links">${links.map(([key,label])=>`<a href="${escapeHtml(urls[key])}" target="_blank" rel="noopener">${label}<span>↗</span></a>`).join("")}</div></div>`;document.body.appendChild(modal);
+  const close=()=>{modal.hidden=true;document.body.classList.remove("modal-open")};modal.querySelector(".platform-close").onclick=close;modal.onclick=e=>{if(e.target===modal)close()};document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});return modal
 }
 
-function injectStyles() {
-  if (document.querySelector("#wheelit-press-styles")) return;
-  const style = document.createElement("style");
-  style.id = "wheelit-press-styles";
-  style.textContent = `
-  .release-summary{margin-top:20px}.release-story,.artist-profile{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}.release-story h3,.artist-profile h3{margin:0 0 10px;font-size:1rem}.release-story p,.artist-profile p{margin:0!important}.release-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin-top:22px}.release-meta-row{padding:13px 0;border-top:1px solid rgba(255,255,255,.1)}.release-meta-row span{display:block;color:rgba(255,255,255,.42);font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.release-meta-row strong{display:block;margin-top:6px}.credit-list{margin-top:22px}.credit-line{display:flex;justify-content:space-between;gap:18px;padding:11px 0;border-top:1px solid rgba(255,255,255,.1)}.credit-line span{color:rgba(255,255,255,.45)}.tracklist-copy{margin-top:20px}.tracklist-copy p{padding:10px 0;border-top:1px solid rgba(255,255,255,.08);margin:0!important}.platform-modal{position:fixed;inset:0;z-index:2000;display:grid;place-items:end center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(18px)}.platform-modal[hidden]{display:none}.platform-dialog{position:relative;width:min(520px,100%);padding:28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#0b0d11}.platform-close{position:absolute;right:18px;top:18px;width:42px;height:42px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:1.35rem}.platform-links{display:grid;gap:10px;margin-top:20px}.platform-links a{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 17px;border:1px solid rgba(255,255,255,.11);border-radius:14px;color:#fff;text-decoration:none}.platform-links a:hover{border-color:rgba(216,255,99,.35)}body.modal-open{overflow:hidden}.share-icon{display:inline-grid;place-items:center;min-width:46px;padding-inline:12px}.share-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}@media(max-width:620px){.release-meta-grid{grid-template-columns:1fr}.credit-line{display:block}.credit-line strong{display:block;margin-top:4px}}
-  `;
-  document.head.appendChild(style);
+function injectStyles(){if(document.querySelector("#wheelit-press-styles"))return;const style=document.createElement("style");style.id="wheelit-press-styles";style.textContent=`.release-summary{margin-top:20px}.release-story,.artist-profile{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}.release-story h3,.artist-profile h3{margin:0 0 10px;font-size:1rem}.release-story p,.artist-profile p{margin:0!important}.release-meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin-top:22px}.release-meta-row{padding:13px 0;border-top:1px solid rgba(255,255,255,.1)}.release-meta-row span{display:block;color:rgba(255,255,255,.42);font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.release-meta-row strong{display:block;margin-top:6px}.credit-list{margin-top:22px}.credit-line{display:flex;justify-content:space-between;gap:18px;padding:11px 0;border-top:1px solid rgba(255,255,255,.1)}.credit-line span{color:rgba(255,255,255,.45)}.tracklist-copy{margin-top:20px}.tracklist-copy p{padding:10px 0;border-top:1px solid rgba(255,255,255,.08);margin:0!important}.platform-modal{position:fixed;inset:0;z-index:2000;display:grid;place-items:end center;padding:20px;background:rgba(0,0,0,.72);backdrop-filter:blur(18px)}.platform-modal[hidden]{display:none}.platform-dialog{position:relative;width:min(520px,100%);padding:28px;border:1px solid rgba(255,255,255,.14);border-radius:24px;background:#0b0d11}.platform-close{position:absolute;right:18px;top:18px;width:42px;height:42px;border:1px solid rgba(255,255,255,.15);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:1.35rem}.platform-links{display:grid;gap:10px;margin-top:20px}.platform-links a{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 17px;border:1px solid rgba(255,255,255,.11);border-radius:14px;color:#fff;text-decoration:none}.platform-links a:hover{border-color:rgba(216,255,99,.35)}body.modal-open{overflow:hidden}.share-icon{display:inline-grid;place-items:center;min-width:46px;padding-inline:12px}.share-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}@media(max-width:620px){.release-meta-grid{grid-template-columns:1fr}.credit-line{display:block}.credit-line strong{display:block;margin-top:4px}}`;document.head.appendChild(style)}
+function metadataRows(meta,title){return[["Artist",meta.artist],["Title",title],["Release Date",meta.released],["Release Type",meta.type],["Genre",meta.genre],["Style",meta.style],["Duration",meta.duration],["BPM",meta.bpm],["Language",meta.language],["Country",meta.country],["Record Label",meta.label],["Copyright",meta.copyright]].filter(([,v])=>v).map(([l,v])=>`<div class="release-meta-row"><span>${escapeHtml(l)}</span><strong>${escapeHtml(v)}</strong></div>`).join("")}
+function artistProfilesMarkup(meta){
+  if(Array.isArray(meta.artistProfiles)&&meta.artistProfiles.length)return`<div class="artist-profiles"><p class="eyebrow">About the Artists</p>${meta.artistProfiles.map(profile=>`<article class="artist-profile-card"><h3>${escapeHtml(profile.name)}</h3>${profile.subtitle?`<span class="artist-subtitle">${escapeHtml(profile.subtitle)}</span>`:""}<p class="muted">${escapeHtml(profile.bio)}</p></article>`).join("")}</div>`;
+  if(meta.artistBio)return`<div class="artist-profile"><h3>About the Artist</h3><p class="muted">${escapeHtml(meta.artistBio)}</p></div>`;
+  return""
 }
 
-function metadataRows(meta, title) {
-  const values = [
-    ["Artist", meta.artist], ["Title", title], ["Release Date", meta.released],
-    ["Release Type", meta.type], ["Genre", meta.genre], ["Style", meta.style],
-    ["Duration", meta.duration], ["BPM", meta.bpm], ["Language", meta.language],
-    ["Country", meta.country], ["Record Label", meta.label], ["Copyright", meta.copyright]
-  ].filter(([,value]) => value);
-  return values.map(([label,value]) => `<div class="release-meta-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
-}
-
-function applyPresentation() {
+function applyPresentation(){
   injectStyles();
-  const slug = slugFromPath();
-  const meta = RELEASE_META[slug] || {};
-  const title = document.querySelector(".hero h1")?.textContent.trim() || document.title.split("—")[0].trim();
-  const artist = meta.artist || "Artist information forthcoming";
-  const cover = document.querySelector(".cover");
-  const audioButton = document.querySelector("[data-audio]");
-  const heroActions = document.querySelector(".hero .actions");
-  const aboutCard = document.querySelector(".grid .card:first-child");
-  const assetsCard = document.querySelector(".grid .card:last-child");
-  const assetActions = assetsCard?.querySelector(".actions");
-
-  const eyebrow = document.querySelector(".hero .eyebrow");
-  if (eyebrow) eyebrow.textContent = "Official Release · Wheel It! Records";
-  const lead = document.querySelector(".hero .lede");
-  if (lead) lead.textContent = meta.description || `Official release information, audio and artwork for “${title}”.`;
-
-  const trackInfo = document.querySelector(".track div");
-  if (trackInfo) trackInfo.innerHTML = `<strong>${escapeHtml(title)}</strong><br><small>${escapeHtml(artist)}</small>`;
-
-  if (aboutCard) {
-    aboutCard.innerHTML = `<p class="eyebrow">Release Information</p><h2>${escapeHtml(artist)}</h2><p class="muted release-summary">${escapeHtml(meta.description || "Additional verified release information will be added as it becomes available.")}</p><div class="release-meta-grid">${metadataRows(meta,title)}</div>${meta.story?`<div class="release-story"><h3>Release Story</h3><p class="muted">${escapeHtml(meta.story)}</p></div>`:""}${meta.artistBio?`<div class="artist-profile"><h3>About the Artist${meta.artist.includes("&")||meta.artist.includes(",")?"s":""}</h3><p class="muted">${escapeHtml(meta.artistBio)}</p></div>`:""}${Array.isArray(meta.tracklist)?`<div class="tracklist-copy"><p class="eyebrow">Tracklist</p>${meta.tracklist.map(item=>`<p>${escapeHtml(item)}</p>`).join("")}</div>`:""}${Array.isArray(meta.credits)?`<div class="credit-list">${meta.credits.map(([role,name])=>`<div class="credit-line"><span>${escapeHtml(role)}</span><strong>${escapeHtml(name)}</strong></div>`).join("")}</div>`:""}`;
-  }
-
-  if (assetsCard) {
-    assetsCard.querySelector(".eyebrow").textContent = "Professional Assets";
-    assetsCard.querySelector("h2").textContent = "Release Materials";
-    assetsCard.querySelector(".muted").textContent = "Approved mastered audio and artwork for DJs, radio, press and industry partners.";
-  }
-  if (assetActions) {
-    assetActions.innerHTML = "";
-    if (audioButton) addButton(assetActions,"Download Audio",proxiedMediaUrl(audioButton.dataset.audio,title,"audio",true),true);
-    if (cover) addButton(assetActions,"Download Artwork",proxiedMediaUrl(cover.src,`${title}-artwork`,"artwork",true));
-  }
-
-  const modal = platformModal(meta,title,meta.artist || title);
-  if (heroActions) {
-    let choose = heroActions.querySelector("#choose-platform");
-    if (!choose) { choose = document.createElement("button"); choose.id="choose-platform"; choose.className="btn"; choose.type="button"; choose.textContent="Choose a Platform"; heroActions.insertBefore(choose,heroActions.querySelector("#share")); }
-    choose.onclick=()=>{modal.hidden=false;document.body.classList.add("modal-open")};
-  }
-
-  const share = document.querySelector("#share");
-  if (share) {
-    share.classList.add("share-icon");
-    share.setAttribute("aria-label","Share this release");
-    share.setAttribute("title","Share this release");
-    share.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 10.6l6.8-4.1M8.6 13.4l6.8 4.1"></path></svg>';
-  }
-
-  document.title = `${title} — ${meta.artist || "Wheel It! Records"}`;
-  const description = meta.description || `Official release page for ${title} from Wheel It! Records.`;
-  document.querySelector('meta[name="description"]')?.setAttribute("content",description);
-  document.querySelector('meta[property="og:title"]')?.setAttribute("content",`${title} — ${meta.artist || "Wheel It! Records"}`);
+  const slug=slugFromPath(),meta=RELEASE_META[slug]||{},rawTitle=document.querySelector(".hero h1")?.textContent.trim()||document.title.split("—")[0].trim(),title=meta.displayTitle||rawTitle,artist=meta.artist||"Artist information forthcoming",cover=document.querySelector(".cover"),audioButton=document.querySelector("[data-audio]"),heroActions=document.querySelector(".hero .actions"),aboutCard=document.querySelector(".grid .card:first-child"),assetsCard=document.querySelector(".grid .card:last-child"),assetActions=assetsCard?.querySelector(".actions");
+  document.querySelectorAll(".brand").forEach(link=>{if(link.closest(".header")){link.href="/wheelitrecords/";link.innerHTML=`<img class="brand-logo" src="${LOGO_URL}" alt="Wheel It! Records">`}});
+  const heading=document.querySelector(".hero h1");if(heading)heading.textContent=title;const now=document.querySelector("#now-playing");if(now)now.textContent=title;
+  const eyebrow=document.querySelector(".hero .eyebrow");if(eyebrow)eyebrow.textContent="Official Release · Wheel It! Records";const lead=document.querySelector(".hero .lede");if(lead)lead.textContent=meta.description||`Official release information, audio and artwork for “${title}”.`;
+  const trackInfo=document.querySelector(".track div");if(trackInfo)trackInfo.innerHTML=`<strong>${escapeHtml(title)}</strong><br><small>${escapeHtml(artist)}</small>`;
+  if(aboutCard)aboutCard.innerHTML=`<p class="eyebrow">Release Information</p><h2>${escapeHtml(artist)}</h2><p class="muted release-summary">${escapeHtml(meta.description||"Additional verified release information will be added as it becomes available.")}</p><div class="release-meta-grid">${metadataRows(meta,title)}</div>${meta.story?`<div class="release-story"><h3>Release Story</h3><p class="muted">${escapeHtml(meta.story)}</p></div>`:""}${artistProfilesMarkup(meta)}${Array.isArray(meta.tracklist)?`<div class="tracklist-copy"><p class="eyebrow">Tracklist</p>${meta.tracklist.map(item=>`<p>${escapeHtml(item)}</p>`).join("")}</div>`:""}${Array.isArray(meta.credits)?`<div class="credit-list">${meta.credits.map(([role,name])=>`<div class="credit-line"><span>${escapeHtml(role)}</span><strong>${escapeHtml(name)}</strong></div>`).join("")}</div>`:""}`;
+  if(assetsCard){assetsCard.querySelector(".eyebrow").textContent="Professional Assets";assetsCard.querySelector("h2").textContent="Release Materials";assetsCard.querySelector(".muted").textContent="Approved mastered audio and artwork for DJs, radio, press and industry partners."}
+  if(assetActions){assetActions.innerHTML="";if(audioButton)addButton(assetActions,"Download Audio",proxiedMediaUrl(audioButton.dataset.audio,title,"audio",true),true);if(cover)addButton(assetActions,"Download Artwork",proxiedMediaUrl(cover.src,`${title}-artwork`,"artwork",true))}
+  const modal=platformModal(meta,title,meta.artist||title);if(heroActions){let choose=heroActions.querySelector("#choose-platform");if(!choose){choose=document.createElement("button");choose.id="choose-platform";choose.className="btn";choose.type="button";choose.textContent="Choose a Platform";heroActions.insertBefore(choose,heroActions.querySelector("#share"))}choose.onclick=()=>{modal.hidden=false;document.body.classList.add("modal-open")}}
+  const share=document.querySelector("#share");if(share){share.classList.add("share-icon");share.setAttribute("aria-label","Share this release");share.setAttribute("title","Share this release");share.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 10.6l6.8-4.1M8.6 13.4l6.8 4.1"></path></svg>'}
+  document.title=`${title} — ${meta.artist||"Wheel It! Records"}`;const description=meta.description||`Official release page for ${title} from Wheel It! Records.`;document.querySelector('meta[name="description"]')?.setAttribute("content",description);document.querySelector('meta[property="og:title"]')?.setAttribute("content",`${title} — ${meta.artist||"Wheel It! Records"}`)
 }
 
-document.querySelectorAll(".brand").forEach(link=>{link.href="/wheelitrecords/";link.innerHTML=`<img class="brand-logo" src="${LOGO_URL}" alt="Wheel It! Records">`});
-document.querySelectorAll(".nav a").forEach(link=>{if(link.textContent.trim().toLowerCase().includes("all releases"))link.href="/wheelitrecords/promo/"});
-applyPresentation();
-
+installGlobalNavigation();applyPresentation();
 const audio=document.querySelector("#audio");let currentButton=null,currentTitle="";
 function ensureStatus(){let status=document.querySelector("#player-status");if(!status){status=document.createElement("div");status.id="player-status";status.className="player-status";status.setAttribute("aria-live","polite");document.querySelector(".player")?.appendChild(status)}return status}
 function setStatus(message){const status=ensureStatus();if(status)status.textContent=message}

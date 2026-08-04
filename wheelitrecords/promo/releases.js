@@ -1,23 +1,24 @@
 window.WHEEL_IT_RELEASES = {
   "dinero-code": {
     artist: "WiggWard & Poseck Jr.",
-    artistBio: "WiggWard and Poseck Jr. are contemporary Jamaican dancehall artists whose collaboration places melodic delivery and street-focused writing inside a compact modern-dancehall format.",
-    genre: "Modern Dancehall",
+    artistBio: "WiggWard, also known as Bop Dymond, is a Jamaican recording artist working in modern dancehall. Poseck Jr. is a Spanish Latin and urban artist with releases including “Madrid,” “GITANIKA,” “Dinero Code” and the 2026 EP “Autentico Roneo de Barrio Vol. 1.” Their pairing makes “Dinero Code” a Jamaica–Spain collaboration rather than a joint act.",
+    genre: "Modern Dancehall / Latin Urban",
+    style: "Jamaican–Spanish crossover",
     released: "October 22, 2025",
     duration: "2:33",
     type: "Single",
     label: "Wheel It! Records",
-    country: "Jamaica",
-    language: "English / Jamaican Patois",
+    country: "Jamaica / Spain",
+    language: "English / Jamaican Patois / Spanish",
     copyright: "℗ 2025 Wheel It! Records",
-    description: "WiggWard and Poseck Jr. join forces on “Dinero Code,” a focused modern-dancehall record built around ambition, momentum and survival-minded confidence.",
-    story: "The collaboration gives both artists equal space, with a concise arrangement designed for immediate impact across streaming, radio and selector circulation.",
+    description: "WiggWard and Poseck Jr. connect Jamaica and Spain on “Dinero Code,” a compact crossover built around ambition, money-minded focus and street-level confidence.",
+    story: "The record brings together two separate artists and scenes: WiggWard’s Jamaican dancehall identity and Poseck Jr.’s Spanish urban catalogue. That contrast gives the release an international character while retaining a direct, club-ready structure.",
     platforms: {apple: "https://music.apple.com/jm/album/dinero-code-single/1846468509", amazon: "https://music.amazon.co.jp/albums/B0FWH7J1D1"},
-    credits: [["Primary Artists", "WiggWard & Poseck Jr."], ["Record Label", "Wheel It! Records"]]
+    credits: [["Primary Artist", "WiggWard (Bop Dymond)"], ["Primary Artist", "Poseck Jr."], ["Record Label", "Wheel It! Records"]]
   },
   "stadaday-in-love": {
     artist: "Stadaday",
-    artistBio: "Stadaday is a Jamaican recording artist with roots in reggae collaboration and a melodic approach suited to relationship-centred material. Public catalogue references place Stadaday among Jamaican vocalists working across reggae and contemporary Caribbean music.",
+    artistBio: "Stadaday is a Jamaican recording artist working in a melodic reggae and contemporary Caribbean lane. Public information remains limited, but his recorded work presents him as a vocalist drawn to relationship-centred writing and direct emotional delivery.",
     genre: "Dancehall / Reggae",
     style: "Melodic Caribbean",
     type: "Single",
@@ -25,12 +26,12 @@ window.WHEEL_IT_RELEASES = {
     country: "Jamaica",
     language: "English / Jamaican Patois",
     description: "“In Love” presents Stadaday in a warm, relationship-driven setting, centring romantic commitment and emotional openness within a contemporary Jamaican production.",
-    story: "The release favours melody and intimacy over aggression, allowing Stadaday’s vocal performance to carry a direct declaration of affection.",
+    story: "The release favours melody and intimacy over aggression, allowing Stadaday’s vocal performance to carry a direct declaration of affection and give the record an accessible lovers-oriented character.",
     credits: [["Primary Artist", "Stadaday"], ["Record Label", "Wheel It! Records"]]
   },
   "halfway": {
     artist: "Ah-Drianna & The Grei Show",
-    artistBio: "Ah-Drianna, born Adrianna Grenade in San Fernando, Trinidad and Tobago, is an R&B/soul artist who developed her career in Jamaica. Her music blends silky vocals, emotionally direct songwriting and Caribbean influence, with a catalogue shaped by love, relationships and introspection.",
+    artistBio: "Ah-Drianna, born Adrianna Grenade in San Fernando, Trinidad and Tobago, is an R&B and soul artist who developed her recording career after moving to Jamaica. Singing from childhood, she draws on R&B, soul and Caribbean influence, with a catalogue that includes “Bullseye,” “Infatuated,” “Adrijuana,” “Anxiety,” “133 Degrees,” “Tragedy” and “Halfway.”",
     genre: "R&B / Soul",
     style: "Alternative Caribbean R&B",
     released: "August 22, 2025",
@@ -40,26 +41,26 @@ window.WHEEL_IT_RELEASES = {
     language: "English",
     copyright: "℗ 2025 Wheel It! Records",
     description: "“Halfway” brings Ah-Drianna and The Grei Show together for an emotionally direct R&B single about commitment, distance and the limits of uneven effort.",
-    story: "Built around Ah-Drianna’s introspective writing and vocal restraint, the song balances vulnerability with self-respect while The Grei Show supports the record’s understated Caribbean atmosphere.",
+    story: "Built around Ah-Drianna’s introspective writing and silky vocal tone, the song balances vulnerability with self-respect while The Grei Show supports the record’s understated Caribbean atmosphere.",
     platforms: {apple: "https://music.apple.com/us/artist/ah-drianna/1491370825", spotify: "https://open.spotify.com/artist/4TL9bFCkMgosm2zEO3Zxr9"},
     credits: [["Primary Artists", "Ah-Drianna & The Grei Show"], ["Record Label", "Wheel It! Records"]]
   },
   "be-a-star": {
     artist: "Lady Melody",
-    artistBio: "Lady Melody is a Jamaican recording artist presented here through a vocal-led, motivational dancehall and reggae direction. Her public profile remains emerging, so this release is positioned around the strength of the song and performance rather than unverified biography.",
+    artistBio: "Lady Melody is a Jamaican recording artist introduced through “Me a Star,” her first commercial release. With no earlier public catalogue to lean on, the single serves as her formal introduction: a melodic, self-affirming performance built around confidence, ambition and the declaration of a new artistic identity.",
     genre: "Dancehall / Reggae",
     style: "Inspirational Caribbean",
-    type: "Single",
+    type: "Debut Single",
     label: "Wheel It! Records",
     country: "Jamaica",
     language: "English / Jamaican Patois",
-    description: "“Me a Star” is Lady Melody’s aspirational statement of confidence, identity and determination.",
-    story: "The record frames Lady Melody as the central voice in her own rise, translating self-belief into a forward-looking dancehall and reggae anthem.",
-    credits: [["Primary Artist", "Lady Melody"], ["Record Label", "Wheel It! Records"]]
+    description: "“Me a Star” is Lady Melody’s debut statement of confidence, identity and determination.",
+    story: "Rather than presenting an established catalogue, the release captures the beginning of one. Lady Melody uses her first official single to announce herself with a forward-looking message centred on self-belief and artistic ambition.",
+    credits: [["Primary Artist", "Lady Melody"], ["Debut Commercial Release", "Me a Star"], ["Record Label", "Wheel It! Records"]]
   },
   "overflowing": {
     artist: "StillVillN",
-    artistBio: "StillVillN is a Jamaican Caribbean artist with releases spanning reggae, modern dancehall and melodic collaborations. His catalogue includes “Greatness,” “Triumphant,” “Vibes Deh,” “Everywhere I Go” and “Overflowing,” reflecting a flexible approach to contemporary Jamaican music.",
+    artistBio: "StillVillN is a Jamaican artist whose catalogue moves across reggae, modern dancehall and melodic Caribbean music. His releases include the album “Felt” and singles such as “Real Eyes,” “Uppercut,” “Change Yuh Reality,” “Success,” “Everywhere I Go,” “blaze” and “Overflowing,” showing a consistent focus on resilience, growth and lived experience.",
     genre: "Reggae",
     style: "Contemporary Jamaican reggae",
     released: "August 1, 2025",
@@ -76,7 +77,7 @@ window.WHEEL_IT_RELEASES = {
   },
   "jah-by-my-side": {
     artist: "Whatatamtam",
-    artistBio: "Whatatamtam, also known as “Sweet Sweet Water,” is a Jamaican reggae and dancehall artist, live performer and host whose work centres positive, conscious music. Her background includes competitions, regular stage performances and collaborations across Jamaica’s independent reggae community.",
+    artistBio: "Whatatamtam, also known as “Sweet Sweet Water,” is a Jamaican reggae and dancehall recording artist, dancer and live performer. She has described her sound as open to jazz, hip-hop, R&B, alternative, pop and rock, while her public journey has included competitions, stage performances, social-media content and independent releases beginning with “Island Girl” in 2022.",
     genre: "Reggae",
     style: "Spiritual / Conscious Reggae",
     released: "March 28, 2025",
@@ -87,27 +88,26 @@ window.WHEEL_IT_RELEASES = {
     language: "English / Jamaican Patois",
     copyright: "℗ 2025 Wheel It! Records",
     description: "“Jah by My Side” is a faith-centred reggae single focused on spiritual protection, resilience and confidence through belief.",
-    story: "The song continues reggae’s tradition of personal testimony, placing Jah at the centre of the artist’s strength, direction and moral grounding.",
+    story: "The song continues reggae’s tradition of personal testimony, placing Jah at the centre of the artist’s strength, direction and moral grounding while reflecting Whatatamtam’s positive and performance-led identity.",
     platforms: {apple: "https://music.apple.com/jp/album/jah-by-my-side-single/1802766528", amazon: "https://music.amazon.com.au/artists/B09R3Z3NCY/whatatamtam"},
-    credits: [["Primary Artist", "Whatatamtam"], ["Record Label", "Wheel It! Records"]]
+    credits: [["Primary Artist", "Whatatamtam"], ["Also Known As", "Sweet Sweet Water"], ["Record Label", "Wheel It! Records"]]
   },
   "its-you": {
-    artist: "Yung Muta",
-    artistBio: "Yung Muta is a modern-dancehall artist born February 22, 1997. His music sits within the contemporary Jamaican dancehall space, balancing rhythmic delivery with melodic, relationship-focused material.",
-    genre: "Modern Dancehall",
-    style: "Melodic Dancehall",
+    artist: "Yungg Muta",
+    artistBio: "Yungg Muta, born Chafari Mutabaruka Campbell, is a Jamaican reggae and dancehall artist and the grandson of dub poet, broadcaster and cultural figure Mutabaruka. He is also the grandson of veteran music producer Charles Campbell. Raised around music and live performance, he has built his own catalogue through songs including “Thank You Jah,” “Miss Intangible,” “Love Talk,” “H.I.M.” and “It’s You,” with a style grounded in roots, consciousness, upliftment and personal experience.",
+    genre: "Reggae / Modern Dancehall",
+    style: "Melodic conscious Caribbean",
     type: "Single",
     label: "Wheel It! Records",
     country: "Jamaica",
     language: "English / Jamaican Patois",
-    description: "“It’s You” places Yung Muta in an intimate melodic-dancehall setting, centring romantic focus and direct emotional expression.",
-    story: "The song is structured as a clear declaration to one person, giving Yung Muta room to foreground melody and sincerity within a contemporary dancehall framework.",
-    platforms: {apple: "https://music.apple.com/ca/artist/yung-muta/1685951207"},
-    credits: [["Primary Artist", "Yung Muta"], ["Record Label", "Wheel It! Records"]]
+    description: "“It’s You” places Yungg Muta in an intimate melodic setting, centring romantic focus and direct emotional expression while retaining the warmth of contemporary Jamaican music.",
+    story: "The song expands Yungg Muta’s catalogue beyond strictly conscious themes, allowing him to foreground tenderness and personal connection while remaining rooted in the musical foundation and cultural awareness associated with his family legacy.",
+    credits: [["Primary Artist", "Yungg Muta"], ["Given Name", "Chafari Mutabaruka Campbell"], ["Record Label", "Wheel It! Records"]]
   },
   "dancehall-stylee": {
     artist: "Swnkah & Sugar Minott",
-    artistBio: "Swnkah is a Jamaican recording artist continuing the musical legacy of her father, reggae and dancehall pioneer Sugar Minott. Sugar Minott was a foundational singer, songwriter and producer whose work helped shape lovers rock, roots reggae and the sound-system culture that fed modern dancehall.",
+    artistBio: "Swnkah, born Candice Minott, is a Jamaican recording artist and the daughter of reggae and dancehall pioneer Sugar Minott and music-industry executive Maxine Stowe. Her catalogue includes “Loosen Up,” “Palm Trees,” “Hotgirl,” “Cash Out” and the RZA collaboration “Why Why Why.” Through “Dancehall Stylee,” she extends her father’s legacy while asserting her own voice across reggae, dancehall and hip-hop-influenced music.",
     genre: "Modern Dancehall",
     style: "Dancehall heritage / contemporary reggae",
     released: "May 20, 2025",
@@ -119,7 +119,7 @@ window.WHEEL_IT_RELEASES = {
     country: "Jamaica",
     copyright: "℗ 2025 Wheel It! Records",
     description: "Swnkah honours her father Sugar Minott and the living spirit of Jamaican dancehall on a cross-generational record that connects heritage with a new era.",
-    story: "“Dancehall Stylee” centres Swnkah’s voice while drawing directly from Sugar Minott’s legacy, functioning as both a family tribute and a forward-looking dancehall single.",
+    story: "“Dancehall Stylee” is presented not as a conventional remake but as a spiritual continuation. Swnkah uses new lyrics and contemporary production to honour both parents, reconnect with foundational dancehall and carry that legacy into her own catalogue.",
     platforms: {apple: "https://music.apple.com/us/album/dancehall-stylee-single/1811688370", amazon: "https://music.amazon.com/tracks/B0F72Q9ZD9"},
     credits: [["Performing Artists", "Swnkah & Lincoln “Sugar” Minott"], ["Songwriters", "Lincoln “Sugar” Minott & Candice Minott"], ["Producer", "The Grei Show"], ["Synthesizer", "The Grei Show"], ["Executive Producer", "Maxine Stowe"], ["Record Label", "Wheel It! Records"]]
   },
@@ -143,7 +143,7 @@ window.WHEEL_IT_RELEASES = {
   },
   "cash-out": {
     artist: "Swnkah",
-    artistBio: "Swnkah is a Jamaican recording artist whose work bridges her family’s reggae heritage with a contemporary approach to dancehall, rap and melodic Caribbean music.",
+    artistBio: "Swnkah, born Candice Minott, is a Jamaican recording artist and the daughter of Sugar Minott and Maxine Stowe. Her work crosses reggae, dancehall and hip-hop-influenced music, with releases including “Loosen Up,” “Palm Trees,” “Hotgirl,” “Why Why Why” with RZA, “Dancehall Stylee” and “Cash Out.”",
     genre: "Hip-Hop/Rap",
     released: "June 22, 2021",
     duration: "2 minutes",
@@ -153,14 +153,15 @@ window.WHEEL_IT_RELEASES = {
     language: "English / Jamaican Patois",
     copyright: "℗ 2021 Wheel It! Records",
     description: "“Cash Out” is a concise solo statement from Swnkah, pairing her Jamaican delivery with a rap-oriented release format.",
-    story: "The song leans into confidence, independence and financial ambition while retaining a distinctly Jamaican rhythmic identity.",
+    story: "The song leans into confidence, independence and financial ambition while expanding Swnkah’s catalogue beyond strictly reggae and dancehall framing.",
     platforms: {apple: "https://music.apple.com/us/album/cash-out-single/1571833861"},
-    credits: [["Primary Artist", "Swnkah"], ["Record Label", "Wheel It! Records"]]
+    credits: [["Primary Artist", "Swnkah"], ["Given Name", "Candice Minott"], ["Record Label", "Wheel It! Records"]]
   },
   "steaming": {
-    artist: "Karbon",
-    artistBio: "Karbon is a reggae recording artist with a contemporary Jamaican sound and a catalogue that includes singles such as “Steaming.”",
+    artist: "Karbon D Hardone",
+    artistBio: "Karbon D Hardone, also styled Karbon D Hard 1, is a Kingston-born Jamaican roots-reggae artist raised in Broadleaf, Manchester. A Rastafarian singer focused on substance over hype, identity, resilience and spiritual elevation, he began writing as a teenager and later became associated with Yaadcore’s 12 Yaad Records. His catalogue includes “Highgrade Maka,” “Fully Awake,” “She’s Mine,” “Hesitate,” “Jamaica” and “Steaming.”",
     genre: "Reggae",
+    style: "Contemporary roots reggae",
     released: "March 28, 2025",
     duration: "2:38",
     type: "Single",
@@ -168,9 +169,9 @@ window.WHEEL_IT_RELEASES = {
     country: "Jamaica",
     language: "English / Jamaican Patois",
     copyright: "℗ 2025 Wheel It! Records",
-    description: "Karbon delivers “Steaming,” a compact reggae single released through Wheel It! Records in 2025.",
-    story: "The release positions Karbon at the centre of a concise, modern reggae presentation designed for streaming, radio and selector circulation.",
+    description: "Karbon D Hardone delivers “Steaming,” a concise roots-reggae single carrying his spiritually grounded, modern Jamaican identity.",
+    story: "The release fits Karbon’s broader approach: foundation-minded reggae delivered with contemporary edge, lyrical purpose and a focus on resilience rather than spectacle.",
     platforms: {apple: "https://music.apple.com/us/album/steaming-single/1800345903", amazon: "https://music.amazon.com.au/albums/B0DZG93RYR"},
-    credits: [["Primary Artist", "Karbon"], ["Record Label", "Wheel It! Records"]]
+    credits: [["Primary Artist", "Karbon D Hardone"], ["Also Styled As", "Karbon D Hard 1"], ["Record Label", "Wheel It! Records"]]
   }
 };

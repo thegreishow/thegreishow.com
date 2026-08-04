@@ -130,22 +130,16 @@
   }
 
   async function loadFooter() {
-    // Avoid double-injection
     if (document.querySelector('[data-site-footer]')) return;
-
     try {
       const response = await fetch('/shared/footer.html', { cache: 'no-cache' });
       if (!response.ok) throw new Error('Footer unavailable');
       const html = await response.text();
-
-      // Prefer an explicit mount point if present
       let mount = document.getElementById('site-footer');
       if (mount) {
         mount.innerHTML = html;
         return;
       }
-
-      // Otherwise append after main or at end of body
       const main = document.querySelector('main');
       const target = main || document.body;
       const wrapper = document.createElement('div');
@@ -172,6 +166,15 @@
     document.body.appendChild(script);
   }
 
+  function loadPromoVideoLayer() {
+    if (!location.pathname.startsWith('/promo/') || document.querySelector('script[data-promo-video]')) return;
+    const script = document.createElement('script');
+    script.src = '/assets/js/promo-video.js?v=20260803-1';
+    script.defer = true;
+    script.dataset.promoVideo = 'true';
+    document.body.appendChild(script);
+  }
+
   function init() {
     if (initialized) return;
     initialized = true;
@@ -180,6 +183,7 @@
     loadNav();
     loadFooter();
     enhanceReleaseList();
+    loadPromoVideoLayer();
   }
 
   window.markCurrentNavLink = markCurrentNavLink;

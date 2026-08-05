@@ -65,7 +65,8 @@ expect('books.html', books, /astralthread\.html|The Astral Thread/i, 'Astral Thr
 expect('books.html', books, /shared\/nav\.js/, 'global site entry is not loaded');
 
 const arcade = await read('arcade.html');
-expect('arcade.html', arcade, /arcade\/game\.html|arcade\/games\//, 'Arcade game path is missing');
+expect('arcade.html', arcade, /arcade\/engine\/loader\.js/, 'Arcade loader is missing');
+expect('arcade.html', arcade, /id=["']arcade-root["']/, 'Arcade application mount is missing');
 expect('arcade.html', arcade, /shared\/nav\.js/, 'global site entry is not loaded');
 
 const whiteline = await read('whiteline.html');
@@ -99,6 +100,8 @@ for (const required of [
   'assets/js/promo-modal.js',
   'assets/js/promo-video.js',
   'assets/css/promo.css',
+  'arcade/engine/loader.js',
+  'arcade/games/games.json',
   'functions/api/newsletter.js',
   'functions/api/whiteline.js',
 ]) {

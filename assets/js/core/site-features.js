@@ -16,6 +16,7 @@
   function loadPromoFeatures() {
     if (!location.pathname.startsWith('/promo/')) return;
     loadScript('/assets/js/promo-video.js?v=20260803-1', 'promoVideo');
+    loadScript('/assets/js/promo-modal.js?v=20260805-1', 'promoModal');
   }
 
   function init() {

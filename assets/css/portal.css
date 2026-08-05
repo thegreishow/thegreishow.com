@@ -38,3 +38,9 @@ body.portal-out {
   transform: scale(0.99);
   transition: all 0.5s ease;
 }
+
+/* About page reliability fix: content must never depend on JS to remain visible. */
+.about-page .section {
+  opacity: 1 !important;
+  transform: none !important;
+}

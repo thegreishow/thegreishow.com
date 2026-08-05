@@ -1,4 +1,4 @@
-// Grei Site - Global Navigation + Footer Injector
+// Grei Site - Global navigation and footer injector
 (function () {
   let initialized = false;
 
@@ -54,59 +54,30 @@
     const toggle = document.querySelector('.nav-toggle');
     const nav = document.getElementById('primary-nav');
     if (!toggle || !nav || toggle.dataset.bound === 'true') return;
+
     toggle.dataset.bound = 'true';
     toggle.addEventListener('click', () => {
       const isOpen = nav.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', String(isOpen));
       toggle.textContent = isOpen ? 'Close' : 'Menu';
     });
+
     nav.addEventListener('click', event => {
       if (event.target.closest('a')) closeMobileNav();
     });
+
     document.addEventListener('click', event => {
       const header = document.querySelector('.site-header');
       if (header && !header.contains(event.target)) closeMobileNav();
     });
+
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape') closeMobileNav(nav.classList.contains('is-open'));
     });
+
     addEventListener('resize', () => {
       if (innerWidth > 900) closeMobileNav();
     }, { passive: true });
-  }
-
-  function initSiteEvents() {
-    if (window.greiTrack) return;
-    const campaignKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
-    const params = new URLSearchParams(location.search);
-    const currentCampaign = campaignKeys.reduce((campaign, key) => {
-      const value = params.get(key);
-      if (value) campaign[key] = value;
-      return campaign;
-    }, {});
-    try {
-      if (Object.keys(currentCampaign).length) sessionStorage.setItem('grei_attribution', JSON.stringify(currentCampaign));
-    } catch {}
-    const getAttribution = () => {
-      try { return JSON.parse(sessionStorage.getItem('grei_attribution') || '{}'); }
-      catch { return {}; }
-    };
-    function track(eventName, details = {}) {
-      const trackedEvent = { event: eventName, page: location.pathname || '/', ...getAttribution(), ...details };
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(trackedEvent);
-      dispatchEvent(new CustomEvent('grei:track', { detail: trackedEvent }));
-    }
-    document.addEventListener('click', event => {
-      const target = event.target.closest('[data-track]');
-      if (!target) return;
-      track('grei_cta_click', {
-        action: target.dataset.track,
-        label: target.dataset.trackLabel || target.textContent.trim()
-      });
-    });
-    window.greiTrack = track;
-    track('grei_page_view', { title: document.title });
   }
 
   function injectEmergencyNav() {
@@ -135,11 +106,12 @@
       const response = await fetch('/shared/footer.html', { cache: 'no-cache' });
       if (!response.ok) throw new Error('Footer unavailable');
       const html = await response.text();
-      let mount = document.getElementById('site-footer');
+      const mount = document.getElementById('site-footer');
       if (mount) {
         mount.innerHTML = html;
         return;
       }
+
       const main = document.querySelector('main');
       const target = main || document.body;
       const wrapper = document.createElement('div');
@@ -151,25 +123,10 @@
     }
   }
 
-  function enhanceReleaseList() {
-    const panel = document.querySelector('.list-panel');
-    if (!panel || document.getElementById('release-list-form')) return;
-    const placeholder = panel.querySelector('a[href^="mailto:"]');
-    panel.querySelector('.list-copy p:last-child').textContent = 'Join the release list for new music, story chapters, visual drops, playable experiments, events, and limited releases.';
-    const form = document.createElement('form');
-    form.id = 'release-list-form';
-    form.className = 'release-list-form';
-    form.innerHTML = '<label><span>First name</span><input name="first_name" type="text" autocomplete="given-name"></label><label><span>Email</span><input name="email" type="email" autocomplete="email" required></label><label><span>Country</span><input name="country" type="text" autocomplete="country-name"></label><label class="release-consent"><input name="consent" type="checkbox" required><span>I agree to receive release news and can unsubscribe at any time.</span></label><button class="home-button primary" type="submit">Join the list</button><p id="release-list-status" class="form-note" role="status" aria-live="polite"></p>';
-    placeholder?.replaceWith(form);
-    const script = document.createElement('script');
-    script.src = 'assets/js/newsletter.js?v=20260727-2';
-    document.body.appendChild(script);
-  }
-
   function loadSiteFeatures() {
     if (document.querySelector('script[data-site-features]')) return;
     const script = document.createElement('script');
-    script.src = '/assets/js/core/site-features.js?v=20260804-1';
+    script.src = '/assets/js/core/site-features.js?v=20260805-2';
     script.defer = true;
     script.dataset.siteFeatures = 'true';
     document.body.appendChild(script);
@@ -179,14 +136,15 @@
     if (initialized) return;
     initialized = true;
     ensureFavicon();
-    initSiteEvents();
     loadNav();
     loadFooter();
-    enhanceReleaseList();
     loadSiteFeatures();
   }
 
   window.markCurrentNavLink = markCurrentNavLink;
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
-  else init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 })();

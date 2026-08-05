@@ -39,24 +39,44 @@ Reduce duplication, separate unrelated responsibilities, document where new code
 ### Confirmed architecture pressure points
 
 1. **Overloaded shared bootstrap**
-   - `shared/nav.js` currently coordinates navigation, footer loading, release-list enhancement, analytics-related site behaviour, and promo-video loading.
-   - Promo-specific behaviour should not depend on the navigation module.
+   - `shared/nav.js` coordinates navigation, footer loading, release-list enhancement, analytics-related site behaviour, and feature bootstrapping.
+   - Promo-specific behaviour has now been moved behind `assets/js/core/site-features.js`, reducing the first layer of coupling.
 
 2. **Large flat root page surface**
-   - Many unrelated HTML pages live at repository root, including public portals, owner/admin pages, White Line pages, media archives, and project microsites.
-   - Moving them immediately would risk public URLs, so the first step is classification and routing documentation rather than relocation.
+   - The audit found 35 root-level HTML pages spanning core portals, owner/admin pages, White Line pages, archives, and compatibility routes.
+   - Moving them immediately would risk public URLs, so classification and route documentation comes before relocation.
 
-3. **Repeated page-specific styling**
-   - `PROJECT_STATE.md` confirms that several pages still contain inline style blocks while the shared component layer is incomplete.
+3. **Repeated page-specific styling and scripting**
+   - 40 HTML pages contain inline CSS or JavaScript.
+   - The largest immediate targets are `index.html`, `about.html`, the arcade games, and the three legacy promo pages.
 
 4. **Structured content is incomplete**
    - Music, visuals, books, press, arcade, and promo pages still need a consistent data-driven content strategy.
 
-5. **Repository weight needs measurement**
-   - The repository is approximately 152 MB. The audit must identify the largest tracked assets, duplicates, generated files, and media that should be externally hosted or compressed.
+5. **Repository weight is media-led**
+   - The checked-out working tree is 136.45 MB across 295 files.
+   - The largest files are first-party music masters, Astral Thread narration, and two oversized JPGs.
+   - No exact duplicate media groups were found, so the main savings will come from image optimization and an explicit media-hosting policy rather than duplicate deletion.
 
 6. **Multiple backend surfaces**
-   - `api/`, `functions/`, `workers/arcade-api/`, and `supabase/` may be intentional, but ownership, deployment target, and boundaries must be documented to avoid duplicate endpoints and configuration drift.
+   - The audit counted 1 file under `api/`, 9 under `functions/`, 4 under `workers/`, and 33 under `supabase/`.
+   - These may be intentional, but ownership, deployment target, and boundaries must be documented to avoid duplicate endpoints and configuration drift.
+
+## Measured findings
+
+The generated report is committed at `docs/ARCHITECTURE_REPORT.md` and reproduced automatically by the Architecture audit GitHub Actions workflow.
+
+### Highest-impact storage targets
+
+- `assets/audio/music/the-vibe.mp3` — 13.22 MB
+- `assets/img/no-drama.jpg` — 11.53 MB
+- `assets/img/home-bg.jpg` — 9.50 MB
+- Astral Thread narration directory — many files between roughly 1 MB and 9 MB
+- Remaining first-party music MP3s — roughly 5 MB to 7 MB each
+
+### Practical conclusion
+
+The two oversized JPGs are the safest first performance/storage optimization candidates. Audio should not be moved until playback, range requests, downloads, offline expectations, and Cloudflare caching are fully documented.
 
 ## Target responsibility map
 
@@ -68,6 +88,7 @@ shared/
 assets/js/core/
   site.js                # global bootstrapping only
   analytics.js           # dataLayer/event helpers
+  site-features.js       # path-aware feature loading
 
 assets/js/components/
   navigation.js
@@ -103,20 +124,31 @@ This is a direction, not an immediate move plan. Existing paths remain authorita
 
 ## Audit worklist
 
-- [ ] Generate a complete repository tree with file sizes.
-- [ ] List the 50 largest tracked files.
-- [ ] Find duplicate assets by checksum and near-duplicate filename.
+- [x] Generate a complete repository tree with file sizes.
+- [x] List the 50 largest tracked files.
+- [x] Find exact duplicate media by checksum.
+- [ ] Add near-duplicate filename and visual similarity checks.
 - [ ] Classify every root HTML page: core, archive, app, admin, legacy, redirect target, or microsite.
-- [ ] Inventory inline `<style>` and `<script>` blocks by page.
-- [ ] Inventory shared JS responsibilities and page consumers.
+- [x] Inventory inline `<style>` and `<script>` blocks by page.
+- [x] Inventory the first shared JS responsibility split.
+- [ ] Inventory all shared JS consumers.
 - [ ] Map every backend directory to its deployment platform and owner.
 - [ ] Check `.gitignore`, generated artifacts, secrets, and environment-file handling.
 - [ ] Record all public routes before moving any file.
 - [ ] Define smoke tests for homepage, booking, mailing list, promo pages, books, arcade, and White Line.
+- [x] Add CI generation of the architecture report.
 
-## First migration candidate
+## First migration completed
 
-Split promo-video loading out of `shared/nav.js` into a neutral global bootstrap or a promo-only page entry. This is small, reversible, and directly reduces coupling without changing URLs or markup.
+Promo-video loading is no longer owned directly by `shared/nav.js`. Navigation now invokes a neutral, path-aware feature bootstrap at `assets/js/core/site-features.js`, which loads the existing promo-video layer only for `/promo/` routes.
+
+## Next migration sequence
+
+1. Classify the 35 root HTML pages and freeze their public-route status.
+2. Document backend deployment boundaries.
+3. Extract shared styling from the three legacy promo pages into one promo stylesheet.
+4. Optimize `no-drama.jpg` and `home-bg.jpg` after confirming every reference and visual fallback.
+5. Split analytics and release-list enhancement out of `shared/nav.js` in separate reversible commits.
 
 ## Completion criteria
 
@@ -124,5 +156,5 @@ Split promo-video loading out of `shared/nav.js` into a neutral global bootstrap
 - No feature-specific behaviour inside navigation code.
 - Repeated inline CSS reduced into shared components without visual regressions.
 - Content-heavy sections use documented data structures.
-- Large and duplicate assets are reduced or relocated safely.
+- Large assets are optimized or relocated safely.
 - Validation and smoke tests pass on the refactor branch before merge.

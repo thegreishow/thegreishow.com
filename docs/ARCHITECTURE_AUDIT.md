@@ -135,7 +135,7 @@ Existing paths remain authoritative until each subsystem is migrated and tested.
 - [x] Map backend directories to deployment platforms and ownership rules.
 - [x] Add `.gitignore` coverage for secrets, local state, dependencies and generated output.
 - [x] Record public routes before moving any file.
-- [ ] Define smoke tests for homepage, booking, mailing list, promo pages, books, arcade, and White Line.
+- [x] Define smoke tests for homepage, booking, mailing list, promo pages, books, arcade, and White Line.
 - [x] Add CI generation of the architecture report.
 
 ## Migrations completed
@@ -150,14 +150,16 @@ Existing paths remain authoritative until each subsystem is migrated and tested.
 8. `shared/nav.js` became a compatibility wrapper for `assets/js/core/site.js`.
 9. Backend runtime boundaries were documented in `docs/BACKEND_BOUNDARIES.md`.
 10. A repository-wide `.gitignore` policy was added for local secrets and generated state.
+11. `scripts/smoke-test.mjs` now protects the homepage, release list, unified booking route, promo pages, books, Arcade, White Line, shared bootstrap and critical backend files.
+12. The normal validation workflow runs both structural validation and smoke tests on every push and pull request.
 
 ## Next migration sequence
 
-1. Add smoke-test coverage for critical working flows.
-2. Inventory all remaining shared JavaScript consumers and compatibility entry points.
-3. Trace the exact active importer and deployment role of `api/media.js`.
-4. Optimize `no-drama.jpg` and `home-bg.jpg` after confirming every reference and visual fallback.
-5. Select the next repeated inline-style family outside promo pages.
+1. Inventory all remaining shared JavaScript consumers and compatibility entry points.
+2. Trace the exact active importer and deployment role of `api/media.js`.
+3. Optimize `no-drama.jpg` and `home-bg.jpg` after confirming every reference and visual fallback.
+4. Select the next repeated inline-style family outside promo pages.
+5. Review the complete PR diff and preview before deciding whether the architecture foundation is ready to merge.
 
 ## Completion criteria
 

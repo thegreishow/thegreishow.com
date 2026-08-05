@@ -38,29 +38,29 @@ Reduce duplication, separate unrelated responsibilities, document where new code
 
 ### Confirmed architecture pressure points
 
-1. **Overloaded shared bootstrap**
-   - `shared/nav.js` coordinates navigation, footer loading, release-list enhancement, analytics-related site behaviour, and feature bootstrapping.
-   - Promo-specific behaviour has now been moved behind `assets/js/core/site-features.js`, reducing the first layer of coupling.
+1. **Legacy entry-point naming**
+   - Public pages still load `shared/nav.js`, but that file is now only a compatibility wrapper.
+   - Global startup lives in `assets/js/core/site.js`; navigation and footer responsibilities live in separate components.
 
 2. **Large flat root page surface**
    - The audit found 35 root-level HTML pages spanning core portals, owner/admin pages, White Line pages, archives, and compatibility routes.
    - Moving them immediately would risk public URLs, so classification and route documentation comes before relocation.
 
 3. **Repeated page-specific styling and scripting**
-   - 40 HTML pages contain inline CSS or JavaScript.
-   - The largest immediate targets are `index.html`, `about.html`, the arcade games, and the three legacy promo pages.
+   - The initial audit found 40 HTML pages containing inline CSS or JavaScript.
+   - The three legacy promo pages have now moved their common CSS and modal behavior into shared assets.
 
 4. **Structured content is incomplete**
    - Music, visuals, books, press, arcade, and promo pages still need a consistent data-driven content strategy.
 
 5. **Repository weight is media-led**
-   - The checked-out working tree is 136.45 MB across 295 files.
+   - The checked-out working tree is approximately 136 MB.
    - The largest files are first-party music masters, Astral Thread narration, and two oversized JPGs.
    - No exact duplicate media groups were found, so the main savings will come from image optimization and an explicit media-hosting policy rather than duplicate deletion.
 
 6. **Multiple backend surfaces**
-   - The audit counted 1 file under `api/`, 9 under `functions/`, 4 under `workers/`, and 33 under `supabase/`.
-   - These may be intentional, but ownership, deployment target, and boundaries must be documented to avoid duplicate endpoints and configuration drift.
+   - The audit counted files under `api/`, `functions/`, `workers/`, and `supabase/`.
+   - Ownership, deployment target, and boundaries must be documented to avoid duplicate endpoints and configuration drift.
 
 ## Measured findings
 
@@ -78,49 +78,36 @@ The generated report is committed at `docs/ARCHITECTURE_REPORT.md` and reproduce
 
 The two oversized JPGs are the safest first performance/storage optimization candidates. Audio should not be moved until playback, range requests, downloads, offline expectations, and Cloudflare caching are fully documented.
 
-## Target responsibility map
+## Current responsibility map
 
 ```text
 shared/
   nav.html
   footer.html
+  nav.js                 # compatibility entry only
 
 assets/js/core/
-  site.js                # global bootstrapping only
+  site.js                # global startup and component orchestration
   analytics.js           # dataLayer/event helpers
-  site-features.js       # path-aware feature loading
+  site-features.js       # conditional feature loading
 
 assets/js/components/
-  navigation.js
-  footer.js
-  media-player.js
+  navigation.js          # navigation fetch, active state, mobile controls
+  footer.js              # footer fetch and mount
 
 assets/js/features/
-  promo-video.js
-  release-list.js
-  newsletter.js
-  booking.js
+  release-list.js        # release-list form enhancement
 
-assets/js/pages/
-  <page-specific entry files>
+assets/js/
+  promo-video.js
+  promo-modal.js
+  newsletter.js
 
 assets/css/
-  base.css
-  layout.css
-  components/
-  features/
-  pages/
-
-data/
-  releases/
-  music.json
-  visuals.json
-  books.json
-  press.json
-  arcade.json
+  promo.css               # shared legacy promo-page presentation
 ```
 
-This is a direction, not an immediate move plan. Existing paths remain authoritative until each subsystem is migrated and tested.
+Existing paths remain authoritative until each subsystem is migrated and tested.
 
 ## Audit worklist
 
@@ -128,27 +115,34 @@ This is a direction, not an immediate move plan. Existing paths remain authorita
 - [x] List the 50 largest tracked files.
 - [x] Find exact duplicate media by checksum.
 - [ ] Add near-duplicate filename and visual similarity checks.
-- [ ] Classify every root HTML page: core, archive, app, admin, legacy, redirect target, or microsite.
+- [x] Classify and freeze root/public routes in `docs/ROUTE_MAP.md`.
 - [x] Inventory inline `<style>` and `<script>` blocks by page.
-- [x] Inventory the first shared JS responsibility split.
-- [ ] Inventory all shared JS consumers.
+- [x] Split analytics, release-list, promo, navigation, and footer responsibilities.
+- [ ] Inventory all remaining shared JS consumers.
 - [ ] Map every backend directory to its deployment platform and owner.
 - [ ] Check `.gitignore`, generated artifacts, secrets, and environment-file handling.
-- [ ] Record all public routes before moving any file.
+- [x] Record public routes before moving any file.
 - [ ] Define smoke tests for homepage, booking, mailing list, promo pages, books, arcade, and White Line.
 - [x] Add CI generation of the architecture report.
 
-## First migration completed
+## Migrations completed
 
-Promo-video loading is no longer owned directly by `shared/nav.js`. Navigation now invokes a neutral, path-aware feature bootstrap at `assets/js/core/site-features.js`, which loads the existing promo-video layer only for `/promo/` routes.
+1. Promo-video loading moved behind `assets/js/core/site-features.js`.
+2. Shared promo CSS moved into `assets/css/promo.css`.
+3. Shared promo modal behavior moved into `assets/js/promo-modal.js`.
+4. Analytics moved into `assets/js/core/analytics.js`.
+5. Release-list enhancement moved into `assets/js/features/release-list.js`.
+6. Navigation moved into `assets/js/components/navigation.js`.
+7. Footer loading moved into `assets/js/components/footer.js`.
+8. `shared/nav.js` became a compatibility wrapper for `assets/js/core/site.js`.
 
 ## Next migration sequence
 
-1. Classify the 35 root HTML pages and freeze their public-route status.
-2. Document backend deployment boundaries.
-3. Extract shared styling from the three legacy promo pages into one promo stylesheet.
+1. Document backend deployment boundaries.
+2. Add smoke-test coverage for critical working flows.
+3. Audit `.gitignore`, environment files, generated artifacts, and repository secrets handling.
 4. Optimize `no-drama.jpg` and `home-bg.jpg` after confirming every reference and visual fallback.
-5. Split analytics and release-list enhancement out of `shared/nav.js` in separate reversible commits.
+5. Select the next repeated inline-style family outside promo pages.
 
 ## Completion criteria
 

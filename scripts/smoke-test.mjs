@@ -42,11 +42,14 @@ expect('index.html', homepage, /class=["'][^"']*list-panel/, 'release-list panel
 expect('index.html', homepage, /shared\/nav\.js/, 'global compatibility entry is not loaded');
 
 const booking = await read('booking.html');
-expect('booking.html', booking, /<form\b/i, 'booking form is missing');
-expect('booking.html', booking, /shared\/nav\.js/, 'global site entry is not loaded');
+expect('booking.html', booking, /url=connect\.html|window\.location\.replace\(target\)/, 'legacy booking route no longer forwards to Connect');
+expect('booking.html', booking, /serviceAliases/, 'legacy booking query compatibility is missing');
 
 const connect = await read('connect.html');
-expect('connect.html', connect, /booking\.html|Request a booking|Book/i, 'booking path is not exposed from Connect');
+expect('connect.html', connect, /id=["']project-inquiry["']/, 'unified inquiry form is missing');
+expect('connect.html', connect, /data-turnstile-action=["']inquiry["']/, 'human-verification mount is missing');
+expect('connect.html', connect, /assets\/js\/contact\.js/, 'inquiry form client is not loaded');
+expect('connect.html', connect, /shared\/nav\.js/, 'global site entry is not loaded');
 
 for (const slug of ['no-drama', 'puff-puff-pass', 'the-vibe']) {
   const file = `promo/${slug}/index.html`;
@@ -91,10 +94,13 @@ for (const required of [
   'assets/js/core/analytics.js',
   'assets/js/features/release-list.js',
   'assets/js/newsletter.js',
+  'assets/js/contact.js',
+  'assets/js/form-security.js',
   'assets/js/promo-modal.js',
   'assets/js/promo-video.js',
   'assets/css/promo.css',
-  'functions/api/booking.js',
+  'functions/api/newsletter.js',
+  'functions/api/whiteline.js',
 ]) {
   await expectFile(required);
 }

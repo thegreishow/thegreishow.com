@@ -1,0 +1,31 @@
+name: Architecture audit
+
+on:
+  push:
+    branches:
+      - refactor/architecture-cleanup
+  pull_request:
+    paths:
+      - 'scripts/audit-architecture.mjs'
+      - '.github/workflows/architecture-audit.yml'
+      - 'docs/ARCHITECTURE_AUDIT.md'
+      - 'shared/nav.js'
+      - 'assets/js/core/site-features.js'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/audit-architecture.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: architecture-report
+          path: docs/ARCHITECTURE_REPORT.md
+          if-no-files-found: error

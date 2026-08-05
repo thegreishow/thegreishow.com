@@ -59,8 +59,8 @@ Reduce duplication, separate unrelated responsibilities, document where new code
    - No exact duplicate media groups were found, so the main savings will come from image optimization and an explicit media-hosting policy rather than duplicate deletion.
 
 6. **Multiple backend surfaces**
-   - The audit counted files under `api/`, `functions/`, `workers/`, and `supabase/`.
-   - Ownership, deployment target, and boundaries must be documented to avoid duplicate endpoints and configuration drift.
+   - Cloudflare Pages Functions, a standalone Arcade Worker, Supabase Edge Functions and Supabase migrations are intentional separate runtimes.
+   - Their ownership and selection rules are now documented in `docs/BACKEND_BOUNDARIES.md`.
 
 ## Measured findings
 
@@ -105,6 +105,19 @@ assets/js/
 
 assets/css/
   promo.css               # shared legacy promo-page presentation
+
+functions/
+  api/                    # same-origin Cloudflare Pages endpoints
+  _lib/                   # Pages Function helpers
+  _middleware.js          # site-wide request/security middleware
+
+workers/arcade-api/
+  src/                    # standalone Arcade Worker
+  schema.sql              # D1 schema
+
+supabase/
+  functions/              # Supabase Edge Functions
+  migrations/             # production database migration history
 ```
 
 Existing paths remain authoritative until each subsystem is migrated and tested.
@@ -119,8 +132,8 @@ Existing paths remain authoritative until each subsystem is migrated and tested.
 - [x] Inventory inline `<style>` and `<script>` blocks by page.
 - [x] Split analytics, release-list, promo, navigation, and footer responsibilities.
 - [ ] Inventory all remaining shared JS consumers.
-- [ ] Map every backend directory to its deployment platform and owner.
-- [ ] Check `.gitignore`, generated artifacts, secrets, and environment-file handling.
+- [x] Map backend directories to deployment platforms and ownership rules.
+- [x] Add `.gitignore` coverage for secrets, local state, dependencies and generated output.
 - [x] Record public routes before moving any file.
 - [ ] Define smoke tests for homepage, booking, mailing list, promo pages, books, arcade, and White Line.
 - [x] Add CI generation of the architecture report.
@@ -135,12 +148,14 @@ Existing paths remain authoritative until each subsystem is migrated and tested.
 6. Navigation moved into `assets/js/components/navigation.js`.
 7. Footer loading moved into `assets/js/components/footer.js`.
 8. `shared/nav.js` became a compatibility wrapper for `assets/js/core/site.js`.
+9. Backend runtime boundaries were documented in `docs/BACKEND_BOUNDARIES.md`.
+10. A repository-wide `.gitignore` policy was added for local secrets and generated state.
 
 ## Next migration sequence
 
-1. Document backend deployment boundaries.
-2. Add smoke-test coverage for critical working flows.
-3. Audit `.gitignore`, environment files, generated artifacts, and repository secrets handling.
+1. Add smoke-test coverage for critical working flows.
+2. Inventory all remaining shared JavaScript consumers and compatibility entry points.
+3. Trace the exact active importer and deployment role of `api/media.js`.
 4. Optimize `no-drama.jpg` and `home-bg.jpg` after confirming every reference and visual fallback.
 5. Select the next repeated inline-style family outside promo pages.
 

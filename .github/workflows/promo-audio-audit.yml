@@ -1,0 +1,71 @@
+name: Promo Audio Audit
+
+on:
+  push:
+    branches:
+      - live-newsletter-promo-audit
+  pull_request:
+    paths:
+      - 'promo/**'
+      - 'assets/audio/**'
+      - 'assets/css/newsletter-live-upgrade.css'
+      - 'assets/css/promo-static-player.css'
+      - 'assets/js/newsletter.js'
+      - 'assets/js/promo-static-player.js'
+      - 'scripts/audit-promo-audio.mjs'
+      - '.github/workflows/promo-audio-audit.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit promo playback
+        id: audit
+        continue-on-error: true
+        run: |
+          node scripts/audit-promo-audio.mjs > promo-audit.txt 2>&1
+          result=$?
+          cat promo-audit.txt
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+      - name: Validate complete site
+        id: site
+        continue-on-error: true
+        run: |
+          node scripts/validate-site.mjs > site-validation.txt 2>&1
+          result=$?
+          cat site-validation.txt
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+      - name: Publish validation report
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "## Promo and site validation"
+            echo
+            echo "### Promo audio"
+            echo '```text'
+            cat promo-audit.txt
+            echo '```'
+            echo
+            echo "### Complete site"
+            echo '```text'
+            cat site-validation.txt
+            echo '```'
+          } > validation-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file validation-comment.md
+      - name: Enforce validation results
+        if: steps.audit.outputs.result != '0' || steps.site.outputs.result != '0'
+        run: exit 1

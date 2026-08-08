@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Subscription Confirmed | The Grei Show</title>
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    :root{color-scheme:dark;--bg:#03060c;--panel:#0b111b;--text:#f5f7fb;--muted:#91a0b3;--accent:#d8ff63;--border:rgba(255,255,255,.12)}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 50% 20%,rgba(216,255,99,.08),transparent 32%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;padding:24px}
+    main{width:min(100%,620px);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015));border:1px solid var(--border);border-radius:28px;padding:40px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+    .eyebrow{color:var(--accent);font-weight:800;letter-spacing:.24em;font-size:12px;margin:0 0 18px}
+    .icon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#03060c;font-size:30px;font-weight:900;margin-bottom:22px}
+    h1{font-size:clamp(34px,7vw,54px);line-height:1.02;margin:0 0 16px}
+    p{font-size:18px;line-height:1.65;color:#d7dee8;margin:0 0 16px}
+    .note{font-size:14px;color:var(--muted);margin-top:18px}
+    a.button{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#03060c;text-decoration:none;font-weight:800;border-radius:999px;padding:14px 22px;margin-top:12px}
+    a.button:hover{filter:brightness(1.04)}
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">THE GREI SHOW</p>
+    <div class="icon" id="status-icon">✓</div>
+    <h1 id="status-title">Subscription confirmed.</h1>
+    <p id="status-message">You’re officially on The Grei Signal. Your welcome email is on the way.</p>
+    <a class="button" href="/">Return to The Grei Show →</a>
+    <p class="note" id="status-note">Thanks for joining the signal.</p>
+  </main>
+  <script>
+    const state = new URLSearchParams(location.search).get('status');
+    const title = document.getElementById('status-title');
+    const message = document.getElementById('status-message');
+    const note = document.getElementById('status-note');
+    const icon = document.getElementById('status-icon');
+    if (state === 'expired') {
+      icon.textContent = '↻';
+      title.textContent = 'Confirmation link expired.';
+      message.textContent = 'That confirmation link has expired. Return to the site and join the list again to get a fresh one.';
+      note.textContent = 'Confirmation links are valid for 24 hours.';
+    } else if (state === 'invalid') {
+      icon.textContent = '!';
+      title.textContent = 'That link is no longer valid.';
+      message.textContent = 'The confirmation link could not be verified. Return to the site and submit your email again.';
+      note.textContent = 'If you already confirmed earlier, you may already be on the list.';
+    }
+  </script>
+</body>
+</html>

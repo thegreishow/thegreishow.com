@@ -16,6 +16,7 @@
   };
   const applyNode=(node,config)=>{
     if(config==null)return;
+    if(node===document.documentElement||node===document.head||node===document.body||node.tagName==='MAIN')return;
     if(typeof config==='string'){node.textContent=config;return}
     if(Object.prototype.hasOwnProperty.call(config,'text'))node.textContent=config.text??'';
     if(Object.prototype.hasOwnProperty.call(config,'html'))node.innerHTML=config.html??'';

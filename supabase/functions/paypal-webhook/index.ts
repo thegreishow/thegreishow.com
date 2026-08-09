@@ -63,7 +63,7 @@ async function recordCompletedCapture(admin: any, event: any) {
   const completed = await admin.from("booking_payments").select("amount").eq("client_request_id", payment.client_request_id).eq("status", "paid");
   if (completed.error) throw completed.error;
   const amountPaid = (completed.data || []).reduce((sum:number,row:any)=>sum+Number(row.amount||0),0);
-  const paymentStatus = Number(booking.data.quoted_amount||0)>0 && amountPaid>=Number(booking.data.quoted_amount||0) ? "paid" : "deposit_paid";
+  const paymentStatus = Number(booking.data.quoted_amount||0)>0 && amountPaid>=Number(booking.data.quoted_amount||0) ? "paid_in_full" : "deposit_paid";
   const update = await admin.from("client_requests").update({ amount_paid:amountPaid, payment_status:paymentStatus }).eq("id", payment.client_request_id);
   if (update.error) throw update.error;
   await admin.rpc("refresh_talent_payout_for_booking", { p_client_request_id: payment.client_request_id });
@@ -82,7 +82,11 @@ async function updateCaptureStatus(admin:any,event:any,status:string) {
   }
   const result=await admin.from("booking_payments").update({status,provider_payload:{webhook_event_id:event.id||null,capture_status:event.resource?.status||status}}).eq("id",payment.id);
   if(result.error)throw result.error;
-  if(["denied","reversed"].includes(status))await admin.from("client_requests").update({payment_status:`paypal_${status}`}).eq("id",payment.client_request_id);
+  if(["denied","reversed","refunded"].includes(status)){
+    const bookingStatus=status==="denied"?"unpaid":"refunded";
+    const bookingResult=await admin.from("client_requests").update({payment_status:bookingStatus}).eq("id",payment.client_request_id);
+    if(bookingResult.error)throw bookingResult.error;
+  }
 }
 
 async function reconcilePayoutItem(admin:any,event:any) {

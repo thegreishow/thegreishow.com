@@ -104,6 +104,14 @@ function renderTemplate(key: string, recipientName: string | null, payload: Reco
   const project = escapeHtml(String(payload.project_type || "your project"));
   const amount = payload.amount_paid ?? payload.quoted_amount ?? payload.amount;
   const money = amount == null ? "" : `${escapeHtml(String(payload.currency || "USD"))} ${Number(amount).toFixed(2)}`;
+  const releaseSlug = String(payload.release_slug || "").trim();
+  const encodedSlug = encodeURIComponent(releaseSlug);
+  const releaseTitle = escapeHtml(String(payload.release_title || "your music"));
+  const tracks = Array.isArray(payload.tracks) ? payload.tracks.filter((track: any) => track && track.url) : [];
+  const musicDownloads = tracks.length
+    ? tracks.map((track: any, index: number) => `<p style="margin:8px 0"><a href="https://thegreishow.com/api/media?slug=${encodedSlug}&amp;type=track&amp;index=${index}&amp;download=1" style="color:#d8ff63;font-weight:700">Download ${escapeHtml(String(track.title || `Track ${index + 1}`))}</a></p>`).join("")
+    : `<p style="margin:8px 0"><a href="https://thegreishow.com/api/media?slug=${encodedSlug}&amp;type=audio&amp;index=0&amp;download=1" style="color:#d8ff63;font-weight:700">Download ${releaseTitle}</a></p>`;
+  const artworkDownload = `<p style="margin:18px 0 8px"><a href="https://thegreishow.com/api/media?slug=${encodedSlug}&amp;type=artwork&amp;index=0&amp;download=1" style="display:inline-block;background:#d8ff63;border-radius:999px;padding:12px 18px;color:#03060c;text-decoration:none;font-weight:800">Download cover art</a></p>`;
   const templates: Record<string, [string, string]> = {
     talent_application_received: ["Your White Line application was received", `<p>Hello ${name},</p><p>We received your White Line Entertainment talent application and media. Our team will review your profile privately and contact you by email or WhatsApp.</p><p><strong>Next step:</strong> keep your portfolio links active and watch for a response from White Line.</p>`],
     talent_application_approved: ["Welcome to White Line Entertainment", `<p>Hello ${name},</p><p>Your talent application has been approved. White Line will prepare your public roster profile and portal access.</p><p>Representation secured through White Line uses the agreed 15% agency commission.</p>`],
@@ -118,6 +126,7 @@ function renderTemplate(key: string, recipientName: string | null, payload: Reco
     admin_booking_payment_received: ["White Line booking payment received", `<p>A payment from <strong>${name}</strong> was recorded for ${project}.</p><p>${money ? `<strong>${money}</strong>` : "Payment amount recorded"} · ${escapeHtml(String(payload.payment_status || "paid"))}</p>`],
     admin_music_support_received: ["New music support payment", `<p>A supporter contributed <strong>${money}</strong> for <strong>${escapeHtml(String(payload.release_title || "a release"))}</strong>.</p><p>The PayPal capture and support ledger were updated automatically.</p>`],
     admin_music_support_issue: ["Music support payment needs review", `<p>A ${escapeHtml(String(payload.status || "payment"))} event was recorded for <strong>${escapeHtml(String(payload.release_title || "a release"))}</strong>${money ? ` (${money})` : ""}.</p><p>Review the PayPal activity and music-support ledger before taking action.</p>`],
+    music_support_buyer_receipt: [`Thank you for supporting ${String(payload.release_title || "The Grei Show")}`, `<p>Hello ${name},</p><p>Thank you for naming your price and directly supporting <strong>${releaseTitle}</strong>. Your payment was completed successfully.</p><p style="margin-top:22px"><strong>Your music downloads</strong></p>${musicDownloads}${artworkDownload}<p style="color:#9eabba;font-size:13px">These are direct downloads delivered through thegreishow.com. Keep this email so you can return to the files later.</p>`],
     talent_payout_paid: ["Your White Line payout was sent", `<p>Hello ${name},</p><p>Your talent payout of <strong>${money}</strong> has been sent to your saved payout account.</p>`],
     talent_payout_failed: ["Action required: White Line payout issue", `<p>Hello ${name},</p><p>We could not complete your talent payout of <strong>${money}</strong>. Please verify your payout email in the talent portal.</p>`],
     talent_payout_held: ["White Line payout is being reviewed", `<p>Hello ${name},</p><p>Your payout of <strong>${money}</strong> is temporarily held by the payment provider. White Line is monitoring the status.</p>`],

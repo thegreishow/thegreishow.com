@@ -9,6 +9,7 @@ The database queues idempotent transactional messages for:
 - deposit received and payment received in full
 - internal notifications for booking deposits, full payments and music-support payments
 - internal review alerts for denied, reversed or refunded music-support payments
+- buyer thank-you receipts with direct website downloads for purchased music and cover art
 - talent payout paid, failed, held, unclaimed and returned
 - internal notifications for new talent and client submissions
 
@@ -61,6 +62,7 @@ Supabase already provides `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERV
 8. Force one invalid recipient address, confirm retry behavior, then correct and manually retry it.
 9. Complete a controlled PayPal booking payment and confirm the booking reaches `paid_in_full`, the client receipt is sent and the owner payment alert is sent.
 10. Complete a controlled name-your-price payment and confirm the support ledger and owner alert are updated.
+11. Confirm the buyer receipt uses the PayPal payer address and contains direct thegreishow.com links for every project track plus its cover art.
 
 ## Safety
 

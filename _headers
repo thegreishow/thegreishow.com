@@ -1,9 +1,3 @@
-/about
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/about.html
-  Cache-Control: no-cache, no-store, must-revalidate
-
 /assets/css/portal.css
   Cache-Control: no-cache, no-store, must-revalidate
 

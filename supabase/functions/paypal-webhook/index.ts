@@ -20,7 +20,7 @@ Deno.serve(async (req: Request) => {
         if (!response.ok && payload?.name !== "ORDER_ALREADY_CAPTURED") throw new Error(payload?.details?.[0]?.description || payload?.message || "PayPal capture failed.");
       }
     }
-    if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") await recordCompletedCapture(admin, event);
+    if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") await recordCompletedCapture(admin, event, accessToken);
     if (["PAYMENT.CAPTURE.DENIED","PAYMENT.CAPTURE.DECLINED","PAYMENT.CAPTURE.REVERSED","PAYMENT.CAPTURE.REFUNDED"].includes(event.event_type)) {
       const status = event.event_type.endsWith("DENIED") || event.event_type.endsWith("DECLINED") ? "denied" : event.event_type.endsWith("REVERSED") ? "reversed" : "refunded";
       await updateCaptureStatus(admin, event, status);
@@ -34,7 +34,7 @@ Deno.serve(async (req: Request) => {
   }
 });
 
-async function recordCompletedCapture(admin: any, event: any) {
+async function recordCompletedCapture(admin: any, event: any, accessToken: string) {
   const capture = event.resource || {};
   const orderId = String(capture.supplementary_data?.related_ids?.order_id || "");
   const captureId = String(capture.id || "");
@@ -45,10 +45,15 @@ async function recordCompletedCapture(admin: any, event: any) {
     const { data: musicSupport, error: supportError } = await admin.from("music_support_payments").select("id").eq("paypal_order_id", orderId).maybeSingle();
     if (supportError) throw supportError;
     if (!musicSupport) return;
+    const order = await paypalOrderDetails(orderId, accessToken);
+    const payer = order?.payer || order?.payment_source?.paypal || {};
+    const payerEmail = validEmail(payer.email_address);
+    const payerName = [payer.name?.given_name, payer.name?.surname].filter(Boolean).join(" ").trim() || null;
     const supportResult = await admin.from("music_support_payments").update({
       status: "paid",
       paypal_capture_id: captureId,
-      payer_email: capture.payee?.email_address || null,
+      payer_email: payerEmail,
+      payer_name: payerName,
       paid_at: capture.create_time || new Date().toISOString(),
       provider_payload: { capture_status: capture.status, webhook_event_id: event.id || null },
       updated_at: new Date().toISOString(),
@@ -116,6 +121,8 @@ async function verifyWebhook(headers:Headers,event:unknown,accessToken:string) {
   const payload=await response.json();if(!response.ok)throw new Error(payload.message||"PayPal webhook verification failed.");return payload.verification_status==="SUCCESS";
 }
 async function paypalAccessToken(){const response=await fetch(`${paypalBaseUrl()}/v1/oauth2/token`,{method:"POST",headers:{Authorization:`Basic ${btoa(`${requiredEnv("PAYPAL_CLIENT_ID")}:${requiredEnv("PAYPAL_CLIENT_SECRET")}`)}`,"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=client_credentials"});const payload=await response.json();if(!response.ok||!payload.access_token)throw new Error(payload.error_description||"Could not authenticate with PayPal.");return payload.access_token as string;}
+async function paypalOrderDetails(orderId:string,accessToken:string){const response=await fetch(`${paypalBaseUrl()}/v2/checkout/orders/${encodeURIComponent(orderId)}`,{headers:{Authorization:`Bearer ${accessToken}`,Accept:"application/json"}});const payload=await response.json();if(!response.ok)throw new Error(payload?.details?.[0]?.description||payload?.message||"Could not retrieve PayPal buyer details.");return payload;}
+function validEmail(value:unknown){const email=String(value||"").trim().toLowerCase();return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)?email:null;}
 function paypalBaseUrl(){return(Deno.env.get("PAYPAL_ENV")||"sandbox").toLowerCase()==="live"?"https://api-m.paypal.com":"https://api-m.sandbox.paypal.com";}
 function requiredEnv(name:string){const value=Deno.env.get(name);if(!value)throw new Error(`${name} is not configured.`);return value;}
 function json(body:unknown,status=200){return new Response(JSON.stringify(body),{status,headers:{"Content-Type":"application/json"}});}

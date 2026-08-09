@@ -7,6 +7,8 @@ The database queues idempotent transactional messages for:
 - talent application received, approved and rejected
 - new client request, quotation, confirmation, completion and cancellation
 - deposit received and payment received in full
+- internal notifications for booking deposits, full payments and music-support payments
+- internal review alerts for denied, reversed or refunded music-support payments
 - talent payout paid, failed, held, unclaimed and returned
 - internal notifications for new talent and client submissions
 
@@ -57,6 +59,8 @@ Supabase already provides `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERV
 6. Test one small real or controlled payment and verify payment receipt email.
 7. Confirm provider message IDs appear in the admin delivery log.
 8. Force one invalid recipient address, confirm retry behavior, then correct and manually retry it.
+9. Complete a controlled PayPal booking payment and confirm the booking reaches `paid_in_full`, the client receipt is sent and the owner payment alert is sent.
+10. Complete a controlled name-your-price payment and confirm the support ledger and owner alert are updated.
 
 ## Safety
 

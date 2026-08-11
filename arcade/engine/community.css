@@ -20,12 +20,13 @@
 .profile-modal-open{overflow:hidden}
 .player-profile-modal{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;padding:18px}
 .player-profile-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(16px)}
-.player-profile-card{position:relative;width:min(520px,100%);padding:26px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:linear-gradient(180deg,#111925,#090d14);box-shadow:0 30px 100px rgba(0,0,0,.6)}
+.player-profile-card{position:relative;width:min(520px,100%);max-height:calc(var(--arcade-viewport-height,100dvh) - 36px);overflow-y:auto;overscroll-behavior:contain;padding:26px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:linear-gradient(180deg,#111925,#090d14);box-shadow:0 30px 100px rgba(0,0,0,.6);touch-action:pan-y}
 .player-profile-card h2{margin:0;font-size:clamp(2rem,7vw,3.2rem);line-height:1}
 .player-profile-copy{margin:12px 0 20px;color:var(--arcade-muted);line-height:1.55}
 .player-profile-label,.player-avatar-fieldset legend{display:block;margin-bottom:8px;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.8)}
 .player-profile-input{width:100%;height:52px;padding:0 14px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(255,255,255,.055);color:#fff;font:inherit;outline:none}
 .player-profile-input:focus{border-color:rgba(0,200,255,.7);box-shadow:0 0 0 4px rgba(0,200,255,.12)}
+.player-profile-help{display:block;margin:7px 2px 0;color:var(--arcade-muted);font-size:11px;line-height:1.4}
 .player-avatar-fieldset{margin:20px 0 0;padding:0;border:0}
 .player-avatar-fieldset + .player-profile-label{margin-top:18px}
 .player-avatar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -36,6 +37,7 @@
 .player-avatar-choice input:checked+span{border-color:var(--arcade-cyan);background:rgba(0,200,255,.12);box-shadow:0 0 0 3px rgba(0,200,255,.1)}
 .player-avatar-choice input:focus-visible+span{outline:3px solid #fff;outline-offset:2px}
 .player-profile-error{min-height:20px;margin:12px 0 0;color:#ff8ca1;font-size:12px}
+.player-profile-error.is-warning{color:#ffd477}
 .player-profile-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
 .profile-primary,.profile-secondary{min-height:46px;padding:0 18px;border-radius:999px;font-weight:900;cursor:pointer}
 .profile-primary{border:0;background:linear-gradient(135deg,var(--arcade-blue),var(--arcade-cyan));color:#fff}
@@ -51,7 +53,8 @@
 .arcade-grid{grid-template-columns:1fr}
 .arcade-card{min-height:0}
 .play-btn{min-height:50px;font-size:14px}
-.player-profile-card{padding:22px}
+.player-profile-modal{align-items:start;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
+.player-profile-card{max-height:calc(var(--arcade-viewport-height,100dvh) - max(20px,env(safe-area-inset-top) + env(safe-area-inset-bottom)));padding:20px}
 .player-avatar-grid{grid-template-columns:repeat(4,1fr)}
 .player-avatar-choice span{height:56px}
 .player-profile-actions{display:grid;grid-template-columns:1fr 1fr}

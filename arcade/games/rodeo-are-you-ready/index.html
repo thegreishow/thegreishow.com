@@ -16,10 +16,10 @@
   <link rel="preload" href="assets/horseback-rider-animation.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/runaway-cow-animation.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
-  <link rel="stylesheet" href="assets/game.css">
+  <link rel="stylesheet" href="assets/game.css?v=20260811c">
 </head>
 <body>
-<script src="../../engine/game-shell.js"></script>
+<script src="../../engine/game-shell.js?v=20260811c"></script>
 <main class="wrap">
   <header class="hud">
     <div class="brand">
@@ -34,6 +34,9 @@
   </header>
 
   <section class="stage" id="stage" aria-label="Rodeo game playfield">
+    <video class="arena-video" id="arenaVideo" muted loop autoplay playsinline preload="metadata" poster="assets/rodeo-arena.webp" aria-hidden="true">
+      <source src="assets/rodeo-arena.mp4" type="video/mp4">
+    </video>
     <canvas id="game" width="960" height="540"></canvas>
     <p class="sr-only" id="directionAnnounce" aria-live="assertive"></p>
     <div class="meter" aria-label="Heat meter">
@@ -104,6 +107,6 @@
   <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
 </main>
 <audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
-<script src="assets/game.js?v=20260811a"></script>
+<script src="assets/game.js?v=20260811c"></script>
 </body>
 </html>

@@ -97,6 +97,9 @@
   const controlButtons = [...document.querySelectorAll("[data-action]")];
   const lassoButton = document.getElementById("lassoButton");
   const music = document.getElementById("music");
+  const arenaVideo = document.getElementById("arenaVideo");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let arenaVideoFailed = false;
 
   const arena = new Image();
   arena.src = "assets/rodeo-arena.webp";
@@ -755,6 +758,7 @@
   function startCountUp() {
     if (counting || running) return;
     document.querySelector("[data-grei-discovery]")?.remove();
+    if (!reduceMotion && !arenaVideoFailed) arenaVideo?.play().catch(() => {});
     audio.unlock();
     modePicker.hidden = true;
     difficultyPicker.hidden = true;
@@ -899,8 +903,10 @@
   }
 
   function drawArena(now) {
-    if (arena.complete && arena.naturalWidth) ctx.drawImage(arena, 0, 0, canvas.width, canvas.height);
-    else {
+    const animatedArenaReady = !reduceMotion && !arenaVideoFailed && arenaVideo?.readyState >= 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!animatedArenaReady && arena.complete && arena.naturalWidth) ctx.drawImage(arena, 0, 0, canvas.width, canvas.height);
+    else if (!animatedArenaReady) {
       const fallback = ctx.createLinearGradient(0, 0, 0, 540);
       fallback.addColorStop(0, "#ff756d");
       fallback.addColorStop(.55, "#a33c42");
@@ -1404,28 +1410,46 @@
   });
   addEventListener("blur", () => heldDirections.clear());
 
-  controlButtons.forEach(button => {
-    const release = () => {
-      heldDirections.delete(button.dataset.action);
-      button.classList.remove("active");
+  function bindGameControl(button, onPress, onRelease = () => {}) {
+    let pressed = false;
+    const press = event => {
+      if (event.cancelable) event.preventDefault();
+      if (pressed) return;
+      pressed = true;
+      button.classList.add("active");
+      button.setAttribute("aria-pressed", "true");
+      stage.dataset.lastInput = button.dataset.action || "lasso";
+      onPress();
     };
-    button.addEventListener("pointerdown", event => {
-      event.preventDefault();
-      if (modeId === "ride") respondRide(button.dataset.action);
-      else if (running && !paused && !counting) {
-        heldDirections.add(button.dataset.action);
-        button.classList.add("active");
-        try { button.setPointerCapture(event.pointerId); } catch {}
-      }
-    });
+    const release = event => {
+      if (!pressed) return;
+      if (event?.cancelable) event.preventDefault();
+      pressed = false;
+      button.classList.remove("active");
+      button.setAttribute("aria-pressed", "false");
+      onRelease();
+    };
+    button.addEventListener("pointerdown", press);
+    button.addEventListener("touchstart", press, { passive: false });
+    button.addEventListener("touchmove", event => event.preventDefault(), { passive: false });
     button.addEventListener("pointerup", release);
     button.addEventListener("pointercancel", release);
-    button.addEventListener("lostpointercapture", release);
+    button.addEventListener("touchend", release, { passive: false });
+    button.addEventListener("touchcancel", release, { passive: false });
+    button.addEventListener("click", event => { if (event.detail === 0) { press(event); release(event); } });
+    window.addEventListener("pointerup", release);
+    window.addEventListener("touchend", release, { passive: false });
+    window.addEventListener("blur", release);
+  }
+
+  controlButtons.forEach(button => {
+    const action = button.dataset.action;
+    bindGameControl(button, () => {
+      if (modeId === "ride") respondRide(action);
+      else if (running && !paused && !counting) heldDirections.add(action);
+    }, () => heldDirections.delete(action));
   });
-  lassoButton.addEventListener("pointerdown", event => {
-    event.preventDefault();
-    throwLasso();
-  });
+  bindGameControl(lassoButton, throwLasso);
 
   addEventListener("grei:pause", event => {
     paused = event.detail.paused;
@@ -1443,6 +1467,9 @@
     audioStatus.textContent = "Instrumental unavailable · game sounds still work";
     musicChip.classList.add("muted");
   });
+  if (reduceMotion) arenaVideo?.pause();
+  arenaVideo?.addEventListener("loadeddata", () => { if (!running) draw(); });
+  arenaVideo?.addEventListener("error", () => { arenaVideoFailed = true; stage.classList.add("video-fallback"); if (!running) draw(); });
   [
     arena, rideSprite, rideAnimation, matadorSprites, matadoraAnimation,
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, runawayCowAnimation

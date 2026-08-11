@@ -3,10 +3,14 @@ import {
   ARCADE_AVATARS, ARCADE_AVATAR_LABELS, hasPlayerProfile, hasSyncedAccount, getArcadeAccount,
   getPlayerProfile, savePlayerProfile, createSyncedAccount, loginSyncedAccount,
   updateSyncedAccount, getRecentActivity, getDailyChallenge, getArcadeLevel
-} from './community.js?v=20260811b';
+} from './community.js?v=20260811c';
 
 let arcadeState={games:[],visibleGames:[],activeTag:'all',search:''};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const syncArcadeViewport=()=>document.documentElement.style.setProperty('--arcade-viewport-height',`${Math.round(window.visualViewport?.height||window.innerHeight||document.documentElement.clientHeight)}px`);
+syncArcadeViewport();
+window.addEventListener('resize',syncArcadeViewport,{passive:true});
+window.visualViewport?.addEventListener('resize',syncArcadeViewport,{passive:true});
 const tagsOf=g=>Array.isArray(g.tags)?g.tags:[];
 
 function card(game){
@@ -20,8 +24,9 @@ function card(game){
 }
 
 function community(games){
-  const p=getPlayerProfile(),level=getArcadeLevel(p.xp),challenge=getDailyChallenge(games),recent=getRecentActivity(),account=getArcadeAccount();
-  return `<section class="arcade-community"><div class="community-profile"><div class="community-identity"><div class="community-avatar" id="community-player-avatar">${esc(p.avatar)}</div><div><p class="arcade-kicker">Player profile</p><h2 id="community-player-name">${esc(p.name)}</h2><p class="community-muted">This device · Arcade Level ${level} · ${p.xp} XP · ${p.gamesPlayed} launches</p><p class="community-sync-status">${account?`Synced player name · Code <strong>${esc(account.playerCode)}</strong>`:'Play as a guest, or save your player name for another device.'}</p></div></div><button class="filter" id="edit-profile" type="button">${account?'Manage profile':'Save player name'}</button></div><div class="community-challenge"><p class="arcade-kicker">Daily prompt</p><h3>${challenge.game?esc(challenge.game.title):'Arcade prompt'}</h3><p>${esc(challenge.objective)}</p></div><div class="community-recent"><p class="arcade-kicker">Recently played</p><div class="community-pills">${recent.length?recent.map(i=>`<span class="community-pill">${esc(i.title)}</span>`).join(''):'<span class="community-muted">Your recent games will appear here.</span>'}</div></div></section>`;
+  const p=getPlayerProfile(),level=getArcadeLevel(p.xp),challenge=getDailyChallenge(games),recent=getRecentActivity(),account=getArcadeAccount(),saved=hasPlayerProfile();
+  const syncStatus=account?`Synced player name · Code <strong>${esc(account.playerCode)}</strong>`:saved?'Saved on this device · Add a PIN anytime to link another device.':'Play as a guest, or save your player name on this device.';
+  return `<section class="arcade-community"><div class="community-profile"><div class="community-identity"><div class="community-avatar" id="community-player-avatar">${esc(p.avatar)}</div><div><p class="arcade-kicker">Player profile</p><h2 id="community-player-name">${esc(p.name)}</h2><p class="community-muted">This device · Arcade Level ${level} · ${p.xp} XP · ${p.gamesPlayed} launches</p><p class="community-sync-status">${syncStatus}</p></div></div><button class="filter" id="edit-profile" type="button">${account?'Manage profile':saved?'Edit profile':'Save player name'}</button></div><div class="community-challenge"><p class="arcade-kicker">Daily prompt</p><h3>${challenge.game?esc(challenge.game.title):'Arcade prompt'}</h3><p>${esc(challenge.objective)}</p></div><div class="community-recent"><p class="arcade-kicker">Recently played</p><div class="community-pills">${recent.length?recent.map(i=>`<span class="community-pill">${esc(i.title)}</span>`).join(''):'<span class="community-muted">Your recent games will appear here.</span>'}</div></div></section>`;
 }
 
 function shell(root,games){
@@ -32,13 +37,14 @@ function shell(root,games){
 function avatarChoices(selected){const chosen=ARCADE_AVATARS.includes(selected)?selected:ARCADE_AVATARS[0];return ARCADE_AVATARS.map(a=>`<label class="player-avatar-choice" title="${esc(ARCADE_AVATAR_LABELS[a])}"><input type="radio" name="avatar" value="${a}" aria-label="${esc(ARCADE_AVATAR_LABELS[a])}" ${a===chosen?'checked':''}><span aria-hidden="true">${a}</span><small>${esc(ARCADE_AVATAR_LABELS[a])}</small></label>`).join('')}
 function modalMarkup(mode='create'){
   const p=getPlayerProfile(),account=getArcadeAccount(),linked=Boolean(account);
-  const copy=mode==='login'?'Enter the player code and PIN from your other device.':linked?'Update your player name or choose a new character. Your saved PIN stays the same.':'You can play as a guest. Save a profile only when you want the same name on another device.';
+  const copy=mode==='login'?'Enter the player code and PIN from your other device.':linked?'Update your player name or choose a new character. Your saved PIN stays the same.':'Your name and character save on this device. Add an optional PIN only if you want a private code for other devices.';
   const identityFields=mode==='login'?`<label class="player-profile-label" for="player-code">Player code</label><input class="player-profile-input" id="player-code" name="playerCode" maxlength="12" required placeholder="GREIXXXXXXX" autocapitalize="characters" autocomplete="off" spellcheck="false">`:`<label class="player-profile-label" for="arcade-name">Arcade name</label><input class="player-profile-input" id="arcade-name" name="name" value="${esc(p.name==='Guest Dreamer'?'':p.name)}" minlength="3" maxlength="18" required autocomplete="nickname"><fieldset class="player-avatar-fieldset"><legend>Choose your character</legend><div class="player-avatar-grid">${avatarChoices(p.avatar)}</div></fieldset>`;
-  const pinField=mode==='login'?`<label class="player-profile-label" for="player-pin">PIN</label><input class="player-profile-input" id="player-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" minlength="4" maxlength="8" required autocomplete="current-password" placeholder="••••">`:linked?'':`<label class="player-profile-label" for="player-pin">Choose a 4–8 digit recovery PIN</label><input class="player-profile-input" id="player-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" minlength="4" maxlength="8" required autocomplete="new-password" placeholder="••••">`;
+  const pinField=mode==='login'?`<label class="player-profile-label" for="player-pin">PIN</label><input class="player-profile-input" id="player-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" minlength="4" maxlength="8" required autocomplete="current-password" placeholder="••••">`:linked?'':`<label class="player-profile-label" for="player-pin">Optional cross-device PIN</label><input class="player-profile-input" id="player-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,8}" minlength="4" maxlength="8" autocomplete="new-password" placeholder="4–8 digits"><small class="player-profile-help">Leave this blank to keep the profile on this device only.</small>`;
   return `<div class="player-profile-modal" role="dialog" aria-modal="true" aria-labelledby="player-profile-title"><div class="player-profile-backdrop"></div><div class="player-profile-card"><p class="arcade-kicker">Optional cross-device profile</p><h2 id="player-profile-title">${mode==='login'?'Link this device':linked?'Your saved profile':'Save your player name'}</h2><p class="player-profile-copy">${copy}</p><div class="profile-mode-switch"><button type="button" data-mode="create" class="profile-secondary">${linked?'Edit profile':'Save profile'}</button><button type="button" data-mode="login" class="profile-secondary">Link existing</button></div><form id="player-profile-form">${identityFields}${pinField}<p class="player-profile-error" id="player-profile-error" role="status" aria-live="polite"></p><div class="player-profile-actions"><button class="profile-secondary" type="button" id="cancel-profile">Cancel</button><button class="profile-primary" type="submit">${mode==='login'?'Link device':linked?'Save changes':'Save profile'}</button></div></form>${linked?`<div class="profile-proof"><span>Your player code</span><strong>${esc(account.playerCode)}</strong><small>Keep this code and PIN private.</small></div>`:''}</div></div>`;
 }
 
 function updateDisplay(root,p){root.querySelector('#community-player-name').textContent=p.name;root.querySelector('#community-player-avatar').textContent=p.avatar}
+function refreshArcade(root){shell(root,arcadeState.games);attach(root);filter();render(root)}
 function openProfile(root,mode='create'){
   document.querySelector('.player-profile-modal')?.remove();document.body.insertAdjacentHTML('beforeend',modalMarkup(mode));document.body.classList.add('profile-modal-open');
   const modal=document.querySelector('.player-profile-modal'),form=modal.querySelector('#player-profile-form'),error=modal.querySelector('#player-profile-error');
@@ -46,7 +52,34 @@ function openProfile(root,mode='create'){
   const onKey=event=>{if(event.key==='Escape')close()};
   addEventListener('keydown',onKey);modal.querySelector('.player-profile-backdrop').onclick=close;modal.querySelector('#cancel-profile').onclick=close;modal.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{removeEventListener('keydown',onKey);openProfile(root,b.dataset.mode)});
   modal.querySelector('input:not([type="radio"])')?.focus();
-  form.onsubmit=async e=>{e.preventDefault();if(!form.reportValidity())return;const submit=form.querySelector('[type="submit"]'),switchers=[...modal.querySelectorAll('[data-mode]')],idle=submit.textContent;submit.disabled=true;switchers.forEach(button=>button.disabled=true);submit.textContent='Saving…';error.textContent='Connecting to the player service…';const d=Object.fromEntries(new FormData(form));try{let account;if(mode==='login')account=await loginSyncedAccount({playerCode:d.playerCode,pin:d.pin});else if(hasSyncedAccount())account=await updateSyncedAccount({name:d.name,avatar:d.avatar});else account=await createSyncedAccount({name:d.name,avatar:d.avatar,pin:d.pin});updateDisplay(root,account);close();shell(root,arcadeState.games);attach(root);filter();render(root)}catch(err){error.textContent=err.message||'Could not sync profile.';submit.disabled=false;switchers.forEach(button=>button.disabled=false);submit.textContent=idle}};
+  form.onsubmit=async e=>{
+    e.preventDefault();
+    if(!form.reportValidity())return;
+    const submit=form.querySelector('[type="submit"]'),switchers=[...modal.querySelectorAll('[data-mode]')],idle=submit.textContent;
+    submit.disabled=true;switchers.forEach(button=>button.disabled=true);submit.textContent='Saving…';error.classList.remove('is-warning');error.textContent='Saving your player profile…';
+    const d=Object.fromEntries(new FormData(form));
+    let localProfile=null;
+    try{
+      let account;
+      if(mode==='login')account=await loginSyncedAccount({playerCode:d.playerCode,pin:d.pin});
+      else if(hasSyncedAccount())account=await updateSyncedAccount({name:d.name,avatar:d.avatar});
+      else{
+        localProfile=savePlayerProfile({...getPlayerProfile(),name:d.name,avatar:d.avatar});
+        updateDisplay(root,localProfile);
+        if(!d.pin){close();refreshArcade(root);return;}
+        account=await createSyncedAccount({name:d.name,avatar:d.avatar,pin:d.pin});
+      }
+      updateDisplay(root,account);close();refreshArcade(root);
+    }catch(err){
+      if(localProfile){
+        error.classList.add('is-warning');
+        error.textContent=`Saved on this device. Cross-device linking is unavailable right now: ${err.message||'please retry later.'}`;
+        submit.disabled=false;switchers.forEach(button=>button.disabled=false);submit.type='button';submit.textContent='Done';submit.onclick=()=>{close();refreshArcade(root)};
+        return;
+      }
+      error.textContent=err.message||'Could not save this profile.';submit.disabled=false;switchers.forEach(button=>button.disabled=false);submit.textContent=idle;
+    }
+  };
 }
 
 function filter(){const q=arcadeState.search.trim().toLowerCase(),tag=arcadeState.activeTag.toLowerCase();arcadeState.visibleGames=arcadeState.games.filter(g=>(tag==='all'||tagsOf(g).map(t=>t.toLowerCase()).includes(tag))&&(!q||[g.title,g.description,g.creator,...tagsOf(g)].join(' ').toLowerCase().includes(q)))}

@@ -11,7 +11,7 @@ export const ARCADE_AVATAR_LABELS = {
 const LEGACY_AVATARS = ['🌌','⚡','🔥','🎮','🪐','👾','🎧','🧿'];
 const isKnownAvatar = avatar => ARCADE_AVATARS.includes(avatar) || LEGACY_AVATARS.includes(avatar);
 
-const communityStyles = new URL('./community.css?v=20260811b', import.meta.url);
+const communityStyles = new URL('./community.css?v=20260811c', import.meta.url);
 if (!document.querySelector('link[data-arcade-community]')) {
   const link=document.createElement('link'); link.rel='stylesheet'; link.href=communityStyles.href; link.dataset.arcadeCommunity='true'; document.head.appendChild(link);
 }
@@ -37,7 +37,7 @@ export function getPlayerProfile(){
 }
 export function savePlayerProfile(profile){
   const clean={
-    name:String(profile.name||'Guest Dreamer').replace(/[^a-zA-Z0-9 _-]/g,'').trim().slice(0,18)||'Guest Dreamer',
+    name:String(profile.name||'Guest Dreamer').normalize('NFKC').replace(/[^\p{L}\p{N} _'-]/gu,'').replace(/\s+/g,' ').trim().slice(0,18)||'Guest Dreamer',
     avatar:isKnownAvatar(profile.avatar)?profile.avatar:ARCADE_AVATARS[0],
     joinedAt:profile.joinedAt||new Date().toISOString(),
     xp:Math.max(0,Number(profile.xp)||0), gamesPlayed:Math.max(0,Number(profile.gamesPlayed)||0)

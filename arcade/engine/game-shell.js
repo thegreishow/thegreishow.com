@@ -81,6 +81,15 @@
   };
 
   // === GAMEBAR ===
+  const syncViewportHeight = () => {
+    const height = Math.round(window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight);
+    document.documentElement.style.setProperty('--grei-viewport-height', `${height}px`);
+  };
+  syncViewportHeight();
+  window.addEventListener('resize', syncViewportHeight, { passive: true });
+  window.addEventListener('orientationchange', syncViewportHeight, { passive: true });
+  window.visualViewport?.addEventListener('resize', syncViewportHeight, { passive: true });
+
   const style = document.createElement('style');
   style.textContent = `
     .grei-gamebar{position:fixed;top:0;left:0;right:0;z-index:99999;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;background:rgba(4,5,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}
@@ -90,12 +99,18 @@
     .sound-btn.active { background: var(--arcade-green, #4ade80) !important; color: #000 !important; }
     .grei-game-discovery{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:14px 0 0;padding:0 16px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(255,255,255,.07);color:#fff;font:800 12px/1 system-ui;letter-spacing:.04em;text-decoration:none}
     .grei-game-discovery:hover{background:rgba(255,255,255,.14)}
-    body.grei-immersive{height:100dvh;overflow:hidden}body.grei-immersive .grei-gamebar,body.grei-immersive .grei-gamebar-spacer{display:none!important}body.grei-immersive .wrap{display:block;width:100%;height:100dvh;padding:0}body.grei-immersive .side{display:none}body.grei-immersive .layout{display:block;height:100%}body.grei-immersive .stage,body.grei-immersive .stage canvas{height:100dvh!important;min-height:100dvh!important;border:0!important;border-radius:0!important}body.grei-immersive .wrap>.hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:10px;right:10px;z-index:10;pointer-events:none}
+    .grei-exit-fullscreen{position:fixed;z-index:100001;top:max(6px,env(safe-area-inset-top));left:50%;display:none;align-items:center;justify-content:center;min-height:40px;padding:0 14px;transform:translateX(-50%);border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(4,5,10,.76);backdrop-filter:blur(12px);color:#fff;font:900 11px/1 system-ui;letter-spacing:.06em;text-transform:uppercase}
+    body.grei-immersive .grei-exit-fullscreen{display:inline-flex}
+    body.grei-immersive{height:var(--grei-viewport-height,100dvh);overflow:hidden}body.grei-immersive .grei-gamebar,body.grei-immersive .grei-gamebar-spacer{display:none!important}body.grei-immersive .wrap{display:block;width:100%;height:var(--grei-viewport-height,100dvh);padding:0}body.grei-immersive .side{display:none}body.grei-immersive .layout{display:block;height:100%}body.grei-immersive .stage,body.grei-immersive .stage canvas{height:var(--grei-viewport-height,100dvh)!important;min-height:var(--grei-viewport-height,100dvh)!important;border:0!important;border-radius:0!important}body.grei-immersive .wrap>.hud{position:fixed;top:max(8px,env(safe-area-inset-top));left:10px;right:10px;z-index:10;pointer-events:none}
     @media(max-width:560px){.grei-gamebar strong{display:none}.grei-gamebar a,.grei-gamebar button{min-height:44px;padding:0 12px}.grei-gamebar-spacer{height:62px}}
   `;
   document.head.appendChild(style);
 
   const gameName = document.title.split('|')[0].trim() || 'Arcade Game';
+  const gamePathParts = location.pathname.split('/').filter(Boolean);
+  const gamePathTail = gamePathParts.at(-1) || '';
+  const gameSlug = (gamePathTail.includes('.') ? gamePathParts.at(-2) : gamePathTail) || 'arcade-game';
+  document.body.classList.add(`grei-game-${gameSlug.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}`);
   const bar = document.createElement('nav');
   bar.className = 'grei-gamebar';
   bar.innerHTML = `
@@ -110,10 +125,16 @@
   const spacer = document.createElement('div'); spacer.className = 'grei-gamebar-spacer';
   const pauseScreen = document.createElement('div'); pauseScreen.className = 'grei-pause-screen';
   pauseScreen.innerHTML = '<div><h2>PAUSED</h2><p>Tap Pause again or press Space to continue.</p></div>';
+  const exitFullscreenBtn = document.createElement('button');
+  exitFullscreenBtn.type = 'button';
+  exitFullscreenBtn.className = 'grei-exit-fullscreen';
+  exitFullscreenBtn.textContent = 'Exit';
+  exitFullscreenBtn.setAttribute('aria-label', 'Exit full screen');
 
   document.body.prepend(spacer);
   document.body.prepend(bar);
   document.body.appendChild(pauseScreen);
+  document.body.appendChild(exitFullscreenBtn);
 
   const soundBtn = bar.querySelector('[data-grei-sound]');
   soundBtn.addEventListener('click', () => {
@@ -138,8 +159,10 @@
   pauseBtn.addEventListener('click', () => setPaused(!paused));
   pauseScreen.addEventListener('click', () => setPaused(false));
   const nativeFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const prefersManagedFullscreen = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 900 || window.innerHeight <= 700;
   const updateFullscreenButton = () => { fullscreenBtn.textContent = nativeFullscreenElement() || immersive ? 'Exit full screen' : 'Full screen'; };
-  const setImmersive = next => { immersive = Boolean(next); document.body.classList.toggle('grei-immersive', immersive); window.scrollTo(0, 0); updateFullscreenButton(); };
+  const applyImmersive = () => { syncViewportHeight(); document.body.classList.toggle('grei-immersive', Boolean(nativeFullscreenElement()) || immersive); window.scrollTo(0, 0); updateFullscreenButton(); };
+  const setImmersive = next => { immersive = Boolean(next); applyImmersive(); };
   async function toggleFullscreen() {
     const request = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
     const exit = document.exitFullscreen || document.webkitExitFullscreen;
@@ -148,21 +171,22 @@
       return;
     }
     if (immersive) { setImmersive(false); return; }
-    if (request) {
-      try { await request.call(document.documentElement); return; } catch {}
+    if (!prefersManagedFullscreen() && request) {
+      try { await request.call(document.documentElement); applyImmersive(); return; } catch {}
     }
     setImmersive(true);
   }
 
   fullscreenBtn.addEventListener('click', toggleFullscreen);
+  exitFullscreenBtn.addEventListener('click', toggleFullscreen);
   window.addEventListener('keydown', event => {
     if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.code === 'Space') { event.preventDefault(); setPaused(!paused); }
     if (event.key.toLowerCase() === 'f') { event.preventDefault(); toggleFullscreen(); }
   });
 
-  document.addEventListener('fullscreenchange', () => { if (nativeFullscreenElement()) immersive = false; updateFullscreenButton(); });
-  document.addEventListener('webkitfullscreenchange', () => { if (nativeFullscreenElement()) immersive = false; updateFullscreenButton(); });
+  document.addEventListener('fullscreenchange', applyImmersive);
+  document.addEventListener('webkitfullscreenchange', applyImmersive);
 
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
 

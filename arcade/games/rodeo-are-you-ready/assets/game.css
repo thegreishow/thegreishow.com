@@ -13,7 +13,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; background: var(--night); color: var(--ink); font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif; overscroll-behavior: none; }
+html, body { width: 100%; margin: 0; min-height: 100%; background: var(--night); color: var(--ink); font-family: Impact, Haettenschweiler, "Arial Narrow Bold", system-ui, sans-serif; overflow-x: hidden; overscroll-behavior: none; }
 button { font: inherit; }
 .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
 .wrap { width: min(1180px, 100%); margin: auto; padding: 10px; display: grid; gap: 10px; }
@@ -21,17 +21,19 @@ button { font: inherit; }
 .brand { min-width: 0; }
 .eyebrow { margin: 0; color: var(--gold); font: 800 10px/1.2 system-ui; letter-spacing: .24em; text-transform: uppercase; }
 .brand h1 { margin: 3px 0 0; font-size: clamp(1.5rem, 5vw, 3rem); font-style: italic; line-height: .9; letter-spacing: .02em; text-transform: uppercase; }
+.mobile-title { display: none; }
 .stats { display: flex; gap: 6px; }
 .stat { min-width: 67px; padding: 7px 9px; border: 1px solid rgba(255, 200, 87, .22); border-radius: 10px 10px 16px 10px; background: linear-gradient(145deg, rgba(84, 37, 29, .92), rgba(24, 9, 14, .95)); box-shadow: inset 0 1px rgba(255,255,255,.08); text-align: center; }
 .stat b { display: block; font-size: 20px; line-height: 1; }
 .stat span { display: block; margin-top: 3px; color: var(--muted); font: 800 8px/1 system-ui; letter-spacing: .12em; text-transform: uppercase; }
-.stage { position: relative; min-height: 57vh; overflow: hidden; border: 1px solid rgba(255, 200, 87, .35); border-radius: 18px; background: #1a0b12 url("rodeo-arena.webp") center/cover no-repeat; box-shadow: 0 20px 80px rgba(0,0,0,.55), inset 0 0 0 1px rgba(23,78,150,.2); }
-canvas { display: block; width: 100%; height: 100%; min-height: 57vh; touch-action: none; }
-.meter { position: absolute; left: 16px; right: 16px; bottom: 14px; display: flex; align-items: center; gap: 9px; pointer-events: none; }
+.stage { position: relative; isolation: isolate; min-height: 57vh; overflow: hidden; border: 1px solid rgba(255, 200, 87, .35); border-radius: 18px; background: #1a0b12 url("rodeo-arena.webp") center/cover no-repeat; box-shadow: 0 20px 80px rgba(0,0,0,.55), inset 0 0 0 1px rgba(23,78,150,.2); }
+.arena-video { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; background: #1a0b12 url("rodeo-arena.webp") center/cover no-repeat; filter: saturate(1.04) contrast(1.03); pointer-events: none; }
+canvas { position: relative; z-index: 1; display: block; width: 100%; height: 100%; min-height: 57vh; background: transparent; touch-action: none; }
+.meter { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 14px; display: flex; align-items: center; gap: 9px; pointer-events: none; }
 .meter label { color: var(--gold); font-size: 14px; font-style: italic; text-transform: uppercase; text-shadow: 0 2px 5px #000; }
 .track { height: 11px; flex: 1; overflow: hidden; border: 1px solid rgba(255,255,255,.3); border-radius: 99px; background: rgba(3,5,10,.65); box-shadow: inset 0 2px 4px rgba(0,0,0,.5); }
 .fill { width: 0; height: 100%; background: linear-gradient(90deg, var(--coral), var(--gold)); box-shadow: 0 0 18px var(--coral); transition: width .12s; }
-.overlay { position: absolute; inset: 0; display: grid; place-items: center; overflow: auto; padding: 18px; background: linear-gradient(180deg, rgba(6,5,9,.28), rgba(9,5,10,.78)); backdrop-filter: blur(6px); }
+.overlay { position: absolute; z-index: 3; inset: 0; display: grid; place-items: center; overflow: auto; padding: 18px; background: linear-gradient(180deg, rgba(6,5,9,.28), rgba(9,5,10,.78)); backdrop-filter: blur(6px); }
 .overlay[hidden] { display: none; }
 .panel { width: min(820px, 100%); margin: auto; padding: clamp(20px, 3vw, 30px); border: 1px solid rgba(255, 200, 87, .45); border-radius: 22px 22px 34px 22px; background: linear-gradient(145deg, rgba(71,31,25,.95), rgba(21,8,13,.97) 62%, rgba(13,33,77,.82)); box-shadow: 0 26px 90px rgba(0,0,0,.65), inset 0 1px rgba(255,255,255,.1); text-align: center; }
 .panel .mini { margin: 0; color: var(--gold); font: 900 10px/1.2 system-ui; letter-spacing: .28em; text-transform: uppercase; }
@@ -71,9 +73,9 @@ canvas { display: block; width: 100%; height: 100%; min-height: 57vh; touch-acti
 .btn { min-height: 50px; padding: 0 25px; border: 0; border-radius: 999px; background: linear-gradient(135deg, #d84335, var(--coral) 55%, var(--gold)); color: #fff; font-size: 17px; font-style: italic; letter-spacing: .03em; text-transform: uppercase; box-shadow: 0 10px 32px rgba(255,98,95,.22), inset 0 1px rgba(255,255,255,.35); cursor: pointer; }
 .btn:focus-visible, .control:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .next-modes { margin: 13px 0 0; color: #b99b90 !important; font-size: 10px !important; letter-spacing: .1em; text-transform: uppercase; }
-.controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.controls { position: relative; z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .controls.catch-controls { grid-template-columns: repeat(5, 1fr); }
-.control { min-height: 64px; border: 1px solid rgba(255,200,87,.22); border-radius: 14px 14px 20px 14px; background: linear-gradient(180deg, #54251d, #210d10); color: #fff; box-shadow: inset 0 1px rgba(255,255,255,.08), 0 5px 18px rgba(0,0,0,.25); touch-action: none; cursor: pointer; }
+.control { min-height: 64px; border: 1px solid rgba(255,200,87,.22); border-radius: 14px 14px 20px 14px; background: linear-gradient(180deg, #54251d, #210d10); color: #fff; box-shadow: inset 0 1px rgba(255,255,255,.08), 0 5px 18px rgba(0,0,0,.25); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
 .control span { display: block; font-size: 25px; line-height: 1; }
 .control small { display: block; margin-top: 5px; color: #caaea5; font: 800 8px/1 system-ui; letter-spacing: .1em; text-transform: uppercase; }
 .control.active, .control:active { background: linear-gradient(180deg, var(--coral), #8e2a24); transform: translateY(2px); }
@@ -119,10 +121,14 @@ canvas { display: block; width: 100%; height: 100%; min-height: 57vh; touch-acti
   .music-chip { min-height: 27px; margin-bottom: 7px; }
   .btn { min-height: 46px; font-size: 15px; }
   .next-modes { display: none; }
-  .controls { gap: 6px; }
-  .controls.catch-controls { grid-template-columns: repeat(4, 1fr); }
-  .controls.catch-controls .lasso-control { grid-column: 1 / -1; min-height: 50px; }
-  .control { min-height: 58px; }
+  .stage:not(.playing) + .controls, .stage:not(.playing) ~ .hint { display: none; }
+  .controls, .controls.catch-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .control[data-action="up"] { grid-column: 2; grid-row: 1; }
+  .control[data-action="left"] { grid-column: 1; grid-row: 2; }
+  .control[data-action="down"] { grid-column: 2; grid-row: 2; }
+  .control[data-action="right"] { grid-column: 3; grid-row: 2; }
+  .controls.catch-controls .lasso-control { grid-column: 1 / -1; grid-row: 3; min-height: 50px; }
+  .control { min-height: 54px; }
   .control small { display: none; }
   .meter { left: 10px; right: 10px; }
 }
@@ -135,6 +141,7 @@ canvas { display: block; width: 100%; height: 100%; min-height: 57vh; touch-acti
   .controls { grid-area: controls; grid-template-columns: 1fr 1fr; align-content: center; }
   .controls.catch-controls { grid-template-columns: 1fr 1fr; }
   .controls.catch-controls .lasso-control { grid-column: 1 / -1; }
+  .control[data-action] { grid-column: auto; grid-row: auto; }
   .control { height: 84px; }
   .hint { display: none; }
   .panel { padding: 16px; }
@@ -147,6 +154,43 @@ canvas { display: block; width: 100%; height: 100%; min-height: 57vh; touch-acti
   .music-chip { margin-bottom: 8px; }
 }
 
+@media (max-width: 900px) {
+  html body.grei-game-rodeo-are-you-ready.grei-immersive { position: fixed; inset: 0; width: 100%; height: var(--grei-viewport-height, 100dvh) !important; min-height: 0; overflow: hidden; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive::before { content: ""; position: fixed; inset: -18px; z-index: 0; background: linear-gradient(rgba(8,6,9,.68),rgba(8,6,9,.9)), url("rodeo-arena.webp") center/cover no-repeat; filter: blur(8px) saturate(.75); pointer-events: none; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap { position: relative; z-index: 1; display: grid !important; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto minmax(0, 1fr) auto !important; grid-template-areas: "hud" "stage" "controls" !important; align-content: stretch; width: 100% !important; height: var(--grei-viewport-height, 100dvh) !important; min-height: 0; gap: 6px; padding: max(5px, env(safe-area-inset-top)) max(7px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(7px, env(safe-area-inset-left)) !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap > .hud { position: static !important; grid-area: hud; min-height: 42px; pointer-events: auto; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .eyebrow { display: none; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .brand h1 { max-width: 92px; margin: 0; overflow: hidden; font-size: 1rem; white-space: nowrap; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .brand .full-title { display: none; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .brand .mobile-title { display: inline; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .stat { min-width: 48px; padding: 5px 4px; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .stat b { font-size: 15px; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage { grid-area: stage; align-self: center; width: 100% !important; height: auto !important; min-height: 0 !important; max-height: calc(var(--grei-viewport-height, 100dvh) - 190px) !important; aspect-ratio: 16 / 9; border: 1px solid rgba(255,200,87,.35) !important; border-radius: 12px !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage:not(.playing) { align-self: stretch; height: 100% !important; max-height: none !important; aspect-ratio: auto; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage canvas { width: 100% !important; height: 100% !important; min-height: 0 !important; aspect-ratio: 16 / 9; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .controls { grid-area: controls; align-self: end; width: 100%; padding-bottom: max(0px, env(safe-area-inset-bottom)); }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .control { min-height: 52px; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .hint { display: none; }
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  html body.grei-game-rodeo-are-you-ready.grei-immersive.grei-game-playing .wrap { grid-template-rows: auto auto auto !important; align-content: start; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive.grei-game-playing .wrap .stage { align-self: start; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive.grei-game-playing .controls { align-self: start; }
+}
+
+@media (orientation: landscape) and (max-height: 670px) {
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap { grid-template-columns: minmax(0, 1fr) minmax(150px, 24vw) !important; grid-template-rows: auto minmax(0, 1fr) !important; grid-template-areas: "hud hud" "stage controls" !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage { width: auto !important; height: 100% !important; max-height: calc(var(--grei-viewport-height, 100dvh) - 55px) !important; justify-self: center; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .controls, html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls { grid-template-columns: 1fr 1fr; align-content: center; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .control[data-action] { grid-column: auto; grid-row: auto; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls .lasso-control { grid-column: 1 / -1; grid-row: auto; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive:not(.grei-game-playing) .wrap { grid-template-columns: minmax(0, 1fr) !important; grid-template-areas: "hud" "stage" !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive:not(.grei-game-playing) .wrap .stage { width: min(100%, 960px) !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive:not(.grei-game-playing) .controls { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .arena-video { display: none; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

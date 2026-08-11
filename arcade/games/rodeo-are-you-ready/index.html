@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#1a0b12">
-  <meta name="description" content="Ride the Rhythm, Dodge the Bull, or Catch the Cow in Rodeo: Are You Ready, a music game by The Grei Show.">
+  <meta name="description" content="Ride the Rhythm, Dodge the Bull, Catch the Cow, or Run the Track in Rodeo: Are You Ready, a music game by The Grei Show.">
   <title>Rodeo: Are You Ready | The Grei Show Arcade</title>
   <link rel="preload" href="assets/rodeo-arena.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/ride-sprite.webp" as="image" type="image/webp">
@@ -16,7 +16,7 @@
   <link rel="preload" href="assets/horseback-rider-animation.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/runaway-cow-animation.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
-  <link rel="stylesheet" href="assets/game.css?v=20260811h">
+  <link rel="stylesheet" href="assets/game.css?v=20260811i">
 </head>
 <body>
 <script src="../../engine/game-shell.js?v=20260811f"></script>
@@ -73,6 +73,14 @@
             </span>
             <span class="badge">Mode 03</span>
           </button>
+          <button type="button" class="mode-card" data-mode="race" aria-pressed="false">
+            <span class="mode-cover race-cover" aria-hidden="true"></span>
+            <span class="mode-copy">
+              <strong>Run the Track</strong>
+              <small>Race three rivals, manage stamina, and take the flag in three laps.</small>
+            </span>
+            <span class="badge">Mode 04</span>
+          </button>
         </div>
         <fieldset class="difficulty-picker" id="difficultyPicker">
           <legend>Choose your pace</legend>
@@ -92,7 +100,7 @@
         </div>
         <div id="results" hidden></div>
         <button class="btn" id="start">Enter the Rodeo</button>
-        <p class="next-modes">Three rodeo events · one endless instrumental</p>
+        <p class="next-modes">Four rodeo events · one endless instrumental</p>
       </div>
     </div>
   </section>
@@ -107,6 +115,6 @@
   <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
 </main>
 <audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
-<script src="assets/game.js?v=20260811f"></script>
+<script src="assets/game.js?v=20260811g"></script>
 </body>
 </html>

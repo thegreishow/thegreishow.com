@@ -23,6 +23,12 @@
       shortLabel: "Lasso",
       levelBase: 4,
       description: "Chase on horseback, close the gap, and throw your lasso before the cow breaks free."
+    },
+    race: {
+      label: "Run the Track",
+      shortLabel: "Race",
+      levelBase: 6,
+      description: "Race three rivals for three laps, manage your stamina, and take the checkered flag."
     }
   };
   const DIFFICULTIES = {
@@ -38,7 +44,11 @@
       cowTimer: 9,
       lassoRange: 300,
       lassoCooldown: .72,
-      escapeDamage: 27
+      escapeDamage: 27,
+      raceSpeed: 184,
+      rivalSpeed: 145,
+      staminaDrain: 13,
+      laps: 3
     },
     standard: {
       label: "Standard",
@@ -52,7 +62,11 @@
       cowTimer: 6.8,
       lassoRange: 178,
       lassoCooldown: .95,
-      escapeDamage: 34
+      escapeDamage: 34,
+      raceSpeed: 208,
+      rivalSpeed: 165,
+      staminaDrain: 18,
+      laps: 3
     }
   };
   const DIRECTIONS = ["left", "up", "down", "right"];
@@ -231,6 +245,9 @@
       this.catches = 0;
       this.quickCatches = 0;
       this.escapes = 0;
+      this.overtakes = 0;
+      this.racePlace = 4;
+      this.raceWon = false;
       this.prompt = null;
       this.answered = false;
       this.elapsed = 0;
@@ -287,6 +304,16 @@
       return { kind: quickCatch ? "perfect" : "good", points };
     }
 
+    scoreOvertake() {
+      this.combo++;
+      this.bestCombo = Math.max(this.bestCombo, this.combo);
+      this.overtakes++;
+      const points = Math.round(240 * Math.min(2.5, 1 + this.combo * .12) * (this.heat >= 100 ? 2 : 1));
+      this.score += points;
+      this.heat = Math.min(100, this.heat + 12);
+      return points;
+    }
+
     takeHit(damage = 18) {
       this.combo = 0;
       this.heat = Math.max(0, this.heat - 18);
@@ -307,6 +334,15 @@
     player: { x: 330, y: 390, vx: 0, vy: 0, facing: 1 },
     cow: { x: 650, y: 310, angle: Math.PI, speed: 0, timer: 0, turnTimer: 0, phase: "run" },
     lasso: { active: false, timer: 0, duration: .42, cooldown: 0, hit: false, targetX: 0, targetY: 0 }
+  };
+  const race = {
+    trackLength: 1800,
+    player: { distance: 0, lane: 0, speed: 0, stamina: 100, lastPlace: 4, overtakeCooldown: 0 },
+    rivals: [
+      { name: "Blaze", distance: 54, lane: -.58, speed: 0, color: "#ff625f" },
+      { name: "Storm", distance: 22, lane: .08, speed: 0, color: "#174e96" },
+      { name: "Goldie", distance: -18, lane: .62, speed: 0, color: "#ffc857" }
+    ]
   };
 
   let running = false;
@@ -360,6 +396,7 @@
     state.reset();
     resetDodge();
     resetChase();
+    resetRace();
     updateSelectionUI();
     hud();
     draw();
@@ -386,10 +423,14 @@
       difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
         ? "Standard uses the official 90 BPM response window with faster charges."
         : "Easy uses a 45 BPM response window with a longer warning and slower bull.";
-    } else {
+    } else if (modeId === "catch") {
       difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
         ? "Standard gives you a faster cow, a tighter lasso range, and a 90 BPM chase."
         : "Easy gives you more chase time, a wider lasso range, and a 45 BPM pace.";
+    } else {
+      difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
+        ? "Standard brings faster rivals, tighter stamina management, and a full 90 BPM sprint."
+        : "Easy gives you gentler rivals, slower stamina drain, and a 45 BPM warm-up pace.";
     }
     if (audio.enabled) audioStatus.textContent = audioLabel();
 
@@ -399,7 +440,9 @@
       ? `Ride${replay} at ${selectedDifficulty.promptBpm} BPM`
       : modeId === "matador"
         ? `Dodge${replay} at ${selectedDifficulty.promptBpm} BPM`
-        : `Chase${replay} at ${selectedDifficulty.promptBpm} BPM`;
+        : modeId === "catch"
+          ? `Chase${replay} at ${selectedDifficulty.promptBpm} BPM`
+          : `Race${replay} at ${selectedDifficulty.promptBpm} BPM`;
     stage.setAttribute("aria-label", `${mode().label} playfield`);
 
     const labels = modeId === "ride" ? RIDE_LABELS : MOVE_LABELS;
@@ -413,10 +456,12 @@
       ? "Arrow keys or W A S D · Match the glowing direction · Space pauses"
       : modeId === "matador"
         ? "Hold arrows or W A S D · Move clear of the charge line · Space pauses"
-        : "Hold arrows or W A S D · Enter, Z, or Lasso to throw · Space pauses";
+        : modeId === "catch"
+          ? "Hold arrows or W A S D · Enter, Z, or Lasso to throw · Space pauses"
+          : "Hold Up/W to gallop · Left/Right to pass · Down/S to brake · Space pauses";
     lassoButton.hidden = modeId !== "catch";
     controls.classList.toggle("catch-controls", modeId === "catch");
-    controls.setAttribute("aria-label", modeId === "ride" ? "Ride controls" : modeId === "matador" ? "Matador controls" : "Horseback chase controls");
+    controls.setAttribute("aria-label", modeId === "ride" ? "Ride controls" : modeId === "matador" ? "Matador controls" : modeId === "catch" ? "Horseback chase controls" : "Horse racing controls");
   }
 
   function chooseMode(nextId) {
@@ -620,6 +665,85 @@
     spawnCow(true);
   }
 
+  function resetRace() {
+    race.player.distance = 0;
+    race.player.lane = 0;
+    race.player.speed = 0;
+    race.player.stamina = 100;
+    race.player.lastPlace = 4;
+    race.player.overtakeCooldown = 0;
+    const starts = [54, 22, -18];
+    race.rivals.forEach((rival, index) => {
+      rival.distance = starts[index];
+      rival.lane = [-.58, .08, .62][index];
+      rival.speed = difficulty().rivalSpeed * (.96 + index * .025);
+    });
+    race.player.lastPlace = racePlace();
+    state.racePlace = race.player.lastPlace;
+    state.balance = 100;
+  }
+
+  function racePlace() {
+    return 1 + race.rivals.filter(rival => rival.distance > race.player.distance).length;
+  }
+
+  function updateRace(dt) {
+    const player = race.player;
+    const accelerating = heldDirections.has("up");
+    const braking = heldDirections.has("down");
+    const steering = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
+    player.lane = Math.max(-.82, Math.min(.82, player.lane + steering * dt * 1.25));
+    player.overtakeCooldown = Math.max(0, player.overtakeCooldown - dt);
+
+    if (accelerating && player.stamina > 0) player.stamina = Math.max(0, player.stamina - difficulty().staminaDrain * dt);
+    else player.stamina = Math.min(100, player.stamina + (braking ? 24 : 16) * dt);
+    const targetSpeed = braking
+      ? difficulty().raceSpeed * .38
+      : accelerating
+        ? difficulty().raceSpeed * (player.stamina <= 1 ? .62 : 1)
+        : difficulty().raceSpeed * .66;
+    player.speed += (targetSpeed - player.speed) * Math.min(1, dt * (braking ? 5.5 : 2.8));
+
+    let drafting = false;
+    race.rivals.forEach((rival, index) => {
+      const rhythm = Math.sin(state.elapsed * (1.15 + index * .17) + index * 2.1) * 7;
+      const target = difficulty().rivalSpeed * (.96 + index * .025) + rhythm;
+      rival.speed += (target - rival.speed) * Math.min(1, dt * 1.6);
+      rival.distance += rival.speed * dt;
+      const gap = rival.distance - player.distance;
+      if (gap > 35 && gap < 130 && Math.abs(rival.lane - player.lane) < .34) drafting = true;
+      if (Math.abs(gap) < 34 && Math.abs(rival.lane - player.lane) < .24) {
+        player.speed *= Math.pow(.84, dt * 4);
+        player.stamina = Math.max(0, player.stamina - 8 * dt);
+      }
+    });
+    if (drafting && accelerating) player.speed += 14 * dt;
+    player.distance += player.speed * dt;
+    state.balance = player.stamina;
+
+    const place = racePlace();
+    if (place < player.lastPlace && player.overtakeCooldown <= 0) {
+      const points = state.scoreOvertake();
+      player.overtakeCooldown = .7;
+      setFeedback(`OVERTAKE +${points}`, 560);
+      burst("#ffc857", 18, 480, 250);
+      audio.good();
+    }
+    player.lastPlace = place;
+    state.racePlace = place;
+    const lap = Math.min(difficulty().laps, Math.floor(Math.max(0, player.distance) / race.trackLength) + 1);
+    stage.dataset.lap = String(lap);
+    stage.dataset.place = String(place);
+    directionAnnounce.textContent = `${place === 1 ? "First" : place === 2 ? "Second" : place === 3 ? "Third" : "Fourth"} place, lap ${lap} of ${difficulty().laps}`;
+
+    if (player.distance >= race.trackLength * difficulty().laps) {
+      state.raceWon = place === 1;
+      state.score += [0, 3000, 1800, 1000, 500][place];
+      state.heat = Math.min(100, state.heat + (place === 1 ? 30 : 12));
+      finish();
+    }
+  }
+
   function spawnCow(first = false) {
     const angle = first ? -.12 : Math.random() * Math.PI * 2;
     const radius = first ? .30 : .42 + Math.random() * .28;
@@ -767,14 +891,14 @@
     kickerEl.textContent = mode().label;
     counting = true;
     let count = 0;
-    const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "DODGE!" : "LASSO!";
+    const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "DODGE!" : modeId === "catch" ? "LASSO!" : "RACE!";
     const cards = [["1", ""], ["2", ""], ["3", ""], [finale, ""]];
     const tick = () => {
       const [first, second] = cards[count];
       titleEl.innerHTML = first + (second ? `<br>${second}` : "");
       copyEl.textContent = count < 3
         ? "Count it up. Find the beat."
-        : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Watch the line and move." : "Close the gap and rope 'em.";
+        : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Watch the line and move." : modeId === "catch" ? "Close the gap and rope 'em." : "Save your stamina and take the inside line.";
       audio.countdown(count);
       count++;
       if (count < cards.length) setTimeout(tick, SONG_BEAT_SECONDS * 1000);
@@ -787,6 +911,7 @@
     state.reset();
     resetDodge();
     resetChase();
+    resetRace();
     heldDirections.clear();
     lassoButton.classList.remove("ready", "active");
     running = true;
@@ -810,6 +935,8 @@
     delete stage.dataset.lassoReady;
     delete stage.dataset.catches;
     delete stage.dataset.escapes;
+    delete stage.dataset.lap;
+    delete stage.dataset.place;
     overlay.hidden = true;
     directionAnnounce.textContent = "";
     audio.begin();
@@ -836,26 +963,30 @@
     difficultyPicker.hidden = false;
     results.hidden = false;
     startButton.hidden = false;
-    kickerEl.textContent = modeId === "ride" ? "Thrown from the saddle" : modeId === "matador" ? "The bull caught you" : "The cow broke free";
-    titleEl.innerHTML = modeId === "ride" ? "HOLD<br>TIGHT" : modeId === "matador" ? "OLÉ<br>AGAIN" : "ROPE<br>UP";
+    kickerEl.textContent = modeId === "ride" ? "Thrown from the saddle" : modeId === "matador" ? "The bull caught you" : modeId === "catch" ? "The cow broke free" : state.raceWon ? "First across the line" : `Finished in place ${state.racePlace}`;
+    titleEl.innerHTML = modeId === "ride" ? "HOLD<br>TIGHT" : modeId === "matador" ? "OLÉ<br>AGAIN" : modeId === "catch" ? "ROPE<br>UP" : state.raceWon ? "TRACK<br>KING" : "RUN<br>AGAIN";
     copyEl.textContent = modeId === "ride"
       ? "Your ride is over, but the instrumental is ready to loop again."
       : modeId === "matador"
         ? "One more sidestep and you had it. Get back in the arena."
-        : "Tighten that loop, mount up, and bring the next cow home.";
+        : modeId === "catch"
+          ? "Tighten that loop, mount up, and bring the next cow home."
+          : state.raceWon ? "You managed the pace, found the gaps, and owned the final stretch." : "Ease off to recover stamina, draft the leaders, and time your pass.";
 
     const rank = modeId === "ride"
       ? state.score >= 10000 ? "Rodeo Royalty" : state.score >= 6000 ? "Wild Rider" : state.score >= 2500 ? "Rodeo Ready" : state.score >= 900 ? "Stable Hand" : "First Timer"
       : modeId === "matador"
         ? state.dodges >= 30 ? "Arena Royalty" : state.dodges >= 18 ? "Cape Master" : state.dodges >= 9 ? "Matador Ready" : state.dodges >= 3 ? "Quick Step" : "First Olé"
-        : state.catches >= 25 ? "Lasso Royalty" : state.catches >= 15 ? "Ranch Boss" : state.catches >= 8 ? "Cow Catcher" : state.catches >= 3 ? "Rope Ready" : "Greenhorn";
-    const middleValue = modeId === "ride" ? `${state.bestCombo}×` : modeId === "matador" ? state.dodges : state.catches;
-    const middleLabel = modeId === "ride" ? "Best combo" : modeId === "matador" ? "Dodges" : "Catches";
-    const lastValue = modeId === "ride" ? state.perfects : modeId === "matador" ? state.closeCalls : state.quickCatches;
-    const lastLabel = modeId === "ride" ? "Perfects" : modeId === "matador" ? "Close calls" : "Quick catches";
+        : modeId === "catch"
+          ? state.catches >= 25 ? "Lasso Royalty" : state.catches >= 15 ? "Ranch Boss" : state.catches >= 8 ? "Cow Catcher" : state.catches >= 3 ? "Rope Ready" : "Greenhorn"
+          : state.racePlace === 1 ? "Track Royalty" : state.racePlace === 2 ? "Photo Finish" : state.racePlace === 3 ? "Podium Rider" : "Trail Runner";
+    const middleValue = modeId === "ride" ? `${state.bestCombo}×` : modeId === "matador" ? state.dodges : modeId === "catch" ? state.catches : `#${state.racePlace}`;
+    const middleLabel = modeId === "ride" ? "Best combo" : modeId === "matador" ? "Dodges" : modeId === "catch" ? "Catches" : "Finish";
+    const lastValue = modeId === "ride" ? state.perfects : modeId === "matador" ? state.closeCalls : modeId === "catch" ? state.quickCatches : state.overtakes;
+    const lastLabel = modeId === "ride" ? "Perfects" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Overtakes";
     results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} ${difficulty().promptBpm} BPM · Best ${best}</p>`;
     updateSelectionUI();
-    document.querySelector(".next-modes").textContent = "Three rodeo events · one endless instrumental";
+    document.querySelector(".next-modes").textContent = "Four rodeo events · one endless instrumental";
     submit();
   }
 
@@ -898,8 +1029,10 @@
       }
     } else if (modeId === "matador") {
       updateMatador(dt);
-    } else {
+    } else if (modeId === "catch") {
       updateCatch(dt);
+    } else {
+      updateRace(dt);
     }
     hud();
   }
@@ -1311,6 +1444,96 @@
     ctx.fillRect(389, 96, 182 * remaining, 7);
   }
 
+  function trackPoint(distance, lane) {
+    const wrapped = ((distance % race.trackLength) + race.trackLength) % race.trackLength;
+    const angle = -Math.PI / 2 + wrapped / race.trackLength * Math.PI * 2;
+    const radiusX = 292 + lane * 42;
+    const radiusY = 142 + lane * 20;
+    return { x: 480 + Math.cos(angle) * radiusX, y: 310 + Math.sin(angle) * radiusY, angle };
+  }
+
+  function drawRaceHorse(distance, lane, color, now, player = false) {
+    const point = trackPoint(distance, lane);
+    const scale = player ? 1 : .82;
+    ctx.save();
+    ctx.translate(point.x, point.y);
+    ctx.rotate(point.angle + Math.PI / 2);
+    ctx.fillStyle = "rgba(0,0,0,.32)";
+    ctx.beginPath();
+    ctx.ellipse(0, 16, 38 * scale, 10 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+    const frame = cycleFrame(now, Math.max(5, (player ? race.player.speed : difficulty().rivalSpeed) / 24));
+    if (spriteFrame(horsebackRiderAnimation, frame, -57 * scale, -100 * scale, 114 * scale, 152 * scale)) {
+      ctx.globalCompositeOperation = "source-atop";
+      ctx.globalAlpha = player ? .16 : .34;
+      ctx.fillStyle = color;
+      ctx.fillRect(-57 * scale, -100 * scale, 114 * scale, 152 * scale);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 34 * scale, 16 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (player) {
+      ctx.strokeStyle = "#fff6ec";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, -15, 43, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawRaceMode(now) {
+    ctx.save();
+    ctx.fillStyle = "rgba(45,18,13,.64)";
+    ctx.strokeStyle = "rgba(255,200,87,.5)";
+    ctx.lineWidth = 74;
+    ctx.beginPath();
+    ctx.ellipse(480, 310, 292, 142, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255,246,236,.25)";
+    ctx.lineWidth = 2;
+    [-42, 0, 42].forEach(offset => {
+      ctx.beginPath();
+      ctx.ellipse(480, 310, 292 + offset, 142 + offset * .48, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+    ctx.fillStyle = "rgba(12,40,30,.48)";
+    ctx.beginPath();
+    ctx.ellipse(480, 310, 220, 91, 0, 0, Math.PI * 2);
+    ctx.fill();
+    for (let row = 0; row < 6; row++) {
+      for (let col = 0; col < 2; col++) {
+        ctx.fillStyle = (row + col) % 2 ? "#fff6ec" : "#1b1513";
+        ctx.fillRect(466 + col * 14, 136 + row * 12, 14, 12);
+      }
+    }
+    ctx.restore();
+
+    const horses = race.rivals.map(rival => ({ distance: rival.distance, lane: rival.lane, color: rival.color, player: false }));
+    horses.push({ distance: race.player.distance, lane: race.player.lane, color: "#fff6ec", player: true });
+    horses.sort((a, b) => trackPoint(a.distance, a.lane).y - trackPoint(b.distance, b.lane).y);
+    horses.forEach(horse => drawRaceHorse(horse.distance, horse.lane, horse.color, now, horse.player));
+
+    const lap = Math.min(difficulty().laps, Math.floor(Math.max(0, race.player.distance) / race.trackLength) + 1);
+    const place = state.racePlace;
+    ctx.fillStyle = "rgba(8,7,12,.78)";
+    ctx.beginPath();
+    ctx.roundRect(355, 70, 250, 50, 12);
+    ctx.fill();
+    ctx.fillStyle = "#ffc857";
+    ctx.textAlign = "center";
+    ctx.font = "italic 900 17px Impact, sans-serif";
+    ctx.fillText(`LAP ${lap}/${difficulty().laps}  ·  PLACE ${place}/4`, 480, 91);
+    ctx.fillStyle = "rgba(255,255,255,.16)";
+    ctx.fillRect(382, 103, 196, 7);
+    ctx.fillStyle = race.player.stamina > 30 ? "#ffc857" : "#ff625f";
+    ctx.fillRect(382, 103, 196 * race.player.stamina / 100, 7);
+  }
+
   function drawCanvasHud() {
     ctx.fillStyle = "rgba(8,7,12,.68)";
     ctx.beginPath();
@@ -1319,7 +1542,7 @@
     ctx.fillStyle = "#ffc857";
     ctx.font = "800 10px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText(modeId === "ride" ? "BALANCE" : modeId === "matador" ? "NERVE" : "GRIT", 29, 34);
+    ctx.fillText(modeId === "ride" ? "BALANCE" : modeId === "matador" ? "NERVE" : modeId === "catch" ? "GRIT" : "STAMINA", 29, 34);
     ctx.fillStyle = "rgba(255,255,255,.15)";
     ctx.fillRect(29, 41, 146, 7);
     const balanceGradient = ctx.createLinearGradient(29, 0, 175, 0);
@@ -1370,8 +1593,10 @@
       drawRidePrompt(now);
     } else if (modeId === "matador") {
       drawMatadorMode(now);
-    } else {
+    } else if (modeId === "catch") {
       drawCatchMode(now);
+    } else {
+      drawRaceMode(now);
     }
     drawFeedback(now);
     drawCanvasHud();
@@ -1479,6 +1704,8 @@
 
   state.reset();
   resetDodge();
+  resetChase();
+  resetRace();
   updateSelectionUI();
   hud();
   draw();

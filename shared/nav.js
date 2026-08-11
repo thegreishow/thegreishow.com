@@ -175,6 +175,15 @@
     document.body.appendChild(script);
   }
 
+  function loadExperienceBooking() {
+    if (!document.body.classList.contains('experience-page') || document.querySelector('script[data-experience-booking]')) return;
+    const script = document.createElement('script');
+    script.src = '/assets/js/experience-booking.js?v=20260811-1';
+    script.defer = true;
+    script.dataset.experienceBooking = 'true';
+    document.body.appendChild(script);
+  }
+
   function init() {
     if (initialized) return;
     initialized = true;
@@ -184,6 +193,7 @@
     loadFooter();
     enhanceReleaseList();
     loadPromoVideoLayer();
+    loadExperienceBooking();
   }
 
   window.markCurrentNavLink = markCurrentNavLink;

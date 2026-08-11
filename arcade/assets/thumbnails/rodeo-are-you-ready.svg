@@ -1,9 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
-  <title id="title">Rodeo: Are You Ready</title><desc id="desc">A neon mechanical bull and rider under pink and gold rodeo lights.</desc>
-  <defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#ff756d"/><stop offset=".56" stop-color="#a33c42"/><stop offset="1" stop-color="#0d214d"/></linearGradient><linearGradient id="hot"><stop stop-color="#d84335"/><stop offset=".55" stop-color="#ff625f"/><stop offset="1" stop-color="#ffc857"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <rect width="1280" height="720" fill="url(#bg)"/><g opacity=".2" fill="#174e96"><path d="M80 0h100l390 540H430z"/><path d="M1110 0h90L790 540H650z"/></g><ellipse cx="640" cy="585" rx="430" ry="75" fill="#0b152d" stroke="#ffc857" stroke-width="6"/>
-  <g transform="translate(640 460)" filter="url(#glow)"><rect x="-180" y="-55" width="330" height="125" rx="62" fill="#2a1014" stroke="#ff625f" stroke-width="6"/><ellipse cx="162" cy="-25" rx="82" ry="54" fill="#231118"/><path d="M190-62q65-65 92-20-48 0-77 48M165-70q35-75 74-51-48 11-59 66" fill="#ffc857"/><path d="M-105 55l-14 92M80 55l10 92" stroke="#174e96" stroke-width="22" stroke-linecap="round"/><path d="M-142 147h52M64 147h52" stroke="#ffc857" stroke-width="14" stroke-linecap="round"/></g>
-  <g transform="translate(635 320)" filter="url(#glow)"><path d="M0 20l-55 98M10 22l70 91" stroke="#f0c0a7" stroke-width="22" stroke-linecap="round"/><rect x="-38" y="-55" width="76" height="105" rx="30" fill="url(#hot)"/><circle cy="-92" r="34" fill="#24111b"/><ellipse cy="-122" rx="70" ry="14" fill="#ffc857"/><rect x="-32" y="-150" width="64" height="30" rx="7" fill="#174e96"/></g>
-  <text x="640" y="105" text-anchor="middle" fill="#ffc857" font-family="Arial,sans-serif" font-weight="900" font-size="25" letter-spacing="12">THE GREI SHOW PRESENTS</text>
-  <text x="640" y="205" text-anchor="middle" fill="white" stroke="#76251d" stroke-width="5" paint-order="stroke" font-family="Impact,Arial Black,sans-serif" font-style="italic" font-size="92">RODEO</text><text x="640" y="258" text-anchor="middle" fill="#ffc857" font-family="Arial Black,sans-serif" font-style="italic" font-size="42">ARE YOU READY?</text>
+  <title id="title">Rodeo: Are You Ready</title>
+  <desc id="desc">A cowgirl rides a mechanical bull inside a cinematic sunset rodeo arena.</desc>
+  <defs>
+    <linearGradient id="shade" x1="0" x2="1">
+      <stop offset="0" stop-color="#09050a" stop-opacity=".94"/>
+      <stop offset=".48" stop-color="#211019" stop-opacity=".64"/>
+      <stop offset="1" stop-color="#09142e" stop-opacity=".08"/>
+    </linearGradient>
+    <linearGradient id="hot" x1="0" x2="1">
+      <stop stop-color="#ff625f"/>
+      <stop offset="1" stop-color="#ffc857"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#050206" flood-opacity=".72"/>
+    </filter>
+  </defs>
+
+  <image href="../../games/rodeo-are-you-ready/assets/rodeo-arena.webp" width="1280" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <rect width="1280" height="720" fill="url(#shade)"/>
+  <rect y="0" width="1280" height="10" fill="url(#hot)"/>
+
+  <g filter="url(#shadow)">
+    <image href="../../games/rodeo-are-you-ready/assets/ride-sprite.webp" x="610" y="36" width="705" height="705" preserveAspectRatio="xMidYMid meet"/>
+  </g>
+
+  <g transform="translate(66 76)">
+    <text x="0" y="0" dominant-baseline="hanging" fill="#ffc857" font-family="Arial, sans-serif" font-size="21" font-weight="900" letter-spacing="8">THE GREI SHOW PRESENTS</text>
+    <text x="0" y="104" dominant-baseline="hanging" fill="#fff8ef" stroke="#6f211d" stroke-width="7" paint-order="stroke" font-family="Impact, Arial Black, sans-serif" font-size="126" font-style="italic" font-weight="900" letter-spacing="2">RODEO</text>
+    <text x="4" y="230" dominant-baseline="hanging" fill="#ffc857" font-family="Arial Black, Arial, sans-serif" font-size="48" font-style="italic" font-weight="900">ARE YOU READY?</text>
+    <rect x="2" y="310" width="430" height="4" rx="2" fill="url(#hot)"/>
+    <text x="3" y="348" dominant-baseline="hanging" fill="#fff8ef" font-family="Arial, sans-serif" font-size="24" font-weight="800" letter-spacing="3">RIDE • DODGE • LASSO</text>
+    <g transform="translate(0 414)" font-family="Arial, sans-serif" font-size="18" font-weight="900" letter-spacing="2">
+      <rect width="192" height="54" rx="27" fill="#140a0e" fill-opacity=".8" stroke="#ffc857" stroke-width="2"/>
+      <text x="96" y="28" dominant-baseline="middle" text-anchor="middle" fill="#ffc857">3 EVENTS</text>
+      <rect x="210" width="238" height="54" rx="27" fill="#140a0e" fill-opacity=".8" stroke="#ff8c70" stroke-width="2"/>
+      <text x="329" y="28" dominant-baseline="middle" text-anchor="middle" fill="#fff8ef">45 / 90 BPM</text>
+    </g>
+  </g>
+
+  <text x="67" y="660" fill="#fff8ef" font-family="Arial, sans-serif" font-size="18" font-weight="800" letter-spacing="4">PLAY THE RODEO IN THE GREI ARCADE</text>
 </svg>

@@ -21,6 +21,7 @@ button { font: inherit; }
 .brand { min-width: 0; }
 .eyebrow { margin: 0; color: var(--gold); font: 800 10px/1.2 system-ui; letter-spacing: .24em; text-transform: uppercase; }
 .brand h1 { margin: 3px 0 0; font-size: clamp(1.5rem, 5vw, 3rem); font-style: italic; line-height: .9; letter-spacing: .02em; text-transform: uppercase; }
+.mobile-title { display: none; }
 .stats { display: flex; gap: 6px; }
 .stat { min-width: 67px; padding: 7px 9px; border: 1px solid rgba(255, 200, 87, .22); border-radius: 10px 10px 16px 10px; background: linear-gradient(145deg, rgba(84, 37, 29, .92), rgba(24, 9, 14, .95)); box-shadow: inset 0 1px rgba(255,255,255,.08); text-align: center; }
 .stat b { display: block; font-size: 20px; line-height: 1; }
@@ -155,10 +156,13 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 
 @media (max-width: 900px) {
   html body.grei-game-rodeo-are-you-ready.grei-immersive { position: fixed; inset: 0; width: 100%; height: var(--grei-viewport-height, 100dvh) !important; min-height: 0; overflow: hidden; }
-  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto minmax(0, 1fr) auto !important; grid-template-areas: "hud" "stage" "controls" !important; align-content: stretch; width: 100% !important; height: var(--grei-viewport-height, 100dvh) !important; min-height: 0; gap: 6px; padding: max(5px, env(safe-area-inset-top)) max(7px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(7px, env(safe-area-inset-left)) !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive::before { content: ""; position: fixed; inset: -18px; z-index: 0; background: linear-gradient(rgba(8,6,9,.68),rgba(8,6,9,.9)), url("rodeo-arena.webp") center/cover no-repeat; filter: blur(8px) saturate(.75); pointer-events: none; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap { position: relative; z-index: 1; display: grid !important; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto minmax(0, 1fr) auto !important; grid-template-areas: "hud" "stage" "controls" !important; align-content: stretch; width: 100% !important; height: var(--grei-viewport-height, 100dvh) !important; min-height: 0; gap: 6px; padding: max(5px, env(safe-area-inset-top)) max(7px, env(safe-area-inset-right)) max(7px, env(safe-area-inset-bottom)) max(7px, env(safe-area-inset-left)) !important; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap > .hud { position: static !important; grid-area: hud; min-height: 42px; pointer-events: auto; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .eyebrow { display: none; }
-  html body.grei-game-rodeo-are-you-ready.grei-immersive .brand h1 { margin: 0; font-size: clamp(1rem, 4.6vw, 1.35rem); }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .brand h1 { max-width: 92px; margin: 0; overflow: hidden; font-size: 1rem; white-space: nowrap; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .brand .full-title { display: none; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .brand .mobile-title { display: inline; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .stat { min-width: 48px; padding: 5px 4px; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .stat b { font-size: 15px; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage { grid-area: stage; align-self: center; width: 100% !important; height: auto !important; min-height: 0 !important; max-height: calc(var(--grei-viewport-height, 100dvh) - 190px) !important; aspect-ratio: 16 / 9; border: 1px solid rgba(255,200,87,.35) !important; border-radius: 12px !important; }
@@ -169,12 +173,21 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   html body.grei-game-rodeo-are-you-ready.grei-immersive .hint { display: none; }
 }
 
+@media (max-width: 900px) and (orientation: portrait) {
+  html body.grei-game-rodeo-are-you-ready.grei-immersive.grei-game-playing .wrap { grid-template-rows: auto auto auto !important; align-content: start; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive.grei-game-playing .wrap .stage { align-self: start; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive.grei-game-playing .controls { align-self: start; }
+}
+
 @media (orientation: landscape) and (max-height: 670px) {
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap { grid-template-columns: minmax(0, 1fr) minmax(150px, 24vw) !important; grid-template-rows: auto minmax(0, 1fr) !important; grid-template-areas: "hud hud" "stage controls" !important; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage { width: auto !important; height: 100% !important; max-height: calc(var(--grei-viewport-height, 100dvh) - 55px) !important; justify-self: center; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls, html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls { grid-template-columns: 1fr 1fr; align-content: center; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .control[data-action] { grid-column: auto; grid-row: auto; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls .lasso-control { grid-column: 1 / -1; grid-row: auto; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive:not(.grei-game-playing) .wrap { grid-template-columns: minmax(0, 1fr) !important; grid-template-areas: "hud" "stage" !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive:not(.grei-game-playing) .wrap .stage { width: min(100%, 960px) !important; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive:not(.grei-game-playing) .controls { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

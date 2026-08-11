@@ -1,4 +1,4 @@
-import { loadGameRegistry } from './registry.js';
+import { loadGameRegistry } from './registry.js?v=20260811e';
 import {
   ARCADE_AVATARS, ARCADE_AVATAR_LABELS, hasPlayerProfile, hasSyncedAccount, getArcadeAccount,
   getPlayerProfile, savePlayerProfile, createSyncedAccount, loginSyncedAccount,

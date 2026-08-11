@@ -800,6 +800,7 @@
     particles = [];
     flashes = [];
     stage.classList.add("playing");
+    document.body.classList.add("grei-game-playing");
     stage.dataset.mode = modeId;
     stage.dataset.direction = "";
     delete stage.dataset.playerX;
@@ -823,6 +824,7 @@
     heldDirections.clear();
     lassoButton.classList.remove("ready", "active");
     stage.classList.remove("playing");
+    document.body.classList.remove("grei-game-playing");
     stage.dataset.direction = "";
     directionAnnounce.textContent = "";
     audio.stop();

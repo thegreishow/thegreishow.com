@@ -159,6 +159,7 @@
   pauseBtn.addEventListener('click', () => setPaused(!paused));
   pauseScreen.addEventListener('click', () => setPaused(false));
   const nativeFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const prefersManagedFullscreen = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 900 || window.innerHeight <= 700;
   const updateFullscreenButton = () => { fullscreenBtn.textContent = nativeFullscreenElement() || immersive ? 'Exit full screen' : 'Full screen'; };
   const applyImmersive = () => { syncViewportHeight(); document.body.classList.toggle('grei-immersive', Boolean(nativeFullscreenElement()) || immersive); window.scrollTo(0, 0); updateFullscreenButton(); };
   const setImmersive = next => { immersive = Boolean(next); applyImmersive(); };
@@ -170,7 +171,7 @@
       return;
     }
     if (immersive) { setImmersive(false); return; }
-    if (request) {
+    if (!prefersManagedFullscreen() && request) {
       try { await request.call(document.documentElement); applyImmersive(); return; } catch {}
     }
     setImmersive(true);

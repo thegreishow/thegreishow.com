@@ -3,7 +3,7 @@
 
 export async function loadGameRegistry() {
   try {
-    const registryUrl = new URL('../games/games.json', import.meta.url);
+    const registryUrl = new URL('../games/games.json?v=20260811e', import.meta.url);
     const res = await fetch(registryUrl);
     if (!res.ok) throw new Error('Failed to load games.json');
 

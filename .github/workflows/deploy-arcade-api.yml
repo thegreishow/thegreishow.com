@@ -82,19 +82,32 @@ jobs:
           sleep 10
           HEALTH="$(curl --fail --show-error --retry 5 --retry-delay 5 "$ARCADE_API_URL/api/health")"
           echo "$HEALTH"
-          node -e 'const h=JSON.parse(process.argv[1]); if(!h.ok || h.database!=="connected" || h.leaderboard!==true || h.crossDeviceProfiles!==true) process.exit(1)' "$HEALTH"
+          node -e 'const h=JSON.parse(process.argv[1]); if(!h.ok || h.database!=="connected" || h.leaderboard!==true || h.crossDeviceProfiles!==true || h.characterAvatars!==true || !h.games?.includes("rodeo-are-you-ready")) process.exit(1)' "$HEALTH"
 
       - name: Prove cross-device account round-trip
         shell: bash
         run: |
           PIN="$(printf '%06d' $((RANDOM % 1000000)))"
+          CODE=""
+          cleanup() {
+            if [ -n "$CODE" ]; then
+              curl --silent --show-error "$ARCADE_API_URL/api/profile" -H 'Content-Type: application/json' --data "{\"action\":\"delete\",\"playerCode\":\"$CODE\",\"pin\":\"$PIN\"}" >/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
           CREATE="$(curl --fail --show-error "$ARCADE_API_URL/api/profile" \
             -H 'Content-Type: application/json' \
-            --data "{\"action\":\"create\",\"name\":\"CI Proof\",\"avatar\":\"⚡\",\"pin\":\"$PIN\"}")"
+            --data "{\"action\":\"create\",\"name\":\"CI Proof\",\"avatar\":\"🤠\",\"pin\":\"$PIN\"}")"
           CODE="$(node -e 'const d=JSON.parse(process.argv[1]); if(!d.ok||!d.player?.playerCode)process.exit(1); process.stdout.write(d.player.playerCode)' "$CREATE")"
           LOGIN="$(curl --fail --show-error "$ARCADE_API_URL/api/profile" \
             -H 'Content-Type: application/json' \
             --data "{\"action\":\"login\",\"playerCode\":\"$CODE\",\"pin\":\"$PIN\"}")"
           node -e 'const d=JSON.parse(process.argv[1]); if(!d.ok||d.player?.name!=="CI Proof"||d.player?.playerCode!==process.argv[2])process.exit(1)' "$LOGIN" "$CODE"
+          UPDATE="$(curl --fail --show-error "$ARCADE_API_URL/api/profile" \
+            -H 'Content-Type: application/json' \
+            --data "{\"action\":\"update\",\"playerCode\":\"$CODE\",\"pin\":\"$PIN\",\"name\":\"CI Proof Updated\",\"avatar\":\"🐉\"}")"
+          node -e 'const d=JSON.parse(process.argv[1]); if(!d.ok||d.player?.name!=="CI Proof Updated"||d.player?.avatar!=="🐉")process.exit(1)' "$UPDATE"
           echo "Cross-device proof passed for $CODE"
-          npx wrangler d1 execute grei-arcade --remote --command="DELETE FROM players WHERE player_code = '$CODE'"
+          cleanup
+          CODE=""
+          trap - EXIT

@@ -5,6 +5,7 @@
   const GAME_ID = "rodeo-are-you-ready";
   const SONG_BPM = 90;
   const SONG_BEAT_SECONDS = 60 / SONG_BPM;
+  const SONG_DURATION_FALLBACK = 173.136;
   const MODES = {
     ride: {
       label: "Ride the Rhythm",
@@ -28,7 +29,7 @@
       label: "Run the Track",
       shortLabel: "Race",
       levelBase: 6,
-      description: "Race three rivals for three laps, manage your stamina, and take the checkered flag."
+      description: "Tap to build gallop speed, fill Heat for a boost, and race three rivals for the full instrumental."
     }
   };
   const DIFFICULTIES = {
@@ -47,7 +48,6 @@
       escapeDamage: 27,
       raceSpeed: 184,
       rivalSpeed: 145,
-      staminaDrain: 13,
       laps: 3
     },
     standard: {
@@ -65,7 +65,6 @@
       escapeDamage: 34,
       raceSpeed: 208,
       rivalSpeed: 165,
-      staminaDrain: 18,
       laps: 3
     }
   };
@@ -73,6 +72,7 @@
   const ICONS = { left: "←", up: "↑", down: "↓", right: "→" };
   const RIDE_LABELS = { left: "LEAN LEFT", up: "LEAN FORWARD", down: "LEAN BACK", right: "LEAN RIGHT" };
   const MOVE_LABELS = { left: "MOVE LEFT", up: "MOVE UP", down: "MOVE DOWN", right: "MOVE RIGHT" };
+  const RACE_LABELS = { left: "STEER LEFT", up: "TAP TO GALLOP", down: "BRAKE", right: "STEER RIGHT" };
   const KEY_ACTION = {
     ArrowLeft: "left", a: "left", A: "left",
     ArrowUp: "up", w: "up", W: "up",
@@ -248,6 +248,8 @@
       this.overtakes = 0;
       this.racePlace = 4;
       this.raceWon = false;
+      this.boosts = 0;
+      this.perfectTaps = 0;
       this.prompt = null;
       this.answered = false;
       this.elapsed = 0;
@@ -337,7 +339,8 @@
   };
   const race = {
     trackLength: 1800,
-    player: { distance: 0, lane: 0, speed: 0, stamina: 100, lastPlace: 4, overtakeCooldown: 0 },
+    duration: SONG_DURATION_FALLBACK,
+    player: { distance: 0, lane: 0, speed: 0, cadence: 0, lastTapAt: 0, boostTimer: 0, lastPlace: 4, overtakeCooldown: 0 },
     rivals: [
       { name: "Blaze", distance: 54, lane: -.58, speed: 0, color: "#ff625f" },
       { name: "Storm", distance: 22, lane: .08, speed: 0, color: "#174e96" },
@@ -381,7 +384,12 @@
   function hud() {
     scoreEl.textContent = state.score;
     comboEl.textContent = `${state.combo}×`;
-    timeEl.textContent = Math.max(0, Math.floor(state.elapsed));
+    if (modeId === "race") {
+      const remaining = Math.max(0, Math.ceil(race.duration - state.elapsed));
+      timeEl.textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
+    } else {
+      timeEl.textContent = Math.max(0, Math.floor(state.elapsed));
+    }
     heatEl.style.width = `${state.heat}%`;
     stage.classList.toggle("heat", state.heat >= 100);
   }
@@ -429,8 +437,8 @@
         : "Easy gives you more chase time, a wider lasso range, and a 45 BPM pace.";
     } else {
       difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
-        ? "Standard brings faster rivals, tighter stamina management, and a full 90 BPM sprint."
-        : "Easy gives you gentler rivals, slower stamina drain, and a 45 BPM warm-up pace.";
+        ? "Standard: tap with the 90 BPM beat, build Heat, then unleash your boost."
+        : "Easy: tap every other beat at 45 BPM, build Heat, then unleash your boost.";
     }
     if (audio.enabled) audioStatus.textContent = audioLabel();
 
@@ -445,12 +453,12 @@
           : `Race${replay} at ${selectedDifficulty.promptBpm} BPM`;
     stage.setAttribute("aria-label", `${mode().label} playfield`);
 
-    const labels = modeId === "ride" ? RIDE_LABELS : MOVE_LABELS;
+    const labels = modeId === "ride" ? RIDE_LABELS : modeId === "race" ? RACE_LABELS : MOVE_LABELS;
     controlButtons.forEach(button => {
       const action = button.dataset.action;
       button.setAttribute("aria-label", labels[action].toLowerCase());
       const small = button.querySelector("small");
-      if (small) small.textContent = labels[action].replace("LEAN ", "").replace("MOVE ", "");
+      if (small) small.textContent = labels[action].replace("LEAN ", "").replace("MOVE ", "").replace("STEER ", "").replace(" TO GALLOP", "");
     });
     controlHint.textContent = modeId === "ride"
       ? "Arrow keys or W A S D · Match the glowing direction · Space pauses"
@@ -458,9 +466,14 @@
         ? "Hold arrows or W A S D · Move clear of the charge line · Space pauses"
         : modeId === "catch"
           ? "Hold arrows or W A S D · Enter, Z, or Lasso to throw · Space pauses"
-          : "Hold Up/W to gallop · Left/Right to pass · Down/S to brake · Space pauses";
-    lassoButton.hidden = modeId !== "catch";
-    controls.classList.toggle("catch-controls", modeId === "catch");
+          : "Tap Up/W to gallop · Left/Right to pass · Enter/Z or Boost at full Heat";
+    lassoButton.hidden = modeId !== "catch" && modeId !== "race";
+    const specialIcon = lassoButton.querySelector("span");
+    const specialLabel = lassoButton.querySelector("small");
+    if (specialIcon) specialIcon.textContent = modeId === "race" ? "⚡" : "◎";
+    if (specialLabel) specialLabel.textContent = modeId === "race" ? "Boost" : "Lasso";
+    lassoButton.setAttribute("aria-label", modeId === "race" ? "Activate boost when Heat is full" : "Throw lasso");
+    controls.classList.toggle("catch-controls", modeId === "catch" || modeId === "race");
     controls.setAttribute("aria-label", modeId === "ride" ? "Ride controls" : modeId === "matador" ? "Matador controls" : modeId === "catch" ? "Horseback chase controls" : "Horse racing controls");
   }
 
@@ -666,10 +679,14 @@
   }
 
   function resetRace() {
+    race.duration = Number.isFinite(music.duration) && music.duration > 60 ? music.duration : SONG_DURATION_FALLBACK;
+    race.trackLength = difficulty().rivalSpeed * race.duration / difficulty().laps;
     race.player.distance = 0;
     race.player.lane = 0;
     race.player.speed = 0;
-    race.player.stamina = 100;
+    race.player.cadence = 0;
+    race.player.lastTapAt = 0;
+    race.player.boostTimer = 0;
     race.player.lastPlace = 4;
     race.player.overtakeCooldown = 0;
     const starts = [54, 22, -18];
@@ -680,46 +697,90 @@
     });
     race.player.lastPlace = racePlace();
     state.racePlace = race.player.lastPlace;
-    state.balance = 100;
+    state.balance = 0;
+    lassoButton.classList.remove("ready", "active");
   }
 
   function racePlace() {
     return 1 + race.rivals.filter(rival => rival.distance > race.player.distance).length;
   }
 
+  function tapGallop() {
+    if (!running || paused || counting || modeId !== "race") return;
+    const now = performance.now();
+    if (now - race.player.lastTapAt < 105) return;
+    race.player.lastTapAt = now;
+    const beatLength = difficulty().interval;
+    const songTime = Number.isFinite(music.currentTime) ? music.currentTime : state.elapsed;
+    const phase = (songTime % beatLength) / beatLength;
+    const beatDistance = Math.min(phase, 1 - phase);
+    const perfect = beatDistance <= .17;
+    const gain = perfect ? 30 : 21;
+    race.player.cadence = Math.min(100, race.player.cadence + gain);
+    state.combo++;
+    state.bestCombo = Math.max(state.bestCombo, state.combo);
+    if (perfect) state.perfectTaps++;
+    const points = perfect ? 55 : 28;
+    state.score += points;
+    state.heat = Math.min(100, state.heat + (perfect ? 5 : 3));
+    state.balance = race.player.cadence;
+    if (perfect) {
+      setFeedback(`ON BEAT +${points}`, 330);
+      audio.good();
+    }
+    burst(perfect ? "#ffc857" : "#ffad86", perfect ? 7 : 3, 480, 300);
+    lassoButton.classList.toggle("ready", state.heat >= 100);
+    stage.dataset.cadence = String(Math.round(race.player.cadence));
+  }
+
+  function activateRaceBoost() {
+    if (!running || paused || counting || modeId !== "race") return;
+    if (state.heat < 100 || race.player.boostTimer > 0) {
+      setFeedback(state.heat < 100 ? "FILL HEAT TO BOOST" : "BOOST ACTIVE", 520);
+      return;
+    }
+    state.heat = 0;
+    race.player.boostTimer = 4.5;
+    state.boosts++;
+    state.score += 500;
+    lassoButton.classList.remove("ready");
+    lassoButton.classList.add("active");
+    setFeedback("FULL HEAT BOOST! +500", 900);
+    burst("#ffc857", 38, 480, 270);
+    flashes.push({ x: 480, y: 270, life: .45 });
+    audio.perfect();
+  }
+
   function updateRace(dt) {
     const player = race.player;
-    const accelerating = heldDirections.has("up");
     const braking = heldDirections.has("down");
     const steering = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
     player.lane = Math.max(-.82, Math.min(.82, player.lane + steering * dt * 1.25));
     player.overtakeCooldown = Math.max(0, player.overtakeCooldown - dt);
-
-    if (accelerating && player.stamina > 0) player.stamina = Math.max(0, player.stamina - difficulty().staminaDrain * dt);
-    else player.stamina = Math.min(100, player.stamina + (braking ? 24 : 16) * dt);
-    const targetSpeed = braking
-      ? difficulty().raceSpeed * .38
-      : accelerating
-        ? difficulty().raceSpeed * (player.stamina <= 1 ? .62 : 1)
-        : difficulty().raceSpeed * .66;
+    player.boostTimer = Math.max(0, player.boostTimer - dt);
+    player.cadence = Math.max(0, player.cadence - (difficultyId === "easy" ? 17 : 23) * dt);
+    const cadencePower = player.cadence / 100;
+    const targetSpeed = braking ? difficulty().raceSpeed * .28 : difficulty().raceSpeed * (.36 + cadencePower * .64);
     player.speed += (targetSpeed - player.speed) * Math.min(1, dt * (braking ? 5.5 : 2.8));
+    if (player.boostTimer > 0) player.speed = Math.max(player.speed, difficulty().raceSpeed * 1.38);
 
     let drafting = false;
     race.rivals.forEach((rival, index) => {
       const rhythm = Math.sin(state.elapsed * (1.15 + index * .17) + index * 2.1) * 7;
-      const target = difficulty().rivalSpeed * (.96 + index * .025) + rhythm;
+      const rubberBand = Math.max(0, Math.min(38, (player.distance - rival.distance) * .015));
+      const target = difficulty().rivalSpeed * (.96 + index * .025) + rhythm + rubberBand;
       rival.speed += (target - rival.speed) * Math.min(1, dt * 1.6);
       rival.distance += rival.speed * dt;
       const gap = rival.distance - player.distance;
       if (gap > 35 && gap < 130 && Math.abs(rival.lane - player.lane) < .34) drafting = true;
       if (Math.abs(gap) < 34 && Math.abs(rival.lane - player.lane) < .24) {
         player.speed *= Math.pow(.84, dt * 4);
-        player.stamina = Math.max(0, player.stamina - 8 * dt);
+        player.cadence = Math.max(0, player.cadence - 10 * dt);
       }
     });
-    if (drafting && accelerating) player.speed += 14 * dt;
+    if (drafting) player.speed += 14 * dt;
     player.distance += player.speed * dt;
-    state.balance = player.stamina;
+    state.balance = player.cadence;
 
     const place = racePlace();
     if (place < player.lastPlace && player.overtakeCooldown <= 0) {
@@ -731,12 +792,17 @@
     }
     player.lastPlace = place;
     state.racePlace = place;
-    const lap = Math.min(difficulty().laps, Math.floor(Math.max(0, player.distance) / race.trackLength) + 1);
+    const progress = Math.min(1, state.elapsed / race.duration);
+    const lap = Math.min(difficulty().laps, Math.floor(progress * difficulty().laps) + 1);
     stage.dataset.lap = String(lap);
     stage.dataset.place = String(place);
+    stage.dataset.cadence = String(Math.round(player.cadence));
+    stage.dataset.boost = player.boostTimer > 0 ? "active" : state.heat >= 100 ? "ready" : "charging";
+    lassoButton.classList.toggle("ready", state.heat >= 100 && player.boostTimer <= 0);
+    lassoButton.classList.toggle("active", player.boostTimer > 0);
     directionAnnounce.textContent = `${place === 1 ? "First" : place === 2 ? "Second" : place === 3 ? "Third" : "Fourth"} place, lap ${lap} of ${difficulty().laps}`;
 
-    if (player.distance >= race.trackLength * difficulty().laps) {
+    if (state.elapsed >= race.duration) {
       state.raceWon = place === 1;
       state.score += [0, 3000, 1800, 1000, 500][place];
       state.heat = Math.min(100, state.heat + (place === 1 ? 30 : 12));
@@ -898,7 +964,7 @@
       titleEl.innerHTML = first + (second ? `<br>${second}` : "");
       copyEl.textContent = count < 3
         ? "Count it up. Find the beat."
-        : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Watch the line and move." : modeId === "catch" ? "Close the gap and rope 'em." : "Save your stamina and take the inside line.";
+        : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Watch the line and move." : modeId === "catch" ? "Close the gap and rope 'em." : "Tap to gallop. Fill Heat. Hit Boost.";
       audio.countdown(count);
       count++;
       if (count < cards.length) setTimeout(tick, SONG_BEAT_SECONDS * 1000);
@@ -937,6 +1003,8 @@
     delete stage.dataset.escapes;
     delete stage.dataset.lap;
     delete stage.dataset.place;
+    delete stage.dataset.cadence;
+    delete stage.dataset.boost;
     overlay.hidden = true;
     directionAnnounce.textContent = "";
     audio.begin();
@@ -971,7 +1039,7 @@
         ? "One more sidestep and you had it. Get back in the arena."
         : modeId === "catch"
           ? "Tighten that loop, mount up, and bring the next cow home."
-          : state.raceWon ? "You managed the pace, found the gaps, and owned the final stretch." : "Ease off to recover stamina, draft the leaders, and time your pass.";
+          : state.raceWon ? "You found the beat, fired the boost, and owned the final stretch." : "Tap with the beat, draft the leaders, and save a boost for the final lap.";
 
     const rank = modeId === "ride"
       ? state.score >= 10000 ? "Rodeo Royalty" : state.score >= 6000 ? "Wild Rider" : state.score >= 2500 ? "Rodeo Ready" : state.score >= 900 ? "Stable Hand" : "First Timer"
@@ -982,8 +1050,8 @@
           : state.racePlace === 1 ? "Track Royalty" : state.racePlace === 2 ? "Photo Finish" : state.racePlace === 3 ? "Podium Rider" : "Trail Runner";
     const middleValue = modeId === "ride" ? `${state.bestCombo}×` : modeId === "matador" ? state.dodges : modeId === "catch" ? state.catches : `#${state.racePlace}`;
     const middleLabel = modeId === "ride" ? "Best combo" : modeId === "matador" ? "Dodges" : modeId === "catch" ? "Catches" : "Finish";
-    const lastValue = modeId === "ride" ? state.perfects : modeId === "matador" ? state.closeCalls : modeId === "catch" ? state.quickCatches : state.overtakes;
-    const lastLabel = modeId === "ride" ? "Perfects" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Overtakes";
+    const lastValue = modeId === "ride" ? state.perfects : modeId === "matador" ? state.closeCalls : modeId === "catch" ? state.quickCatches : state.boosts;
+    const lastLabel = modeId === "ride" ? "Perfects" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Boosts";
     results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} ${difficulty().promptBpm} BPM · Best ${best}</p>`;
     updateSelectionUI();
     document.querySelector(".next-modes").textContent = "Four rodeo events · one endless instrumental";
@@ -1462,15 +1530,13 @@
     ctx.beginPath();
     ctx.ellipse(0, 16, 38 * scale, 10 * scale, 0, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = player ? 5 : 4;
+    ctx.beginPath();
+    ctx.ellipse(0, 14, 43 * scale, 14 * scale, 0, 0, Math.PI * 2);
+    ctx.stroke();
     const frame = cycleFrame(now, Math.max(5, (player ? race.player.speed : difficulty().rivalSpeed) / 24));
-    if (spriteFrame(horsebackRiderAnimation, frame, -57 * scale, -100 * scale, 114 * scale, 152 * scale)) {
-      ctx.globalCompositeOperation = "source-atop";
-      ctx.globalAlpha = player ? .16 : .34;
-      ctx.fillStyle = color;
-      ctx.fillRect(-57 * scale, -100 * scale, 114 * scale, 152 * scale);
-      ctx.globalCompositeOperation = "source-over";
-      ctx.globalAlpha = 1;
-    } else {
+    if (!spriteFrame(horsebackRiderAnimation, frame, -57 * scale, -100 * scale, 114 * scale, 152 * scale)) {
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.ellipse(0, 0, 34 * scale, 16 * scale, 0, 0, Math.PI * 2);
@@ -1483,6 +1549,10 @@
       ctx.arc(0, -15, 43, 0, Math.PI * 2);
       ctx.stroke();
     }
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(-42 * scale, -57 * scale, player ? 8 : 6, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
 
@@ -1518,7 +1588,8 @@
     horses.sort((a, b) => trackPoint(a.distance, a.lane).y - trackPoint(b.distance, b.lane).y);
     horses.forEach(horse => drawRaceHorse(horse.distance, horse.lane, horse.color, now, horse.player));
 
-    const lap = Math.min(difficulty().laps, Math.floor(Math.max(0, race.player.distance) / race.trackLength) + 1);
+    const songProgress = Math.min(1, state.elapsed / race.duration);
+    const lap = Math.min(difficulty().laps, Math.floor(songProgress * difficulty().laps) + 1);
     const place = state.racePlace;
     ctx.fillStyle = "rgba(8,7,12,.78)";
     ctx.beginPath();
@@ -1530,8 +1601,11 @@
     ctx.fillText(`LAP ${lap}/${difficulty().laps}  ·  PLACE ${place}/4`, 480, 91);
     ctx.fillStyle = "rgba(255,255,255,.16)";
     ctx.fillRect(382, 103, 196, 7);
-    ctx.fillStyle = race.player.stamina > 30 ? "#ffc857" : "#ff625f";
-    ctx.fillRect(382, 103, 196 * race.player.stamina / 100, 7);
+    ctx.fillStyle = race.player.boostTimer > 0 ? "#fff6ec" : "#ffc857";
+    ctx.fillRect(382, 103, 196 * songProgress, 7);
+    ctx.fillStyle = state.heat >= 100 ? "#ffc857" : "#fff6ec";
+    ctx.font = "italic 900 15px Impact, sans-serif";
+    ctx.fillText(race.player.boostTimer > 0 ? `BOOST ${race.player.boostTimer.toFixed(1)}s` : state.heat >= 100 ? "BOOST READY!" : "TAP ↑ TO GALLOP", 480, 143);
   }
 
   function drawCanvasHud() {
@@ -1542,7 +1616,7 @@
     ctx.fillStyle = "#ffc857";
     ctx.font = "800 10px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText(modeId === "ride" ? "BALANCE" : modeId === "matador" ? "NERVE" : modeId === "catch" ? "GRIT" : "STAMINA", 29, 34);
+    ctx.fillText(modeId === "ride" ? "BALANCE" : modeId === "matador" ? "NERVE" : modeId === "catch" ? "GRIT" : "GALLOP", 29, 34);
     ctx.fillStyle = "rgba(255,255,255,.15)";
     ctx.fillRect(29, 41, 146, 7);
     const balanceGradient = ctx.createLinearGradient(29, 0, 175, 0);
@@ -1617,9 +1691,9 @@
   difficultyButtons.forEach(button => button.addEventListener("click", () => chooseDifficulty(button.dataset.difficulty)));
 
   addEventListener("keydown", event => {
-    if (modeId === "catch" && (event.key === "Enter" || event.key === "z" || event.key === "Z")) {
+    if ((modeId === "catch" || modeId === "race") && (event.key === "Enter" || event.key === "z" || event.key === "Z")) {
       event.preventDefault();
-      if (!event.repeat) throwLasso();
+      if (!event.repeat) modeId === "race" ? activateRaceBoost() : throwLasso();
       return;
     }
     const action = KEY_ACTION[event.key];
@@ -1627,6 +1701,8 @@
     event.preventDefault();
     if (modeId === "ride") {
       if (!event.repeat) respondRide(action);
+    } else if (modeId === "race" && action === "up") {
+      if (!event.repeat) tapGallop();
     } else if (running && !paused && !counting) {
       heldDirections.add(action);
     }
@@ -1673,10 +1749,11 @@
     const action = button.dataset.action;
     bindGameControl(button, () => {
       if (modeId === "ride") respondRide(action);
+      else if (modeId === "race" && action === "up") tapGallop();
       else if (running && !paused && !counting) heldDirections.add(action);
     }, () => heldDirections.delete(action));
   });
-  bindGameControl(lassoButton, throwLasso);
+  bindGameControl(lassoButton, () => modeId === "race" ? activateRaceBoost() : throwLasso());
 
   addEventListener("grei:pause", event => {
     paused = event.detail.paused;

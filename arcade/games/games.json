@@ -1,5 +1,16 @@
 [
   {
+    "id": "rodeo-are-you-ready",
+    "title": "Rodeo: Are You Ready",
+    "creator": "The Grei Show",
+    "description": "Choose an endless mechanical-bull rhythm ride, a matador dodge challenge, or a horseback lasso chase, with Easy and Standard pacing over the official Rodeo instrumental.",
+    "version": "0.5",
+    "type": "native",
+    "entry": "arcade/games/rodeo-are-you-ready/index.html",
+    "thumbnail": "arcade/assets/thumbnails/rodeo-are-you-ready.svg",
+    "tags": ["rhythm", "rodeo", "dodge", "lasso", "horseback", "music", "mobile"]
+  },
+  {
     "id": "dreamweaver-oracle",
     "title": "Dreamweaver",
     "creator": "The Grei Show",

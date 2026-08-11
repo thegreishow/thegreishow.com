@@ -28,6 +28,7 @@
   };
 
   const discoveryLinks = {
+    'rodeo-are-you-ready': { href: '../../../music.html', label: 'Enter The Grei Show Music' },
     'dreamweaver-oracle': { href: '../../../astralthread.html', label: 'Read The Astral Thread' },
     'signal-runner': { href: '../../../music.html', label: 'Enter the Audio Universe' },
     'jamaica-run': { href: '../../../music.html', label: 'Explore The Grei Show Music' }
@@ -119,6 +120,7 @@
     const enabled = window.greiPlaySound.toggle();
     soundBtn.textContent = enabled ? '🔊' : '🔇';
     soundBtn.classList.toggle('active', enabled);
+    window.dispatchEvent(new CustomEvent('grei:sound', { detail: { enabled } }));
   });
 
   let paused = false;

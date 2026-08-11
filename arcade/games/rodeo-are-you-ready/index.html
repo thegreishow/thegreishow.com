@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#1a0b12">
+  <meta name="description" content="Ride the Rhythm, Dodge the Bull, or Catch the Cow in Rodeo: Are You Ready, a music game by The Grei Show.">
+  <title>Rodeo: Are You Ready | The Grei Show Arcade</title>
+  <link rel="preload" href="assets/rodeo-arena.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/ride-sprite.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/ride-animation.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/matador-sprites.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/matadora-animation.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/charging-bull-animation.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/catch-cow-sprites.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/horseback-rider-animation.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/runaway-cow-animation.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
+  <link rel="stylesheet" href="assets/game.css">
+</head>
+<body>
+<script src="../../engine/game-shell.js"></script>
+<main class="wrap">
+  <header class="hud">
+    <div class="brand">
+      <p class="eyebrow">The Grei Show presents</p>
+      <h1>Rodeo: Are You Ready</h1>
+    </div>
+    <div class="stats" aria-live="polite">
+      <div class="stat"><b id="score">0</b><span>Score</span></div>
+      <div class="stat"><b id="combo">0×</b><span>Combo</span></div>
+      <div class="stat"><b id="time">0</b><span>Time</span></div>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="Rodeo game playfield">
+    <canvas id="game" width="960" height="540"></canvas>
+    <p class="sr-only" id="directionAnnounce" aria-live="assertive"></p>
+    <div class="meter" aria-label="Heat meter">
+      <label>Heat</label>
+      <div class="track"><div class="fill" id="heat"></div></div>
+    </div>
+    <div class="overlay" id="overlay">
+      <div class="panel" id="panel">
+        <p class="mini" id="kicker">Choose your event</p>
+        <h2 id="overlayTitle">Are You<br>Ready?</h2>
+        <p id="overlayCopy">Stay in the saddle, answer every buck on the beat, and turn up the heat.</p>
+        <div class="mode-picker" id="modePicker" aria-label="Choose a rodeo event">
+          <button type="button" class="mode-card selected" data-mode="ride" aria-pressed="true">
+            <img class="mode-cover" src="assets/rodeo-cover.webp" alt="" width="58" height="58">
+            <span class="mode-copy">
+              <strong>Ride the Rhythm</strong>
+              <small>Match every buck and stay mounted as long as you can.</small>
+            </span>
+            <span class="badge">Mode 01</span>
+          </button>
+          <button type="button" class="mode-card" data-mode="matador" aria-pressed="false">
+            <span class="mode-cover matador-cover" aria-hidden="true"></span>
+            <span class="mode-copy">
+              <strong>Dodge the Bull</strong>
+              <small>Read the charge line, move aside, and build an Olé streak.</small>
+            </span>
+            <span class="badge">Mode 02</span>
+          </button>
+          <button type="button" class="mode-card" data-mode="catch" aria-pressed="false">
+            <span class="mode-cover catch-cover" aria-hidden="true"></span>
+            <span class="mode-copy">
+              <strong>Catch the Cow</strong>
+              <small>Chase on horseback, close the gap, and throw your lasso.</small>
+            </span>
+            <span class="badge">Mode 03</span>
+          </button>
+        </div>
+        <fieldset class="difficulty-picker" id="difficultyPicker">
+          <legend>Choose your pace</legend>
+          <div class="difficulty-options">
+            <button type="button" class="difficulty" data-difficulty="easy" aria-pressed="false">
+              <strong>Easy</strong><small>45 BPM · every other beat</small>
+            </button>
+            <button type="button" class="difficulty selected" data-difficulty="standard" aria-pressed="true">
+              <strong>Standard</strong><small>90 BPM · every beat</small>
+            </button>
+          </div>
+          <p id="difficultyNote">Standard follows every beat of the official 90 BPM instrumental.</p>
+        </fieldset>
+        <div class="music-chip" id="musicChip">
+          <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span id="audioStatus">Rodeo instrumental · official 90 BPM</span>
+        </div>
+        <div id="results" hidden></div>
+        <button class="btn" id="start">Enter the Rodeo</button>
+        <p class="next-modes">Three rodeo events · one endless instrumental</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls" id="controls" aria-label="Game controls">
+    <button class="control" data-action="left" aria-label="Lean left"><span>←</span><small>Left</small></button>
+    <button class="control" data-action="up" aria-label="Lean forward"><span>↑</span><small>Forward</small></button>
+    <button class="control" data-action="down" aria-label="Lean back"><span>↓</span><small>Back</small></button>
+    <button class="control" data-action="right" aria-label="Lean right"><span>→</span><small>Right</small></button>
+    <button class="control lasso-control" id="lassoButton" aria-label="Throw lasso" hidden><span>◎</span><small>Lasso</small></button>
+  </section>
+  <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
+</main>
+<audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
+<script src="assets/game.js?v=20260811a"></script>
+</body>
+</html>

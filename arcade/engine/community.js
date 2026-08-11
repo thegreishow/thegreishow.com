@@ -3,9 +3,15 @@ const ACTIVITY_KEY = 'grei_arcade_activity';
 const LEGACY_NAME_KEY = 'grei_arcade_player_name';
 const ACCOUNT_KEY = 'grei_arcade_account';
 export const ARCADE_API_BASE = 'https://grei-arcade-api.thegreishow.workers.dev';
-export const ARCADE_AVATARS = ['🌌','⚡','🔥','🎮','🪐','👾','🎧','🧿'];
+export const ARCADE_AVATARS = ['🧑🏾‍🚀','🤠','🧑🏾‍🎤','🦁','🐉','🥷','🧙🏾','🤖'];
+export const ARCADE_AVATAR_LABELS = {
+  '🧑🏾‍🚀':'Astronaut', '🤠':'Cowboy', '🧑🏾‍🎤':'Rockstar', '🦁':'Lion',
+  '🐉':'Dragon', '🥷':'Ninja', '🧙🏾':'Wizard', '🤖':'Robot'
+};
+const LEGACY_AVATARS = ['🌌','⚡','🔥','🎮','🪐','👾','🎧','🧿'];
+const isKnownAvatar = avatar => ARCADE_AVATARS.includes(avatar) || LEGACY_AVATARS.includes(avatar);
 
-const communityStyles = new URL('./community.css', import.meta.url);
+const communityStyles = new URL('./community.css?v=20260811b', import.meta.url);
 if (!document.querySelector('link[data-arcade-community]')) {
   const link=document.createElement('link'); link.rel='stylesheet'; link.href=communityStyles.href; link.dataset.arcadeCommunity='true'; document.head.appendChild(link);
 }
@@ -23,7 +29,7 @@ export function getPlayerProfile(){
   const account=getArcadeAccount();
   return {
     name:String(saved.name||account?.name||legacyName||'Guest Dreamer').slice(0,18),
-    avatar:ARCADE_AVATARS.includes(saved.avatar)?saved.avatar:(ARCADE_AVATARS.includes(account?.avatar)?account.avatar:ARCADE_AVATARS[0]),
+    avatar:isKnownAvatar(saved.avatar)?saved.avatar:(isKnownAvatar(account?.avatar)?account.avatar:ARCADE_AVATARS[0]),
     joinedAt:saved.joinedAt||account?.joinedAt||new Date().toISOString(),
     xp:Number(saved.xp??account?.xp)||0,
     gamesPlayed:Number(saved.gamesPlayed??account?.gamesPlayed)||0
@@ -32,7 +38,7 @@ export function getPlayerProfile(){
 export function savePlayerProfile(profile){
   const clean={
     name:String(profile.name||'Guest Dreamer').replace(/[^a-zA-Z0-9 _-]/g,'').trim().slice(0,18)||'Guest Dreamer',
-    avatar:ARCADE_AVATARS.includes(profile.avatar)?profile.avatar:ARCADE_AVATARS[0],
+    avatar:isKnownAvatar(profile.avatar)?profile.avatar:ARCADE_AVATARS[0],
     joinedAt:profile.joinedAt||new Date().toISOString(),
     xp:Math.max(0,Number(profile.xp)||0), gamesPlayed:Math.max(0,Number(profile.gamesPlayed)||0)
   };
@@ -45,9 +51,14 @@ function saveAccount(player,pin){
   return account;
 }
 async function profileRequest(payload){
-  const response=await fetch(`${ARCADE_API_BASE}/api/profile`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok) throw new Error(data.error||'Profile sync failed.');
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+  let response;
+  try{response=await fetch(`${ARCADE_API_BASE}/api/profile`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal})}
+  catch(error){throw new Error(error?.name==='AbortError'?'Profile service timed out. Please try again.':'Could not reach the player service. Check your connection and try again.')}
+  finally{clearTimeout(timeout)}
+  const data=await response.json().catch(()=>null);
+  if(!response.ok) throw new Error(data?.error||`Profile service returned ${response.status}. Please try again.`);
+  if(!data?.player) throw new Error('The player service returned an incomplete profile. Please try again.');
   return data;
 }
 export async function createSyncedAccount({name,avatar,pin}){const data=await profileRequest({action:'create',name,avatar,pin});return saveAccount(data.player,pin)}

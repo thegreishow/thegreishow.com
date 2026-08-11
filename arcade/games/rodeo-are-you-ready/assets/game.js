@@ -29,7 +29,7 @@
       label: "Run the Track",
       shortLabel: "Race",
       levelBase: 6,
-      description: "Tap to build gallop speed, fill Heat for a boost, and race three rivals for the full instrumental."
+      description: "Time each gallop tap to the beat, earn Heat for Perfects, and counter rival surges with your boost."
     }
   };
   const DIFFICULTIES = {
@@ -47,7 +47,7 @@
       lassoCooldown: .72,
       escapeDamage: 27,
       raceSpeed: 184,
-      rivalSpeed: 145,
+      rivalSpeed: 152,
       laps: 3
     },
     standard: {
@@ -64,7 +64,7 @@
       lassoCooldown: .95,
       escapeDamage: 34,
       raceSpeed: 208,
-      rivalSpeed: 165,
+      rivalSpeed: 175,
       laps: 3
     }
   };
@@ -340,11 +340,11 @@
   const race = {
     trackLength: 1800,
     duration: SONG_DURATION_FALLBACK,
-    player: { distance: 0, lane: 0, speed: 0, cadence: 0, lastTapAt: 0, boostTimer: 0, lastPlace: 4, overtakeCooldown: 0 },
+    player: { distance: 0, lane: 0, speed: 0, cadence: 0, lastTapAt: 0, lastJudgedBeat: -1, boostTimer: 0, lastPlace: 4, overtakeCooldown: 0, lastGrade: "", gradeUntil: 0 },
     rivals: [
-      { name: "Blaze", distance: 54, lane: -.58, speed: 0, color: "#ff625f" },
-      { name: "Storm", distance: 22, lane: .08, speed: 0, color: "#174e96" },
-      { name: "Goldie", distance: -18, lane: .62, speed: 0, color: "#ffc857" }
+      { name: "Blaze", distance: 54, lane: -.58, speed: 0, color: "#ff625f", surgeTimer: 0, nextSurge: 9, laneTarget: -.58 },
+      { name: "Storm", distance: 22, lane: .08, speed: 0, color: "#174e96", surgeTimer: 0, nextSurge: 13, laneTarget: .08 },
+      { name: "Goldie", distance: -18, lane: .62, speed: 0, color: "#ffc857", surgeTimer: 0, nextSurge: 17, laneTarget: .62 }
     ]
   };
 
@@ -686,14 +686,20 @@
     race.player.speed = 0;
     race.player.cadence = 0;
     race.player.lastTapAt = 0;
+    race.player.lastJudgedBeat = -1;
     race.player.boostTimer = 0;
+    race.player.lastGrade = "";
+    race.player.gradeUntil = 0;
     race.player.lastPlace = 4;
     race.player.overtakeCooldown = 0;
     const starts = [54, 22, -18];
     race.rivals.forEach((rival, index) => {
       rival.distance = starts[index];
       rival.lane = [-.58, .08, .62][index];
+      rival.laneTarget = rival.lane;
       rival.speed = difficulty().rivalSpeed * (.96 + index * .025);
+      rival.surgeTimer = 0;
+      rival.nextSurge = 9 + index * 4;
     });
     race.player.lastPlace = racePlace();
     state.racePlace = race.player.lastPlace;
@@ -711,22 +717,56 @@
     if (now - race.player.lastTapAt < 105) return;
     race.player.lastTapAt = now;
     const beatLength = difficulty().interval;
-    const songTime = Number.isFinite(music.currentTime) ? music.currentTime : state.elapsed;
+    const songTime = Number.isFinite(music.currentTime) && music.currentTime > .02 ? music.currentTime : state.elapsed;
+    const judgedBeat = Math.round(songTime / beatLength);
+    if (judgedBeat === race.player.lastJudgedBeat) {
+      race.player.lastGrade = "TOO SOON";
+      race.player.gradeUntil = now + 300;
+      stage.dataset.timing = "too-soon";
+      setFeedback("TOO SOON · WAIT FOR THE FLASH", 300);
+      return;
+    }
+    race.player.lastJudgedBeat = judgedBeat;
     const phase = (songTime % beatLength) / beatLength;
-    const beatDistance = Math.min(phase, 1 - phase);
-    const perfect = beatDistance <= .17;
-    const gain = perfect ? 30 : 21;
+    const beatDistanceSeconds = Math.min(phase, 1 - phase) * beatLength;
+    const perfectWindow = difficultyId === "easy" ? .18 : .115;
+    const goodWindow = difficultyId === "easy" ? .36 : .24;
+    const perfect = beatDistanceSeconds <= perfectWindow;
+    const good = !perfect && beatDistanceSeconds <= goodWindow;
+    const grade = perfect ? "PERFECT" : good ? "GOOD" : phase <= .5 ? "LATE" : "EARLY";
+    const gain = perfect ? 32 : good ? 23 : 9;
     race.player.cadence = Math.min(100, race.player.cadence + gain);
-    state.combo++;
-    state.bestCombo = Math.max(state.bestCombo, state.combo);
+    if (perfect || good) {
+      state.combo++;
+      state.bestCombo = Math.max(state.bestCombo, state.combo);
+    } else {
+      state.combo = 0;
+      state.misses++;
+    }
     if (perfect) state.perfectTaps++;
-    const points = perfect ? 55 : 28;
+    const points = perfect ? 75 : good ? 40 : 8;
+    const heatGain = perfect ? 10 : good ? 4 : 0;
+    const awardedHeat = race.player.boostTimer > 0 ? 0 : heatGain;
     state.score += points;
-    state.heat = Math.min(100, state.heat + (perfect ? 5 : 3));
+    state.heat = Math.min(100, state.heat + awardedHeat);
     state.balance = race.player.cadence;
-    if (perfect) {
-      setFeedback(`ON BEAT +${points}`, 330);
+    race.player.lastGrade = grade;
+    race.player.gradeUntil = now + 520;
+    stage.dataset.timing = grade.toLowerCase();
+    if (perfect || good) {
+      setFeedback(`${grade} +${points}${awardedHeat ? ` · +${awardedHeat} HEAT` : ""}`, perfect ? 520 : 380);
       audio.good();
+    } else {
+      setFeedback(`${grade} · FIND THE BEAT`, 350);
+      audio.warning();
+    }
+    if (state.combo > 0 && state.combo % 8 === 0) {
+      state.score += 250;
+      const streakHeat = race.player.boostTimer > 0 ? 0 : 15;
+      state.heat = Math.min(100, state.heat + streakHeat);
+      setFeedback(`8-TAP HOT STREAK!${streakHeat ? " +15 HEAT" : ""}`, 760);
+      burst("#ffc857", 24, 480, 280);
+      audio.perfect();
     }
     burst(perfect ? "#ffc857" : "#ffad86", perfect ? 7 : 3, 480, 300);
     lassoButton.classList.toggle("ready", state.heat >= 100);
@@ -766,9 +806,20 @@
 
     let drafting = false;
     race.rivals.forEach((rival, index) => {
+      rival.nextSurge -= dt;
+      rival.surgeTimer = Math.max(0, rival.surgeTimer - dt);
+      if (rival.nextSurge <= 0) {
+        rival.surgeTimer = 2.6;
+        rival.nextSurge = 13 + Math.random() * 10;
+        rival.laneTarget = Math.max(-.75, Math.min(.75, rival.lane + (Math.random() - .5) * .9));
+        stage.dataset.rivalSurge = rival.name.toLowerCase();
+      }
+      rival.lane += (rival.laneTarget - rival.lane) * Math.min(1, dt * 1.1);
       const rhythm = Math.sin(state.elapsed * (1.15 + index * .17) + index * 2.1) * 7;
-      const rubberBand = Math.max(0, Math.min(38, (player.distance - rival.distance) * .015));
-      const target = difficulty().rivalSpeed * (.96 + index * .025) + rhythm + rubberBand;
+      const rubberBand = Math.max(-20, Math.min(55, (player.distance - rival.distance) * .02));
+      const rivalSurge = rival.surgeTimer > 0 ? 38 : 0;
+      const finalSprint = state.elapsed >= race.duration - 22 ? 12 : 0;
+      const target = difficulty().rivalSpeed * (.96 + index * .025) + rhythm + rubberBand + rivalSurge + finalSprint;
       rival.speed += (target - rival.speed) * Math.min(1, dt * 1.6);
       rival.distance += rival.speed * dt;
       const gap = rival.distance - player.distance;
@@ -1520,7 +1571,7 @@
     return { x: 480 + Math.cos(angle) * radiusX, y: 310 + Math.sin(angle) * radiusY, angle };
   }
 
-  function drawRaceHorse(distance, lane, color, now, player = false) {
+  function drawRaceHorse(distance, lane, color, now, player = false, surged = false) {
     const point = trackPoint(distance, lane);
     const scale = player ? 1 : .82;
     ctx.save();
@@ -1532,9 +1583,14 @@
     ctx.fill();
     ctx.strokeStyle = color;
     ctx.lineWidth = player ? 5 : 4;
+    if (surged) {
+      ctx.shadowColor = "#ffc857";
+      ctx.shadowBlur = 18;
+    }
     ctx.beginPath();
     ctx.ellipse(0, 14, 43 * scale, 14 * scale, 0, 0, Math.PI * 2);
     ctx.stroke();
+    ctx.shadowBlur = 0;
     const frame = cycleFrame(now, Math.max(5, (player ? race.player.speed : difficulty().rivalSpeed) / 24));
     if (!spriteFrame(horsebackRiderAnimation, frame, -57 * scale, -100 * scale, 114 * scale, 152 * scale)) {
       ctx.fillStyle = color;
@@ -1553,6 +1609,37 @@
     ctx.beginPath();
     ctx.arc(-42 * scale, -57 * scale, player ? 8 : 6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
+  }
+
+  function drawRaceBeatTarget(now) {
+    const beatLength = difficulty().interval;
+    const songTime = Number.isFinite(music.currentTime) && music.currentTime > .02 ? music.currentTime : state.elapsed;
+    const phase = (songTime % beatLength) / beatLength;
+    const distance = Math.min(phase, 1 - phase);
+    const proximity = 1 - Math.min(1, distance / .5);
+    const radius = 34 + (1 - proximity) * 68;
+    const perfectWindow = (difficultyId === "easy" ? .18 : .115) / beatLength;
+    const inPerfectWindow = distance <= perfectWindow;
+    ctx.save();
+    ctx.translate(480, 310);
+    ctx.strokeStyle = inPerfectWindow ? "#fff6ec" : `rgba(255,200,87,${.36 + proximity * .54})`;
+    ctx.lineWidth = inPerfectWindow ? 8 : 5;
+    ctx.shadowColor = "#ffc857";
+    ctx.shadowBlur = inPerfectWindow ? 30 : 8 + proximity * 12;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = inPerfectWindow ? "#ffc857" : "rgba(255,246,236,.86)";
+    ctx.textAlign = "center";
+    ctx.font = "italic 900 13px Impact, sans-serif";
+    ctx.fillText(inPerfectWindow ? "TAP!" : "TIME THE RING", 0, 5);
+    if (race.player.lastGrade && now < race.player.gradeUntil) {
+      ctx.fillStyle = race.player.lastGrade === "PERFECT" ? "#ffc857" : race.player.lastGrade === "GOOD" ? "#fff6ec" : "#ff8b7f";
+      ctx.font = "italic 900 18px Impact, sans-serif";
+      ctx.fillText(race.player.lastGrade, 0, 31);
+    }
     ctx.restore();
   }
 
@@ -1583,10 +1670,12 @@
     }
     ctx.restore();
 
-    const horses = race.rivals.map(rival => ({ distance: rival.distance, lane: rival.lane, color: rival.color, player: false }));
-    horses.push({ distance: race.player.distance, lane: race.player.lane, color: "#fff6ec", player: true });
+    drawRaceBeatTarget(now);
+
+    const horses = race.rivals.map(rival => ({ distance: rival.distance, lane: rival.lane, color: rival.color, player: false, surged: rival.surgeTimer > 0 }));
+    horses.push({ distance: race.player.distance, lane: race.player.lane, color: "#fff6ec", player: true, surged: race.player.boostTimer > 0 });
     horses.sort((a, b) => trackPoint(a.distance, a.lane).y - trackPoint(b.distance, b.lane).y);
-    horses.forEach(horse => drawRaceHorse(horse.distance, horse.lane, horse.color, now, horse.player));
+    horses.forEach(horse => drawRaceHorse(horse.distance, horse.lane, horse.color, now, horse.player, horse.surged));
 
     const songProgress = Math.min(1, state.elapsed / race.duration);
     const lap = Math.min(difficulty().laps, Math.floor(songProgress * difficulty().laps) + 1);
@@ -1605,7 +1694,15 @@
     ctx.fillRect(382, 103, 196 * songProgress, 7);
     ctx.fillStyle = state.heat >= 100 ? "#ffc857" : "#fff6ec";
     ctx.font = "italic 900 15px Impact, sans-serif";
-    ctx.fillText(race.player.boostTimer > 0 ? `BOOST ${race.player.boostTimer.toFixed(1)}s` : state.heat >= 100 ? "BOOST READY!" : "TAP ↑ TO GALLOP", 480, 143);
+    const surgingRival = race.rivals.find(rival => rival.surgeTimer > 0);
+    const raceCallout = race.player.boostTimer > 0
+      ? `BOOST ${race.player.boostTimer.toFixed(1)}s`
+      : state.heat >= 100
+        ? "BOOST READY!"
+        : surgingRival
+          ? `${surgingRival.name.toUpperCase()} SURGES!`
+          : "TAP ↑ ON THE FLASH";
+    ctx.fillText(raceCallout, 480, 143);
   }
 
   function drawCanvasHud() {

@@ -131,9 +131,12 @@
   catchCowSprites.src = "assets/catch-cow-sprites.webp";
   const horsebackRiderAnimation = new Image();
   horsebackRiderAnimation.src = "assets/horseback-rider-animation.webp";
+  const raceGallopAnimation = new Image();
+  raceGallopAnimation.src = "assets/race-gallop-animation-v2.webp";
   const runawayCowAnimation = new Image();
   runawayCowAnimation.src = "assets/runaway-cow-animation.webp";
   const ANIMATION_FRAMES = 4;
+  const RACE_GALLOP_FRAMES = 8;
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
   let difficultyId = DIFFICULTIES[localStorage.getItem("grei-rodeo-difficulty")] ? localStorage.getItem("grei-rodeo-difficulty") : "standard";
@@ -1187,16 +1190,16 @@
     });
   }
 
-  function spriteFrame(image, index, x, y, width, height) {
+  function spriteFrame(image, index, x, y, width, height, frameCount = ANIMATION_FRAMES) {
     if (!image.complete || !image.naturalWidth) return false;
-    const frameWidth = image.naturalWidth / ANIMATION_FRAMES;
-    const frame = ((Math.floor(index) % ANIMATION_FRAMES) + ANIMATION_FRAMES) % ANIMATION_FRAMES;
+    const frameWidth = image.naturalWidth / frameCount;
+    const frame = ((Math.floor(index) % frameCount) + frameCount) % frameCount;
     ctx.drawImage(image, frame * frameWidth, 0, frameWidth, image.naturalHeight, x, y, width, height);
     return true;
   }
 
-  function cycleFrame(now, fps, phase = 0) {
-    return Math.floor(now / 1000 * fps + phase) % ANIMATION_FRAMES;
+  function cycleFrame(now, fps, phase = 0, frameCount = ANIMATION_FRAMES) {
+    return Math.floor(now / 1000 * fps + phase) % frameCount;
   }
 
   function drawRide(now) {
@@ -1591,8 +1594,8 @@
     ctx.ellipse(0, 14, 43 * scale, 14 * scale, 0, 0, Math.PI * 2);
     ctx.stroke();
     ctx.shadowBlur = 0;
-    const frame = cycleFrame(now, Math.max(5, (player ? race.player.speed : difficulty().rivalSpeed) / 24));
-    if (!spriteFrame(horsebackRiderAnimation, frame, -57 * scale, -100 * scale, 114 * scale, 152 * scale)) {
+    const frame = cycleFrame(now, Math.max(7, (player ? race.player.speed : difficulty().rivalSpeed) / 19), 0, RACE_GALLOP_FRAMES);
+    if (!spriteFrame(raceGallopAnimation, frame, -70 * scale, -114 * scale, 140 * scale, 140 * scale, RACE_GALLOP_FRAMES)) {
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.ellipse(0, 0, 34 * scale, 16 * scale, 0, 0, Math.PI * 2);
@@ -1873,7 +1876,7 @@
   arenaVideo?.addEventListener("error", () => { arenaVideoFailed = true; stage.classList.add("video-fallback"); if (!running) draw(); });
   [
     arena, rideSprite, rideAnimation, matadorSprites, matadoraAnimation,
-    chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, runawayCowAnimation
+    chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation
   ].forEach(image => image.addEventListener("load", () => { if (!running) draw(); }));
 
   state.reset();

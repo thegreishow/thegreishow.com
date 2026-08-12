@@ -120,7 +120,7 @@
   const rideSprite = new Image();
   rideSprite.src = "assets/ride-sprite.webp";
   const rideAnimation = new Image();
-  rideAnimation.src = "assets/ride-animation.webp";
+  rideAnimation.src = "assets/ride-animation-v2.webp";
   const matadorSprites = new Image();
   matadorSprites.src = "assets/matador-sprites.webp";
   const matadoraAnimation = new Image();
@@ -136,6 +136,7 @@
   const runawayCowAnimation = new Image();
   runawayCowAnimation.src = "assets/runaway-cow-animation.webp";
   const ANIMATION_FRAMES = 4;
+  const RIDE_ANIMATION_FRAMES = 8;
   const RACE_GALLOP_FRAMES = 8;
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
@@ -1211,8 +1212,13 @@
       const pivotCanvasY = 465;
       const roll = Math.sin(t * 17) * bullKick * .04 + directionalRoll * bullKick + riderLean * .035;
       const lift = directionalLift * bullKick + riderPitch * 2;
-      const rideFps = running ? difficulty().promptBpm / 15 : 2.5;
-      const frame = cycleFrame(now, rideFps, bullDirection === "down" ? 2 : bullDirection === "up" ? 1 : 0);
+      const rideFps = running ? difficulty().promptBpm / 7.5 : 4;
+      const frame = cycleFrame(
+        now,
+        rideFps,
+        bullDirection === "down" ? 4 : bullDirection === "up" ? 2 : 0,
+        RIDE_ANIMATION_FRAMES
+      );
 
       ctx.fillStyle = "rgba(0,0,0,.34)";
       ctx.beginPath();
@@ -1227,7 +1233,7 @@
       ctx.rotate(roll);
       ctx.shadowColor = state.heat >= 100 ? "rgba(255,200,87,.62)" : "rgba(255,98,95,.30)";
       ctx.shadowBlur = state.heat >= 100 ? 30 : 13;
-      spriteFrame(rideAnimation, frame, -195, -390, 390, 390);
+      spriteFrame(rideAnimation, frame, -195, -390, 390, 390, RIDE_ANIMATION_FRAMES);
       ctx.restore();
       return;
     }

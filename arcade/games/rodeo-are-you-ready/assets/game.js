@@ -124,9 +124,9 @@
   const matadorSprites = new Image();
   matadorSprites.src = "assets/matador-sprites.webp";
   const matadoraAnimation = new Image();
-  matadoraAnimation.src = "assets/matadora-animation.webp";
+  matadoraAnimation.src = "assets/matadora-animation-v2.webp";
   const chargingBullAnimation = new Image();
-  chargingBullAnimation.src = "assets/charging-bull-animation.webp";
+  chargingBullAnimation.src = "assets/charging-bull-animation-v2.webp";
   const catchCowSprites = new Image();
   catchCowSprites.src = "assets/catch-cow-sprites.webp";
   const horsebackRiderAnimation = new Image();
@@ -137,6 +137,7 @@
   runawayCowAnimation.src = "assets/runaway-cow-animation.webp";
   const ANIMATION_FRAMES = 4;
   const RIDE_ANIMATION_FRAMES = 8;
+  const DODGE_ANIMATION_FRAMES = 8;
   const RACE_GALLOP_FRAMES = 8;
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
@@ -1318,7 +1319,8 @@
     ctx.ellipse(0, 10, 42, 12, 0, 0, Math.PI * 2);
     ctx.fill();
     const moving = Math.hypot(player.vx, player.vy) > 18;
-    if (spriteFrame(matadoraAnimation, moving ? cycleFrame(performance.now(), 9) : 0, -72, -154, 144, 192)) {
+    const matadoraFrame = moving ? cycleFrame(performance.now(), 18, 0, DODGE_ANIMATION_FRAMES) : 0;
+    if (spriteFrame(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES)) {
       // Animated character strip.
     } else if (matadorSprites.complete && matadorSprites.naturalWidth) {
       const slotWidth = matadorSprites.naturalWidth / 2;
@@ -1348,8 +1350,10 @@
     ctx.beginPath();
     ctx.ellipse(0, 31, 54, 14, 0, 0, Math.PI * 2);
     ctx.fill();
-    const bullFrame = bull.phase === "charge" ? cycleFrame(performance.now(), 11) : bull.phase === "recover" ? 3 : 0;
-    if (spriteFrame(chargingBullAnimation, bullFrame, -93, -124, 186, 248)) {
+    const bullFrame = bull.phase === "charge"
+      ? cycleFrame(performance.now(), 22, 0, DODGE_ANIMATION_FRAMES)
+      : bull.phase === "recover" ? 7 : 0;
+    if (spriteFrame(chargingBullAnimation, bullFrame, -93, -124, 186, 248, DODGE_ANIMATION_FRAMES)) {
       // Animated charge strip.
     } else if (matadorSprites.complete && matadorSprites.naturalWidth) {
       const slotWidth = matadorSprites.naturalWidth / 2;

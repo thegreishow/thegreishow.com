@@ -130,14 +130,15 @@
   const catchCowSprites = new Image();
   catchCowSprites.src = "assets/catch-cow-sprites.webp";
   const horsebackRiderAnimation = new Image();
-  horsebackRiderAnimation.src = "assets/horseback-rider-animation.webp";
+  horsebackRiderAnimation.src = "assets/horseback-rider-animation-v2.webp";
   const raceGallopAnimation = new Image();
   raceGallopAnimation.src = "assets/race-gallop-animation-v2.webp";
   const runawayCowAnimation = new Image();
-  runawayCowAnimation.src = "assets/runaway-cow-animation.webp";
+  runawayCowAnimation.src = "assets/runaway-cow-animation-v2.webp";
   const ANIMATION_FRAMES = 4;
   const RIDE_ANIMATION_FRAMES = 8;
   const DODGE_ANIMATION_FRAMES = 8;
+  const CHASE_ANIMATION_FRAMES = 8;
   const RACE_GALLOP_FRAMES = 8;
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
@@ -1435,8 +1436,10 @@
     ctx.fill();
     ctx.scale(player.facing, 1);
     ctx.rotate(player.vy / 274 * .018);
-    const gallopFrame = running ? cycleFrame(now, difficultyId === "easy" ? 6 : 9) : 0;
-    if (spriteFrame(horsebackRiderAnimation, gallopFrame, -123, -248, 246, 328)) {
+    const gallopFrame = running
+      ? cycleFrame(now, difficultyId === "easy" ? 12 : 18, 0, CHASE_ANIMATION_FRAMES)
+      : 0;
+    if (spriteFrame(horsebackRiderAnimation, gallopFrame, -123, -248, 246, 328, CHASE_ANIMATION_FRAMES)) {
       // Animated horseback strip.
     } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
       const slotWidth = catchCowSprites.naturalWidth / 2;
@@ -1464,8 +1467,10 @@
     ctx.fill();
     ctx.scale(facing, 1);
     ctx.rotate(Math.sin(cow.angle) * .025);
-    const cowFrame = cow.phase === "run" ? cycleFrame(now, difficultyId === "easy" ? 7 : 10) : 0;
-    if (spriteFrame(runawayCowAnimation, cowFrame, -88, -132, 176, 235)) {
+    const cowFrame = cow.phase === "run"
+      ? cycleFrame(now, difficultyId === "easy" ? 14 : 20, 0, CHASE_ANIMATION_FRAMES)
+      : 0;
+    if (spriteFrame(runawayCowAnimation, cowFrame, -88, -132, 176, 235, CHASE_ANIMATION_FRAMES)) {
       // Animated cow strip.
     } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
       const slotWidth = catchCowSprites.naturalWidth / 2;

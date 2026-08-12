@@ -124,7 +124,7 @@
   const matadorSprites = new Image();
   matadorSprites.src = "assets/matador-sprites.webp";
   const matadoraAnimation = new Image();
-  matadoraAnimation.src = "assets/matadora-animation-v2.webp";
+  matadoraAnimation.src = "assets/matadora-animation-v3.webp";
   const chargingBullAnimation = new Image();
   chargingBullAnimation.src = "assets/charging-bull-animation-v2.webp";
   const catchCowSprites = new Image();
@@ -1280,7 +1280,7 @@
     const remaining = Math.max(0, (state.prompt.expires - now) / (state.prompt.expires - state.prompt.born));
     const pulse = 1 + Math.sin(now / 70) * .035;
     ctx.save();
-    ctx.translate(700, 84);
+    ctx.translate(700, 270);
     ctx.scale(pulse, pulse);
     ctx.fillStyle = "rgba(34,13,14,.9)";
     ctx.shadowColor = state.heat >= 100 ? "#ffc857" : "#ff625f";

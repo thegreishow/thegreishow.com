@@ -8,10 +8,10 @@
   const SONG_DURATION_FALLBACK = 173.136;
   const MODES = {
     ride: {
-      label: "Ride the Rhythm",
+      label: "Ride the Riddim",
       shortLabel: "Ride",
       levelBase: 0,
-      description: "Match every buck on the beat and stay mounted as long as you can."
+      description: "Match each buck, protect your balance, and use every ride to chase a high score."
     },
     matador: {
       label: "Dodge the Bull",
@@ -104,12 +104,12 @@
   const timeEl = document.getElementById("time");
   const heatEl = document.getElementById("heat");
   const audioStatus = document.getElementById("audioStatus");
-  const musicChip = document.getElementById("musicChip");
   const directionAnnounce = document.getElementById("directionAnnounce");
   const controlHint = document.getElementById("controlHint");
   const controls = document.getElementById("controls");
   const controlButtons = [...document.querySelectorAll("[data-action]")];
   const lassoButton = document.getElementById("lassoButton");
+  const gameMenuButton = document.getElementById("gameMenuButton");
   const music = document.getElementById("music");
   const arenaVideo = document.getElementById("arenaVideo");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -140,12 +140,16 @@
   const DODGE_ANIMATION_FRAMES = 8;
   const CHASE_ANIMATION_FRAMES = 8;
   const RACE_GALLOP_FRAMES = 8;
+  const RIDE_LIVES = { easy: 6, standard: 5 };
+  const RIDE_RECOVERY_MS = { easy: 4000, standard: 3500 };
+  const RIDE_WRONG_DAMAGE = { easy: 10, standard: 14 };
+  const RIDE_MISSED_DAMAGE = { easy: 8, standard: 11 };
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
   let difficultyId = DIFFICULTIES[localStorage.getItem("grei-rodeo-difficulty")] ? localStorage.getItem("grei-rodeo-difficulty") : "standard";
   const mode = () => MODES[modeId];
   const difficulty = () => DIFFICULTIES[difficultyId];
-  const audioLabel = () => `Rodeo instrumental · official ${SONG_BPM} BPM · loops`;
+  const audioLabel = () => `Music on · ${SONG_BPM} BPM`;
   const bestKey = () => `grei-rodeo-best-${modeId}-${difficultyId}`;
 
   class AudioDirector {
@@ -178,7 +182,6 @@
         audioStatus.textContent = audioLabel();
       } catch {
         audioStatus.textContent = "Tap the sound button to enable music";
-        musicChip.classList.add("muted");
       }
     }
 
@@ -190,7 +193,6 @@
       this.track.volume = .58;
       this.track.play().then(() => {
         this.unlocked = true;
-        musicChip.classList.remove("muted");
       }).catch(() => {
         audioStatus.textContent = "Music blocked · tap sound, then retry";
       });
@@ -203,7 +205,6 @@
     setEnabled(enabled) {
       this.enabled = Boolean(enabled);
       this.track.muted = !this.enabled;
-      musicChip.classList.toggle("muted", !this.enabled);
       audioStatus.textContent = this.enabled ? audioLabel() : "Music and game sounds muted";
       if (this.enabled && running && !paused) this.resume();
     }
@@ -243,6 +244,7 @@
       this.bestCombo = 0;
       this.heat = 0;
       this.balance = 100;
+      this.lives = RIDE_LIVES[difficultyId];
       this.perfects = 0;
       this.misses = 0;
       this.dodges = 0;
@@ -263,14 +265,14 @@
     }
 
     newPrompt(direction, now) {
-      this.prompt = { direction, born: now, expires: now + difficulty().interval * 860 };
+      this.prompt = { direction, born: now, expires: now + difficulty().interval * 920 };
       this.answered = false;
     }
 
     answerRide(action, now) {
       if (!this.prompt || this.answered || this.finished) return null;
       this.answered = true;
-      if (action !== this.prompt.direction) return this.takeHit(22);
+      if (action !== this.prompt.direction) return this.takeHit(RIDE_WRONG_DAMAGE[difficultyId]);
       const age = now - this.prompt.born;
       const accuracy = Math.max(0, 1 - age / (this.prompt.expires - this.prompt.born));
       const perfect = accuracy > .42;
@@ -281,7 +283,7 @@
       const points = Math.round((perfect ? 140 : 90) * multiplier * (this.heat >= 100 ? 2 : 1));
       this.score += points;
       this.heat = Math.min(100, this.heat + (perfect ? 12 : 8));
-      this.balance = Math.min(100, this.balance + 4);
+      this.balance = Math.min(100, this.balance + (difficultyId === "easy" ? 8 : 6));
       return { kind: perfect ? "perfect" : "good", points };
     }
 
@@ -357,6 +359,8 @@
   let running = false;
   let paused = false;
   let counting = false;
+  let countdownToken = 0;
+  let rideRecoveryUntil = 0;
   let last = 0;
   let nextBeatAt = difficulty().interval;
   let beatIndex = 0;
@@ -398,6 +402,8 @@
     }
     heatEl.style.width = `${state.heat}%`;
     stage.classList.toggle("heat", state.heat >= 100);
+    if (modeId === "ride") stage.dataset.lives = String(state.lives);
+    else delete stage.dataset.lives;
   }
 
   function showSelection() {
@@ -407,6 +413,8 @@
     startButton.hidden = false;
     kickerEl.textContent = "Choose your event";
     titleEl.innerHTML = "ARE YOU<br>READY?";
+    rideRecoveryUntil = 0;
+    delete stage.dataset.recovering;
     state.reset();
     resetDodge();
     resetChase();
@@ -431,8 +439,8 @@
     const selectedDifficulty = difficulty();
     if (modeId === "ride") {
       difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
-        ? "Standard follows every beat of the official 90 BPM instrumental."
-        : "Easy stays synced to the official track and prompts on every other beat at 45 BPM.";
+        ? "Standard gives you five rides, 3.5 seconds to recover, and quicker prompts."
+        : "Easy gives you six rides, 4 seconds to recover, and prompts every other beat.";
     } else if (modeId === "matador") {
       difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
         ? "Standard uses the official 90 BPM response window with faster charges."
@@ -489,7 +497,7 @@
     localStorage.setItem("grei-rodeo-mode", modeId);
     best = loadBest();
     if (!results.hidden) showSelection();
-    else { updateSelectionUI(); draw(); }
+    else { state.reset(); resetDodge(); resetChase(); resetRace(); updateSelectionUI(); hud(); draw(); }
   }
 
   function chooseDifficulty(nextId) {
@@ -498,7 +506,7 @@
     localStorage.setItem("grei-rodeo-difficulty", difficultyId);
     best = loadBest();
     if (!results.hidden) showSelection();
-    else { updateSelectionUI(); draw(); }
+    else { state.reset(); resetDodge(); resetChase(); resetRace(); updateSelectionUI(); hud(); draw(); }
   }
 
   function randomDirection() {
@@ -514,8 +522,9 @@
   }
 
   function respondRide(action) {
-    if (!running || paused || counting || modeId !== "ride") return;
-    const outcome = state.answerRide(action, performance.now());
+    const now = performance.now();
+    if (!running || paused || counting || modeId !== "ride" || rideRecoveryUntil > now) return;
+    const outcome = state.answerRide(action, now);
     if (!outcome) return;
     const control = document.querySelector(`[data-action="${action}"]`);
     control?.classList.add("active");
@@ -533,18 +542,41 @@
       outcome.kind === "perfect" ? audio.perfect() : audio.good();
     }
     hud();
-    if (state.balance <= 0) finish();
+    if (state.balance <= 0) loseRideLife(now);
+  }
+
+  function loseRideLife(now = performance.now()) {
+    state.lives = Math.max(0, state.lives - 1);
+    state.combo = 0;
+    state.prompt = null;
+    state.answered = true;
+    stage.dataset.direction = "";
+    stage.dataset.lives = String(state.lives);
+    if (state.lives <= 0) {
+      state.balance = 0;
+      finish();
+      return;
+    }
+    const recoveryMs = RIDE_RECOVERY_MS[difficultyId];
+    state.balance = 100;
+    rideRecoveryUntil = now + recoveryMs;
+    nextBeatAt = state.elapsed + recoveryMs / 1000 + difficulty().interval;
+    stage.dataset.recovering = "true";
+    directionAnnounce.textContent = `${state.lives} rides left. Recovering.`;
+    setFeedback(`SAVED! ${state.lives} RIDES LEFT`, 1200);
+    flashes.push({ x: 690, y: 270, life: .42 });
+    hud();
   }
 
   function rideBeat(now) {
     if (state.prompt && !state.answered) {
       state.answered = true;
-      state.takeHit();
+      state.takeHit(RIDE_MISSED_DAMAGE[difficultyId]);
       setFeedback("HOLD ON", 430);
       stage.classList.add("shake");
       setTimeout(() => stage.classList.remove("shake"), 250);
       audio.miss();
-      if (state.balance <= 0) { hud(); finish(); return; }
+      if (state.balance <= 0) { loseRideLife(now); return; }
     }
     bullDirection = randomDirection();
     state.newPrompt(bullDirection, now);
@@ -709,7 +741,7 @@
     });
     race.player.lastPlace = racePlace();
     state.racePlace = race.player.lastPlace;
-    state.balance = 0;
+    if (modeId === "race") state.balance = 0;
     lassoButton.classList.remove("ready", "active");
   }
 
@@ -1004,6 +1036,7 @@
 
   function startCountUp() {
     if (counting || running) return;
+    const token = ++countdownToken;
     document.querySelector("[data-grei-discovery]")?.remove();
     if (!reduceMotion && !arenaVideoFailed) arenaVideo?.play().catch(() => {});
     audio.unlock();
@@ -1017,6 +1050,7 @@
     const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "DODGE!" : modeId === "catch" ? "LASSO!" : "RACE!";
     const cards = [["1", ""], ["2", ""], ["3", ""], [finale, ""]];
     const tick = () => {
+      if (token !== countdownToken) return;
       const [first, second] = cards[count];
       titleEl.innerHTML = first + (second ? `<br>${second}` : "");
       copyEl.textContent = count < 3
@@ -1025,7 +1059,7 @@
       audio.countdown(count);
       count++;
       if (count < cards.length) setTimeout(tick, SONG_BEAT_SECONDS * 1000);
-      else setTimeout(begin, SONG_BEAT_SECONDS * 1000);
+      else setTimeout(() => { if (token === countdownToken) begin(); }, SONG_BEAT_SECONDS * 1000);
     };
     tick();
   }
@@ -1043,6 +1077,7 @@
     startedAt = Date.now();
     last = performance.now();
     nextBeatAt = difficulty().interval;
+    rideRecoveryUntil = 0;
     beatIndex = 0;
     feedback = "";
     particles = [];
@@ -1062,6 +1097,7 @@
     delete stage.dataset.place;
     delete stage.dataset.cadence;
     delete stage.dataset.boost;
+    delete stage.dataset.recovering;
     overlay.hidden = true;
     directionAnnounce.textContent = "";
     audio.begin();
@@ -1072,12 +1108,15 @@
   function finish() {
     if (!running) return;
     running = false;
+    countdownToken++;
+    rideRecoveryUntil = 0;
     state.finished = true;
     heldDirections.clear();
     lassoButton.classList.remove("ready", "active");
     stage.classList.remove("playing");
     document.body.classList.remove("grei-game-playing");
     stage.dataset.direction = "";
+    delete stage.dataset.recovering;
     directionAnnounce.textContent = "";
     audio.stop();
     best = Math.max(best, state.score);
@@ -1091,7 +1130,7 @@
     kickerEl.textContent = modeId === "ride" ? "Thrown from the saddle" : modeId === "matador" ? "The bull caught you" : modeId === "catch" ? "The cow broke free" : state.raceWon ? "First across the line" : `Finished in place ${state.racePlace}`;
     titleEl.innerHTML = modeId === "ride" ? "HOLD<br>TIGHT" : modeId === "matador" ? "OLÉ<br>AGAIN" : modeId === "catch" ? "ROPE<br>UP" : state.raceWon ? "TRACK<br>KING" : "RUN<br>AGAIN";
     copyEl.textContent = modeId === "ride"
-      ? "Your ride is over, but the instrumental is ready to loop again."
+      ? "Your rides are spent. Mount up again and beat your high score."
       : modeId === "matador"
         ? "One more sidestep and you had it. Get back in the arena."
         : modeId === "catch"
@@ -1111,8 +1150,63 @@
     const lastLabel = modeId === "ride" ? "Perfects" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Boosts";
     results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} ${difficulty().promptBpm} BPM · Best ${best}</p>`;
     updateSelectionUI();
-    document.querySelector(".next-modes").textContent = "Four rodeo events · one endless instrumental";
+    document.querySelector(".next-modes").textContent = "Four rodeo events · chase a new high score";
     submit();
+  }
+
+  function leaveCurrentRun() {
+    countdownToken++;
+    running = false;
+    counting = false;
+    rideRecoveryUntil = 0;
+    heldDirections.clear();
+    lassoButton.classList.remove("ready", "active");
+    stage.classList.remove("playing", "shake", "heat");
+    document.body.classList.remove("grei-game-playing");
+    stage.dataset.direction = "";
+    delete stage.dataset.recovering;
+    directionAnnounce.textContent = "";
+    audio.stop();
+    if (window.greiIsPaused?.()) document.querySelector("[data-grei-pause]")?.click();
+    paused = false;
+  }
+
+  function returnToEvents() {
+    leaveCurrentRun();
+    overlay.hidden = false;
+    showSelection();
+  }
+
+  function restartCurrentEvent() {
+    leaveCurrentRun();
+    overlay.hidden = false;
+    showSelection();
+    startCountUp();
+  }
+
+  function configureGameMenu() {
+    const shellPauseButton = document.querySelector("[data-grei-pause]");
+    const pauseCard = document.querySelector(".grei-pause-screen > div");
+    if (!shellPauseButton || !pauseCard || !gameMenuButton) return;
+    pauseCard.classList.add("rodeo-pause-card");
+    pauseCard.innerHTML = `
+      <p class="rodeo-pause-kicker">Rodeo menu</p>
+      <h2>PAUSED</h2>
+      <p>Continue this run, start it over, or choose another event.</p>
+      <div class="rodeo-pause-actions">
+        <button type="button" data-rodeo-resume>Continue</button>
+        <button type="button" data-rodeo-restart>Restart event</button>
+        <button type="button" data-rodeo-events>Choose event</button>
+      </div>`;
+    pauseCard.addEventListener("click", event => event.stopPropagation());
+    pauseCard.querySelector("[data-rodeo-resume]")?.addEventListener("click", () => {
+      if (window.greiIsPaused?.()) shellPauseButton.click();
+    });
+    pauseCard.querySelector("[data-rodeo-restart]")?.addEventListener("click", restartCurrentEvent);
+    pauseCard.querySelector("[data-rodeo-events]")?.addEventListener("click", returnToEvents);
+    gameMenuButton.addEventListener("click", () => {
+      if (running && !window.greiIsPaused?.()) shellPauseButton.click();
+    });
   }
 
   async function submit() {
@@ -1148,8 +1242,22 @@
     state.elapsed += dt;
     updateShared(dt);
     if (modeId === "ride") {
+      if (rideRecoveryUntil > now) {
+        const seconds = Math.max(1, Math.ceil((rideRecoveryUntil - now) / 1000));
+        stage.dataset.recovering = "true";
+        directionAnnounce.textContent = `Recovering. ${seconds}`;
+        hud();
+        return;
+      }
+      if (rideRecoveryUntil) {
+        rideRecoveryUntil = 0;
+        delete stage.dataset.recovering;
+        directionAnnounce.textContent = "Back in the saddle";
+        setFeedback("BACK IN THE SADDLE", 650);
+      }
       while (state.elapsed >= nextBeatAt && running) {
         rideBeat(now);
+        if (rideRecoveryUntil > now) break;
         nextBeatAt += difficulty().interval;
       }
     } else if (modeId === "matador") {
@@ -1276,7 +1384,35 @@
   }
 
   function drawRidePrompt(now) {
-    if (!state.prompt || !running || counting || modeId !== "ride") return;
+    if (!running || counting || modeId !== "ride") return;
+    if (rideRecoveryUntil > now) {
+      const seconds = Math.max(1, Math.ceil((rideRecoveryUntil - now) / 1000));
+      ctx.save();
+      ctx.translate(700, 270);
+      ctx.fillStyle = "rgba(34,13,14,.92)";
+      ctx.shadowColor = "#ffc857";
+      ctx.shadowBlur = 24;
+      ctx.beginPath();
+      ctx.arc(0, 0, 55, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#ffc857";
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.arc(0, 0, 61, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "900 48px system-ui";
+      ctx.fillText(seconds, 0, -3);
+      ctx.fillStyle = "#ffc857";
+      ctx.font = "900 10px system-ui";
+      ctx.fillText("GET READY", 0, 82);
+      ctx.restore();
+      return;
+    }
+    if (!state.prompt) return;
     const remaining = Math.max(0, (state.prompt.expires - now) / (state.prompt.expires - state.prompt.born));
     const pulse = 1 + Math.sin(now / 70) * .035;
     ctx.save();
@@ -1732,6 +1868,13 @@
     ctx.font = "800 10px system-ui";
     ctx.textAlign = "left";
     ctx.fillText(modeId === "ride" ? "BALANCE" : modeId === "matador" ? "NERVE" : modeId === "catch" ? "GRIT" : "GALLOP", 29, 34);
+    if (modeId === "ride") {
+      ctx.fillStyle = state.lives > 1 ? "#ffc857" : "#ff625f";
+      ctx.textAlign = "right";
+      ctx.font = "900 10px system-ui";
+      ctx.fillText(`${"♥".repeat(state.lives)}  ${state.lives}`, 176, 34);
+      ctx.textAlign = "left";
+    }
     ctx.fillStyle = "rgba(255,255,255,.15)";
     ctx.fillRect(29, 41, 146, 7);
     const balanceGradient = ctx.createLinearGradient(29, 0, 175, 0);
@@ -1806,6 +1949,11 @@
   difficultyButtons.forEach(button => button.addEventListener("click", () => chooseDifficulty(button.dataset.difficulty)));
 
   addEventListener("keydown", event => {
+    if (event.key === "Escape" && running && !event.repeat) {
+      event.preventDefault();
+      document.querySelector("[data-grei-pause]")?.click();
+      return;
+    }
     if ((modeId === "catch" || modeId === "race") && (event.key === "Enter" || event.key === "z" || event.key === "Z")) {
       event.preventDefault();
       if (!event.repeat) modeId === "race" ? activateRaceBoost() : throwLasso();
@@ -1872,6 +2020,7 @@
 
   addEventListener("grei:pause", event => {
     paused = event.detail.paused;
+    gameMenuButton?.setAttribute("aria-expanded", String(paused));
     if (paused) {
       heldDirections.clear();
       audio.pause();
@@ -1883,8 +2032,7 @@
   });
   addEventListener("grei:sound", event => audio.setEnabled(event.detail.enabled));
   music.addEventListener("error", () => {
-    audioStatus.textContent = "Instrumental unavailable · game sounds still work";
-    musicChip.classList.add("muted");
+    audioStatus.textContent = "Music unavailable · game sounds still work";
   });
   if (reduceMotion) arenaVideo?.pause();
   arenaVideo?.addEventListener("loadeddata", () => { if (!running) draw(); });
@@ -1894,6 +2042,7 @@
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation
   ].forEach(image => image.addEventListener("load", () => { if (!running) draw(); }));
 
+  configureGameMenu();
   state.reset();
   resetDodge();
   resetChase();

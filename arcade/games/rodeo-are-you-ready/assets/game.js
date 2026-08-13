@@ -184,9 +184,7 @@
   const catchCowSprites = new Image();
   catchCowSprites.src = "assets/catch-cow-sprites.webp";
   const horsebackRiderAnimation = new Image();
-  horsebackRiderAnimation.src = "assets/horseback-rider-animation-v2.webp";
-  const raceGallopAnimation = new Image();
-  raceGallopAnimation.src = "assets/race-gallop-animation-v2.webp";
+  horsebackRiderAnimation.src = "assets/horseback-rider-animation-v3.png";
   const runawayCowAnimation = new Image();
   runawayCowAnimation.src = "assets/runaway-cow-animation-v2.webp";
   const rollingCalfEventsAnimation = new Image();
@@ -198,7 +196,8 @@
   const DODGE_ANIMATION_FRAMES = 8;
   const BULL_ANIMATION_FRAMES = 4;
   const CHASE_ANIMATION_FRAMES = 8;
-  const RACE_GALLOP_FRAMES = 8;
+  const HORSEBACK_ANIMATION_FRAMES = 4;
+  const RACE_GALLOP_FRAMES = 4;
   const RIDE_LIVES = { easy: 6, standard: 5 };
   const RIDE_RECOVERY_MS = { easy: 4000, standard: 3500 };
   const RIDE_WRONG_DAMAGE = { easy: 10, standard: 14 };
@@ -2518,11 +2517,11 @@
     ctx.scale(player.facing, 1);
     ctx.rotate(player.vy / 274 * .018 + (celebrating && player.celebrationType === "twirl" ? Math.sin(now / 90) * .045 : 0));
     const gallopFrame = celebrating
-      ? player.celebrationType === "twirl" ? 6 + cycleFrame(now, 10, 0, 2)
-        : player.celebrationType === "salute" ? 7
-          : 4 + cycleFrame(now, 9, 0, 2)
-      : running ? cycleFrame(now, difficultyId === "easy" ? 12 : 18, 0, CHASE_ANIMATION_FRAMES) : 0;
-    if (spriteFrame(horsebackRiderAnimation, gallopFrame, -123, -248, 246, 328, CHASE_ANIMATION_FRAMES)) {
+      ? player.celebrationType === "twirl" ? 2 + cycleFrame(now, 10, 0, 2)
+        : player.celebrationType === "salute" ? 0
+          : 1 + cycleFrame(now, 9, 0, 3)
+      : running ? cycleFrame(now, difficultyId === "easy" ? 12 : 18, 0, HORSEBACK_ANIMATION_FRAMES) : 0;
+    if (spriteFrame(horsebackRiderAnimation, gallopFrame, -123, -248, 246, 328, HORSEBACK_ANIMATION_FRAMES)) {
       // Animated horseback strip.
     } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
       const slotWidth = catchCowSprites.naturalWidth / 2;
@@ -2737,9 +2736,9 @@
   function drawRaceHorse(distance, lane, color, now, player = false, surged = false) {
     const point = trackPoint(distance, lane);
     const scale = player ? 1 : .82;
+    const facing = -Math.sin(point.angle) >= 0 ? 1 : -1;
     ctx.save();
     ctx.translate(point.x, point.y);
-    ctx.rotate(point.angle + Math.PI / 2);
     ctx.fillStyle = "rgba(0,0,0,.32)";
     ctx.beginPath();
     ctx.ellipse(0, 16, 38 * scale, 10 * scale, 0, 0, Math.PI * 2);
@@ -2754,8 +2753,9 @@
     ctx.ellipse(0, 14, 43 * scale, 14 * scale, 0, 0, Math.PI * 2);
     ctx.stroke();
     ctx.shadowBlur = 0;
+    ctx.scale(facing, 1);
     const frame = cycleFrame(now, Math.max(7, (player ? race.player.speed : difficulty().rivalSpeed) / 19), 0, RACE_GALLOP_FRAMES);
-    if (!spriteFrame(raceGallopAnimation, frame, -70 * scale, -114 * scale, 140 * scale, 140 * scale, RACE_GALLOP_FRAMES)) {
+    if (!spriteFrame(horsebackRiderAnimation, frame, -70 * scale, -114 * scale, 140 * scale, 140 * scale, RACE_GALLOP_FRAMES)) {
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.ellipse(0, 0, 34 * scale, 16 * scale, 0, 0, Math.PI * 2);
@@ -3245,7 +3245,7 @@
   }
   [
     arena, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation, ragingBullHitAnimation,
-    chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation, rollingCalfEventsAnimation
+    chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, runawayCowAnimation, rollingCalfEventsAnimation
   ].forEach(image => image.addEventListener("load", () => { if (!running) draw(); }));
 
   configureGameMenu();

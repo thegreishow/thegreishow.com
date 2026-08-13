@@ -43,7 +43,7 @@
     },
     matador: {
       steps: [
-        "Use the joystick to move, then tap Jump as the raging bull reaches you. Jumps rotate through vault, tuck, and spin styles.",
+        "Use the joystick to move, then tap Vault once as the raging bull enters the glowing jump window.",
         "Stay close to the horns without getting clipped: close and razor dodges earn the biggest rewards.",
         "Chain clean dodges for longer streaks, OLÉ celebrations, and the ×2 to ×10 multiplier ladder."
       ],
@@ -213,11 +213,11 @@
   const RIDE_DIRECTION_FRAMES = { left: 3, up: 2, down: 4, right: 5 };
   const RIDE_IDLE_FRAMES = [0, 1, 6, 7];
   const RIDE_CHEERS = ["YEEHAW!", "WOO!", "RIDE IT!", "LET'S GO!", "GIDDY UP!"];
-  const JUMP_STYLES = [
-    { id: "vault", label: "CAPE VAULT", velocity: 515, color: "#59d8ff" },
-    { id: "tuck", label: "HIGH TUCK", velocity: 585, color: "#66e38f" },
-    { id: "spin", label: "TORNADO JUMP", velocity: 545, color: "#e785ff" }
-  ];
+  const JUMP_STYLE = { id: "vault", label: "CAPE VAULT", velocity: 476, color: "#59d8ff" };
+  const JUMP_WINDOW = {
+    easy: { open: 210, close: 30 },
+    standard: { open: 184, close: 30 }
+  };
   const MULTIPLIER_CELEBRATIONS = {
     2: { title: "BLUE SPARK", cheer: "YEEHAW!", style: "rings", haptic: [35, 35, 55] },
     4: { title: "GREEN STAMPEDE", cheer: "WOO!", style: "stars", haptic: [45, 25, 45, 25, 70] },
@@ -226,6 +226,22 @@
     10: { title: "RODEO ROYALTY", cheer: "LEGENDARY!", style: "crown", haptic: [70, 25, 70, 25, 130] }
   };
   const STREAK_CHEERS = { 3: "WARMING UP!", 5: "ON FIRE!", 8: "CROWD ROARING!", 12: "UNTOUCHABLE!", 16: "RODEO ROYALTY!", 20: "LEGENDARY!", 25: "CAPE MASTER!", 30: "ARENA ICON!", 40: "ALL-TIME GREAT!" };
+  const VOICE_CUE_FILES = {
+    three: "assets/voice/three-v1.mp3",
+    two: "assets/voice/two-v1.mp3",
+    one: "assets/voice/one-v1.mp3",
+    "start-ride": "assets/voice/start-ride-v1.mp3",
+    "start-raging": "assets/voice/start-raging-v1.mp3",
+    "start-calf": "assets/voice/start-calf-v1.mp3",
+    "start-race": "assets/voice/start-race-v1.mp3",
+    yeehaw: "assets/voice/yeehaw-v1.mp3",
+    ole: "assets/voice/ole-v1.mp3",
+    legendary: "assets/voice/legendary-v1.mp3"
+  };
+  const announcer = new Audio();
+  announcer.preload = "auto";
+  announcer.playsInline = true;
+  let activeVoiceCue = null;
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
   let difficultyId = DIFFICULTIES[localStorage.getItem("grei-rodeo-difficulty")] ? localStorage.getItem("grei-rodeo-difficulty") : "standard";
@@ -259,7 +275,15 @@
       try {
         this.track.currentTime = 0;
         this.track.volume = 0;
+        announcer.src = VOICE_CUE_FILES.three;
+        announcer.muted = true;
+        const voiceUnlock = announcer.play().then(() => {
+          announcer.pause();
+          announcer.currentTime = 0;
+          announcer.muted = false;
+        }).catch(() => { announcer.muted = false; });
         await this.track.play();
+        await voiceUnlock;
         this.unlocked = true;
         audioStatus.textContent = audioLabel();
       } catch {
@@ -272,7 +296,7 @@
       this.track.pause();
       this.track.currentTime = 0;
       this.track.loop = true;
-      this.track.volume = .58;
+      this.track.volume = activeVoiceCue ? .30 : .58;
       this.track.play().then(() => {
         this.unlocked = true;
       }).catch(() => {
@@ -280,13 +304,14 @@
       });
     }
 
-    pause() { this.track.pause(); }
+    pause() { this.track.pause(); stopVoiceCue(); }
     resume() { if (this.enabled && running) this.track.play().catch(() => {}); }
-    stop() { this.track.pause(); }
+    stop() { this.track.pause(); stopVoiceCue(); }
 
     setEnabled(enabled) {
       this.enabled = Boolean(enabled);
       this.track.muted = !this.enabled;
+      if (!this.enabled) stopVoiceCue();
       audioStatus.textContent = this.enabled ? audioLabel() : "Music and game sounds muted";
       if (this.enabled && running && !paused) this.resume();
     }
@@ -319,6 +344,11 @@
       [NOTES.E4, NOTES.GS4, NOTES.B4, NOTES.E5, NOTES.GS5, NOTES.B5].slice(0, Math.min(6, level + 2)).forEach((note, index) => {
         this.tone(note, .15 + index * .01, index % 2 ? "triangle" : "sine", .045, index * delay);
       });
+    }
+    impact(strength = .5) {
+      const weight = Math.max(.18, Math.min(1, strength));
+      this.tone(72, .095, "sine", .025 + weight * .035);
+      this.tone(116, .065, "triangle", .012 + weight * .018, .012);
     }
     miss() { this.tone(NOTES.B3, .13, "sawtooth", .035); this.tone(NOTES.E3, .18, "triangle", .04, .07); }
   }
@@ -480,10 +510,10 @@
       if (closeCall) this.closeCalls++;
       const scoreMultiplier = this.modeMultiplier();
       const base = razor ? 420 : closeCall ? 300 : 180;
-      const jumpBonus = jumpType === "spin" ? 1.45 : jumpType === "tuck" ? 1.32 : jumpType === "vault" ? 1.22 : 1;
+      const jumpBonus = jumpType ? 1.3 : 1;
       const points = Math.round(base * jumpBonus * scoreMultiplier);
       this.score += points;
-      const multiplierUpgrade = this.addSkillProgress((razor ? 3 : closeCall ? 2 : 1) + (jumpType ? 1 : 0) + (jumpType === "spin" ? .75 : 0));
+      const multiplierUpgrade = this.addSkillProgress((razor ? 3 : closeCall ? 2 : 1) + (jumpType ? 1 : 0));
       this.balance = Math.min(100, this.balance + 2);
       return { kind: razor ? "razor" : closeCall ? "close" : "clear", points, scoreMultiplier, multiplierUpgrade, jumped: Boolean(jumpType), jumpType };
     }
@@ -529,8 +559,8 @@
   const heldDirections = new Set();
   const joystick = { active: false, id: null, x: 0, y: 0 };
   const dodge = {
-    player: { x: 480, y: 350, vx: 0, vy: 0, jumpHeight: 0, jumpVelocity: 0, airborne: false, landedAt: 0, jumpType: "vault", jumpStartedAt: 0, jumpCount: 0 },
-    bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false, jumped: false, jumpFlashed: false },
+    player: { x: 480, y: 350, vx: 0, vy: 0, jumpHeight: 0, jumpVelocity: 0, airborne: false, landedAt: 0, jumpType: "vault", jumpStartedAt: 0, jumpLockUntil: 0, jumpHintAt: 0 },
+    bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false, jumped: false, jumpFlashed: false, jumpAttempted: false },
     ole: { startedAt: 0, until: 0, level: 0 },
     hit: { startedAt: 0, until: 0, angle: 0, gameOver: false },
     celebration: { startedAt: 0, until: 0, type: "cape", level: 0 }
@@ -593,33 +623,55 @@
     feedbackColor = options.color || (text.includes("PERFECT") || text.includes("OLÉ") ? "#ffc857" : "#fff6ec");
   }
 
-  function haptic(pattern = 24) {
-    try {
-      if (navigator.vibrate) navigator.vibrate(pattern);
-      const gamepad = navigator.getGamepads?.()?.find(Boolean);
-      gamepad?.vibrationActuator?.playEffect?.("dual-rumble", {
-        duration: Array.isArray(pattern) ? pattern.reduce((sum, value) => sum + value, 0) : pattern,
-        strongMagnitude: .52,
-        weakMagnitude: .82
-      }).catch(() => {});
-    } catch {}
+  function stopVoiceCue() {
+    announcer.pause();
+    try { announcer.currentTime = 0; } catch {}
+    activeVoiceCue = null;
+    if (running && audio.enabled) music.volume = .58;
   }
 
-  function speakCountdown(text) {
-    if (!audio.enabled || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+  function playVoiceCue(id, volume = .88) {
+    if (!audio.enabled || !VOICE_CUE_FILES[id]) return;
+    stopVoiceCue();
+    activeVoiceCue = id;
+    announcer.src = VOICE_CUE_FILES[id];
+    announcer.volume = volume;
+    announcer.muted = false;
+    if (running) music.volume = .30;
+    const finishCue = () => {
+      if (activeVoiceCue !== id) return;
+      activeVoiceCue = null;
+      if (running && audio.enabled) music.volume = .58;
+    };
+    announcer.onended = finishCue;
+    announcer.onerror = finishCue;
+    announcer.play().catch(finishCue);
+  }
+
+  function haptic(pattern = 24, options = {}) {
+    const duration = Array.isArray(pattern) ? pattern.reduce((sum, value) => sum + value, 0) : Number(pattern) || 24;
+    const strength = options.strength ?? Math.max(.22, Math.min(1, duration / 180));
+    let hardwareFeedback = false;
     try {
-      window.speechSynthesis.cancel();
-      const line = new SpeechSynthesisUtterance(text);
-      line.lang = "en-US";
-      line.rate = text.length > 5 ? 1.08 : .92;
-      line.pitch = text.length > 5 ? .82 : .74;
-      line.volume = .95;
-      const voices = window.speechSynthesis.getVoices();
-      line.voice = voices.find(voice => /^en-(JM|GB|US)/.test(voice.lang) && /male|daniel|aaron|fred|reed/i.test(voice.name))
-        || voices.find(voice => /^en-(JM|GB|US)/.test(voice.lang))
-        || null;
-      window.speechSynthesis.speak(line);
+      if (typeof navigator.vibrate === "function") hardwareFeedback = navigator.vibrate(pattern) || hardwareFeedback;
+      const gamepad = navigator.getGamepads?.()?.find(Boolean);
+      const actuator = gamepad?.vibrationActuator;
+      if (actuator?.playEffect) {
+        hardwareFeedback = true;
+        actuator.playEffect("dual-rumble", {
+          duration,
+          strongMagnitude: Math.max(.34, strength),
+          weakMagnitude: Math.max(.48, Math.min(1, strength + .2))
+        }).catch(() => {});
+      }
     } catch {}
+    audio.impact(hardwareFeedback ? strength * .4 : strength);
+    stage.style.setProperty("--impact-shift", `${(1.2 + strength * 3.2).toFixed(1)}px`);
+    stage.classList.remove("impact-pulse");
+    void stage.offsetWidth;
+    stage.classList.add("impact-pulse");
+    clearTimeout(haptic.clearTimer);
+    haptic.clearTimer = setTimeout(() => stage.classList.remove("impact-pulse"), 190);
   }
 
   function streakCheer() { return STREAK_CHEERS[state.combo] || ""; }
@@ -804,6 +856,7 @@
     stage.classList.add("multiplier-up");
     setTimeout(() => stage.classList.remove("multiplier-up"), 760);
     audio.celebrate(Math.max(1, tier));
+    playVoiceCue(multiplier >= 10 ? "legendary" : "yeehaw", multiplier >= 10 ? .96 : .86);
     haptic(celebration.haptic);
     if (modeId === "ride") {
       bullKick = 1.7 + tier * .12;
@@ -929,7 +982,8 @@
     dodge.player.landedAt = 0;
     dodge.player.jumpType = "vault";
     dodge.player.jumpStartedAt = 0;
-    dodge.player.jumpCount = 0;
+    dodge.player.jumpLockUntil = 0;
+    dodge.player.jumpHintAt = 0;
     dodge.ole.until = 0;
     dodge.hit.until = 0;
     dodge.hit.gameOver = false;
@@ -943,11 +997,11 @@
 
   function updateJumpButton() {
     if (!jumpButton) return;
-    const nextStyle = JUMP_STYLES[dodge.player.jumpCount % JUMP_STYLES.length];
     const label = jumpButton.querySelector("small");
-    if (label) label.textContent = nextStyle.id === "vault" ? "Vault" : nextStyle.id === "tuck" ? "Tuck" : "Spin";
-    jumpButton.setAttribute("aria-label", `${nextStyle.label.toLowerCase()} over the bull`);
-    jumpButton.style.setProperty("--jump-color", nextStyle.color);
+    if (label) label.textContent = "Vault";
+    jumpButton.setAttribute("aria-label", "Vault over the raging bull");
+    jumpButton.setAttribute("aria-disabled", "true");
+    jumpButton.style.setProperty("--jump-color", JUMP_STYLE.color);
   }
 
   function spawnBull(first = false) {
@@ -968,6 +1022,7 @@
     dodge.bull.hit = false;
     dodge.bull.jumped = false;
     dodge.bull.jumpFlashed = false;
+    dodge.bull.jumpAttempted = false;
     dodge.hit.until = 0;
     dodge.hit.gameOver = false;
     if (running && modeId === "matador") audio.warning();
@@ -985,24 +1040,34 @@
 
   function jumpMatadora() {
     const player = dodge.player;
-    if (!running || paused || counting || modeId !== "matador" || player.airborne || performance.now() < dodge.hit.until) return;
-    const style = JUMP_STYLES[player.jumpCount % JUMP_STYLES.length];
-    player.jumpCount++;
-    updateJumpButton();
-    player.jumpType = style.id;
-    player.jumpStartedAt = performance.now();
+    const now = performance.now();
+    if (!running || paused || counting || modeId !== "matador" || player.airborne || now < player.jumpLockUntil || now < dodge.hit.until) return;
+    const bull = dodge.bull;
+    const window = JUMP_WINDOW[difficultyId];
+    const distance = Math.hypot(bull.x - player.x, bull.y - player.y);
+    const jumpReady = bull.phase === "charge" && !bull.jumpAttempted && distance <= window.open && distance > window.close;
+    if (!jumpReady) {
+      if (bull.phase === "charge" && !bull.jumpAttempted && now >= player.jumpHintAt) {
+        player.jumpHintAt = now + 520;
+        setFeedback(distance > window.open ? "WAIT FOR THE HORNS" : "TOO LATE — MOVE!", 360, { color: "#d7b8ad" });
+        audio.warning();
+      }
+      return;
+    }
+    bull.jumpAttempted = true;
+    player.jumpType = JUMP_STYLE.id;
+    player.jumpStartedAt = now;
     player.airborne = true;
     player.jumpHeight = 1;
-    player.jumpVelocity = style.velocity + (difficultyId === "easy" ? 24 : 0);
-    if (style.id === "vault") {
-      const direction = Math.sign(player.vx || joystick.x || 1);
-      player.vx += direction * 72;
-    }
-    stage.dataset.jump = style.id;
+    player.jumpVelocity = JUMP_STYLE.velocity + (difficultyId === "easy" ? 24 : 0);
+    const direction = Math.sign(player.vx || joystick.x || 1);
+    player.vx += direction * 58;
+    stage.dataset.jump = JUMP_STYLE.id;
     jumpButton?.classList.remove("ready");
-    setFeedback(`${style.label}!`, 390, { color: style.color });
+    jumpButton?.setAttribute("aria-disabled", "true");
+    setFeedback(`${JUMP_STYLE.label}!`, 430, { color: JUMP_STYLE.color });
     audio.good();
-    haptic(style.id === "spin" ? [25, 18, 35] : 28);
+    haptic([22, 14, 34], { strength: .46 });
     burst("#d7b8ad", 9, player.x, player.y + 5);
   }
 
@@ -1010,7 +1075,7 @@
     const outcome = state.scoreDodge(dodge.bull.minDistance, dodge.bull.jumped ? dodge.player.jumpType : null);
     const closeCall = outcome.kind === "close" || outcome.kind === "razor";
     const now = performance.now();
-    const celebrationTypes = outcome.jumped ? ["spin", "cape", "fist"] : ["cape", "spin", "fist"];
+    const celebrationTypes = outcome.jumped ? ["cape", "fist"] : ["cape", "spin", "fist"];
     const celebrationType = celebrationTypes[(state.dodges + state.skillTier) % celebrationTypes.length];
     dodge.celebration = { startedAt: now, until: now + (closeCall ? 1180 : 760), type: celebrationType, level: outcome.kind === "razor" ? 2 : 1 };
     if (closeCall) {
@@ -1022,11 +1087,12 @@
       celebrateMultiplier(outcome.multiplierUpgrade, dodge.player.x, dodge.player.y - 40);
     } else {
       const cheer = streakCheer();
-      const jumpName = JUMP_STYLES.find(style => style.id === outcome.jumpType)?.label;
+      const jumpName = outcome.jumpType ? JUMP_STYLE.label : "";
       const title = outcome.kind === "razor" ? "RAZOR OLÉ!" : outcome.kind === "close" ? "OLÉ!" : jumpName ? `${jumpName} CLEAR!` : "CLEAR!";
       const streak = cheer ? `${cheer}  ` : "";
       setFeedback(`${streak}${title} +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer || closeCall ? 920 : 620, { big: outcome.kind === "razor" || Boolean(cheer), color: state.multiplierColor() });
       closeCall ? audio.perfect() : audio.good();
+      if (closeCall) playVoiceCue("ole", .9);
     }
     haptic(outcome.kind === "razor" ? [45, 24, 70] : closeCall ? [32, 22, 45] : 22);
     burst(state.multiplierColor(), outcome.kind === "razor" ? 42 : closeCall ? 30 : 18, dodge.player.x, dodge.player.y - 35);
@@ -1056,13 +1122,21 @@
         dodge.player.jumpVelocity = 0;
         dodge.player.airborne = false;
         dodge.player.landedAt = performance.now();
+        dodge.player.jumpLockUntil = dodge.player.landedAt + 220;
         stage.dataset.jump = "landed";
         setTimeout(() => { if (!dodge.player.airborne) delete stage.dataset.jump; }, 240);
         burst("#d7b8ad", 12, dodge.player.x, dodge.player.y + 7);
-        audio.good();
+        haptic(18, { strength: .28 });
       }
     }
-    jumpButton?.classList.toggle("ready", !dodge.player.airborne && !hitActive && dodge.bull.phase === "charge");
+    const jumpWindow = JUMP_WINDOW[difficultyId];
+    const jumpDistance = Math.hypot(dodge.bull.x - dodge.player.x, dodge.bull.y - dodge.player.y);
+    const jumpReady = !dodge.player.airborne && !hitActive && performance.now() >= dodge.player.jumpLockUntil
+      && dodge.bull.phase === "charge" && !dodge.bull.jumpAttempted
+      && jumpDistance <= jumpWindow.open && jumpDistance > jumpWindow.close;
+    jumpButton?.classList.toggle("ready", jumpReady);
+    jumpButton?.setAttribute("aria-disabled", String(!jumpReady));
+    stage.dataset.jumpWindow = jumpReady ? "open" : "closed";
     stage.dataset.playerX = String(Math.round(dodge.player.x));
     stage.dataset.playerY = String(Math.round(dodge.player.y));
 
@@ -1554,7 +1628,8 @@
     }
     document.querySelector("[data-grei-discovery]")?.remove();
     if (!arenaVideoFailed) arenaVideo?.play().catch(() => {});
-    audio.unlock();
+    await audio.unlock();
+    if (token !== countdownToken) return;
     modePicker.hidden = true;
     difficultyPicker.hidden = true;
     results.hidden = true;
@@ -1563,8 +1638,8 @@
     copyEl.hidden = false;
     let count = 0;
     const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "RAGE!" : modeId === "catch" ? "ROLL!" : "RACE!";
-    const finaleVoice = modeId === "ride" ? "Let's ride!" : modeId === "matador" ? "Face the raging bull!" : modeId === "catch" ? "Catch that Rolling Calf!" : "Run the track!";
-    const cards = [["3", "", "Three"], ["2", "", "Two"], ["1", "", "One"], [finale, "", finaleVoice]];
+    const finaleVoice = modeId === "ride" ? "start-ride" : modeId === "matador" ? "start-raging" : modeId === "catch" ? "start-calf" : "start-race";
+    const cards = [["3", "", "three"], ["2", "", "two"], ["1", "", "one"], [finale, "", finaleVoice]];
     const tick = () => {
       if (token !== countdownToken) return;
       const [first, second, voiceLine] = cards[count];
@@ -1573,7 +1648,7 @@
         ? "Hear the count. Feel the pulse."
         : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Face the Raging Bull." : modeId === "catch" ? "Track down the Rolling Calf." : "Tap to gallop. Fill Heat. Hit Boost.";
       audio.countdown(count);
-      speakCountdown(voiceLine);
+      playVoiceCue(voiceLine, count < 3 ? .82 : .94);
       haptic(count < 3 ? 28 : [45, 20, 80]);
       count++;
       if (count < cards.length) setTimeout(tick, SONG_BEAT_SECONDS * 1000);
@@ -1649,7 +1724,6 @@
     delete stage.dataset.ole;
     directionAnnounce.textContent = "";
     audio.stop();
-    window.speechSynthesis?.cancel?.();
     best = Math.max(best, state.score);
     localStorage.setItem(bestKey(), String(best));
 
@@ -1700,7 +1774,6 @@
     delete stage.dataset.recovering;
     directionAnnounce.textContent = "";
     audio.stop();
-    window.speechSynthesis?.cancel?.();
     if (window.greiIsPaused?.()) document.querySelector("[data-grei-pause]")?.click();
     paused = false;
   }
@@ -2181,15 +2254,9 @@
     const celebrationProgress = celebrationActive ? Math.min(1, (now - dodge.celebration.startedAt) / Math.max(1, dodge.celebration.until - dodge.celebration.startedAt)) : 0;
     const jumpProgress = player.airborne ? Math.min(1, (now - player.jumpStartedAt) / 980) : 0;
     let performanceRotation = 0;
-    if (player.airborne && player.jumpType === "spin") performanceRotation += jumpProgress * Math.PI * 2;
-    else if (player.airborne && player.jumpType === "vault") performanceRotation += Math.sin(jumpProgress * Math.PI) * .24 * Math.sign(player.vx || 1);
-    else if (player.airborne && player.jumpType === "tuck") performanceRotation -= Math.sin(jumpProgress * Math.PI) * .13;
-    if (celebrationActive && dodge.celebration.type === "spin") performanceRotation += celebrationProgress * Math.PI * 2;
+    if (player.airborne) performanceRotation += Math.sin(jumpProgress * Math.PI) * .2 * Math.sign(player.vx || 1);
+    if (!player.airborne && celebrationActive && dodge.celebration.type === "spin") performanceRotation += celebrationProgress * Math.PI * 2;
     ctx.rotate(player.vx / 265 * .055 + (player.airborne ? player.vx / 265 * .08 : 0) + (oleActive ? Math.sin(oleProgress * Math.PI * 2) * .055 : 0) + performanceRotation);
-    if (player.airborne && player.jumpType === "tuck") {
-      const tuck = Math.sin(jumpProgress * Math.PI);
-      ctx.scale(1 - tuck * .08, 1 - tuck * .12);
-    }
     if (justLanded) {
       const landing = Math.max(0, 1 - (now - player.landedAt) / 220);
       ctx.scale(1 + landing * .07, 1 - landing * .09);
@@ -2206,9 +2273,7 @@
     }
     const moving = Math.hypot(player.vx, player.vy) > 18;
     const matadoraFrame = player.airborne
-      ? player.jumpType === "tuck" ? (player.jumpVelocity > 80 ? 3 : player.jumpVelocity > -120 ? 4 : 5)
-        : player.jumpType === "spin" ? (player.jumpVelocity > 90 ? 6 : player.jumpVelocity > -120 ? 7 : 2)
-          : player.jumpVelocity > 110 ? 2 : player.jumpVelocity > -115 ? 3 : 4
+      ? player.jumpVelocity > 110 ? 2 : player.jumpVelocity > -115 ? 3 : 4
       : justLanded ? 5
         : celebrationActive ? dodge.celebration.type === "fist" ? 7 : dodge.celebration.type === "cape" ? 6 : 6 + cycleFrame(now, 14, 0, 2)
           : oleActive ? (dodge.ole.level > 1 && oleProgress > .52 ? 7 : 6)

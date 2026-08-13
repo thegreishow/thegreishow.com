@@ -13,13 +13,13 @@
       levelBase: 0
     },
     matador: {
-      label: "Dodge the Bull",
-      shortLabel: "Dodge",
+      label: "Raging Bull",
+      shortLabel: "Rage",
       levelBase: 2
     },
     catch: {
-      label: "Catch the Cow",
-      shortLabel: "Lasso",
+      label: "Rolling Calf",
+      shortLabel: "Calf",
       levelBase: 4
     },
     race: {
@@ -43,7 +43,7 @@
     },
     matador: {
       steps: [
-        "Use the joystick to move, then tap Jump as the bull reaches you to clear a charge.",
+        "Use the joystick to move, then tap Jump as the raging bull reaches you. Jumps rotate through vault, tuck, and spin styles.",
         "Stay close to the horns without getting clipped: close and razor dodges earn the biggest rewards.",
         "Chain clean dodges for longer streaks, OLÉ celebrations, and the ×2 to ×10 multiplier ladder."
       ],
@@ -54,12 +54,12 @@
     },
     catch: {
       steps: [
-        "Use the joystick to chase the marked cow and close the distance.",
-        "When the target ring turns gold and Lasso lights up, throw before the cow escapes.",
-        "Fast, accurate catches score more and raise Heat faster."
+        "Use the joystick to chase the Rolling Calf and close the distance.",
+        "When the target ring turns gold and Lasso lights up, throw before the calf breaks free.",
+        "Fast, accurate catches trigger longer rope-down animations, celebrations, and more Heat."
       ],
       meters: [
-        ["Grit", "Your chase stamina. Escaped cows drain it; the run ends at zero."],
+        ["Grit", "Your chase stamina. Escaped calves drain it; the run ends at zero."],
         ["Heat", "Precise and quick catches fill five tougher bars from ×2 through ×10. An escape drops one tier."]
       ]
     },
@@ -179,6 +179,8 @@
   matadorSprites.src = "assets/matador-sprites.webp";
   const matadoraAnimation = new Image();
   matadoraAnimation.src = "assets/matadora-animation-v3.webp";
+  const ragingBullHitAnimation = new Image();
+  ragingBullHitAnimation.src = "assets/raging-bull-hit-v1.png";
   const chargingBullAnimation = new Image();
   chargingBullAnimation.src = "assets/charging-bull-animation-v2.webp";
   const catchCowSprites = new Image();
@@ -189,9 +191,12 @@
   raceGallopAnimation.src = "assets/race-gallop-animation-v2.webp";
   const runawayCowAnimation = new Image();
   runawayCowAnimation.src = "assets/runaway-cow-animation-v2.webp";
+  const rollingCalfEventsAnimation = new Image();
+  rollingCalfEventsAnimation.src = "assets/rolling-calf-events-v1.png";
   const ANIMATION_FRAMES = 4;
   const RIDE_ANIMATION_FRAMES = 8;
   const RIDE_FALL_FRAMES = 6;
+  const EVENT_ANIMATION_FRAMES = 6;
   const DODGE_ANIMATION_FRAMES = 8;
   const CHASE_ANIMATION_FRAMES = 8;
   const RACE_GALLOP_FRAMES = 8;
@@ -210,6 +215,18 @@
   const RIDE_DIRECTION_FRAMES = { left: 3, up: 2, down: 4, right: 5 };
   const RIDE_IDLE_FRAMES = [0, 1, 6, 7];
   const RIDE_CHEERS = ["YEEHAW!", "WOO!", "RIDE IT!", "LET'S GO!", "GIDDY UP!"];
+  const JUMP_STYLES = [
+    { id: "vault", label: "CAPE VAULT", velocity: 515, color: "#59d8ff" },
+    { id: "tuck", label: "HIGH TUCK", velocity: 585, color: "#66e38f" },
+    { id: "spin", label: "TORNADO JUMP", velocity: 545, color: "#e785ff" }
+  ];
+  const MULTIPLIER_CELEBRATIONS = {
+    2: { title: "BLUE SPARK", cheer: "YEEHAW!", style: "rings", haptic: [35, 35, 55] },
+    4: { title: "GREEN STAMPEDE", cheer: "WOO!", style: "stars", haptic: [45, 25, 45, 25, 70] },
+    6: { title: "GOLD RUSH", cheer: "GIDDY UP!", style: "confetti", haptic: [60, 25, 90] },
+    8: { title: "FIRESTORM", cheer: "RIDE IT!", style: "flames", haptic: [40, 20, 60, 20, 100] },
+    10: { title: "RODEO ROYALTY", cheer: "LEGENDARY!", style: "crown", haptic: [70, 25, 70, 25, 130] }
+  };
   const STREAK_CHEERS = { 3: "WARMING UP!", 5: "ON FIRE!", 8: "CROWD ROARING!", 12: "UNTOUCHABLE!", 16: "RODEO ROYALTY!", 20: "LEGENDARY!", 25: "CAPE MASTER!", 30: "ARENA ICON!", 40: "ALL-TIME GREAT!" };
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
@@ -456,7 +473,7 @@
       return { kind: perfect ? "perfect" : "good", points, scoreMultiplier, heatUpgrade };
     }
 
-    scoreDodge(minDistance, jumped = false) {
+    scoreDodge(minDistance, jumpType = null) {
       this.combo++;
       this.bestCombo = Math.max(this.bestCombo, this.combo);
       this.dodges++;
@@ -465,12 +482,12 @@
       if (closeCall) this.closeCalls++;
       const scoreMultiplier = this.modeMultiplier();
       const base = razor ? 420 : closeCall ? 300 : 180;
-      const jumpBonus = jumped ? 1.22 : 1;
+      const jumpBonus = jumpType === "spin" ? 1.45 : jumpType === "tuck" ? 1.32 : jumpType === "vault" ? 1.22 : 1;
       const points = Math.round(base * jumpBonus * scoreMultiplier);
       this.score += points;
-      const multiplierUpgrade = this.addSkillProgress((razor ? 3 : closeCall ? 2 : 1) + (jumped ? 1 : 0));
+      const multiplierUpgrade = this.addSkillProgress((razor ? 3 : closeCall ? 2 : 1) + (jumpType ? 1 : 0) + (jumpType === "spin" ? .75 : 0));
       this.balance = Math.min(100, this.balance + 2);
-      return { kind: razor ? "razor" : closeCall ? "close" : "clear", points, scoreMultiplier, multiplierUpgrade, jumped };
+      return { kind: razor ? "razor" : closeCall ? "close" : "clear", points, scoreMultiplier, multiplierUpgrade, jumped: Boolean(jumpType), jumpType };
     }
 
     scoreCatch(quickCatch, distance) {
@@ -514,13 +531,15 @@
   const heldDirections = new Set();
   const joystick = { active: false, id: null, x: 0, y: 0 };
   const dodge = {
-    player: { x: 480, y: 350, vx: 0, vy: 0, jumpHeight: 0, jumpVelocity: 0, airborne: false, landedAt: 0 },
+    player: { x: 480, y: 350, vx: 0, vy: 0, jumpHeight: 0, jumpVelocity: 0, airborne: false, landedAt: 0, jumpType: "vault", jumpStartedAt: 0, jumpCount: 0 },
     bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false, jumped: false, jumpFlashed: false },
-    ole: { startedAt: 0, until: 0, level: 0 }
+    ole: { startedAt: 0, until: 0, level: 0 },
+    hit: { startedAt: 0, until: 0, angle: 0, gameOver: false },
+    celebration: { startedAt: 0, until: 0, type: "cape", level: 0 }
   };
   const chase = {
-    player: { x: 330, y: 390, vx: 0, vy: 0, facing: 1 },
-    cow: { x: 650, y: 310, angle: Math.PI, speed: 0, timer: 0, turnTimer: 0, phase: "run" },
+    player: { x: 330, y: 390, vx: 0, vy: 0, facing: 1, celebrateUntil: 0, celebrationType: "rope" },
+    cow: { x: 650, y: 310, angle: Math.PI, speed: 0, timer: 0, turnTimer: 0, phase: "run", phaseStartedAt: 0 },
     lasso: { active: false, timer: 0, duration: .42, cooldown: 0, hit: false, targetX: 0, targetY: 0 }
   };
   const race = {
@@ -541,6 +560,7 @@
   let rideRecoveryUntil = 0;
   let rideReaction = { direction: "up", startedAt: 0, until: 0 };
   let rideTransition = { phase: "mounted", startedAt: 0, fallUntil: 0, remountAt: 0, until: 0 };
+  let multiplierCelebration = { multiplier: 1, tier: 0, style: "rings", title: "", startedAt: 0, until: 0, x: 480, y: 270 };
   let last = 0;
   let nextBeatAt = difficulty().interval;
   let beatIndex = 0;
@@ -573,6 +593,35 @@
     feedbackUntil = performance.now() + duration;
     feedbackBig = Boolean(options.big);
     feedbackColor = options.color || (text.includes("PERFECT") || text.includes("OLÉ") ? "#ffc857" : "#fff6ec");
+  }
+
+  function haptic(pattern = 24) {
+    try {
+      if (navigator.vibrate) navigator.vibrate(pattern);
+      const gamepad = navigator.getGamepads?.()?.find(Boolean);
+      gamepad?.vibrationActuator?.playEffect?.("dual-rumble", {
+        duration: Array.isArray(pattern) ? pattern.reduce((sum, value) => sum + value, 0) : pattern,
+        strongMagnitude: .52,
+        weakMagnitude: .82
+      }).catch(() => {});
+    } catch {}
+  }
+
+  function speakCountdown(text) {
+    if (!audio.enabled || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    try {
+      window.speechSynthesis.cancel();
+      const line = new SpeechSynthesisUtterance(text);
+      line.lang = "en-US";
+      line.rate = text.length > 5 ? 1.08 : .92;
+      line.pitch = text.length > 5 ? .82 : .74;
+      line.volume = .95;
+      const voices = window.speechSynthesis.getVoices();
+      line.voice = voices.find(voice => /^en-(JM|GB|US)/.test(voice.lang) && /male|daniel|aaron|fred|reed/i.test(voice.name))
+        || voices.find(voice => /^en-(JM|GB|US)/.test(voice.lang))
+        || null;
+      window.speechSynthesis.speak(line);
+    } catch {}
   }
 
   function streakCheer() { return STREAK_CHEERS[state.combo] || ""; }
@@ -642,6 +691,7 @@
     rideRecoveryUntil = 0;
     rideReaction = { direction: "up", startedAt: 0, until: 0 };
     rideTransition = { phase: "mounted", startedAt: 0, fallUntil: 0, remountAt: 0, until: 0 };
+    multiplierCelebration.until = 0;
     stage.dataset.rideAnimation = "mounted";
     delete stage.dataset.rideMove;
     delete stage.dataset.recovering;
@@ -672,9 +722,9 @@
     startButton.textContent = modeId === "ride"
       ? `Ride${replay}`
       : modeId === "matador"
-        ? `Dodge${replay}`
+        ? `Rage${replay}`
         : modeId === "catch"
-          ? `Chase${replay}`
+          ? `Roll${replay}`
           : `Race${replay}`;
     stage.setAttribute("aria-label", `${mode().label} playfield`);
     stage.dataset.mode = modeId;
@@ -705,7 +755,7 @@
     controls.classList.toggle("jump-controls", modeId === "matador");
     controls.classList.toggle("joystick-controls", usesJoystick);
     joystickWrap.hidden = !usesJoystick;
-    joystickLabel.textContent = modeId === "catch" ? "Chase" : "Move";
+    joystickLabel.textContent = modeId === "catch" ? "Chase Calf" : "Move";
     controls.setAttribute("aria-label", modeId === "ride" ? "Ride controls" : modeId === "matador" ? "Matador controls" : modeId === "catch" ? "Horseback chase controls" : "Horse racing controls");
     hud();
   }
@@ -743,16 +793,25 @@
   function celebrateMultiplier(multiplier, x = 480, y = 270) {
     const tier = SCORE_MULTIPLIERS.indexOf(multiplier);
     const color = MULTIPLIER_COLORS[Math.max(0, tier)];
-    const cheer = RIDE_CHEERS[Math.max(0, tier - 1) % RIDE_CHEERS.length];
-    setFeedback(`${cheer}  ×${multiplier} MULTIPLIER!`, 1650, { big: true, color });
-    burst(color, 62, x, y);
-    burst(tier % 2 ? "#ffc857" : "#ff625f", 30, x, y - 38);
+    const celebration = MULTIPLIER_CELEBRATIONS[multiplier] || { title: "MULTIPLIER UP", cheer: RIDE_CHEERS[0], style: "rings", haptic: 55 };
+    const now = performance.now();
+    multiplierCelebration = { multiplier, tier, style: celebration.style, title: celebration.title, startedAt: now, until: now + 1850, x, y };
+    setFeedback(`${celebration.cheer}  ${celebration.title} ×${multiplier}!`, 1750, { big: true, color });
+    const primaryAmount = [0, 42, 50, 58, 68, 84][tier] || 42;
+    burst(color, primaryAmount, x, y);
+    burst(tier >= 4 ? "#ff625f" : tier >= 3 ? "#ffc857" : "#fff6ec", 18 + tier * 5, x, y - 38);
     flashes.push({ x: x - 100, y: y - 34, life: .55 }, { x: x + 100, y: y - 34, life: .55 });
     stage.classList.remove("multiplier-up");
     void stage.offsetWidth;
     stage.classList.add("multiplier-up");
     setTimeout(() => stage.classList.remove("multiplier-up"), 760);
     audio.celebrate(Math.max(1, tier));
+    haptic(celebration.haptic);
+    if (modeId === "ride") {
+      bullKick = 1.7 + tier * .12;
+      riderLean = tier % 2 ? -1 : 1;
+      riderPitch = tier >= 4 ? -1 : 0;
+    }
   }
 
   function respondRide(action) {
@@ -773,6 +832,7 @@
       stage.classList.add("shake");
       setTimeout(() => stage.classList.remove("shake"), 250);
       audio.miss();
+      haptic([55, 30, 80]);
     } else {
       riderLean = { left: -1, right: 1, up: 0, down: 0 }[action] || 0;
       riderPitch = { up: -1, down: 1 }[action] || 0;
@@ -788,6 +848,7 @@
         const multiplierCopy = outcome.scoreMultiplier > 1 ? ` · ×${outcome.scoreMultiplier}` : "";
         setFeedback(outcome.kind === "perfect" ? `${cheer}PERFECT +${outcome.points}${multiplierCopy}` : `SMOOTH +${outcome.points}${multiplierCopy}`, cheer ? 900 : 560, { big: Boolean(milestone), color: state.multiplierColor() });
         outcome.kind === "perfect" ? audio.perfect() : audio.good();
+        haptic(outcome.kind === "perfect" ? [22, 18, 36] : 18);
       }
       burst(outcome.kind === "perfect" ? "#ffc857" : "#ff625f", outcome.kind === "perfect" ? 26 : 15);
     }
@@ -816,6 +877,7 @@
       setFeedback(`THROWN!${tierDrop}`, 900);
       burst("#ff625f", 42, 480, 330);
       audio.miss();
+      haptic([90, 40, 130]);
       setTimeout(() => {
         if (running && modeId === "ride" && state.lives <= 0) finish();
       }, 980);
@@ -833,6 +895,7 @@
     burst("#ff625f", 38, 480, 330);
     flashes.push({ x: 480, y: 290, life: .5 });
     audio.miss();
+    haptic([90, 40, 130]);
     hud();
   }
 
@@ -866,11 +929,27 @@
     dodge.player.jumpVelocity = 0;
     dodge.player.airborne = false;
     dodge.player.landedAt = 0;
+    dodge.player.jumpType = "vault";
+    dodge.player.jumpStartedAt = 0;
+    dodge.player.jumpCount = 0;
     dodge.ole.until = 0;
+    dodge.hit.until = 0;
+    dodge.hit.gameOver = false;
+    dodge.celebration.until = 0;
     if (jumpButton) jumpButton.classList.remove("ready", "active");
+    updateJumpButton();
     delete stage.dataset.jump;
     resetJoystick();
     spawnBull(true);
+  }
+
+  function updateJumpButton() {
+    if (!jumpButton) return;
+    const nextStyle = JUMP_STYLES[dodge.player.jumpCount % JUMP_STYLES.length];
+    const label = jumpButton.querySelector("small");
+    if (label) label.textContent = nextStyle.id === "vault" ? "Vault" : nextStyle.id === "tuck" ? "Tuck" : "Spin";
+    jumpButton.setAttribute("aria-label", `${nextStyle.label.toLowerCase()} over the bull`);
+    jumpButton.style.setProperty("--jump-color", nextStyle.color);
   }
 
   function spawnBull(first = false) {
@@ -891,6 +970,8 @@
     dodge.bull.hit = false;
     dodge.bull.jumped = false;
     dodge.bull.jumpFlashed = false;
+    dodge.hit.until = 0;
+    dodge.hit.gameOver = false;
     if (running && modeId === "matador") audio.warning();
   }
 
@@ -906,22 +987,36 @@
 
   function jumpMatadora() {
     const player = dodge.player;
-    if (!running || paused || counting || modeId !== "matador" || player.airborne) return;
+    if (!running || paused || counting || modeId !== "matador" || player.airborne || performance.now() < dodge.hit.until) return;
+    const style = JUMP_STYLES[player.jumpCount % JUMP_STYLES.length];
+    player.jumpCount++;
+    updateJumpButton();
+    player.jumpType = style.id;
+    player.jumpStartedAt = performance.now();
     player.airborne = true;
     player.jumpHeight = 1;
-    player.jumpVelocity = difficultyId === "easy" ? 545 : 515;
-    stage.dataset.jump = "airborne";
+    player.jumpVelocity = style.velocity + (difficultyId === "easy" ? 24 : 0);
+    if (style.id === "vault") {
+      const direction = Math.sign(player.vx || joystick.x || 1);
+      player.vx += direction * 72;
+    }
+    stage.dataset.jump = style.id;
     jumpButton?.classList.remove("ready");
-    setFeedback("JUMP!", 280, { color: "#59d8ff" });
+    setFeedback(`${style.label}!`, 390, { color: style.color });
     audio.good();
+    haptic(style.id === "spin" ? [25, 18, 35] : 28);
     burst("#d7b8ad", 9, player.x, player.y + 5);
   }
 
   function resolveDodge() {
-    const outcome = state.scoreDodge(dodge.bull.minDistance, dodge.bull.jumped);
+    const outcome = state.scoreDodge(dodge.bull.minDistance, dodge.bull.jumped ? dodge.player.jumpType : null);
     const closeCall = outcome.kind === "close" || outcome.kind === "razor";
+    const now = performance.now();
+    const celebrationTypes = outcome.jumped ? ["spin", "cape", "fist"] : ["cape", "spin", "fist"];
+    const celebrationType = celebrationTypes[(state.dodges + state.skillTier) % celebrationTypes.length];
+    dodge.celebration = { startedAt: now, until: now + (closeCall ? 1180 : 760), type: celebrationType, level: outcome.kind === "razor" ? 2 : 1 };
     if (closeCall) {
-      dodge.ole = { startedAt: performance.now(), until: performance.now() + (outcome.kind === "razor" ? 1180 : 880), level: outcome.kind === "razor" ? 2 : 1 };
+      dodge.ole = { startedAt: now, until: now + (outcome.kind === "razor" ? 1180 : 880), level: outcome.kind === "razor" ? 2 : 1 };
       stage.dataset.ole = outcome.kind;
       setTimeout(() => { if (performance.now() >= dodge.ole.until) delete stage.dataset.ole; }, 1200);
     }
@@ -929,11 +1024,13 @@
       celebrateMultiplier(outcome.multiplierUpgrade, dodge.player.x, dodge.player.y - 40);
     } else {
       const cheer = streakCheer();
-      const title = outcome.kind === "razor" ? "RAZOR OLÉ!" : outcome.kind === "close" ? "OLÉ!" : outcome.jumped ? "AIRBORNE CLEAR!" : "CLEAR!";
+      const jumpName = JUMP_STYLES.find(style => style.id === outcome.jumpType)?.label;
+      const title = outcome.kind === "razor" ? "RAZOR OLÉ!" : outcome.kind === "close" ? "OLÉ!" : jumpName ? `${jumpName} CLEAR!` : "CLEAR!";
       const streak = cheer ? `${cheer}  ` : "";
       setFeedback(`${streak}${title} +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer || closeCall ? 920 : 620, { big: outcome.kind === "razor" || Boolean(cheer), color: state.multiplierColor() });
       closeCall ? audio.perfect() : audio.good();
     }
+    haptic(outcome.kind === "razor" ? [45, 24, 70] : closeCall ? [32, 22, 45] : 22);
     burst(state.multiplierColor(), outcome.kind === "razor" ? 42 : closeCall ? 30 : 18, dodge.player.x, dodge.player.y - 35);
     hud();
   }
@@ -943,6 +1040,8 @@
     const keyboardY = (heldDirections.has("down") ? 1 : 0) - (heldDirections.has("up") ? 1 : 0);
     let moveX = joystick.active ? joystick.x : keyboardX;
     let moveY = joystick.active ? joystick.y : keyboardY;
+    const hitActive = performance.now() < dodge.hit.until;
+    if (hitActive) { moveX = 0; moveY = 0; }
     const moveLength = Math.hypot(moveX, moveY);
     if (moveLength > 1) { moveX /= moveLength; moveY /= moveLength; }
     const playerSpeed = difficultyId === "easy" ? 310 : 288;
@@ -965,7 +1064,7 @@
         audio.good();
       }
     }
-    jumpButton?.classList.toggle("ready", !dodge.player.airborne && dodge.bull.phase === "charge");
+    jumpButton?.classList.toggle("ready", !dodge.player.airborne && !hitActive && dodge.bull.phase === "charge");
     stage.dataset.playerX = String(Math.round(dodge.player.x));
     stage.dataset.playerY = String(Math.round(dodge.player.y));
 
@@ -1011,15 +1110,22 @@
         bull.hit = true;
         state.hits++;
         state.takeHit(34);
-        setFeedback("CLIPPED!", 620);
+        const impactNow = performance.now();
+        dodge.hit = { startedAt: impactNow, until: impactNow + 1320, angle: bull.angle, gameOver: state.balance <= 0 };
+        dodge.celebration.until = 0;
+        dodge.ole.until = 0;
+        dodge.player.airborne = false;
+        dodge.player.jumpHeight = 0;
+        bull.phase = "impact";
+        bull.timer = 1.32;
+        setFeedback(state.balance <= 0 ? "RAGING BULL KNOCKOUT!" : "HORN HIT! RECOVER!", 980, { big: state.balance <= 0, color: "#ff625f" });
         stage.classList.add("shake");
-        setTimeout(() => stage.classList.remove("shake"), 250);
+        setTimeout(() => stage.classList.remove("shake"), 430);
         audio.miss();
-        burst("#ff625f", 24, dodge.player.x, dodge.player.y - 30);
-        dodge.player.x += Math.cos(bull.angle) * 42;
-        dodge.player.y += Math.sin(bull.angle) * 28;
-        constrainPlayer();
-        if (state.balance <= 0) { finish(); return; }
+        haptic([90, 40, 140]);
+        burst("#ff625f", 42, dodge.player.x, dodge.player.y - 30);
+        flashes.push({ x: dodge.player.x, y: dodge.player.y - 38, life: .65 });
+        return;
       }
 
       if (bull.travel >= bull.maxTravel) {
@@ -1031,6 +1137,11 @@
     }
 
     bull.timer -= dt;
+    if (bull.phase === "impact" && bull.timer <= 0) {
+      if (dodge.hit.gameOver) finish();
+      else spawnBull();
+      return;
+    }
     if (bull.timer <= 0) spawnBull();
   }
 
@@ -1040,6 +1151,8 @@
     chase.player.vx = 0;
     chase.player.vy = 0;
     chase.player.facing = 1;
+    chase.player.celebrateUntil = 0;
+    chase.player.celebrationType = "rope";
     chase.lasso.active = false;
     chase.lasso.timer = 0;
     chase.lasso.cooldown = 0;
@@ -1133,6 +1246,7 @@
     } else if (perfect || good) {
       setFeedback(`${grade} +${points} · ×${scoreMultiplier}${awardedHeat ? ` · +${awardedHeat} HEAT` : ""}`, perfect ? 520 : 380, { color: state.multiplierColor() });
       audio.good();
+      haptic(perfect ? [20, 14, 30] : 16);
     } else {
       setFeedback(`${grade} · FIND THE BEAT`, 350);
       audio.warning();
@@ -1169,6 +1283,7 @@
     burst("#ffc857", 38, 480, 270);
     flashes.push({ x: 480, y: 270, life: .45 });
     audio.perfect();
+    haptic([55, 22, 85]);
   }
 
   function updateRace(dt) {
@@ -1256,6 +1371,7 @@
     chase.cow.turnTimer = .2 + Math.random() * .35;
     chase.cow.wander = (Math.random() - .5) * .7;
     chase.cow.phase = "run";
+    chase.cow.phaseStartedAt = performance.now();
     chase.lasso.active = false;
     chase.lasso.hit = false;
   }
@@ -1283,6 +1399,7 @@
     lassoButton.classList.add("active");
     setTimeout(() => lassoButton.classList.remove("active"), 170);
     audio.rope();
+    haptic(22);
 
     if (!inRange) {
       const gap = Math.max(0, Math.round(distance - difficulty().lassoRange));
@@ -1294,33 +1411,38 @@
     const outcome = state.scoreCatch(quickCatch, distance);
     stage.dataset.catches = String(state.catches);
     chase.cow.phase = "caught";
-    chase.cow.timer = .52;
+    chase.cow.phaseStartedAt = performance.now();
+    chase.cow.timer = quickCatch ? 1.85 : 1.55;
+    chase.player.celebrateUntil = performance.now() + chase.cow.timer * 1000;
+    chase.player.celebrationType = state.combo >= 8 ? "twirl" : quickCatch ? "rope" : "salute";
     if (outcome.multiplierUpgrade) {
       celebrateMultiplier(outcome.multiplierUpgrade, chase.cow.x, chase.cow.y - 34);
     } else {
       const cheer = streakCheer();
-      const action = quickCatch ? "QUICK CATCH" : "ROPE 'EM";
+      const action = quickCatch ? "QUICK CALF CATCH" : "ROPE 'EM";
       setFeedback(`${cheer ? `${cheer}  ` : ""}${action} +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer ? 880 : 700, { big: Boolean(cheer), color: state.multiplierColor() });
       quickCatch ? audio.perfect() : audio.good();
     }
     burst(state.multiplierColor(), quickCatch ? 30 : 22, chase.cow.x, chase.cow.y - 34);
+    haptic(quickCatch ? [38, 22, 60] : [28, 20, 38]);
     hud();
   }
 
   function cowEscaped() {
+    if (chase.cow.phase === "escaping") return;
     state.escapes++;
     stage.dataset.escapes = String(state.escapes);
     state.takeHit(difficulty().escapeDamage);
-    setFeedback("COW GOT AWAY", 680);
+    chase.cow.phase = "escaping";
+    chase.cow.phaseStartedAt = performance.now();
+    chase.cow.timer = 1.25;
+    chase.cow.angle = Math.atan2(chase.cow.y - chase.player.y, chase.cow.x - chase.player.x);
+    setFeedback("ROLLING CALF BREAKS FREE!", 940, { color: "#ff625f" });
     stage.classList.add("shake");
     setTimeout(() => stage.classList.remove("shake"), 250);
     audio.miss();
+    haptic([75, 35, 95]);
     burst("#ff625f", 18, chase.cow.x, chase.cow.y);
-    if (state.balance <= 0) {
-      finish();
-      return;
-    }
-    spawnCow();
   }
 
   function updateCatch(dt) {
@@ -1352,6 +1474,19 @@
       return;
     }
 
+    if (cow.phase === "escaping") {
+      cow.timer -= dt;
+      const escapeBoost = difficulty().cowSpeed * 1.85;
+      cow.x += Math.cos(cow.angle) * escapeBoost * dt;
+      cow.y += Math.sin(cow.angle) * escapeBoost * .72 * dt;
+      directionAnnounce.textContent = "Rolling Calf escaped";
+      if (cow.timer <= 0) {
+        if (state.balance <= 0) finish();
+        else spawnCow();
+      }
+      return;
+    }
+
     cow.timer -= dt;
     if (cow.timer <= 0) {
       cowEscaped();
@@ -1380,7 +1515,7 @@
     const distance = Math.hypot(cow.x - chase.player.x, cow.y - chase.player.y);
     const ready = distance <= difficulty().lassoRange && chase.lasso.cooldown <= 0;
     lassoButton.classList.toggle("ready", ready);
-    directionAnnounce.textContent = ready ? "Cow in lasso range" : "Close the gap";
+    directionAnnounce.textContent = ready ? "Rolling Calf in lasso range" : "Close the gap";
     stage.dataset.playerX = String(Math.round(chase.player.x));
     stage.dataset.playerY = String(Math.round(chase.player.y));
     stage.dataset.cowX = String(Math.round(cow.x));
@@ -1405,16 +1540,19 @@
     copyEl.hidden = false;
     counting = true;
     let count = 0;
-    const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "DODGE!" : modeId === "catch" ? "LASSO!" : "RACE!";
-    const cards = [["1", ""], ["2", ""], ["3", ""], [finale, ""]];
+    const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "RAGE!" : modeId === "catch" ? "ROLL!" : "RACE!";
+    const finaleVoice = modeId === "ride" ? "Let's ride!" : modeId === "matador" ? "Face the raging bull!" : modeId === "catch" ? "Catch that Rolling Calf!" : "Run the track!";
+    const cards = [["3", "", "Three"], ["2", "", "Two"], ["1", "", "One"], [finale, "", finaleVoice]];
     const tick = () => {
       if (token !== countdownToken) return;
-      const [first, second] = cards[count];
+      const [first, second, voiceLine] = cards[count];
       titleEl.innerHTML = first + (second ? `<br>${second}` : "");
       copyEl.textContent = count < 3
-        ? "Count it up. Find the beat."
-        : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Watch the line and move." : modeId === "catch" ? "Close the gap and rope 'em." : "Tap to gallop. Fill Heat. Hit Boost.";
+        ? "Hear the count. Feel the pulse."
+        : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Face the Raging Bull." : modeId === "catch" ? "Track down the Rolling Calf." : "Tap to gallop. Fill Heat. Hit Boost.";
       audio.countdown(count);
+      speakCountdown(voiceLine);
+      haptic(count < 3 ? 28 : [45, 20, 80]);
       count++;
       if (count < cards.length) setTimeout(tick, SONG_BEAT_SECONDS * 1000);
       else setTimeout(() => { if (token === countdownToken) begin(); }, SONG_BEAT_SECONDS * 1000);
@@ -1428,6 +1566,7 @@
     resetChase();
     resetRace();
     heldDirections.clear();
+    multiplierCelebration.until = 0;
     lassoButton.classList.remove("ready", "active");
     running = true;
     paused = false;
@@ -1473,6 +1612,7 @@
     countdownToken++;
     rideRecoveryUntil = 0;
     rideTransition.phase = "mounted";
+    multiplierCelebration.until = 0;
     state.finished = true;
     heldDirections.clear();
     resetJoystick();
@@ -1487,6 +1627,7 @@
     delete stage.dataset.ole;
     directionAnnounce.textContent = "";
     audio.stop();
+    window.speechSynthesis?.cancel?.();
     best = Math.max(best, state.score);
     localStorage.setItem(bestKey(), String(best));
 
@@ -1496,14 +1637,14 @@
     results.hidden = false;
     startButton.hidden = false;
     copyEl.hidden = false;
-    kickerEl.textContent = modeId === "ride" ? "Thrown from the saddle" : modeId === "matador" ? "The bull caught you" : modeId === "catch" ? "The cow broke free" : state.raceWon ? "First across the line" : `Finished in place ${state.racePlace}`;
+    kickerEl.textContent = modeId === "ride" ? "Thrown from the saddle" : modeId === "matador" ? "The Raging Bull caught you" : modeId === "catch" ? "The Rolling Calf broke free" : state.raceWon ? "First across the line" : `Finished in place ${state.racePlace}`;
     titleEl.innerHTML = modeId === "ride" ? "HOLD<br>TIGHT" : modeId === "matador" ? "OLÉ<br>AGAIN" : modeId === "catch" ? "ROPE<br>UP" : state.raceWon ? "TRACK<br>KING" : "RUN<br>AGAIN";
     copyEl.textContent = modeId === "ride"
       ? "Your rides are spent. Mount up again and beat your high score."
       : modeId === "matador"
         ? "One more sidestep and you had it. Get back in the arena."
         : modeId === "catch"
-          ? "Tighten that loop, mount up, and bring the next cow home."
+          ? "Tighten that loop, mount up, and secure the next Rolling Calf."
           : state.raceWon ? "You found the beat, fired the boost, and owned the final stretch." : "Tap with the beat, draft the leaders, and save a boost for the final lap.";
 
     const rank = modeId === "ride"
@@ -1511,7 +1652,7 @@
       : modeId === "matador"
         ? state.dodges >= 30 ? "Arena Royalty" : state.dodges >= 18 ? "Cape Master" : state.dodges >= 9 ? "Matador Ready" : state.dodges >= 3 ? "Quick Step" : "First Olé"
         : modeId === "catch"
-          ? state.catches >= 25 ? "Lasso Royalty" : state.catches >= 15 ? "Ranch Boss" : state.catches >= 8 ? "Cow Catcher" : state.catches >= 3 ? "Rope Ready" : "Greenhorn"
+          ? state.catches >= 25 ? "Rolling Calf Royalty" : state.catches >= 15 ? "Ranch Boss" : state.catches >= 8 ? "Calf Catcher" : state.catches >= 3 ? "Rope Ready" : "Greenhorn"
           : state.racePlace === 1 ? "Track Royalty" : state.racePlace === 2 ? "Photo Finish" : state.racePlace === 3 ? "Podium Rider" : "Trail Runner";
     const middleValue = modeId === "race" ? `#${state.racePlace}` : state.bestCombo;
     const middleLabel = modeId === "race" ? "Finish" : "Best streak";
@@ -1537,6 +1678,7 @@
     delete stage.dataset.recovering;
     directionAnnounce.textContent = "";
     audio.stop();
+    window.speechSynthesis?.cancel?.();
     if (window.greiIsPaused?.()) document.querySelector("[data-grei-pause]")?.click();
     paused = false;
   }
@@ -1662,7 +1804,10 @@
         directionAnnounce.textContent = "Back in the saddle";
         setFeedback("YEEHAW! BACK IN THE SADDLE", 900);
         burst("#ffc857", 24, 480, 285);
+        bullKick = 1.65;
+        riderPitch = -1;
         audio.good();
+        haptic([32, 18, 52]);
       }
       while (state.elapsed >= nextBeatAt && running) {
         rideBeat(now);
@@ -1761,21 +1906,40 @@
       stage.dataset.rideAnimation = frame === 3 ? "down" : "recovering";
     } else {
       const progress = Math.min(1, (now - rideTransition.remountAt) / Math.max(1, rideTransition.until - rideTransition.remountAt));
-      const eased = 1 - Math.pow(1 - progress, 3);
-      frame = progress < .52 ? 4 : 5;
-      x = 612 - eased * 132;
-      y = 412 - Math.sin(progress * Math.PI) * 24;
-      scale = .92 + eased * .08;
-      alpha = progress > .76 ? 1 - (progress - .76) / .24 : 1;
-      stage.dataset.rideAnimation = progress < .52 ? "stand" : "remount";
+      if (progress < .24) {
+        frame = 4;
+        x = 612;
+        y = 413 - progress * 20;
+        rotation = -.08 * (1 - progress / .24);
+        stage.dataset.rideAnimation = "stand-up";
+      } else if (progress < .62) {
+        const run = (progress - .24) / .38;
+        frame = 5;
+        x = 612 - run * 102;
+        y = 408 - Math.abs(Math.sin(run * Math.PI * 4)) * 13;
+        rotation = -.08 + Math.sin(run * Math.PI * 4) * .035;
+        stage.dataset.rideAnimation = "run-to-bull";
+      } else {
+        const leap = (progress - .62) / .38;
+        frame = 5;
+        x = 510 - leap * 30;
+        y = 402 - Math.sin(leap * Math.PI) * 96 - leap * 18;
+        rotation = -.12 + leap * .12;
+        scale = .94 + leap * .06;
+        alpha = leap > .72 ? 1 - (leap - .72) / .28 : 1;
+        stage.dataset.rideAnimation = leap < .72 ? "leap-to-saddle" : "saddle-settle";
+      }
 
-      if (progress > .64 && rideAnimation.complete && rideAnimation.naturalWidth) {
-        const mountedAlpha = Math.min(1, (progress - .64) / .36);
+      if (progress > .62 && rideAnimation.complete && rideAnimation.naturalWidth) {
+        const mountedAlpha = Math.min(1, (progress - .62) / .38);
+        const settle = Math.sin(mountedAlpha * Math.PI) * 16;
         ctx.save();
         ctx.globalAlpha = mountedAlpha;
-        ctx.translate(480, 405);
-        ctx.scale(.9 + mountedAlpha * .1, .9 + mountedAlpha * .1);
-        spriteFrame(rideAnimation, RIDE_IDLE_FRAMES[0], -195, -390, 390, 390, RIDE_ANIMATION_FRAMES);
+        ctx.translate(480, 405 - settle);
+        ctx.rotate(Math.sin(mountedAlpha * Math.PI * 2) * .025);
+        ctx.scale(.88 + mountedAlpha * .12, .88 + mountedAlpha * .12);
+        const remountFrame = mountedAlpha < .48 ? RIDE_DIRECTION_FRAMES.up : RIDE_IDLE_FRAMES[0];
+        spriteFrame(rideAnimation, remountFrame, -195, -390, 390, 390, RIDE_ANIMATION_FRAMES);
         ctx.restore();
       }
     }
@@ -1813,6 +1977,18 @@
     let alpha = 1;
     let shadowAlpha = .34;
     if (reactionActive) roll += ({ left: -.12, right: .12, up: -.035, down: .045 }[direction] || 0) * reactionStrength;
+    const promotionActive = modeId === "ride" && now < multiplierCelebration.until && rideTransition.phase === "mounted";
+    if (promotionActive) {
+      const promotionProgress = Math.min(1, (now - multiplierCelebration.startedAt) / Math.max(1, multiplierCelebration.until - multiplierCelebration.startedAt));
+      const performance = Math.sin(promotionProgress * Math.PI);
+      const tierFrames = [0, RIDE_DIRECTION_FRAMES.left, RIDE_DIRECTION_FRAMES.right, RIDE_DIRECTION_FRAMES.up, RIDE_DIRECTION_FRAMES.down, RIDE_IDLE_FRAMES[7]];
+      frame = tierFrames[multiplierCelebration.tier] || RIDE_IDLE_FRAMES[0];
+      y -= performance * (16 + multiplierCelebration.tier * 5);
+      x += Math.sin(promotionProgress * Math.PI * (2 + multiplierCelebration.tier)) * (5 + multiplierCelebration.tier * 2);
+      roll += Math.sin(promotionProgress * Math.PI * 2) * (.025 + multiplierCelebration.tier * .009);
+      scale += performance * (.025 + multiplierCelebration.tier * .006);
+      stage.dataset.rideAnimation = `celebrate-${multiplierCelebration.multiplier}`;
+    }
 
     if (rideTransition.phase === "fall" && now < rideTransition.until) {
       if (now < rideTransition.fallUntil) {
@@ -1846,7 +2022,7 @@
         shadowAlpha = .12 + eased * .22;
         stage.dataset.rideAnimation = "remount";
       }
-    } else {
+    } else if (!promotionActive) {
       stage.dataset.rideAnimation = reactionActive ? direction : "mounted";
     }
 
@@ -1978,6 +2154,27 @@
 
   function drawMatadora(now = performance.now()) {
     const player = dodge.player;
+    const hitActive = now < dodge.hit.until;
+    if (hitActive && ragingBullHitAnimation.complete && ragingBullHitAnimation.naturalWidth) {
+      const progress = Math.min(1, (now - dodge.hit.startedAt) / Math.max(1, dodge.hit.until - dodge.hit.startedAt));
+      const frame = Math.min(EVENT_ANIMATION_FRAMES - 1, Math.floor(progress * EVENT_ANIMATION_FRAMES));
+      const push = Math.sin(progress * Math.PI) * 54 + progress * 72;
+      const impactX = player.x + Math.cos(dodge.hit.angle) * push;
+      const impactY = player.y + Math.sin(dodge.hit.angle) * push * .35 - Math.sin(progress * Math.PI) * 34;
+      ctx.save();
+      ctx.fillStyle = `rgba(0,0,0,${.28 - Math.sin(progress * Math.PI) * .12})`;
+      ctx.beginPath();
+      ctx.ellipse(impactX, player.y + 12, 46 + (frame === 3 ? 22 : 0), 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.translate(impactX, impactY);
+      ctx.rotate(Math.sin(progress * Math.PI) * Math.sign(Math.cos(dodge.hit.angle) || 1) * .18);
+      ctx.shadowColor = "rgba(255,98,95,.58)";
+      ctx.shadowBlur = frame < 3 ? 20 : 9;
+      spriteFrame(ragingBullHitAnimation, frame, -112, -198, 224, 224, EVENT_ANIMATION_FRAMES);
+      ctx.restore();
+      return;
+    }
+
     ctx.save();
     ctx.translate(player.x, player.y);
     const jumpRatio = Math.min(1, player.jumpHeight / 64);
@@ -1992,7 +2189,19 @@
     const justLanded = now - player.landedAt < 220;
     const oleActive = now < dodge.ole.until;
     const oleProgress = oleActive ? Math.min(1, (now - dodge.ole.startedAt) / Math.max(1, dodge.ole.until - dodge.ole.startedAt)) : 0;
-    ctx.rotate(player.vx / 265 * .055 + (player.airborne ? player.vx / 265 * .08 : 0) + (oleActive ? Math.sin(oleProgress * Math.PI * 2) * .055 : 0));
+    const celebrationActive = now < dodge.celebration.until;
+    const celebrationProgress = celebrationActive ? Math.min(1, (now - dodge.celebration.startedAt) / Math.max(1, dodge.celebration.until - dodge.celebration.startedAt)) : 0;
+    const jumpProgress = player.airborne ? Math.min(1, (now - player.jumpStartedAt) / 980) : 0;
+    let performanceRotation = 0;
+    if (player.airborne && player.jumpType === "spin") performanceRotation += jumpProgress * Math.PI * 2;
+    else if (player.airborne && player.jumpType === "vault") performanceRotation += Math.sin(jumpProgress * Math.PI) * .24 * Math.sign(player.vx || 1);
+    else if (player.airborne && player.jumpType === "tuck") performanceRotation -= Math.sin(jumpProgress * Math.PI) * .13;
+    if (celebrationActive && dodge.celebration.type === "spin") performanceRotation += celebrationProgress * Math.PI * 2;
+    ctx.rotate(player.vx / 265 * .055 + (player.airborne ? player.vx / 265 * .08 : 0) + (oleActive ? Math.sin(oleProgress * Math.PI * 2) * .055 : 0) + performanceRotation);
+    if (player.airborne && player.jumpType === "tuck") {
+      const tuck = Math.sin(jumpProgress * Math.PI);
+      ctx.scale(1 - tuck * .08, 1 - tuck * .12);
+    }
     if (justLanded) {
       const landing = Math.max(0, 1 - (now - player.landedAt) / 220);
       ctx.scale(1 + landing * .07, 1 - landing * .09);
@@ -2009,9 +2218,12 @@
     }
     const moving = Math.hypot(player.vx, player.vy) > 18;
     const matadoraFrame = player.airborne
-      ? player.jumpVelocity > 110 ? 2 : player.jumpVelocity > -115 ? 3 : 4
+      ? player.jumpType === "tuck" ? (player.jumpVelocity > 80 ? 3 : player.jumpVelocity > -120 ? 4 : 5)
+        : player.jumpType === "spin" ? (player.jumpVelocity > 90 ? 6 : player.jumpVelocity > -120 ? 7 : 2)
+          : player.jumpVelocity > 110 ? 2 : player.jumpVelocity > -115 ? 3 : 4
       : justLanded ? 5
-        : oleActive ? (dodge.ole.level > 1 && oleProgress > .52 ? 7 : 6)
+        : celebrationActive ? dodge.celebration.type === "fist" ? 7 : dodge.celebration.type === "cape" ? 6 : 6 + cycleFrame(now, 14, 0, 2)
+          : oleActive ? (dodge.ole.level > 1 && oleProgress > .52 ? 7 : 6)
           : moving ? cycleFrame(now, 18, 0, DODGE_ANIMATION_FRAMES) : 0;
     if (spriteFrame(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES)) {
       // Animated character strip.
@@ -2056,6 +2268,44 @@
     ctx.shadowColor = "rgba(0,0,0,.9)";
     ctx.shadowBlur = 10;
     ctx.fillText(dodge.ole.level > 1 ? "¡OLÉ!" : "OLÉ", 0, -88 - progress * 20);
+    ctx.restore();
+  }
+
+  function drawDodgeCelebration(now) {
+    if (now >= dodge.celebration.until) return;
+    const progress = Math.min(1, (now - dodge.celebration.startedAt) / Math.max(1, dodge.celebration.until - dodge.celebration.startedAt));
+    const strength = Math.sin(progress * Math.PI);
+    const color = state.multiplierColor();
+    ctx.save();
+    ctx.translate(dodge.player.x, dodge.player.y - 66);
+    ctx.globalAlpha = strength * .9;
+    if (dodge.celebration.type === "spin") {
+      for (let ring = 0; ring < 3; ring++) {
+        ctx.strokeStyle = ring === 1 ? "#ff625f" : color;
+        ctx.lineWidth = 7 - ring * 1.6;
+        ctx.beginPath();
+        ctx.arc(0, 0, 48 + ring * 18, progress * Math.PI * 3 + ring, progress * Math.PI * 3 + Math.PI * 1.25 + ring);
+        ctx.stroke();
+      }
+    } else if (dodge.celebration.type === "cape") {
+      ctx.strokeStyle = "#ff625f";
+      ctx.lineWidth = 14;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.arc(-12, 5, 70 + progress * 18, Math.PI * .55, Math.PI * 1.58 + progress * .55);
+      ctx.stroke();
+      ctx.strokeStyle = "#ffc857";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = color;
+      for (let ray = 0; ray < 10; ray++) {
+        ctx.save();
+        ctx.rotate(ray / 10 * Math.PI * 2 + progress);
+        ctx.fillRect(58, -3, 18 + strength * 18, 6);
+        ctx.restore();
+      }
+    }
     ctx.restore();
   }
 
@@ -2130,6 +2380,7 @@
       { y: bull.y, draw: drawChargingBull }
     ].sort((a, b) => a.y - b.y);
     entities.forEach(entity => entity.draw());
+    drawDodgeCelebration(now);
     drawOleFlourish(now);
 
     if (bull.phase === "telegraph") {
@@ -2145,7 +2396,9 @@
 
   function drawHorsebackRider(now) {
     const player = chase.player;
-    const gallop = running && (Math.abs(player.vx) + Math.abs(player.vy) > 10) ? Math.sin(now / 72) * 3 : 0;
+    const celebrating = now < player.celebrateUntil;
+    const celebrationProgress = celebrating ? Math.min(1, (player.celebrateUntil - now) / 1850) : 0;
+    const gallop = celebrating ? -Math.sin(now / 90) * 5 : running && (Math.abs(player.vx) + Math.abs(player.vy) > 10) ? Math.sin(now / 72) * 3 : 0;
     ctx.save();
     ctx.translate(player.x, player.y + gallop);
     ctx.fillStyle = "rgba(0,0,0,.34)";
@@ -2153,10 +2406,12 @@
     ctx.ellipse(0, 48, 78, 17, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.scale(player.facing, 1);
-    ctx.rotate(player.vy / 274 * .018);
-    const gallopFrame = running
-      ? cycleFrame(now, difficultyId === "easy" ? 12 : 18, 0, CHASE_ANIMATION_FRAMES)
-      : 0;
+    ctx.rotate(player.vy / 274 * .018 + (celebrating && player.celebrationType === "twirl" ? Math.sin(now / 90) * .045 : 0));
+    const gallopFrame = celebrating
+      ? player.celebrationType === "twirl" ? 6 + cycleFrame(now, 10, 0, 2)
+        : player.celebrationType === "salute" ? 7
+          : 4 + cycleFrame(now, 9, 0, 2)
+      : running ? cycleFrame(now, difficultyId === "easy" ? 12 : 18, 0, CHASE_ANIMATION_FRAMES) : 0;
     if (spriteFrame(horsebackRiderAnimation, gallopFrame, -123, -248, 246, 328, CHASE_ANIMATION_FRAMES)) {
       // Animated horseback strip.
     } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
@@ -2170,13 +2425,26 @@
       ctx.fillStyle = "#ff625f";
       ctx.fillRect(-8, -82, 24, 75);
     }
+    if (celebrating) {
+      ctx.save();
+      ctx.scale(player.facing, 1);
+      ctx.globalAlpha = .4 + celebrationProgress * .45;
+      ctx.strokeStyle = state.multiplierColor();
+      ctx.lineWidth = 5;
+      ctx.setLineDash([12, 8]);
+      ctx.lineDashOffset = -now / 18;
+      ctx.beginPath();
+      ctx.arc(0, -100, 72, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
     ctx.restore();
   }
 
   function drawRunawayCow(now) {
     const cow = chase.cow;
     const facing = Math.cos(cow.angle) >= 0 ? 1 : -1;
-    const bob = cow.phase === "run" ? Math.sin(now / 63) * 3 : 0;
+    const bob = cow.phase === "run" || cow.phase === "escaping" ? Math.sin(now / 63) * 3 : 0;
     ctx.save();
     ctx.translate(cow.x, cow.y + bob);
     ctx.fillStyle = "rgba(0,0,0,.30)";
@@ -2185,10 +2453,14 @@
     ctx.fill();
     ctx.scale(facing, 1);
     ctx.rotate(Math.sin(cow.angle) * .025);
-    const cowFrame = cow.phase === "run"
-      ? cycleFrame(now, difficultyId === "easy" ? 14 : 20, 0, CHASE_ANIMATION_FRAMES)
-      : 0;
-    if (spriteFrame(runawayCowAnimation, cowFrame, -88, -132, 176, 235, CHASE_ANIMATION_FRAMES)) {
+    const eventElapsed = Math.max(0, now - cow.phaseStartedAt);
+    const eventFrame = cow.phase === "caught"
+      ? Math.min(3, 1 + Math.floor(eventElapsed / 410))
+      : cow.phase === "escaping" ? Math.min(5, 4 + Math.floor(eventElapsed / 340)) : -1;
+    const cowFrame = cycleFrame(now, difficultyId === "easy" ? 14 : 20, 0, CHASE_ANIMATION_FRAMES);
+    if (eventFrame >= 0 && spriteFrame(rollingCalfEventsAnimation, eventFrame, -92, -132, 184, 184, EVENT_ANIMATION_FRAMES)) {
+      // Dedicated rope-down and escape animation strip.
+    } else if (spriteFrame(runawayCowAnimation, cowFrame, -88, -132, 176, 235, CHASE_ANIMATION_FRAMES)) {
       // Animated cow strip.
     } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
       const slotWidth = catchCowSprites.naturalWidth / 2;
@@ -2199,7 +2471,7 @@
       ctx.ellipse(0, 0, 55, 30, 0, 0, Math.PI * 2);
       ctx.fill();
     }
-    if (cow.phase === "caught") {
+    if (cow.phase === "caught" && eventFrame < 0) {
       ctx.strokeStyle = "#ffc857";
       ctx.lineWidth = 6;
       ctx.beginPath();
@@ -2280,6 +2552,31 @@
     ctx.restore();
   }
 
+  function drawRollingCalfMoment(now) {
+    const cow = chase.cow;
+    if (cow.phase !== "caught" && cow.phase !== "escaping") return;
+    const elapsed = Math.max(0, now - cow.phaseStartedAt);
+    const progress = Math.min(1, elapsed / (cow.phase === "caught" ? 1500 : 1100));
+    const strength = Math.sin(progress * Math.PI);
+    ctx.save();
+    ctx.translate(cow.x, cow.y - 56);
+    ctx.globalAlpha = Math.max(.18, strength);
+    ctx.strokeStyle = cow.phase === "caught" ? state.multiplierColor() : "#ff625f";
+    ctx.lineWidth = 5;
+    for (let ring = 0; ring < 2; ring++) {
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 62 + ring * 18 + progress * 15, 34 + ring * 10, progress * 1.4, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = cow.phase === "caught" ? state.multiplierColor() : "#ff625f";
+    ctx.textAlign = "center";
+    ctx.font = "italic 900 20px Impact, sans-serif";
+    ctx.shadowColor = "rgba(0,0,0,.9)";
+    ctx.shadowBlur = 8;
+    ctx.fillText(cow.phase === "caught" ? "CALF SECURED!" : "BROKE FREE!", 0, -65 - strength * 14);
+    ctx.restore();
+  }
+
   function drawCatchMode(now) {
     ctx.save();
     ctx.fillStyle = "rgba(20,9,11,.12)";
@@ -2297,6 +2594,7 @@
     ].sort((a, b) => a.y - b.y);
     entities.forEach(entity => entity.draw());
     drawLasso(now);
+    drawRollingCalfMoment(now);
 
     const remaining = chase.cow.phase === "run" ? Math.max(0, chase.cow.timer / difficulty().cowTimer) : 1;
     const catchDistance = Math.hypot(chase.cow.x - chase.player.x, chase.cow.y - chase.player.y);
@@ -2308,7 +2606,10 @@
     ctx.fillStyle = "#ffc857";
     ctx.textAlign = "center";
     ctx.font = "italic 900 12px Impact, sans-serif";
-    ctx.fillText(chase.cow.phase === "caught" ? "CAUGHT!" : catchReady ? "LOCKED · THROW LASSO" : `CHASE · ${Math.round(catchDistance)} AWAY`, 480, 87);
+    const chaseCallout = chase.cow.phase === "caught" ? "ROLLING CALF SECURED!"
+      : chase.cow.phase === "escaping" ? "CALF BREAKING FREE!"
+        : catchReady ? "LOCKED · THROW LASSO" : `CHASE · ${Math.round(catchDistance)} AWAY`;
+    ctx.fillText(chaseCallout, 480, 87);
     ctx.fillStyle = "rgba(255,255,255,.15)";
     ctx.fillRect(389, 96, 182, 7);
     ctx.fillStyle = remaining > .35 ? "#ffc857" : "#ff625f";
@@ -2512,6 +2813,84 @@
     }
   }
 
+  function drawMultiplierCelebration(now) {
+    if (now >= multiplierCelebration.until || multiplierCelebration.tier <= 0) return;
+    const progress = Math.min(1, (now - multiplierCelebration.startedAt) / Math.max(1, multiplierCelebration.until - multiplierCelebration.startedAt));
+    const strength = Math.sin(progress * Math.PI);
+    const color = MULTIPLIER_COLORS[multiplierCelebration.tier];
+    const { style, x, y, multiplier } = multiplierCelebration;
+    ctx.save();
+    ctx.translate(x, y - 30);
+    ctx.globalAlpha = Math.max(0, strength);
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 18;
+
+    if (style === "rings") {
+      for (let ring = 0; ring < 4; ring++) {
+        ctx.strokeStyle = ring % 2 ? "#fff6ec" : color;
+        ctx.lineWidth = 7 - ring;
+        ctx.beginPath();
+        ctx.arc(0, 0, 45 + ring * 30 + progress * 40, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    } else if (style === "stars") {
+      ctx.fillStyle = color;
+      for (let star = 0; star < 12; star++) {
+        ctx.save();
+        ctx.rotate(star / 12 * Math.PI * 2 + progress * .8);
+        ctx.translate(72 + strength * 54, 0);
+        ctx.rotate(progress * Math.PI * 3);
+        ctx.fillRect(-6, -6, 12, 12);
+        ctx.restore();
+      }
+    } else if (style === "confetti") {
+      for (let ribbon = 0; ribbon < 18; ribbon++) {
+        const angle = ribbon / 18 * Math.PI * 2;
+        ctx.strokeStyle = ribbon % 3 === 0 ? "#fff6ec" : ribbon % 2 ? color : "#ff625f";
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * 35, Math.sin(angle) * 35);
+        ctx.quadraticCurveTo(Math.cos(angle + .4) * 94, Math.sin(angle + .4) * 94, Math.cos(angle) * (135 + progress * 35), Math.sin(angle) * (135 + progress * 35));
+        ctx.stroke();
+      }
+    } else if (style === "flames") {
+      for (let flame = 0; flame < 9; flame++) {
+        const angle = flame / 9 * Math.PI * 2 + progress * .6;
+        const radius = 78 + flame % 3 * 17;
+        ctx.save();
+        ctx.rotate(angle);
+        ctx.translate(radius, 0);
+        ctx.fillStyle = flame % 2 ? color : "#ffc857";
+        ctx.beginPath();
+        ctx.moveTo(-10, 18);
+        ctx.quadraticCurveTo(0, -38 - strength * 28, 10, 18);
+        ctx.quadraticCurveTo(0, 8, -10, 18);
+        ctx.fill();
+        ctx.restore();
+      }
+    } else {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 9;
+      ctx.beginPath();
+      ctx.moveTo(-92, 12);
+      ctx.lineTo(-64, -58);
+      ctx.lineTo(-22, -20);
+      ctx.lineTo(0, -82 - strength * 24);
+      ctx.lineTo(22, -20);
+      ctx.lineTo(64, -58);
+      ctx.lineTo(92, 12);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fillStyle = "rgba(231,133,255,.2)";
+      ctx.fill();
+      ctx.fillStyle = color;
+      ctx.font = "italic 900 48px Impact, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`×${multiplier}`, 0, -9);
+    }
+    ctx.restore();
+  }
+
   function drawFeedback(now) {
     if (feedback && now < feedbackUntil) {
       const multiplierMoment = feedbackBig;
@@ -2579,6 +2958,7 @@
     } else {
       drawRaceMode(now);
     }
+    drawMultiplierCelebration(now);
     drawFeedback(now);
     drawCanvasHud();
     drawParticles();
@@ -2754,8 +3134,8 @@
     keepArenaMoving();
   }
   [
-    arena, rideSprite, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation,
-    chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation
+    arena, rideSprite, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation, ragingBullHitAnimation,
+    chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation, rollingCalfEventsAnimation
   ].forEach(image => image.addEventListener("load", () => { if (!running) draw(); }));
 
   configureGameMenu();

@@ -21,13 +21,13 @@
 import { recordGameLaunch, ARCADE_API_BASE } from './engine/community.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const instructions={
-'rodeo-are-you-ready':['Choose Ride the Riddim, Dodge the Bull, Catch the Cow, or Run the Track, then select Easy or Standard.','Every event now has a color-coded ×2, ×4, ×6, ×8, and ×10 multiplier ladder. Longer clean streaks unlock bigger scoring.','In Dodge, steer with the joystick and tap Jump to clear a charge. Razor-close dodges trigger OLÉ rewards; open Menu → How to Play for every event.'],
+'rodeo-are-you-ready':['Choose Ride the Riddim, Raging Bull, Rolling Calf, or Run the Track, then select Easy or Standard.','Every event has a color-coded ×2, ×4, ×6, ×8, and ×10 multiplier ladder with a different celebration at every tier.','Raging Bull has vault, tuck, and spin jumps; Rolling Calf has animated catches and escapes. Supported phones add haptics, and every run starts with a voiced countdown.'],
 'dreamweaver-oracle':['Move through the dream and collect story fragments.','Avoid corrupted memories and survive as long as possible.','Use each run to shape a different version of the dream.'],
 'signal-runner':['Move left and right using A/D, arrow keys or the on-screen controls.','Collect blue signals to build your score.','Avoid red static; losing all three lives ends the transmission.'],
 'jamaica-run':['Run across Jamaica and collect coins.','Jump or dodge tropical obstacles using the on-screen controls.','Keep moving to build distance and set a new personal best.']
 };
 const goals={
-'rodeo-are-you-ready':['First Ride — enter any rodeo event','Multiplier Rider — reach ×4 scoring in any event','Arena Ready — land a jumping OLÉ, catch 8 cows, or finish the full race'],
+'rodeo-are-you-ready':['First Ride — enter any rodeo event','Multiplier Rider — reach ×4 scoring in any event','Arena Ready — land a spinning OLÉ, secure 8 Rolling Calves, or finish the full race'],
 'dreamweaver-oracle':['First Fragment — complete your first run','Dream Walker — survive a full memory cycle','Dreamweaver — reach a top leaderboard position'],
 'signal-runner':['Clean Signal — collect 10 signals','No Static — survive without losing a life','Transmission Master — score 500+'],
 'jamaica-run':['First Mile — begin your island run','Coin Collector — gather 25 coins','Island Legend — claim a top leaderboard score']

@@ -4,21 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
   <meta name="theme-color" content="#1a0b12">
-  <meta name="description" content="Ride the Riddim, Dodge the Bull, Catch the Cow, or Run the Track in Rodeo: Are You Ready, a music game by The Grei Show.">
+  <meta name="description" content="Ride the Riddim, Raging Bull, Rolling Calf, or Run the Track in Rodeo: Are You Ready, a music game by The Grei Show.">
   <title>Rodeo: Are You Ready | The Grei Show Arcade</title>
   <link rel="preload" href="assets/rodeo-arena.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/ride-sprite.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/ride-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/matador-sprites.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/matadora-animation-v3.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/raging-bull-hit-v1.png" as="image" type="image/png">
   <link rel="preload" href="assets/charging-bull-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/catch-cow-sprites.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/horseback-rider-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/race-gallop-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/runaway-cow-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/ride-fall-animation-v2.png" as="image" type="image/png">
+  <link rel="preload" href="assets/rolling-calf-events-v1.png" as="image" type="image/png">
   <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
-  <link rel="stylesheet" href="assets/game.css?v=20260813a">
+  <link rel="stylesheet" href="assets/game.css?v=20260813b">
 </head>
 <body>
 <script src="../../engine/game-shell.js?v=20260811f"></script>
@@ -65,11 +67,11 @@
           </button>
           <button type="button" class="mode-card" data-mode="matador" aria-pressed="false">
             <span class="mode-cover matador-cover" aria-hidden="true"></span>
-            <strong>Dodge the Bull</strong>
+            <strong>Raging Bull</strong>
           </button>
           <button type="button" class="mode-card" data-mode="catch" aria-pressed="false">
             <span class="mode-cover catch-cover" aria-hidden="true"></span>
-            <strong>Catch the Cow</strong>
+            <strong>Rolling Calf</strong>
           </button>
           <button type="button" class="mode-card" data-mode="race" aria-pressed="false">
             <span class="mode-cover race-cover" aria-hidden="true"></span>
@@ -112,6 +114,6 @@
   <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
 </main>
 <audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
-<script src="assets/game.js?v=20260813a"></script>
+<script src="assets/game.js?v=20260813b"></script>
 </body>
 </html>

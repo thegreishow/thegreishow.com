@@ -124,6 +124,7 @@
     ArrowRight: "right", d: "right", D: "right"
   };
   const NOTES = {
+    E2: 82.41, B2: 123.47,
     E3: 164.81, B3: 246.94, E4: 329.63, FS4: 369.99,
     GS4: 415.30, B4: 493.88, CS5: 554.37, DS5: 622.25,
     E5: 659.25, GS5: 830.61, B5: 987.77
@@ -167,28 +168,51 @@
   const arenaVideo = document.getElementById("arenaVideo");
   let arenaVideoFailed = false;
 
-  const arena = new Image();
-  arena.src = "assets/rodeo-arena.webp";
-  const rideAnimation = new Image();
-  rideAnimation.src = "assets/ride-animation-v3.png";
-  const rideFallAnimation = new Image();
-  rideFallAnimation.src = "assets/ride-fall-animation-v2.png";
-  const matadorSprites = new Image();
-  matadorSprites.src = "assets/matador-sprites.webp";
-  const matadoraAnimation = new Image();
-  matadoraAnimation.src = "assets/matadora-animation-v4.png";
-  const ragingBullHitAnimation = new Image();
-  ragingBullHitAnimation.src = "assets/raging-bull-hit-v1.png";
-  const chargingBullAnimation = new Image();
-  chargingBullAnimation.src = "assets/charging-bull-animation-v3.png";
-  const catchCowSprites = new Image();
-  catchCowSprites.src = "assets/catch-cow-sprites.webp";
-  const horsebackRiderAnimation = new Image();
-  horsebackRiderAnimation.src = "assets/horseback-rider-animation-v3.png";
-  const runawayCowAnimation = new Image();
-  runawayCowAnimation.src = "assets/runaway-cow-animation-v2.webp";
-  const rollingCalfEventsAnimation = new Image();
-  rollingCalfEventsAnimation.src = "assets/rolling-calf-events-v1.png";
+  const makeAsset = source => ({ image: new Image(), source, promise: null });
+  const assets = {
+    arena: makeAsset("assets/rodeo-arena.webp"),
+    rideAnimation: makeAsset("assets/ride-animation-v3.png"),
+    rideFallAnimation: makeAsset("assets/ride-fall-animation-v2.png"),
+    matadorSprites: makeAsset("assets/matador-sprites.webp"),
+    matadoraAnimation: makeAsset("assets/matadora-animation-v4.png"),
+    ragingBullHitAnimation: makeAsset("assets/raging-bull-hit-v1.png"),
+    chargingBullAnimation: makeAsset("assets/charging-bull-animation-v3.png"),
+    catchCowSprites: makeAsset("assets/catch-cow-sprites.webp"),
+    horsebackRiderAnimation: makeAsset("assets/horseback-rider-animation-v3.png"),
+    runawayCowAnimation: makeAsset("assets/runaway-cow-animation-v2.webp"),
+    rollingCalfEventsAnimation: makeAsset("assets/rolling-calf-events-v1.png")
+  };
+  const MODE_ASSETS = {
+    ride: ["rideAnimation", "rideFallAnimation"],
+    matador: ["matadorSprites", "matadoraAnimation", "ragingBullHitAnimation", "chargingBullAnimation"],
+    catch: ["catchCowSprites", "horsebackRiderAnimation", "runawayCowAnimation", "rollingCalfEventsAnimation"],
+    race: ["horsebackRiderAnimation"]
+  };
+  function loadAsset(key) {
+    const asset = assets[key];
+    if (!asset) return Promise.resolve(false);
+    if (asset.image.naturalWidth) return Promise.resolve(true);
+    if (!asset.promise) {
+      asset.promise = new Promise(resolve => {
+        asset.image.addEventListener("load", () => resolve(true), { once: true });
+        asset.image.addEventListener("error", () => resolve(false), { once: true });
+        asset.image.src = asset.source;
+      });
+    }
+    return asset.promise;
+  }
+  const arena = assets.arena.image;
+  const rideAnimation = assets.rideAnimation.image;
+  const rideFallAnimation = assets.rideFallAnimation.image;
+  const matadorSprites = assets.matadorSprites.image;
+  const matadoraAnimation = assets.matadoraAnimation.image;
+  const ragingBullHitAnimation = assets.ragingBullHitAnimation.image;
+  const chargingBullAnimation = assets.chargingBullAnimation.image;
+  const catchCowSprites = assets.catchCowSprites.image;
+  const horsebackRiderAnimation = assets.horsebackRiderAnimation.image;
+  const runawayCowAnimation = assets.runawayCowAnimation.image;
+  const rollingCalfEventsAnimation = assets.rollingCalfEventsAnimation.image;
+  loadAsset("arena");
   const ANIMATION_FRAMES = 4;
   const RIDE_ANIMATION_FRAMES = 8;
   const RIDE_FALL_FRAMES = 6;
@@ -239,7 +263,7 @@
     legendary: "assets/voice/legendary-v2.mp3"
   };
   const announcer = new Audio();
-  announcer.preload = "auto";
+  announcer.preload = "metadata";
   announcer.playsInline = true;
   let activeVoiceCue = null;
   let musicMixFrame = 0;
@@ -276,7 +300,7 @@
       try {
         this.track.currentTime = 0;
         this.track.volume = 0;
-        announcer.src = VOICE_CUE_FILES.three;
+        announcer.src = VOICE_CUE_FILES.one;
         announcer.muted = true;
         const voiceUnlock = announcer.play().then(() => {
           announcer.pause();
@@ -351,8 +375,8 @@
     }
     impact(strength = .5) {
       const weight = Math.max(.18, Math.min(1, strength));
-      this.tone(72, .095, "sine", .025 + weight * .035);
-      this.tone(116, .065, "triangle", .012 + weight * .018, .012);
+      this.tone(NOTES.E2, .095, "sine", .025 + weight * .035);
+      this.tone(NOTES.B2, .065, "triangle", .012 + weight * .018, .012);
     }
     noise(duration = .28, volume = .035, frequency = 1200) {
       if (!this.enabled) return;
@@ -711,7 +735,10 @@
     const strength = options.strength ?? Math.max(.22, Math.min(1, duration / 180));
     let hardwareFeedback = false;
     try {
-      if (typeof navigator.vibrate === "function") hardwareFeedback = navigator.vibrate(pattern) || hardwareFeedback;
+      if (typeof navigator.vibrate === "function" && document.visibilityState !== "hidden") {
+        navigator.vibrate(0);
+        hardwareFeedback = navigator.vibrate(pattern) || hardwareFeedback;
+      }
       const gamepad = navigator.getGamepads?.()?.find(Boolean);
       const actuator = gamepad?.vibrationActuator;
       if (actuator?.playEffect) {
@@ -724,6 +751,8 @@
       }
     } catch {}
     audio.impact(hardwareFeedback ? strength * .4 : strength);
+    stage.dataset.haptics = hardwareFeedback ? "hardware" : "audio-visual";
+    if (options.subtle) return;
     stage.style.setProperty("--impact-shift", `${(1.2 + strength * 3.2).toFixed(1)}px`);
     stage.classList.remove("impact-pulse");
     void stage.offsetWidth;
@@ -887,6 +916,7 @@
     if (running || counting || !MODES[nextId]) return;
     modeId = nextId;
     localStorage.setItem("grei-rodeo-mode", modeId);
+    MODE_ASSETS[modeId].forEach(loadAsset);
     best = loadBest();
     if (!results.hidden) showSelection();
     else { state.reset(); resetDodge(); resetChase(); resetRace(); updateSelectionUI(); hud(); draw(); }
@@ -1681,12 +1711,8 @@
   }
 
   async function ensureSelectedAvatar() {
-    const avatar = modeId === "ride" ? rideAnimation : modeId === "matador" ? matadoraAnimation : null;
-    if (!avatar || avatar.naturalWidth) return true;
-    try {
-      if (typeof avatar.decode === "function") await avatar.decode();
-    } catch {}
-    return Boolean(avatar.naturalWidth);
+    const loaded = await Promise.all(MODE_ASSETS[modeId].map(loadAsset));
+    return loaded.every(Boolean);
   }
 
   async function startCountUp() {
@@ -1695,17 +1721,17 @@
     counting = true;
     startButton.disabled = true;
     const previousButtonCopy = startButton.textContent;
-    startButton.textContent = "Loading rider…";
+    startButton.textContent = `Preparing ${mode().shortLabel}…`;
     const avatarReady = await ensureSelectedAvatar();
     if (token !== countdownToken) return;
     startButton.disabled = false;
     startButton.textContent = previousButtonCopy;
     if (!avatarReady) {
       counting = false;
-      kickerEl.textContent = "Rider still loading";
+      kickerEl.textContent = "Event still loading";
       titleEl.innerHTML = "SADDLE<br>UP";
       copyEl.hidden = false;
-      copyEl.textContent = "The cowgirl art did not finish loading. Tap again to retry.";
+      copyEl.textContent = "The event art did not finish loading. Check your connection and tap again.";
       return;
     }
     document.querySelector("[data-grei-discovery]")?.remove();
@@ -1721,7 +1747,7 @@
     let count = 0;
     const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "RAGE!" : modeId === "catch" ? "ROLL!" : "RACE!";
     const finaleVoice = modeId === "ride" ? "start-ride" : modeId === "matador" ? "start-raging" : modeId === "catch" ? "start-calf" : "start-race";
-    const cards = [["3", "", "three"], ["2", "", "two"], ["1", "", "one"], [finale, "", finaleVoice]];
+    const cards = [["1", "", "one"], ["2", "", "two"], ["3", "", "three"], [finale, "", finaleVoice]];
     const tick = () => {
       if (token !== countdownToken) return;
       const [first, second, voiceLine] = cards[count];
@@ -1836,7 +1862,7 @@
     const middleLabel = modeId === "race" ? "Finish" : "Best streak";
     const lastValue = `×${state.bestMultiplier}`;
     const lastLabel = "Peak multiplier";
-    results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} · Best ${best}</p>`;
+    results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} · Best ${best}</p><p class="score-sync" data-state="saving" role="status" aria-live="polite">Saving to the ${mode().shortLabel} · ${difficulty().label} board…</p>`;
     updateSelectionUI();
     submit();
   }
@@ -1937,13 +1963,25 @@
     const name = (localStorage.getItem("grei_arcade_player_name") || "Rider").slice(0, 18);
     const duration = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
     const level = mode().levelBase + difficulty().level;
+    const status = results.querySelector(".score-sync");
     try {
-      await fetch(`${API}/api/leaderboard`, {
+      const response = await fetch(`${API}/api/leaderboard`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ game: GAME_ID, name, score: state.score, level, duration })
       });
-    } catch {}
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || "Leaderboard unavailable");
+      if (status) {
+        status.dataset.state = "saved";
+        status.textContent = `${data.improved ? "New online best" : "Online best kept"} · Rank #${data.rank} on ${mode().shortLabel} ${difficulty().label}`;
+      }
+    } catch {
+      if (status) {
+        status.dataset.state = "local";
+        status.textContent = "Best saved on this phone · online leaderboard unavailable";
+      }
+    }
   }
 
   function updateShared(dt) {
@@ -2329,6 +2367,10 @@
 
     ctx.save();
     ctx.translate(player.x, player.y - player.jumpHeight);
+    const motion = Math.min(1, Math.hypot(player.vx, player.vy) / 260);
+    const footfall = player.airborne ? 0 : Math.sin(now / 54) * motion;
+    ctx.translate(0, footfall * 2.5);
+    ctx.scale(1 + Math.abs(footfall) * .018, 1 - Math.abs(footfall) * .012);
     const justLanded = now - player.landedAt < 220;
     const oleActive = now < dodge.ole.until;
     const oleProgress = oleActive ? Math.min(1, (now - dodge.ole.startedAt) / Math.max(1, dodge.ole.until - dodge.ole.startedAt)) : 0;
@@ -2509,13 +2551,15 @@
     const celebrationProgress = celebrating ? Math.min(1, (player.celebrateUntil - now) / 1850) : 0;
     const gallop = celebrating ? -Math.sin(now / 90) * 5 : running && (Math.abs(player.vx) + Math.abs(player.vy) > 10) ? Math.sin(now / 72) * 3 : 0;
     ctx.save();
-    ctx.translate(player.x, player.y + gallop);
+    const chaseSpeed = Math.min(1, Math.hypot(player.vx, player.vy) / 290);
+    const stride = Math.sin(now / 58) * chaseSpeed;
+    ctx.translate(player.x, player.y + gallop + stride * 2.8);
     ctx.fillStyle = "rgba(0,0,0,.34)";
     ctx.beginPath();
     ctx.ellipse(0, 48, 78, 17, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.scale(player.facing, 1);
-    ctx.rotate(player.vy / 274 * .018 + (celebrating && player.celebrationType === "twirl" ? Math.sin(now / 90) * .045 : 0));
+    ctx.scale(player.facing * (1 + Math.abs(stride) * .018), 1 - Math.abs(stride) * .012);
+    ctx.rotate(player.vy / 274 * .028 + player.vx / 310 * .018 + (celebrating && player.celebrationType === "twirl" ? Math.sin(now / 90) * .045 : 0));
     const gallopFrame = celebrating
       ? player.celebrationType === "twirl" ? 2 + cycleFrame(now, 10, 0, 2)
         : player.celebrationType === "salute" ? 0
@@ -2560,7 +2604,8 @@
     ctx.beginPath();
     ctx.ellipse(0, 33, 49, 11, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.scale(facing, 1);
+    const runStride = cow.phase === "run" || cow.phase === "escaping" ? Math.sin(now / 48) : 0;
+    ctx.scale(facing * (1 + Math.abs(runStride) * .022), 1 - Math.abs(runStride) * .016);
     ctx.rotate(Math.sin(cow.angle) * .025);
     const eventElapsed = Math.max(0, now - cow.phaseStartedAt);
     const eventFrame = cow.phase === "caught"
@@ -2738,7 +2783,9 @@
     const scale = player ? 1 : .82;
     const facing = -Math.sin(point.angle) >= 0 ? 1 : -1;
     ctx.save();
-    ctx.translate(point.x, point.y);
+    const horseSpeed = player ? race.player.speed : difficulty().rivalSpeed;
+    const stride = Math.sin(now / Math.max(38, 70 - horseSpeed / 9));
+    ctx.translate(point.x, point.y + stride * (player ? 3.2 : 2.3));
     ctx.fillStyle = "rgba(0,0,0,.32)";
     ctx.beginPath();
     ctx.ellipse(0, 16, 38 * scale, 10 * scale, 0, 0, Math.PI * 2);
@@ -2753,7 +2800,8 @@
     ctx.ellipse(0, 14, 43 * scale, 14 * scale, 0, 0, Math.PI * 2);
     ctx.stroke();
     ctx.shadowBlur = 0;
-    ctx.scale(facing, 1);
+    ctx.rotate(Math.cos(point.angle) * .035 + stride * .012);
+    ctx.scale(facing * (1 + Math.abs(stride) * .022), 1 - Math.abs(stride) * .016);
     const frame = cycleFrame(now, Math.max(7, (player ? race.player.speed : difficulty().rivalSpeed) / 19), 0, RACE_GALLOP_FRAMES);
     if (!spriteFrame(horsebackRiderAnimation, frame, -70 * scale, -114 * scale, 140 * scale, 140 * scale, RACE_GALLOP_FRAMES)) {
       ctx.fillStyle = color;
@@ -3037,8 +3085,9 @@
         ctx.strokeText(feedback, 0, 12, 470);
         ctx.fillText(feedback, 0, 12, 470);
       } else {
-        ctx.strokeText(feedback, 480, modeId === "ride" ? 205 : 150, 760);
-        ctx.fillText(feedback, 480, modeId === "ride" ? 205 : 150, 760);
+        const feedbackY = modeId === "ride" ? 205 : modeId === "matador" ? 188 : 160;
+        ctx.strokeText(feedback, 480, feedbackY, 760);
+        ctx.fillText(feedback, 480, feedbackY, 760);
       }
       ctx.restore();
     }
@@ -3179,6 +3228,7 @@
       button.classList.add("active");
       button.setAttribute("aria-pressed", "true");
       stage.dataset.lastInput = button.dataset.action || "lasso";
+      haptic(10, { strength: .16, subtle: true });
       onPress();
     };
     const release = event => {
@@ -3243,6 +3293,7 @@
     stage.dataset.background = "mp4";
     keepArenaMoving();
   }
+  MODE_ASSETS[modeId].forEach(loadAsset);
   [
     arena, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation, ragingBullHitAnimation,
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, runawayCowAnimation, rollingCalfEventsAnimation

@@ -27,6 +27,9 @@ CREATE TABLE IF NOT EXISTS scores (
 CREATE INDEX IF NOT EXISTS idx_scores_game_rank
   ON scores (game, score DESC, duration ASC);
 
+CREATE INDEX IF NOT EXISTS idx_scores_game_level_rank
+  ON scores (game, level, score DESC, duration ASC);
+
 CREATE INDEX IF NOT EXISTS idx_scores_player_best
   ON scores (game, player_hash, score DESC, duration ASC);
 

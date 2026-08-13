@@ -7,28 +7,7 @@
   <meta name="description" content="Ride the Riddim, Raging Bull, Rolling Calf, or Run the Track in Rodeo: Are You Ready, a music game by The Grei Show.">
   <title>Rodeo: Are You Ready | The Grei Show Arcade</title>
   <link rel="preload" href="assets/rodeo-arena.webp" as="image" type="image/webp">
-  <link rel="preload" href="assets/ride-animation-v3.png" as="image" type="image/png">
-  <link rel="preload" href="assets/matador-sprites.webp" as="image" type="image/webp">
-  <link rel="preload" href="assets/matadora-animation-v4.png" as="image" type="image/png">
-  <link rel="preload" href="assets/raging-bull-hit-v1.png" as="image" type="image/png">
-  <link rel="preload" href="assets/charging-bull-animation-v3.png" as="image" type="image/png">
-  <link rel="preload" href="assets/catch-cow-sprites.webp" as="image" type="image/webp">
-  <link rel="preload" href="assets/horseback-rider-animation-v3.png" as="image" type="image/png">
-  <link rel="preload" href="assets/runaway-cow-animation-v2.webp" as="image" type="image/webp">
-  <link rel="preload" href="assets/ride-fall-animation-v2.png" as="image" type="image/png">
-  <link rel="preload" href="assets/rolling-calf-events-v1.png" as="image" type="image/png">
-  <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/three-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/two-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/one-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/start-ride-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/start-raging-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/start-calf-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/start-race-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/yeehaw-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/ole-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="preload" href="assets/voice/legendary-v2.mp3" as="audio" type="audio/mpeg">
-  <link rel="stylesheet" href="assets/game.css?v=20260813f">
+  <link rel="stylesheet" href="assets/game.css?v=20260813h">
 </head>
 <body>
 <script src="../../engine/game-shell.js?v=20260811f"></script>
@@ -49,7 +28,7 @@
   </header>
 
   <section class="stage" id="stage" aria-label="Rodeo game playfield">
-    <video class="arena-video" id="arenaVideo" muted loop autoplay playsinline preload="auto" poster="assets/rodeo-arena.webp" aria-hidden="true">
+    <video class="arena-video" id="arenaVideo" muted loop autoplay playsinline preload="metadata" poster="assets/rodeo-arena.webp" aria-hidden="true">
       <source src="assets/exec-cb0ec69b-a278-437a-977e-973194b4cf70.mp4" type="video/mp4">
     </video>
     <canvas id="game" width="960" height="540"></canvas>
@@ -121,7 +100,7 @@
   </section>
   <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
 </main>
-<audio id="music" preload="auto" loop src="assets/rodeo-instrumental.mp3"></audio>
-<script src="assets/game.js?v=20260813g"></script>
+<audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
+<script src="assets/game.js?v=20260813h"></script>
 </body>
 </html>

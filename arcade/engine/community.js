@@ -85,12 +85,12 @@ function localTopThree(gameId){
   if(gameId==='signal-runner'){const score=Number(localStorage.getItem('grei-signal-runner-best')||0),name=localStorage.getItem(LEGACY_NAME_KEY)||'You';return score?[{name,score}]:[]}
   return safeParse(localStorage.getItem(`grei_arcade_scores_${gameId}`),[]).filter(e=>e&&Number.isFinite(Number(e.score))).sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,3);
 }
-async function getTopThree(gameId){try{const r=await fetch(`${ARCADE_API_BASE}/api/leaderboard?game=${encodeURIComponent(gameId)}`);if(!r.ok)throw 0;const d=await r.json();return{scores:Array.isArray(d.scores)?d.scores.slice(0,3):[],global:true}}catch{return{scores:localTopThree(gameId),global:false}}}
+async function getTopThree(gameId){try{const level=gameId==='rodeo-are-you-ready'?'&level=2':'';const r=await fetch(`${ARCADE_API_BASE}/api/leaderboard?game=${encodeURIComponent(gameId)}${level}`);if(!r.ok)throw 0;const d=await r.json();return{scores:Array.isArray(d.scores)?d.scores.slice(0,3):[],global:true}}catch{return{scores:localTopThree(gameId),global:false}}}
 async function decorateGameCard(card){
   if(card.dataset.podiumReady==='true')return; const button=card.querySelector('.play-btn'),info=card.querySelector('.arcade-info'),gameId=button?.dataset.id;if(!gameId||!info)return;card.dataset.podiumReady='true';
   const panel=document.createElement('div');panel.className='card-podium';panel.innerHTML='<strong>Top 3</strong><span class="card-podium-status">Loading…</span>';info.appendChild(panel);
   const{scores,global}=await getTopThree(gameId);if(!scores.length){panel.innerHTML='<strong>Top 3</strong><span class="card-podium-empty">No scores yet—claim first place.</span>';return}
-  panel.innerHTML=`<div class="card-podium-head"><strong>Top 3</strong><small>${global?'Global':'This device'}</small></div>${scores.map((e,i)=>`<div class="card-podium-row"><span>${i+1}</span><b>${escapeHtml(e.name||'Dreamer')}</b><em>${Number(e.score)||0}</em></div>`).join('')}`;
+  panel.innerHTML=`<div class="card-podium-head"><strong>Top 3</strong><small>${gameId==='rodeo-are-you-ready'?'Ride · Standard':global?'Global':'This device'}</small></div>${scores.map((e,i)=>`<div class="card-podium-row"><span>${i+1}</span><b>${escapeHtml(e.name||'Dreamer')}</b><em>${Number(e.score)||0}</em></div>`).join('')}`;
 }
 function decorateVisibleCards(){document.querySelectorAll('.arcade-card').forEach(decorateGameCard)}
 const observer=new MutationObserver(decorateVisibleCards);observer.observe(document.documentElement,{childList:true,subtree:true});window.addEventListener('DOMContentLoaded',decorateVisibleCards);

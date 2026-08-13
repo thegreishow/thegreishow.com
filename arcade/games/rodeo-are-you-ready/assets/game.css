@@ -73,7 +73,7 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .mode-cover { display: block; width: 58px; height: 58px; border: 1px solid rgba(255,200,87,.4); border-radius: 11px; object-fit: cover; object-position: 72% 45%; background-color: #241118; box-shadow: 0 8px 25px rgba(0,0,0,.35); }
 .matador-cover { background-image: linear-gradient(rgba(255,98,95,.12), rgba(13,33,77,.3)), url("matador-sprites.webp"); background-position: 93% 51%; background-size: 202% auto; background-repeat: no-repeat; }
 .catch-cover { background-image: linear-gradient(rgba(255,98,95,.08), rgba(13,33,77,.25)), url("catch-cow-sprites.webp"); background-position: 94% 53%; background-size: 202% auto; background-repeat: no-repeat; }
-.race-cover { background-image: linear-gradient(rgba(255,200,87,.05), rgba(13,33,77,.28)), url("horseback-rider-animation.webp"); background-position: 3% 48%; background-size: 400% auto; background-repeat: no-repeat; }
+.race-cover { background-image: linear-gradient(rgba(255,200,87,.05), rgba(13,33,77,.28)), url("horseback-rider-animation-v3.png"); background-position: 3% 48%; background-size: 400% auto; background-repeat: no-repeat; }
 .mode-card strong { display: block; font-size: 16px; font-style: italic; line-height: 1; text-transform: uppercase; }
 .difficulty-picker { margin: 0 0 13px; padding: 0; border: 0; }
 .difficulty-picker[hidden] { display: none; }
@@ -135,6 +135,9 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .result { padding: 12px 6px; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; background: rgba(255,255,255,.06); }
 .result b { display: block; color: var(--gold); font-size: 24px; }
 .result span { color: var(--muted); font: 800 8px/1 system-ui; letter-spacing: .1em; text-transform: uppercase; }
+.score-sync { min-height: 1.4em; margin: -6px auto 12px !important; color: #fff6ec !important; font-size: 11px !important; }
+.score-sync[data-state="saved"] { color: #8ff0b0 !important; }
+.score-sync[data-state="local"] { color: #ffd58a !important; }
 .shake { animation: shake .25s; }
 .heat { animation: heat 1s infinite alternate; }
 .multiplier-up { animation: multiplier-pop .72s cubic-bezier(.2,.9,.22,1.3); }

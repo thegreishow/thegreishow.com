@@ -124,6 +124,7 @@
     ArrowRight: "right", d: "right", D: "right"
   };
   const NOTES = {
+    E2: 82.41, B2: 123.47,
     E3: 164.81, B3: 246.94, E4: 329.63, FS4: 369.99,
     GS4: 415.30, B4: 493.88, CS5: 554.37, DS5: 622.25,
     E5: 659.25, GS5: 830.61, B5: 987.77
@@ -167,28 +168,51 @@
   const arenaVideo = document.getElementById("arenaVideo");
   let arenaVideoFailed = false;
 
-  const arena = new Image();
-  arena.src = "assets/rodeo-arena.webp";
-  const rideAnimation = new Image();
-  rideAnimation.src = "assets/ride-animation-v3.png";
-  const rideFallAnimation = new Image();
-  rideFallAnimation.src = "assets/ride-fall-animation-v2.png";
-  const matadorSprites = new Image();
-  matadorSprites.src = "assets/matador-sprites.webp";
-  const matadoraAnimation = new Image();
-  matadoraAnimation.src = "assets/matadora-animation-v4.png";
-  const ragingBullHitAnimation = new Image();
-  ragingBullHitAnimation.src = "assets/raging-bull-hit-v1.png";
-  const chargingBullAnimation = new Image();
-  chargingBullAnimation.src = "assets/charging-bull-animation-v3.png";
-  const catchCowSprites = new Image();
-  catchCowSprites.src = "assets/catch-cow-sprites.webp";
-  const horsebackRiderAnimation = new Image();
-  horsebackRiderAnimation.src = "assets/horseback-rider-animation-v3.png";
-  const runawayCowAnimation = new Image();
-  runawayCowAnimation.src = "assets/runaway-cow-animation-v2.webp";
-  const rollingCalfEventsAnimation = new Image();
-  rollingCalfEventsAnimation.src = "assets/rolling-calf-events-v1.png";
+  const makeAsset = source => ({ image: new Image(), source, promise: null });
+  const assets = {
+    arena: makeAsset("assets/rodeo-arena.webp"),
+    rideAnimation: makeAsset("assets/ride-animation-v3.png"),
+    rideFallAnimation: makeAsset("assets/ride-fall-animation-v2.png"),
+    matadorSprites: makeAsset("assets/matador-sprites.webp"),
+    matadoraAnimation: makeAsset("assets/matadora-animation-v4.png"),
+    ragingBullHitAnimation: makeAsset("assets/raging-bull-hit-v1.png"),
+    chargingBullAnimation: makeAsset("assets/charging-bull-animation-v3.png"),
+    catchCowSprites: makeAsset("assets/catch-cow-sprites.webp"),
+    horsebackRiderAnimation: makeAsset("assets/horseback-rider-animation-v3.png"),
+    runawayCowAnimation: makeAsset("assets/runaway-cow-animation-v2.webp"),
+    rollingCalfEventsAnimation: makeAsset("assets/rolling-calf-events-v1.png")
+  };
+  const MODE_ASSETS = {
+    ride: ["rideAnimation", "rideFallAnimation"],
+    matador: ["matadorSprites", "matadoraAnimation", "ragingBullHitAnimation", "chargingBullAnimation"],
+    catch: ["catchCowSprites", "horsebackRiderAnimation", "runawayCowAnimation", "rollingCalfEventsAnimation"],
+    race: ["horsebackRiderAnimation"]
+  };
+  function loadAsset(key) {
+    const asset = assets[key];
+    if (!asset) return Promise.resolve(false);
+    if (asset.image.naturalWidth) return Promise.resolve(true);
+    if (!asset.promise) {
+      asset.promise = new Promise(resolve => {
+        asset.image.addEventListener("load", () => resolve(true), { once: true });
+        asset.image.addEventListener("error", () => resolve(false), { once: true });
+        asset.image.src = asset.source;
+      });
+    }
+    return asset.promise;
+  }
+  const arena = assets.arena.image;
+  const rideAnimation = assets.rideAnimation.image;
+  const rideFallAnimation = assets.rideFallAnimation.image;
+  const matadorSprites = assets.matadorSprites.image;
+  const matadoraAnimation = assets.matadoraAnimation.image;
+  const ragingBullHitAnimation = assets.ragingBullHitAnimation.image;
+  const chargingBullAnimation = assets.chargingBullAnimation.image;
+  const catchCowSprites = assets.catchCowSprites.image;
+  const horsebackRiderAnimation = assets.horsebackRiderAnimation.image;
+  const runawayCowAnimation = assets.runawayCowAnimation.image;
+  const rollingCalfEventsAnimation = assets.rollingCalfEventsAnimation.image;
+  loadAsset("arena");
   const ANIMATION_FRAMES = 4;
   const RIDE_ANIMATION_FRAMES = 8;
   const RIDE_FALL_FRAMES = 6;
@@ -239,7 +263,7 @@
     legendary: "assets/voice/legendary-v2.mp3"
   };
   const announcer = new Audio();
-  announcer.preload = "auto";
+  announcer.preload = "metadata";
   announcer.playsInline = true;
   let activeVoiceCue = null;
   let musicMixFrame = 0;
@@ -276,7 +300,7 @@
       try {
         this.track.currentTime = 0;
         this.track.volume = 0;
-        announcer.src = VOICE_CUE_FILES.three;
+        announcer.src = VOICE_CUE_FILES.one;
         announcer.muted = true;
         const voiceUnlock = announcer.play().then(() => {
           announcer.pause();
@@ -351,8 +375,8 @@
     }
     impact(strength = .5) {
       const weight = Math.max(.18, Math.min(1, strength));
-      this.tone(72, .095, "sine", .025 + weight * .035);
-      this.tone(116, .065, "triangle", .012 + weight * .018, .012);
+      this.tone(NOTES.E2, .095, "sine", .025 + weight * .035);
+      this.tone(NOTES.B2, .065, "triangle", .012 + weight * .018, .012);
     }
     noise(duration = .28, volume = .035, frequency = 1200) {
       if (!this.enabled) return;
@@ -644,6 +668,10 @@
   let riderPitch = 0;
   let particles = [];
   let flashes = [];
+  let lastMotionEmit = 0;
+  const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+  let reducedMotion = motionPreference.matches;
+  motionPreference.addEventListener?.("change", event => { reducedMotion = event.matches; });
   let best = loadBest();
 
   function loadBest() {
@@ -711,7 +739,10 @@
     const strength = options.strength ?? Math.max(.22, Math.min(1, duration / 180));
     let hardwareFeedback = false;
     try {
-      if (typeof navigator.vibrate === "function") hardwareFeedback = navigator.vibrate(pattern) || hardwareFeedback;
+      if (typeof navigator.vibrate === "function" && document.visibilityState !== "hidden") {
+        navigator.vibrate(0);
+        hardwareFeedback = navigator.vibrate(pattern) || hardwareFeedback;
+      }
       const gamepad = navigator.getGamepads?.()?.find(Boolean);
       const actuator = gamepad?.vibrationActuator;
       if (actuator?.playEffect) {
@@ -724,6 +755,8 @@
       }
     } catch {}
     audio.impact(hardwareFeedback ? strength * .4 : strength);
+    stage.dataset.haptics = hardwareFeedback ? "hardware" : "audio-visual";
+    if (options.subtle) return;
     stage.style.setProperty("--impact-shift", `${(1.2 + strength * 3.2).toFixed(1)}px`);
     stage.classList.remove("impact-pulse");
     void stage.offsetWidth;
@@ -887,6 +920,7 @@
     if (running || counting || !MODES[nextId]) return;
     modeId = nextId;
     localStorage.setItem("grei-rodeo-mode", modeId);
+    MODE_ASSETS[modeId].forEach(loadAsset);
     best = loadBest();
     if (!results.hidden) showSelection();
     else { state.reset(); resetDodge(); resetChase(); resetRace(); updateSelectionUI(); hud(); draw(); }
@@ -911,6 +945,56 @@
     for (let i = 0; i < amount; i++) {
       particles.push({ x, y, vx: (Math.random() - .5) * 330, vy: -80 - Math.random() * 230, life: .7 + Math.random() * .55, color, size: 2 + Math.random() * 6, spin: Math.random() * 6 });
     }
+  }
+
+  function motionParticle(type, x, y, options = {}) {
+    if (reducedMotion) return;
+    particles.push({
+      type,
+      x,
+      y,
+      vx: options.vx ?? (Math.random() - .5) * 42,
+      vy: options.vy ?? -12 - Math.random() * 18,
+      life: options.life ?? .5,
+      maxLife: options.life ?? .5,
+      color: options.color || "#d7b8ad",
+      size: options.size ?? 8,
+      length: options.length ?? 34,
+      spin: options.spin ?? Math.random() * Math.PI,
+      drag: options.drag ?? 3.4
+    });
+  }
+
+  function dustTrail(x, y, speed = 1, color = "#d7b8ad") {
+    if (performance.now() - lastMotionEmit < Math.max(38, 105 - speed * 38)) return;
+    lastMotionEmit = performance.now();
+    const amount = speed > 1.15 ? 3 : 2;
+    for (let index = 0; index < amount; index++) {
+      motionParticle("dust", x + (Math.random() - .5) * 28, y + Math.random() * 6, {
+        vx: (Math.random() - .5) * 48 - speed * 7,
+        vy: -12 - Math.random() * 20,
+        life: .42 + Math.random() * .28,
+        size: 8 + Math.random() * 10,
+        color
+      });
+    }
+  }
+
+  function speedStreak(x, y, angle, strength = 1, color = "#ffc857") {
+    motionParticle("streak", x, y, {
+      vx: -Math.cos(angle) * 130 * strength,
+      vy: -Math.sin(angle) * 80 * strength,
+      life: .2 + strength * .12,
+      size: 2 + strength * 1.4,
+      length: 28 + strength * 36,
+      color,
+      drag: 1.8,
+      spin: angle
+    });
+  }
+
+  function reactionRing(x, y, color = "#ffc857", size = 28) {
+    motionParticle("ring", x, y, { vx: 0, vy: 0, life: .46, size, color, drag: 0 });
   }
 
   function celebrateMultiplier(multiplier, x = 480, y = 270) {
@@ -977,6 +1061,7 @@
         haptic(outcome.kind === "perfect" ? [22, 18, 36] : 18);
       }
       burst(outcome.kind === "perfect" ? "#ffc857" : "#ff625f", outcome.kind === "perfect" ? 26 : 15);
+      if (outcome.kind === "perfect") reactionRing(480, 330, state.multiplierColor(), 34);
     }
     hud();
     if (state.balance <= 0) loseRideLife(now);
@@ -1041,6 +1126,7 @@
     directionAnnounce.textContent = RIDE_LABELS[bullDirection];
     beatIndex++;
     bullKick = 1;
+    dustTrail(480 + (Math.random() - .5) * 70, 424, 1.15, "#b98b6f");
     if (beatIndex % 4 === 0) flashes.push({ x: 90 + Math.random() * 780, y: 170 + Math.random() * 180, life: .18 });
     audio.beat(beatIndex);
     hud();
@@ -1192,6 +1278,9 @@
     dodge.player.x += dodge.player.vx * dt;
     dodge.player.y += dodge.player.vy * dt;
     constrainPlayer();
+    if (!dodge.player.airborne && Math.hypot(dodge.player.vx, dodge.player.vy) > 125) {
+      dustTrail(dodge.player.x - dodge.player.vx * .035, dodge.player.y + 9, .8, "#c59b82");
+    }
     if (dodge.player.airborne) {
       dodge.player.jumpVelocity -= 1420 * dt;
       dodge.player.jumpHeight += dodge.player.jumpVelocity * dt;
@@ -1243,6 +1332,10 @@
       bull.x += stepX;
       bull.y += stepY;
       bull.travel += Math.hypot(stepX, stepY);
+      if (performance.now() - lastMotionEmit > 58) {
+        dustTrail(bull.x - Math.cos(bull.angle) * 45, bull.y + 30, 1.35, "#b98b6f");
+        speedStreak(bull.x - Math.cos(bull.angle) * 70, bull.y - 18, bull.angle, 1.1, "#ffad86");
+      }
       const playerDistance = Math.hypot(bull.x - dodge.player.x, bull.y - dodge.player.y);
       bull.minDistance = Math.min(bull.minDistance, playerDistance);
 
@@ -1253,6 +1346,7 @@
           stage.dataset.jump = "cleared";
           setFeedback("HORN CLEAR!", 360, { color: "#59d8ff" });
           flashes.push({ x: dodge.player.x, y: dodge.player.y - dodge.player.jumpHeight, life: .4 });
+          reactionRing(dodge.player.x, dodge.player.y - dodge.player.jumpHeight, "#59d8ff", 30);
         }
       }
 
@@ -1413,6 +1507,7 @@
       audio.crowd(Math.min(5, 1 + Math.floor(state.combo / 5)));
     }
     burst(perfect ? "#ffc857" : "#ffad86", perfect ? 7 : 3, 480, 300);
+    if (perfect) reactionRing(480, 310, state.multiplierColor(), 25);
     lassoButton.classList.toggle("ready", state.heat >= 100);
     stage.dataset.cadence = String(Math.round(race.player.cadence));
   }
@@ -1433,6 +1528,7 @@
     setFeedback(`FULL HEAT BOOST! +${boostPoints} · ×${state.modeMultiplier()}`, 900, { big: state.modeMultiplier() >= 4, color: state.multiplierColor() });
     burst("#ffc857", 38, 480, 270);
     flashes.push({ x: 480, y: 270, life: .45 });
+    reactionRing(480, 270, "#ffc857", 48);
     audio.whoosh(1.15);
     audio.perfect();
     haptic([55, 22, 85]);
@@ -1478,6 +1574,16 @@
     });
     if (drafting) player.speed += 14 * dt;
     player.distance += player.speed * dt;
+    if (!reducedMotion && player.cadence > 42 && performance.now() - lastMotionEmit > (player.boostTimer > 0 ? 38 : 82)) {
+      lastMotionEmit = performance.now();
+      const point = trackPoint(player.distance, player.lane);
+      const tangent = point.angle + Math.PI / 2;
+      const strength = player.boostTimer > 0 ? 1.45 : .72 + player.cadence / 180;
+      for (let line = 0; line < (player.boostTimer > 0 ? 3 : 1); line++) {
+        speedStreak(point.x - Math.cos(tangent) * (30 + line * 12), point.y - 20 + line * 14, tangent, strength, line ? "#ffad86" : "#ffc857");
+      }
+      if (player.boostTimer > 0) motionParticle("dust", point.x, point.y + 20, { vx: -Math.cos(tangent) * 48, vy: -18, life: .5, size: 15, color: "#d9aa75" });
+    }
     state.balance = player.cadence;
 
     const place = racePlace();
@@ -1491,6 +1597,7 @@
         audio.good();
       }
       burst(state.multiplierColor(), 18, 480, 250);
+      reactionRing(480, 250, state.multiplierColor(), 32);
     }
     player.lastPlace = place;
     state.racePlace = place;
@@ -1548,6 +1655,7 @@
     chase.lasso.hit = inRange;
     chase.lasso.targetX = chase.cow.x;
     chase.lasso.targetY = chase.cow.y;
+    reactionRing(chase.lasso.targetX, chase.lasso.targetY - 12, inRange ? "#ffc857" : "#ff625f", inRange ? 34 : 22);
     lassoButton.classList.add("active");
     setTimeout(() => lassoButton.classList.remove("active"), 170);
     audio.whoosh(.52);
@@ -1613,6 +1721,9 @@
     chase.player.x += chase.player.vx * dt;
     chase.player.y += chase.player.vy * dt;
     constrainChaseEntity(chase.player, 292, 132);
+    if (Math.hypot(chase.player.vx, chase.player.vy) > 145) {
+      dustTrail(chase.player.x - chase.player.facing * 58, chase.player.y + 42, .95, "#b98b6f");
+    }
 
     chase.lasso.cooldown = Math.max(0, chase.lasso.cooldown - dt);
     if (chase.lasso.active) {
@@ -1633,6 +1744,7 @@
       const escapeBoost = difficulty().cowSpeed * 1.85;
       cow.x += Math.cos(cow.angle) * escapeBoost * dt;
       cow.y += Math.sin(cow.angle) * escapeBoost * .72 * dt;
+      dustTrail(cow.x - Math.cos(cow.angle) * 45, cow.y + 29, 1.5, "#bd8a69");
       directionAnnounce.textContent = "Rolling Calf escaped";
       if (cow.timer <= 0) {
         if (state.balance <= 0) finish();
@@ -1661,6 +1773,7 @@
     cow.speed = difficulty().cowSpeed * chaseRamp * pressureSlowdown;
     cow.x += Math.cos(cow.angle) * cow.speed * dt;
     cow.y += Math.sin(cow.angle) * cow.speed * .72 * dt;
+    if (cow.speed > 130) dustTrail(cow.x - Math.cos(cow.angle) * 45, cow.y + 29, cow.phase === "escaping" ? 1.4 : .85, "#bd8a69");
     if (constrainChaseEntity(cow, 304, 139)) {
       cow.angle = Math.atan2(350 - cow.y, 480 - cow.x) + (Math.random() - .5) * .8;
       cow.wander = 0;
@@ -1681,12 +1794,8 @@
   }
 
   async function ensureSelectedAvatar() {
-    const avatar = modeId === "ride" ? rideAnimation : modeId === "matador" ? matadoraAnimation : null;
-    if (!avatar || avatar.naturalWidth) return true;
-    try {
-      if (typeof avatar.decode === "function") await avatar.decode();
-    } catch {}
-    return Boolean(avatar.naturalWidth);
+    const loaded = await Promise.all(MODE_ASSETS[modeId].map(loadAsset));
+    return loaded.every(Boolean);
   }
 
   async function startCountUp() {
@@ -1695,17 +1804,17 @@
     counting = true;
     startButton.disabled = true;
     const previousButtonCopy = startButton.textContent;
-    startButton.textContent = "Loading rider…";
+    startButton.textContent = `Preparing ${mode().shortLabel}…`;
     const avatarReady = await ensureSelectedAvatar();
     if (token !== countdownToken) return;
     startButton.disabled = false;
     startButton.textContent = previousButtonCopy;
     if (!avatarReady) {
       counting = false;
-      kickerEl.textContent = "Rider still loading";
+      kickerEl.textContent = "Event still loading";
       titleEl.innerHTML = "SADDLE<br>UP";
       copyEl.hidden = false;
-      copyEl.textContent = "The cowgirl art did not finish loading. Tap again to retry.";
+      copyEl.textContent = "The event art did not finish loading. Check your connection and tap again.";
       return;
     }
     document.querySelector("[data-grei-discovery]")?.remove();
@@ -1721,7 +1830,7 @@
     let count = 0;
     const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "RAGE!" : modeId === "catch" ? "ROLL!" : "RACE!";
     const finaleVoice = modeId === "ride" ? "start-ride" : modeId === "matador" ? "start-raging" : modeId === "catch" ? "start-calf" : "start-race";
-    const cards = [["3", "", "three"], ["2", "", "two"], ["1", "", "one"], [finale, "", finaleVoice]];
+    const cards = [["1", "", "one"], ["2", "", "two"], ["3", "", "three"], [finale, "", finaleVoice]];
     const tick = () => {
       if (token !== countdownToken) return;
       const [first, second, voiceLine] = cards[count];
@@ -1836,7 +1945,7 @@
     const middleLabel = modeId === "race" ? "Finish" : "Best streak";
     const lastValue = `×${state.bestMultiplier}`;
     const lastLabel = "Peak multiplier";
-    results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} · Best ${best}</p>`;
+    results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} · Best ${best}</p><p class="score-sync" data-state="saving" role="status" aria-live="polite">Saving to the ${mode().shortLabel} · ${difficulty().label} board…</p>`;
     updateSelectionUI();
     submit();
   }
@@ -1937,13 +2046,25 @@
     const name = (localStorage.getItem("grei_arcade_player_name") || "Rider").slice(0, 18);
     const duration = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
     const level = mode().levelBase + difficulty().level;
+    const status = results.querySelector(".score-sync");
     try {
-      await fetch(`${API}/api/leaderboard`, {
+      const response = await fetch(`${API}/api/leaderboard`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ game: GAME_ID, name, score: state.score, level, duration })
       });
-    } catch {}
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || "Leaderboard unavailable");
+      if (status) {
+        status.dataset.state = "saved";
+        status.textContent = `${data.improved ? "New online best" : "Online best kept"} · Rank #${data.rank} on ${mode().shortLabel} ${difficulty().label}`;
+      }
+    } catch {
+      if (status) {
+        status.dataset.state = "local";
+        status.textContent = "Best saved on this phone · online leaderboard unavailable";
+      }
+    }
   }
 
   function updateShared(dt) {
@@ -1953,9 +2074,12 @@
     particles.forEach(particle => {
       particle.x += particle.vx * dt;
       particle.y += particle.vy * dt;
-      particle.vy += 300 * dt;
+      const drag = Math.max(0, 1 - (particle.drag || 0) * dt);
+      particle.vx *= drag;
+      particle.vy *= drag;
+      particle.vy += (particle.type === "dust" ? -18 : particle.type === "streak" || particle.type === "ring" ? 0 : 300) * dt;
       particle.life -= dt;
-      particle.spin += dt * 8;
+      if (particle.type !== "streak" && particle.type !== "ring") particle.spin += dt * 8;
     });
     particles = particles.filter(particle => particle.life > 0);
     flashes.forEach(flash => { flash.life -= dt; });
@@ -2024,6 +2148,21 @@
       ctx.fillStyle = `rgba(255,98,95,${.022 + rideHeatGlow * .055 + Math.sin(now / 130) * .012})`;
       ctx.fillRect(0, 0, 960, 540);
     }
+    if (!reducedMotion && running && state.combo > 1) {
+      const crowdEnergy = Math.min(1, state.combo / 12);
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      for (let light = 0; light < 18; light++) {
+        const side = light % 2 ? 1 : -1;
+        const row = Math.floor(light / 2);
+        const pulse = .25 + Math.max(0, Math.sin(now / 115 + light * 1.7)) * .75;
+        ctx.fillStyle = `rgba(255,200,87,${crowdEnergy * pulse * .34})`;
+        ctx.beginPath();
+        ctx.arc(480 + side * (265 + row * 20), 172 + (row % 3) * 24, 2 + pulse * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
     flashes.forEach(flash => {
       const glow = ctx.createRadialGradient(flash.x, flash.y, 0, flash.x, flash.y, 85);
       glow.addColorStop(0, `rgba(255,248,216,${flash.life * 3})`);
@@ -2039,6 +2178,17 @@
     const frame = ((Math.floor(index) % frameCount) + frameCount) % frameCount;
     ctx.drawImage(image, frame * frameWidth, 0, frameWidth, image.naturalHeight, x, y, width, height);
     return true;
+  }
+
+  function spriteEchoes(image, index, x, y, width, height, frameCount, offsetX, offsetY, strength = 1) {
+    if (reducedMotion || !image.complete || !image.naturalWidth) return;
+    for (let echo = 3; echo >= 1; echo--) {
+      ctx.save();
+      ctx.globalAlpha = (.055 + (3 - echo) * .035) * strength;
+      ctx.translate(offsetX * echo, offsetY * echo);
+      spriteFrame(image, index, x, y, width, height, frameCount);
+      ctx.restore();
+    }
   }
 
   function cycleFrame(now, fps, phase = 0, frameCount = ANIMATION_FRAMES) {
@@ -2146,7 +2296,11 @@
     const reactionStrength = reactionActive ? Math.sin(reactionProgress * Math.PI) : 0;
     const direction = reactionActive ? rideReaction.direction : bullDirection;
     const idleIndex = Math.floor(now / (running ? 235 : 320)) % RIDE_IDLE_FRAMES.length;
-    let frame = reactionActive ? RIDE_DIRECTION_FRAMES[direction] : RIDE_IDLE_FRAMES[idleIndex];
+    let frame = reactionActive
+      ? reactionProgress < .15 ? RIDE_IDLE_FRAMES[idleIndex]
+        : reactionProgress > .78 ? RIDE_IDLE_FRAMES[(idleIndex + 1) % RIDE_IDLE_FRAMES.length]
+          : RIDE_DIRECTION_FRAMES[direction]
+      : RIDE_IDLE_FRAMES[idleIndex];
     let x = reactionActive ? ({ left: -28, right: 28, up: 0, down: 0 }[direction] || 0) * reactionStrength : 0;
     let y = reactionActive ? ({ up: -24, down: 18, left: 2, right: 2 }[direction] || 0) * reactionStrength : 0;
     let roll = Math.sin(t * 17) * bullKick * .035 + riderLean * .025;
@@ -2223,6 +2377,11 @@
       const heatStrength = state.rideTier / RIDE_HEAT_TARGETS.length;
       ctx.shadowColor = heatStrength > 0 ? `rgba(255,200,87,${.32 + heatStrength * .42})` : "rgba(255,98,95,.30)";
       ctx.shadowBlur = heatStrength > 0 ? 16 + heatStrength * 24 : 13;
+      if (reactionActive || promotionActive) {
+        const echoX = direction === "left" ? 10 : direction === "right" ? -10 : 0;
+        const echoY = direction === "up" ? 8 : direction === "down" ? -7 : 2;
+        spriteEchoes(rideAnimation, frame, -195, -390, 390, 390, RIDE_ANIMATION_FRAMES, echoX, echoY, .8 + state.rideTier * .08);
+      }
       spriteFrame(rideAnimation, frame, -195, -390, 390, 390, RIDE_ANIMATION_FRAMES);
       ctx.restore();
       return;
@@ -2329,6 +2488,10 @@
 
     ctx.save();
     ctx.translate(player.x, player.y - player.jumpHeight);
+    const motion = Math.min(1, Math.hypot(player.vx, player.vy) / 260);
+    const footfall = player.airborne ? 0 : Math.sin(now / 54) * motion;
+    ctx.translate(0, footfall * 2.5);
+    ctx.scale(1 + Math.abs(footfall) * .018, 1 - Math.abs(footfall) * .012);
     const justLanded = now - player.landedAt < 220;
     const oleActive = now < dodge.ole.until;
     const oleProgress = oleActive ? Math.min(1, (now - dodge.ole.startedAt) / Math.max(1, dodge.ole.until - dodge.ole.startedAt)) : 0;
@@ -2357,6 +2520,9 @@
         : celebrationActive ? dodge.celebration.type === "fist" ? 7 : 6
           : oleActive ? (dodge.ole.level > 1 && oleProgress > .52 ? 7 : 6)
           : moving ? cycleFrame(now, 18, 0, DODGE_ANIMATION_FRAMES) : 0;
+    if (player.airborne || motion > .62 || oleActive) {
+      spriteEchoes(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES, -player.vx / 55, Math.max(2, player.vy / -70), player.airborne ? .95 : .65);
+    }
     spriteFrame(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES);
     ctx.restore();
   }
@@ -2430,6 +2596,7 @@
     const bullFrame = bull.phase === "charge"
       ? cycleFrame(performance.now(), 16, 0, BULL_ANIMATION_FRAMES)
       : bull.phase === "recover" ? 3 : 0;
+    if (bull.phase === "charge") spriteEchoes(chargingBullAnimation, bullFrame, -106, -153, 212, 212, BULL_ANIMATION_FRAMES, -10, 0, .8);
     if (spriteFrame(chargingBullAnimation, bullFrame, -106, -153, 212, 212, BULL_ANIMATION_FRAMES)) {
       // Animated charge strip.
     } else if (matadorSprites.complete && matadorSprites.naturalWidth) {
@@ -2509,18 +2676,23 @@
     const celebrationProgress = celebrating ? Math.min(1, (player.celebrateUntil - now) / 1850) : 0;
     const gallop = celebrating ? -Math.sin(now / 90) * 5 : running && (Math.abs(player.vx) + Math.abs(player.vy) > 10) ? Math.sin(now / 72) * 3 : 0;
     ctx.save();
-    ctx.translate(player.x, player.y + gallop);
+    const chaseSpeed = Math.min(1, Math.hypot(player.vx, player.vy) / 290);
+    const stride = Math.sin(now / 58) * chaseSpeed;
+    ctx.translate(player.x, player.y + gallop + stride * 2.8);
     ctx.fillStyle = "rgba(0,0,0,.34)";
     ctx.beginPath();
     ctx.ellipse(0, 48, 78, 17, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.scale(player.facing, 1);
-    ctx.rotate(player.vy / 274 * .018 + (celebrating && player.celebrationType === "twirl" ? Math.sin(now / 90) * .045 : 0));
+    ctx.scale(player.facing * (1 + Math.abs(stride) * .018), 1 - Math.abs(stride) * .012);
+    ctx.rotate(player.vy / 274 * .028 + player.vx / 310 * .018 + (celebrating && player.celebrationType === "twirl" ? Math.sin(now / 90) * .045 : 0));
     const gallopFrame = celebrating
       ? player.celebrationType === "twirl" ? 2 + cycleFrame(now, 10, 0, 2)
         : player.celebrationType === "salute" ? 0
           : 1 + cycleFrame(now, 9, 0, 3)
       : running ? cycleFrame(now, difficultyId === "easy" ? 12 : 18, 0, HORSEBACK_ANIMATION_FRAMES) : 0;
+    if (chaseSpeed > .68 || celebrating) {
+      spriteEchoes(horsebackRiderAnimation, gallopFrame, -123, -248, 246, 328, HORSEBACK_ANIMATION_FRAMES, -8, 1, celebrating ? .9 : .55);
+    }
     if (spriteFrame(horsebackRiderAnimation, gallopFrame, -123, -248, 246, 328, HORSEBACK_ANIMATION_FRAMES)) {
       // Animated horseback strip.
     } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
@@ -2560,7 +2732,8 @@
     ctx.beginPath();
     ctx.ellipse(0, 33, 49, 11, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.scale(facing, 1);
+    const runStride = cow.phase === "run" || cow.phase === "escaping" ? Math.sin(now / 48) : 0;
+    ctx.scale(facing * (1 + Math.abs(runStride) * .022), 1 - Math.abs(runStride) * .016);
     ctx.rotate(Math.sin(cow.angle) * .025);
     const eventElapsed = Math.max(0, now - cow.phaseStartedAt);
     const eventFrame = cow.phase === "caught"
@@ -2569,16 +2742,21 @@
     const cowFrame = cycleFrame(now, difficultyId === "easy" ? 14 : 20, 0, CHASE_ANIMATION_FRAMES);
     if (eventFrame >= 0 && spriteFrame(rollingCalfEventsAnimation, eventFrame, -92, -132, 184, 184, EVENT_ANIMATION_FRAMES)) {
       // Dedicated rope-down and escape animation strip.
-    } else if (spriteFrame(runawayCowAnimation, cowFrame, -88, -132, 176, 235, CHASE_ANIMATION_FRAMES)) {
-      // Animated cow strip.
-    } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
-      const slotWidth = catchCowSprites.naturalWidth / 2;
-      ctx.drawImage(catchCowSprites, slotWidth, 0, slotWidth, catchCowSprites.naturalHeight, -88, -132, 176, 235);
     } else {
-      ctx.fillStyle = "#b45424";
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 55, 30, 0, 0, Math.PI * 2);
-      ctx.fill();
+      if (cow.phase === "escaping" || cow.speed > difficulty().cowSpeed * .92) {
+        spriteEchoes(runawayCowAnimation, cowFrame, -88, -132, 176, 235, CHASE_ANIMATION_FRAMES, -7, 0, cow.phase === "escaping" ? .9 : .45);
+      }
+      if (spriteFrame(runawayCowAnimation, cowFrame, -88, -132, 176, 235, CHASE_ANIMATION_FRAMES)) {
+        // Animated cow strip.
+      } else if (catchCowSprites.complete && catchCowSprites.naturalWidth) {
+        const slotWidth = catchCowSprites.naturalWidth / 2;
+        ctx.drawImage(catchCowSprites, slotWidth, 0, slotWidth, catchCowSprites.naturalHeight, -88, -132, 176, 235);
+      } else {
+        ctx.fillStyle = "#b45424";
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 55, 30, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     if (cow.phase === "caught" && eventFrame < 0) {
       ctx.strokeStyle = "#ffc857";
@@ -2738,7 +2916,9 @@
     const scale = player ? 1 : .82;
     const facing = -Math.sin(point.angle) >= 0 ? 1 : -1;
     ctx.save();
-    ctx.translate(point.x, point.y);
+    const horseSpeed = player ? race.player.speed : difficulty().rivalSpeed;
+    const stride = Math.sin(now / Math.max(38, 70 - horseSpeed / 9));
+    ctx.translate(point.x, point.y + stride * (player ? 3.2 : 2.3));
     ctx.fillStyle = "rgba(0,0,0,.32)";
     ctx.beginPath();
     ctx.ellipse(0, 16, 38 * scale, 10 * scale, 0, 0, Math.PI * 2);
@@ -2753,8 +2933,12 @@
     ctx.ellipse(0, 14, 43 * scale, 14 * scale, 0, 0, Math.PI * 2);
     ctx.stroke();
     ctx.shadowBlur = 0;
-    ctx.scale(facing, 1);
+    ctx.rotate(Math.cos(point.angle) * .035 + stride * .012);
+    ctx.scale(facing * (1 + Math.abs(stride) * .022), 1 - Math.abs(stride) * .016);
     const frame = cycleFrame(now, Math.max(7, (player ? race.player.speed : difficulty().rivalSpeed) / 19), 0, RACE_GALLOP_FRAMES);
+    if (surged || (player && race.player.cadence > 62)) {
+      spriteEchoes(horsebackRiderAnimation, frame, -70 * scale, -114 * scale, 140 * scale, 140 * scale, RACE_GALLOP_FRAMES, -8, 0, surged ? .9 : .55);
+    }
     if (!spriteFrame(horsebackRiderAnimation, frame, -70 * scale, -114 * scale, 140 * scale, 140 * scale, RACE_GALLOP_FRAMES)) {
       ctx.fillStyle = color;
       ctx.beginPath();
@@ -3037,8 +3221,9 @@
         ctx.strokeText(feedback, 0, 12, 470);
         ctx.fillText(feedback, 0, 12, 470);
       } else {
-        ctx.strokeText(feedback, 480, modeId === "ride" ? 205 : 150, 760);
-        ctx.fillText(feedback, 480, modeId === "ride" ? 205 : 150, 760);
+        const feedbackY = modeId === "ride" ? 205 : modeId === "matador" ? 188 : 160;
+        ctx.strokeText(feedback, 480, feedbackY, 760);
+        ctx.fillText(feedback, 480, feedbackY, 760);
       }
       ctx.restore();
     }
@@ -3047,11 +3232,31 @@
   function drawParticles() {
     particles.forEach(particle => {
       ctx.save();
-      ctx.globalAlpha = Math.max(0, particle.life);
+      const progress = particle.maxLife ? 1 - particle.life / particle.maxLife : 0;
+      ctx.globalAlpha = Math.max(0, particle.maxLife ? particle.life / particle.maxLife : particle.life);
       ctx.translate(particle.x, particle.y);
       ctx.rotate(particle.spin);
-      ctx.fillStyle = particle.color;
-      ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size * 1.7);
+      if (particle.type === "dust") {
+        ctx.fillStyle = particle.color;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, particle.size * (1 + progress * 1.4), particle.size * .48 * (1 + progress), 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (particle.type === "streak") {
+        const gradient = ctx.createLinearGradient(-particle.length, 0, 0, 0);
+        gradient.addColorStop(0, "rgba(255,255,255,0)");
+        gradient.addColorStop(1, particle.color);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(-particle.length, -particle.size / 2, particle.length, particle.size);
+      } else if (particle.type === "ring") {
+        ctx.strokeStyle = particle.color;
+        ctx.lineWidth = Math.max(1, 5 * (1 - progress));
+        ctx.beginPath();
+        ctx.arc(0, 0, particle.size * (1 + progress * 2.2), 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = particle.color;
+        ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size * 1.7);
+      }
       ctx.restore();
     });
   }
@@ -3179,6 +3384,7 @@
       button.classList.add("active");
       button.setAttribute("aria-pressed", "true");
       stage.dataset.lastInput = button.dataset.action || "lasso";
+      haptic(10, { strength: .16, subtle: true });
       onPress();
     };
     const release = event => {
@@ -3243,6 +3449,7 @@
     stage.dataset.background = "mp4";
     keepArenaMoving();
   }
+  MODE_ASSETS[modeId].forEach(loadAsset);
   [
     arena, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation, ragingBullHitAnimation,
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, runawayCowAnimation, rollingCalfEventsAnimation

@@ -4,10 +4,22 @@
     "title": "Rodeo: Are You Ready",
     "creator": "The Grei Show",
     "description": "Four premium rodeo events with voiced countdowns, supported-device haptics, animated remounts, Raging Bull stunt jumps, Rolling Calf rope-downs, and ×2–×10 celebrations.",
-    "version": "1.3",
+    "version": "1.5",
     "type": "native",
     "entry": "arcade/games/rodeo-are-you-ready/index.html",
     "thumbnail": "arcade/assets/thumbnails/rodeo-are-you-ready.webp?v=20260811",
+    "leaderboardLevel": 2,
+    "leaderboardLabel": "Ride · Standard",
+    "leaderboards": [
+      {"level": 1, "label": "Rodeo · Ride Easy"},
+      {"level": 2, "label": "Rodeo · Ride Standard"},
+      {"level": 3, "label": "Rodeo · Bull Easy"},
+      {"level": 4, "label": "Rodeo · Bull Standard"},
+      {"level": 5, "label": "Rodeo · Calf Easy"},
+      {"level": 6, "label": "Rodeo · Calf Standard"},
+      {"level": 7, "label": "Rodeo · Race Easy"},
+      {"level": 8, "label": "Rodeo · Race Standard"}
+    ],
     "tags": ["rhythm", "rodeo", "dodge", "lasso", "horseback", "music", "mobile"]
   },
   {

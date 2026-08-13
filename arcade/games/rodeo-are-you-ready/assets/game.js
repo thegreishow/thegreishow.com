@@ -10,26 +10,69 @@
     ride: {
       label: "Ride the Riddim",
       shortLabel: "Ride",
-      levelBase: 0,
-      description: "Match each buck, protect your balance, and use every ride to chase a high score."
+      levelBase: 0
     },
     matador: {
       label: "Dodge the Bull",
       shortLabel: "Dodge",
-      levelBase: 2,
-      description: "Read the charge line, move clear, and build an Olé streak."
+      levelBase: 2
     },
     catch: {
       label: "Catch the Cow",
       shortLabel: "Lasso",
-      levelBase: 4,
-      description: "Chase on horseback, close the gap, and throw your lasso before the cow breaks free."
+      levelBase: 4
     },
     race: {
       label: "Run the Track",
       shortLabel: "Race",
-      levelBase: 6,
-      description: "Time each gallop tap to the beat, earn Heat for Perfects, and counter rival surges with your boost."
+      levelBase: 6
+    }
+  };
+  const HOW_TO_PLAY = {
+    ride: {
+      steps: [
+        "Tap the direction shown in front of the rider before its ring runs out.",
+        "Respond closer to the ideal moment for Perfect timing, more points, and more Heat.",
+        "When Balance reaches zero, you lose a life and get a short recovery window."
+      ],
+      meters: [
+        ["Balance", "Your grip on the bull. Keep it above zero to stay mounted."],
+        ["Lives", "Standard starts with five; Easy starts with six."],
+        ["Heat", "At full Heat, every scoring move is worth 2× until a mistake cools it down."]
+      ]
+    },
+    matador: {
+      steps: [
+        "On phone, drag anywhere inside the arena and the matadora follows your finger.",
+        "Watch the charge line, then move clear before the bull launches.",
+        "Close calls score more and build Heat faster, but clipping the bull costs Nerve."
+      ],
+      meters: [
+        ["Nerve", "Your survival meter. Bull hits drain it; the run ends at zero."],
+        ["Heat", "At full Heat, every clean dodge is worth 2× until a hit cools it down."]
+      ]
+    },
+    catch: {
+      steps: [
+        "Steer the horse to close the gap with the runaway cow.",
+        "When the Lasso button glows, throw it before the cow escapes.",
+        "Fast, accurate catches score more and raise Heat faster."
+      ],
+      meters: [
+        ["Grit", "Your chase stamina. Escaped cows drain it; the run ends at zero."],
+        ["Heat", "At full Heat, each successful catch is worth 2× until an escape cools it down."]
+      ]
+    },
+    race: {
+      steps: [
+        "Tap Gallop when the center flash hits to build speed; timing it perfectly builds more Heat.",
+        "Steer left or right to find a clear lane and pass your rivals.",
+        "When Heat is full, tap Boost to spend it on a burst of speed."
+      ],
+      meters: [
+        ["Gallop", "Your current speed rhythm. It rises with well-timed taps and slowly fades."],
+        ["Heat", "Your boost charge. Fill it, then spend it with the Boost button."]
+      ]
     }
   };
   const DIFFICULTIES = {
@@ -96,13 +139,16 @@
   const modePicker = document.getElementById("modePicker");
   const modeButtons = [...document.querySelectorAll("[data-mode]")];
   const difficultyPicker = document.getElementById("difficultyPicker");
-  const difficultyNote = document.getElementById("difficultyNote");
   const difficultyButtons = [...document.querySelectorAll("[data-difficulty]")];
   const results = document.getElementById("results");
   const scoreEl = document.getElementById("score");
   const comboEl = document.getElementById("combo");
   const timeEl = document.getElementById("time");
   const heatEl = document.getElementById("heat");
+  const heatMeter = document.getElementById("heatMeter");
+  const heatLabel = document.getElementById("heatLabel");
+  const heatPurpose = document.getElementById("heatPurpose");
+  const heatValue = document.getElementById("heatValue");
   const audioStatus = document.getElementById("audioStatus");
   const directionAnnounce = document.getElementById("directionAnnounce");
   const controlHint = document.getElementById("controlHint");
@@ -149,7 +195,7 @@
   let difficultyId = DIFFICULTIES[localStorage.getItem("grei-rodeo-difficulty")] ? localStorage.getItem("grei-rodeo-difficulty") : "standard";
   const mode = () => MODES[modeId];
   const difficulty = () => DIFFICULTIES[difficultyId];
-  const audioLabel = () => `Music on · ${SONG_BPM} BPM`;
+  const audioLabel = () => "Music on";
   const bestKey = () => `grei-rodeo-best-${modeId}-${difficultyId}`;
 
   class AudioDirector {
@@ -318,7 +364,7 @@
       this.combo++;
       this.bestCombo = Math.max(this.bestCombo, this.combo);
       this.overtakes++;
-      const points = Math.round(240 * Math.min(2.5, 1 + this.combo * .12) * (this.heat >= 100 ? 2 : 1));
+      const points = Math.round(240 * Math.min(2.5, 1 + this.combo * .12));
       this.score += points;
       this.heat = Math.min(100, this.heat + 12);
       return points;
@@ -338,6 +384,7 @@
   const heldDirections = new Set();
   const dodge = {
     player: { x: 480, y: 405, vx: 0, vy: 0 },
+    pointer: { active: false, id: null, x: 480, y: 405 },
     bull: { x: 480, y: 188, targetX: 480, targetY: 405, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false }
   };
   const chase = {
@@ -401,6 +448,14 @@
       timeEl.textContent = Math.max(0, Math.floor(state.elapsed));
     }
     heatEl.style.width = `${state.heat}%`;
+    const heatReady = state.heat >= 100;
+    const heatUse = modeId === "race"
+      ? heatReady ? "Boost ready" : "Fills boost"
+      : heatReady ? "2× score active" : "Full = 2× score";
+    heatLabel.textContent = modeId === "race" && heatReady ? "Boost" : "Heat";
+    heatPurpose.textContent = heatUse;
+    heatValue.textContent = `${Math.round(state.heat)}%`;
+    heatMeter.setAttribute("aria-label", `${modeId === "race" ? "Boost charge" : "Heat"}: ${Math.round(state.heat)} percent. ${heatUse}.`);
     stage.classList.toggle("heat", state.heat >= 100);
     if (modeId === "ride") stage.dataset.lives = String(state.lives);
     else delete stage.dataset.lives;
@@ -413,6 +468,7 @@
     startButton.hidden = false;
     kickerEl.textContent = "Choose your event";
     titleEl.innerHTML = "ARE YOU<br>READY?";
+    copyEl.hidden = true;
     rideRecoveryUntil = 0;
     delete stage.dataset.recovering;
     state.reset();
@@ -436,36 +492,18 @@
       button.setAttribute("aria-pressed", String(selected));
     });
 
-    const selectedDifficulty = difficulty();
-    if (modeId === "ride") {
-      difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
-        ? "Standard gives you five rides, 3.5 seconds to recover, and quicker prompts."
-        : "Easy gives you six rides, 4 seconds to recover, and prompts every other beat.";
-    } else if (modeId === "matador") {
-      difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
-        ? "Standard uses the official 90 BPM response window with faster charges."
-        : "Easy uses a 45 BPM response window with a longer warning and slower bull.";
-    } else if (modeId === "catch") {
-      difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
-        ? "Standard gives you a faster cow, a tighter lasso range, and a 90 BPM chase."
-        : "Easy gives you more chase time, a wider lasso range, and a 45 BPM pace.";
-    } else {
-      difficultyNote.textContent = selectedDifficulty.promptBpm === SONG_BPM
-        ? "Standard: tap with the 90 BPM beat, build Heat, then unleash your boost."
-        : "Easy: tap every other beat at 45 BPM, build Heat, then unleash your boost.";
-    }
     if (audio.enabled) audioStatus.textContent = audioLabel();
 
-    if (results.hidden && !running && !counting) copyEl.textContent = mode().description;
     const replay = results.hidden ? "" : " Again";
     startButton.textContent = modeId === "ride"
-      ? `Ride${replay} at ${selectedDifficulty.promptBpm} BPM`
+      ? `Ride${replay}`
       : modeId === "matador"
-        ? `Dodge${replay} at ${selectedDifficulty.promptBpm} BPM`
+        ? `Dodge${replay}`
         : modeId === "catch"
-          ? `Chase${replay} at ${selectedDifficulty.promptBpm} BPM`
-          : `Race${replay} at ${selectedDifficulty.promptBpm} BPM`;
+          ? `Chase${replay}`
+          : `Race${replay}`;
     stage.setAttribute("aria-label", `${mode().label} playfield`);
+    stage.dataset.mode = modeId;
 
     const labels = modeId === "ride" ? RIDE_LABELS : modeId === "race" ? RACE_LABELS : MOVE_LABELS;
     controlButtons.forEach(button => {
@@ -477,7 +515,7 @@
     controlHint.textContent = modeId === "ride"
       ? "Arrow keys or W A S D · Match the glowing direction · Space pauses"
       : modeId === "matador"
-        ? "Hold arrows or W A S D · Move clear of the charge line · Space pauses"
+        ? "Drag inside the arena to move · Arrow keys also work · Space pauses"
         : modeId === "catch"
           ? "Hold arrows or W A S D · Enter, Z, or Lasso to throw · Space pauses"
           : "Tap Up/W to gallop · Left/Right to pass · Enter/Z or Boost at full Heat";
@@ -488,7 +526,9 @@
     if (specialLabel) specialLabel.textContent = modeId === "race" ? "Boost" : "Lasso";
     lassoButton.setAttribute("aria-label", modeId === "race" ? "Activate boost when Heat is full" : "Throw lasso");
     controls.classList.toggle("catch-controls", modeId === "catch" || modeId === "race");
+    controls.classList.toggle("finger-controls", modeId === "matador");
     controls.setAttribute("aria-label", modeId === "ride" ? "Ride controls" : modeId === "matador" ? "Matador controls" : modeId === "catch" ? "Horseback chase controls" : "Horse racing controls");
+    hud();
   }
 
   function chooseMode(nextId) {
@@ -594,6 +634,10 @@
     dodge.player.y = 405;
     dodge.player.vx = 0;
     dodge.player.vy = 0;
+    dodge.pointer.active = false;
+    dodge.pointer.id = null;
+    dodge.pointer.x = dodge.player.x;
+    dodge.pointer.y = dodge.player.y;
     spawnBull(true);
   }
 
@@ -635,16 +679,26 @@
   }
 
   function updateMatador(dt) {
-    let moveX = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
-    let moveY = (heldDirections.has("down") ? 1 : 0) - (heldDirections.has("up") ? 1 : 0);
-    const moveLength = Math.hypot(moveX, moveY) || 1;
-    moveX /= moveLength;
-    moveY /= moveLength;
-    const playerSpeed = difficultyId === "easy" ? 285 : 265;
-    dodge.player.vx = moveX * playerSpeed;
-    dodge.player.vy = moveY * playerSpeed;
-    dodge.player.x += dodge.player.vx * dt;
-    dodge.player.y += dodge.player.vy * dt;
+    if (dodge.pointer.active) {
+      const previousX = dodge.player.x;
+      const previousY = dodge.player.y;
+      const follow = Math.min(1, dt * 22);
+      dodge.player.x += (dodge.pointer.x - dodge.player.x) * follow;
+      dodge.player.y += (dodge.pointer.y - dodge.player.y) * follow;
+      dodge.player.vx = (dodge.player.x - previousX) / Math.max(dt, .001);
+      dodge.player.vy = (dodge.player.y - previousY) / Math.max(dt, .001);
+    } else {
+      let moveX = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
+      let moveY = (heldDirections.has("down") ? 1 : 0) - (heldDirections.has("up") ? 1 : 0);
+      const moveLength = Math.hypot(moveX, moveY) || 1;
+      moveX /= moveLength;
+      moveY /= moveLength;
+      const playerSpeed = difficultyId === "easy" ? 285 : 265;
+      dodge.player.vx = moveX * playerSpeed;
+      dodge.player.vy = moveY * playerSpeed;
+      dodge.player.x += dodge.player.vx * dt;
+      dodge.player.y += dodge.player.vy * dt;
+    }
     constrainPlayer();
 
     const bull = dodge.bull;
@@ -1045,6 +1099,7 @@
     results.hidden = true;
     startButton.hidden = true;
     kickerEl.textContent = mode().label;
+    copyEl.hidden = false;
     counting = true;
     let count = 0;
     const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "DODGE!" : modeId === "catch" ? "LASSO!" : "RACE!";
@@ -1127,6 +1182,7 @@
     difficultyPicker.hidden = false;
     results.hidden = false;
     startButton.hidden = false;
+    copyEl.hidden = false;
     kickerEl.textContent = modeId === "ride" ? "Thrown from the saddle" : modeId === "matador" ? "The bull caught you" : modeId === "catch" ? "The cow broke free" : state.raceWon ? "First across the line" : `Finished in place ${state.racePlace}`;
     titleEl.innerHTML = modeId === "ride" ? "HOLD<br>TIGHT" : modeId === "matador" ? "OLÉ<br>AGAIN" : modeId === "catch" ? "ROPE<br>UP" : state.raceWon ? "TRACK<br>KING" : "RUN<br>AGAIN";
     copyEl.textContent = modeId === "ride"
@@ -1148,9 +1204,8 @@
     const middleLabel = modeId === "ride" ? "Best combo" : modeId === "matador" ? "Dodges" : modeId === "catch" ? "Catches" : "Finish";
     const lastValue = modeId === "ride" ? state.perfects : modeId === "matador" ? state.closeCalls : modeId === "catch" ? state.quickCatches : state.boosts;
     const lastLabel = modeId === "ride" ? "Perfects" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Boosts";
-    results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} ${difficulty().promptBpm} BPM · Best ${best}</p>`;
+    results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} · Best ${best}</p>`;
     updateSelectionUI();
-    document.querySelector(".next-modes").textContent = "Four rodeo events · chase a new high score";
     submit();
   }
 
@@ -1190,23 +1245,58 @@
     if (!shellPauseButton || !pauseCard || !gameMenuButton) return;
     pauseCard.classList.add("rodeo-pause-card");
     pauseCard.innerHTML = `
-      <p class="rodeo-pause-kicker">Rodeo menu</p>
-      <h2>PAUSED</h2>
-      <p>Continue this run, start it over, or choose another event.</p>
-      <div class="rodeo-pause-actions">
-        <button type="button" data-rodeo-resume>Continue</button>
-        <button type="button" data-rodeo-restart>Restart event</button>
-        <button type="button" data-rodeo-events>Choose event</button>
+      <div class="rodeo-pause-view" data-rodeo-pause-main>
+        <p class="rodeo-pause-kicker">Rodeo menu</p>
+        <h2>PAUSED</h2>
+        <p>Continue, restart, learn the event, or head back to the arena menu.</p>
+        <div class="rodeo-pause-actions">
+          <button type="button" data-rodeo-resume>Continue</button>
+          <button type="button" data-rodeo-help>How to play</button>
+          <button type="button" data-rodeo-restart>Restart event</button>
+          <button type="button" data-rodeo-events>Choose event</button>
+        </div>
+      </div>
+      <div class="rodeo-pause-view" data-rodeo-help-view hidden>
+        <p class="rodeo-pause-kicker">How to play</p>
+        <div class="rodeo-howto" data-rodeo-howto></div>
+        <button type="button" data-rodeo-back>Back</button>
       </div>`;
+    const pauseMain = pauseCard.querySelector("[data-rodeo-pause-main]");
+    const helpView = pauseCard.querySelector("[data-rodeo-help-view]");
+    const howTo = pauseCard.querySelector("[data-rodeo-howto]");
+    const renderHowTo = () => {
+      const guide = HOW_TO_PLAY[modeId];
+      howTo.innerHTML = `
+        <h3>${mode().label}</h3>
+        <ol>${guide.steps.map(step => `<li>${step}</li>`).join("")}</ol>
+        <div class="rodeo-meter-guide">${guide.meters.map(([name, purpose]) => `<div><strong>${name}</strong>${purpose}</div>`).join("")}</div>`;
+    };
+    const showPauseMain = () => {
+      pauseMain.hidden = false;
+      helpView.hidden = true;
+    };
+    const showHelp = () => {
+      renderHowTo();
+      pauseMain.hidden = true;
+      helpView.hidden = false;
+      pauseCard.querySelector("[data-rodeo-back]")?.focus();
+    };
     pauseCard.addEventListener("click", event => event.stopPropagation());
     pauseCard.querySelector("[data-rodeo-resume]")?.addEventListener("click", () => {
       if (window.greiIsPaused?.()) shellPauseButton.click();
     });
+    pauseCard.querySelector("[data-rodeo-help]")?.addEventListener("click", showHelp);
+    pauseCard.querySelector("[data-rodeo-back]")?.addEventListener("click", showPauseMain);
     pauseCard.querySelector("[data-rodeo-restart]")?.addEventListener("click", restartCurrentEvent);
     pauseCard.querySelector("[data-rodeo-events]")?.addEventListener("click", returnToEvents);
     gameMenuButton.addEventListener("click", () => {
-      if (running && !window.greiIsPaused?.()) shellPauseButton.click();
+      if (running && !window.greiIsPaused?.()) {
+        showPauseMain();
+        renderHowTo();
+        shellPauseButton.click();
+      }
     });
+    addEventListener("grei:pause", event => { if (event.detail.paused) { showPauseMain(); renderHowTo(); } });
   }
 
   async function submit() {
@@ -1319,7 +1409,7 @@
     const directionalLift = bullDirection === "up" ? -10 : bullDirection === "down" ? 8 : 0;
     if (rideAnimation.complete && rideAnimation.naturalWidth) {
       const pivotCanvasX = 480;
-      const pivotCanvasY = 465;
+      const pivotCanvasY = 435;
       const roll = Math.sin(t * 17) * bullKick * .04 + directionalRoll * bullKick + riderLean * .035;
       const lift = directionalLift * bullKick + riderPitch * 2;
       const rideFps = running ? difficulty().promptBpm / 7.5 : 4;
@@ -1332,12 +1422,12 @@
 
       ctx.fillStyle = "rgba(0,0,0,.34)";
       ctx.beginPath();
-      ctx.ellipse(480, 492, 154, 20, 0, 0, Math.PI * 2);
+      ctx.ellipse(480, 462, 154, 20, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.save();
       ctx.beginPath();
-      ctx.rect(0, 0, canvas.width, 475);
+      ctx.rect(0, 0, canvas.width, 452);
       ctx.clip();
       ctx.translate(pivotCanvasX, pivotCanvasY + lift);
       ctx.rotate(roll);
@@ -1353,12 +1443,12 @@
       const pivotX = 610;
       const pivotY = 1078;
       const pivotCanvasX = 480;
-      const pivotCanvasY = 465;
+      const pivotCanvasY = 435;
       const roll = Math.sin(t * 17) * bullKick * .04 + directionalRoll * bullKick + riderLean * .035;
       const lift = directionalLift * bullKick + riderPitch * 2;
       ctx.save();
       ctx.beginPath();
-      ctx.rect(0, 0, canvas.width, 475);
+      ctx.rect(0, 0, canvas.width, 452);
       ctx.clip();
       ctx.translate(pivotCanvasX, pivotCanvasY + lift);
       ctx.rotate(roll);
@@ -1368,7 +1458,7 @@
     }
 
     ctx.save();
-    ctx.translate(480, 360);
+    ctx.translate(480, 330);
     ctx.rotate(directionalRoll * bullKick);
     ctx.fillStyle = "#142a4a";
     ctx.beginPath();
@@ -1522,6 +1612,20 @@
     ctx.fill();
     ctx.stroke();
     ctx.restore();
+
+    if (dodge.pointer.active) {
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,246,236,.72)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(dodge.pointer.x, dodge.pointer.y, 17 + Math.sin(now / 90) * 2, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,200,87,.85)";
+      ctx.beginPath();
+      ctx.arc(dodge.pointer.x, dodge.pointer.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
 
     const bull = dodge.bull;
     if (bull.phase === "telegraph") {
@@ -1860,38 +1964,49 @@
   }
 
   function drawCanvasHud() {
+    const statusLabel = modeId === "ride" ? "BALANCE" : modeId === "matador" ? "NERVE" : modeId === "catch" ? "GRIT" : "GALLOP";
+    const statusPurpose = modeId === "ride" ? "STAY MOUNTED" : modeId === "matador" ? "SURVIVAL" : modeId === "catch" ? "CHASE STAMINA" : "CURRENT SPEED";
     ctx.fillStyle = "rgba(8,7,12,.68)";
     ctx.beginPath();
-    ctx.roundRect(18, 18, 170, 39, 10);
+    ctx.roundRect(18, 18, 220, 53, 10);
     ctx.fill();
     ctx.fillStyle = "#ffc857";
     ctx.font = "800 10px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText(modeId === "ride" ? "BALANCE" : modeId === "matador" ? "NERVE" : modeId === "catch" ? "GRIT" : "GALLOP", 29, 34);
+    ctx.fillText(statusLabel, 29, 34);
     if (modeId === "ride") {
       ctx.fillStyle = state.lives > 1 ? "#ffc857" : "#ff625f";
       ctx.textAlign = "right";
       ctx.font = "900 10px system-ui";
-      ctx.fillText(`${"♥".repeat(state.lives)}  ${state.lives}`, 176, 34);
+      ctx.fillText(`♥ × ${state.lives}`, 227, 34);
+      ctx.textAlign = "left";
+    } else {
+      ctx.fillStyle = "#fff6ec";
+      ctx.textAlign = "right";
+      ctx.font = "900 10px system-ui";
+      ctx.fillText(`${Math.round(state.balance)}%`, 227, 34);
       ctx.textAlign = "left";
     }
+    ctx.fillStyle = "rgba(255,246,236,.72)";
+    ctx.font = "800 8px system-ui";
+    ctx.fillText(statusPurpose, 29, 48);
     ctx.fillStyle = "rgba(255,255,255,.15)";
-    ctx.fillRect(29, 41, 146, 7);
-    const balanceGradient = ctx.createLinearGradient(29, 0, 175, 0);
+    ctx.fillRect(29, 55, 198, 7);
+    const balanceGradient = ctx.createLinearGradient(29, 0, 227, 0);
     balanceGradient.addColorStop(0, "#ff625f");
     balanceGradient.addColorStop(.55, "#ffc857");
     balanceGradient.addColorStop(1, "#fef5e7");
     ctx.fillStyle = balanceGradient;
-    ctx.fillRect(29, 41, 146 * state.balance / 100, 7);
+    ctx.fillRect(29, 55, 198 * state.balance / 100, 7);
 
     ctx.fillStyle = "rgba(8,7,12,.68)";
     ctx.beginPath();
-    ctx.roundRect(772, 18, 170, 39, 10);
+    ctx.roundRect(810, 18, 132, 39, 10);
     ctx.fill();
     ctx.fillStyle = "#ffc857";
     ctx.font = "900 10px system-ui";
     ctx.textAlign = "center";
-    ctx.fillText(`${difficulty().label.toUpperCase()} · ${difficulty().promptBpm} BPM`, 857, 42);
+    ctx.fillText(difficulty().label.toUpperCase(), 876, 42);
   }
 
   function drawFeedback(now) {
@@ -1947,6 +2062,34 @@
   startButton.addEventListener("click", startCountUp);
   modeButtons.forEach(button => button.addEventListener("click", () => chooseMode(button.dataset.mode)));
   difficultyButtons.forEach(button => button.addEventListener("click", () => chooseDifficulty(button.dataset.difficulty)));
+
+  function updateDodgePointer(event) {
+    const rect = canvas.getBoundingClientRect();
+    dodge.pointer.x = (event.clientX - rect.left) * canvas.width / rect.width;
+    dodge.pointer.y = (event.clientY - rect.top) * canvas.height / rect.height;
+  }
+
+  canvas.addEventListener("pointerdown", event => {
+    if (!running || paused || counting || modeId !== "matador") return;
+    if (event.cancelable) event.preventDefault();
+    dodge.pointer.active = true;
+    dodge.pointer.id = event.pointerId;
+    updateDodgePointer(event);
+    canvas.setPointerCapture?.(event.pointerId);
+    stage.dataset.lastInput = "arena-drag";
+  });
+  canvas.addEventListener("pointermove", event => {
+    if (!dodge.pointer.active || dodge.pointer.id !== event.pointerId) return;
+    if (event.cancelable) event.preventDefault();
+    updateDodgePointer(event);
+  });
+  const releaseDodgePointer = event => {
+    if (dodge.pointer.id !== event.pointerId) return;
+    dodge.pointer.active = false;
+    dodge.pointer.id = null;
+  };
+  canvas.addEventListener("pointerup", releaseDodgePointer);
+  canvas.addEventListener("pointercancel", releaseDodgePointer);
 
   addEventListener("keydown", event => {
     if (event.key === "Escape" && running && !event.repeat) {
@@ -2023,6 +2166,8 @@
     gameMenuButton?.setAttribute("aria-expanded", String(paused));
     if (paused) {
       heldDirections.clear();
+      dodge.pointer.active = false;
+      dodge.pointer.id = null;
       audio.pause();
     } else if (running) {
       last = performance.now();

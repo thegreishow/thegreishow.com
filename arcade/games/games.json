@@ -4,7 +4,7 @@
     "title": "Rodeo: Are You Ready",
     "creator": "The Grei Show",
     "description": "Choose from four rodeo events: ride the riddim, dodge the bull, catch the cow, or race the track with timing-based boosts.",
-    "version": "0.8",
+    "version": "0.9",
     "type": "native",
     "entry": "arcade/games/rodeo-are-you-ready/index.html",
     "thumbnail": "arcade/assets/thumbnails/rodeo-are-you-ready.webp?v=20260811",

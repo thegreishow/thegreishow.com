@@ -2213,6 +2213,11 @@
   document.addEventListener("visibilitychange", () => { if (!document.hidden) keepArenaMoving(); });
   addEventListener("pointerdown", keepArenaMoving, { once: true });
   arenaVideo?.addEventListener("error", () => { arenaVideoFailed = true; stage.classList.add("video-fallback"); stage.dataset.background = "poster"; if (!running) draw(); });
+  if (arenaVideo?.readyState >= 2) {
+    arenaVideo.classList.add("is-live");
+    stage.dataset.background = "mp4";
+    keepArenaMoving();
+  }
   [
     arena, rideSprite, rideAnimation, matadorSprites, matadoraAnimation,
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation

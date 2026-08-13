@@ -169,16 +169,14 @@
 
   const arena = new Image();
   arena.src = "assets/rodeo-arena.webp";
-  const rideSprite = new Image();
-  rideSprite.src = "assets/ride-sprite.webp";
   const rideAnimation = new Image();
-  rideAnimation.src = "assets/ride-animation-v2.webp";
+  rideAnimation.src = "assets/ride-animation-v3.png";
   const rideFallAnimation = new Image();
   rideFallAnimation.src = "assets/ride-fall-animation-v2.png";
   const matadorSprites = new Image();
   matadorSprites.src = "assets/matador-sprites.webp";
   const matadoraAnimation = new Image();
-  matadoraAnimation.src = "assets/matadora-animation-v3.webp";
+  matadoraAnimation.src = "assets/matadora-animation-v4.png";
   const ragingBullHitAnimation = new Image();
   ragingBullHitAnimation.src = "assets/raging-bull-hit-v1.png";
   const chargingBullAnimation = new Image();
@@ -1526,9 +1524,34 @@
     stage.dataset.escapes = String(state.escapes);
   }
 
-  function startCountUp() {
+  async function ensureSelectedAvatar() {
+    const avatar = modeId === "ride" ? rideAnimation : modeId === "matador" ? matadoraAnimation : null;
+    if (!avatar || avatar.naturalWidth) return true;
+    try {
+      if (typeof avatar.decode === "function") await avatar.decode();
+    } catch {}
+    return Boolean(avatar.naturalWidth);
+  }
+
+  async function startCountUp() {
     if (counting || running) return;
     const token = ++countdownToken;
+    counting = true;
+    startButton.disabled = true;
+    const previousButtonCopy = startButton.textContent;
+    startButton.textContent = "Loading rider…";
+    const avatarReady = await ensureSelectedAvatar();
+    if (token !== countdownToken) return;
+    startButton.disabled = false;
+    startButton.textContent = previousButtonCopy;
+    if (!avatarReady) {
+      counting = false;
+      kickerEl.textContent = "Rider still loading";
+      titleEl.innerHTML = "SADDLE<br>UP";
+      copyEl.hidden = false;
+      copyEl.textContent = "The cowgirl art did not finish loading. Tap again to retry.";
+      return;
+    }
     document.querySelector("[data-grei-discovery]")?.remove();
     if (!arenaVideoFailed) arenaVideo?.play().catch(() => {});
     audio.unlock();
@@ -1538,7 +1561,6 @@
     startButton.hidden = true;
     kickerEl.textContent = mode().label;
     copyEl.hidden = false;
-    counting = true;
     let count = 0;
     const finale = modeId === "ride" ? "RIDE!" : modeId === "matador" ? "RAGE!" : modeId === "catch" ? "ROLL!" : "RACE!";
     const finaleVoice = modeId === "ride" ? "Let's ride!" : modeId === "matador" ? "Face the raging bull!" : modeId === "catch" ? "Catch that Rolling Calf!" : "Run the track!";
@@ -2051,41 +2073,7 @@
       return;
     }
 
-    if (rideSprite.complete && rideSprite.naturalWidth) {
-      const spriteScale = 500 / rideSprite.naturalWidth;
-      const pivotX = 610;
-      const pivotY = 1078;
-      const pivotCanvasX = 480;
-      const pivotCanvasY = 405;
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, 0, canvas.width, 430);
-      ctx.clip();
-      ctx.globalAlpha = alpha;
-      ctx.translate(pivotCanvasX + x, pivotCanvasY + y + riderPitch * 2);
-      ctx.rotate(roll);
-      ctx.scale(scale, scale);
-      ctx.drawImage(rideSprite, -pivotX * spriteScale, -pivotY * spriteScale, rideSprite.naturalWidth * spriteScale, rideSprite.naturalHeight * spriteScale);
-      ctx.restore();
-      return;
-    }
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.translate(480 + x, 300 + y);
-    ctx.rotate(roll);
-    ctx.scale(scale, scale);
-    ctx.fillStyle = "#142a4a";
-    ctx.beginPath();
-    ctx.ellipse(0, 105, 125, 28, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#54251d";
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 130, 62, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#ff625f";
-    ctx.fillRect(-18, -100, 36, 75);
-    ctx.restore();
+    // The run waits for the approved cowgirl art; never draw a polygon replacement.
   }
 
   function drawRidePrompt(now) {
@@ -2225,24 +2213,7 @@
         : celebrationActive ? dodge.celebration.type === "fist" ? 7 : dodge.celebration.type === "cape" ? 6 : 6 + cycleFrame(now, 14, 0, 2)
           : oleActive ? (dodge.ole.level > 1 && oleProgress > .52 ? 7 : 6)
           : moving ? cycleFrame(now, 18, 0, DODGE_ANIMATION_FRAMES) : 0;
-    if (spriteFrame(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES)) {
-      // Animated character strip.
-    } else if (matadorSprites.complete && matadorSprites.naturalWidth) {
-      const slotWidth = matadorSprites.naturalWidth / 2;
-      ctx.drawImage(matadorSprites, 0, 0, slotWidth, matadorSprites.naturalHeight, -72, -154, 144, 192);
-    } else {
-      ctx.fillStyle = "#174e96";
-      ctx.beginPath();
-      ctx.arc(0, -35, 24, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#ff625f";
-      ctx.beginPath();
-      ctx.moveTo(-12, -35);
-      ctx.lineTo(-70, 10);
-      ctx.lineTo(-5, 2);
-      ctx.closePath();
-      ctx.fill();
-    }
+    spriteFrame(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES);
     ctx.restore();
   }
 
@@ -3134,7 +3105,7 @@
     keepArenaMoving();
   }
   [
-    arena, rideSprite, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation, ragingBullHitAnimation,
+    arena, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation, ragingBullHitAnimation,
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation, rollingCalfEventsAnimation
   ].forEach(image => image.addEventListener("load", () => { if (!running) draw(); }));
 

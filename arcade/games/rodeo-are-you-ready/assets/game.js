@@ -180,7 +180,7 @@
   const ragingBullHitAnimation = new Image();
   ragingBullHitAnimation.src = "assets/raging-bull-hit-v1.png";
   const chargingBullAnimation = new Image();
-  chargingBullAnimation.src = "assets/charging-bull-animation-v2.webp";
+  chargingBullAnimation.src = "assets/charging-bull-animation-v3.png";
   const catchCowSprites = new Image();
   catchCowSprites.src = "assets/catch-cow-sprites.webp";
   const horsebackRiderAnimation = new Image();
@@ -196,6 +196,7 @@
   const RIDE_FALL_FRAMES = 6;
   const EVENT_ANIMATION_FRAMES = 6;
   const DODGE_ANIMATION_FRAMES = 8;
+  const BULL_ANIMATION_FRAMES = 4;
   const CHASE_ANIMATION_FRAMES = 8;
   const RACE_GALLOP_FRAMES = 8;
   const RIDE_LIVES = { easy: 6, standard: 5 };
@@ -213,7 +214,7 @@
   const RIDE_DIRECTION_FRAMES = { left: 3, up: 2, down: 4, right: 5 };
   const RIDE_IDLE_FRAMES = [0, 1, 6, 7];
   const RIDE_CHEERS = ["YEEHAW!", "WOO!", "RIDE IT!", "LET'S GO!", "GIDDY UP!"];
-  const JUMP_STYLE = { id: "vault", label: "CAPE VAULT", velocity: 476, color: "#59d8ff" };
+  const JUMP_STYLE = { id: "vault", label: "CAPE VAULT", velocity: 448, color: "#59d8ff" };
   const JUMP_WINDOW = {
     easy: { open: 210, close: 30 },
     standard: { open: 184, close: 30 }
@@ -560,7 +561,7 @@
   const joystick = { active: false, id: null, x: 0, y: 0 };
   const dodge = {
     player: { x: 480, y: 350, vx: 0, vy: 0, jumpHeight: 0, jumpVelocity: 0, airborne: false, landedAt: 0, jumpType: "vault", jumpStartedAt: 0, jumpLockUntil: 0, jumpHintAt: 0 },
-    bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false, jumped: false, jumpFlashed: false, jumpAttempted: false },
+    bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, facing: 1, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false, jumped: false, jumpFlashed: false, jumpAttempted: false },
     ole: { startedAt: 0, until: 0, level: 0 },
     hit: { startedAt: 0, until: 0, angle: 0, gameOver: false },
     celebration: { startedAt: 0, until: 0, type: "cape", level: 0 }
@@ -789,7 +790,7 @@
     controlHint.textContent = modeId === "ride"
       ? "Arrow keys or W A S D · Match the glowing direction · Space pauses"
       : modeId === "matador"
-        ? "Joystick to dodge · Tap Jump or press J to clear a charge · Space pauses"
+        ? "Joystick to dodge · Tap Vault or press J as the bull closes in · Space pauses"
         : modeId === "catch"
           ? "Use the joystick to chase · Throw when Lasso turns gold · Space pauses"
           : "Tap Up/W to gallop · Left/Right to pass · Enter/Z or Boost at full Heat";
@@ -1011,6 +1012,7 @@
     dodge.bull.targetX = dodge.player.x;
     dodge.bull.targetY = dodge.player.y;
     dodge.bull.angle = Math.atan2(dodge.bull.targetY - dodge.bull.y, dodge.bull.targetX - dodge.bull.x);
+    dodge.bull.facing = Math.cos(dodge.bull.angle) >= 0 ? 1 : -1;
     dodge.bull.phase = "telegraph";
     dodge.bull.timer = difficulty().telegraph;
     dodge.bull.speed = difficulty().bullSpeed;
@@ -1075,7 +1077,7 @@
     const outcome = state.scoreDodge(dodge.bull.minDistance, dodge.bull.jumped ? dodge.player.jumpType : null);
     const closeCall = outcome.kind === "close" || outcome.kind === "razor";
     const now = performance.now();
-    const celebrationTypes = outcome.jumped ? ["cape", "fist"] : ["cape", "spin", "fist"];
+    const celebrationTypes = ["cape", "fist"];
     const celebrationType = celebrationTypes[(state.dodges + state.skillTier) % celebrationTypes.length];
     dodge.celebration = { startedAt: now, until: now + (closeCall ? 1180 : 760), type: celebrationType, level: outcome.kind === "razor" ? 2 : 1 };
     if (closeCall) {
@@ -1115,7 +1117,7 @@
     dodge.player.y += dodge.player.vy * dt;
     constrainPlayer();
     if (dodge.player.airborne) {
-      dodge.player.jumpVelocity -= 1220 * dt;
+      dodge.player.jumpVelocity -= 1420 * dt;
       dodge.player.jumpHeight += dodge.player.jumpVelocity * dt;
       if (dodge.player.jumpHeight <= 0) {
         dodge.player.jumpHeight = 0;
@@ -2251,12 +2253,9 @@
     const oleActive = now < dodge.ole.until;
     const oleProgress = oleActive ? Math.min(1, (now - dodge.ole.startedAt) / Math.max(1, dodge.ole.until - dodge.ole.startedAt)) : 0;
     const celebrationActive = now < dodge.celebration.until;
-    const celebrationProgress = celebrationActive ? Math.min(1, (now - dodge.celebration.startedAt) / Math.max(1, dodge.celebration.until - dodge.celebration.startedAt)) : 0;
-    const jumpProgress = player.airborne ? Math.min(1, (now - player.jumpStartedAt) / 980) : 0;
-    let performanceRotation = 0;
-    if (player.airborne) performanceRotation += Math.sin(jumpProgress * Math.PI) * .2 * Math.sign(player.vx || 1);
-    if (!player.airborne && celebrationActive && dodge.celebration.type === "spin") performanceRotation += celebrationProgress * Math.PI * 2;
-    ctx.rotate(player.vx / 265 * .055 + (player.airborne ? player.vx / 265 * .08 : 0) + (oleActive ? Math.sin(oleProgress * Math.PI * 2) * .055 : 0) + performanceRotation);
+    const groundedLean = player.airborne ? 0 : player.vx / 265 * .045;
+    const capeLean = !player.airborne && oleActive ? Math.sin(oleProgress * Math.PI * 2) * .045 : 0;
+    ctx.rotate(groundedLean + capeLean);
     if (justLanded) {
       const landing = Math.max(0, 1 - (now - player.landedAt) / 220);
       ctx.scale(1 + landing * .07, 1 - landing * .09);
@@ -2273,9 +2272,9 @@
     }
     const moving = Math.hypot(player.vx, player.vy) > 18;
     const matadoraFrame = player.airborne
-      ? player.jumpVelocity > 110 ? 2 : player.jumpVelocity > -115 ? 3 : 4
+      ? player.jumpVelocity > 120 ? 1 : player.jumpVelocity > -135 ? 6 : 5
       : justLanded ? 5
-        : celebrationActive ? dodge.celebration.type === "fist" ? 7 : dodge.celebration.type === "cape" ? 6 : 6 + cycleFrame(now, 14, 0, 2)
+        : celebrationActive ? dodge.celebration.type === "fist" ? 7 : 6
           : oleActive ? (dodge.ole.level > 1 && oleProgress > .52 ? 7 : 6)
           : moving ? cycleFrame(now, 18, 0, DODGE_ANIMATION_FRAMES) : 0;
     spriteFrame(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES);
@@ -2315,15 +2314,7 @@
     ctx.save();
     ctx.translate(dodge.player.x, dodge.player.y - 66);
     ctx.globalAlpha = strength * .9;
-    if (dodge.celebration.type === "spin") {
-      for (let ring = 0; ring < 3; ring++) {
-        ctx.strokeStyle = ring === 1 ? "#ff625f" : color;
-        ctx.lineWidth = 7 - ring * 1.6;
-        ctx.beginPath();
-        ctx.arc(0, 0, 48 + ring * 18, progress * Math.PI * 3 + ring, progress * Math.PI * 3 + Math.PI * 1.25 + ring);
-        ctx.stroke();
-      }
-    } else if (dodge.celebration.type === "cape") {
+    if (dodge.celebration.type === "cape") {
       ctx.strokeStyle = "#ff625f";
       ctx.lineWidth = 14;
       ctx.lineCap = "round";
@@ -2349,15 +2340,17 @@
     const bull = dodge.bull;
     ctx.save();
     ctx.translate(bull.x, bull.y);
-    ctx.rotate(bull.angle - Math.PI * .75);
     ctx.fillStyle = "rgba(0,0,0,.34)";
     ctx.beginPath();
-    ctx.ellipse(0, 31, 54, 14, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 31, 62, 14, 0, 0, Math.PI * 2);
     ctx.fill();
+    const stride = bull.phase === "charge" ? Math.sin(performance.now() / 58) : 0;
+    ctx.translate(0, stride * 1.6);
+    ctx.scale((bull.facing || 1) * (1 + stride * .012), 1 - stride * .008);
     const bullFrame = bull.phase === "charge"
-      ? cycleFrame(performance.now(), 22, 0, DODGE_ANIMATION_FRAMES)
-      : bull.phase === "recover" ? 7 : 0;
-    if (spriteFrame(chargingBullAnimation, bullFrame, -93, -124, 186, 248, DODGE_ANIMATION_FRAMES)) {
+      ? cycleFrame(performance.now(), 16, 0, BULL_ANIMATION_FRAMES)
+      : bull.phase === "recover" ? 3 : 0;
+    if (spriteFrame(chargingBullAnimation, bullFrame, -106, -153, 212, 212, BULL_ANIMATION_FRAMES)) {
       // Animated charge strip.
     } else if (matadorSprites.complete && matadorSprites.naturalWidth) {
       const slotWidth = matadorSprites.naturalWidth / 2;

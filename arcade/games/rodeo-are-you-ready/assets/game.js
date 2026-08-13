@@ -228,21 +228,22 @@
   };
   const STREAK_CHEERS = { 3: "WARMING UP!", 5: "ON FIRE!", 8: "CROWD ROARING!", 12: "UNTOUCHABLE!", 16: "RODEO ROYALTY!", 20: "LEGENDARY!", 25: "CAPE MASTER!", 30: "ARENA ICON!", 40: "ALL-TIME GREAT!" };
   const VOICE_CUE_FILES = {
-    three: "assets/voice/three-v1.mp3",
-    two: "assets/voice/two-v1.mp3",
-    one: "assets/voice/one-v1.mp3",
-    "start-ride": "assets/voice/start-ride-v1.mp3",
-    "start-raging": "assets/voice/start-raging-v1.mp3",
-    "start-calf": "assets/voice/start-calf-v1.mp3",
-    "start-race": "assets/voice/start-race-v1.mp3",
-    yeehaw: "assets/voice/yeehaw-v1.mp3",
-    ole: "assets/voice/ole-v1.mp3",
-    legendary: "assets/voice/legendary-v1.mp3"
+    three: "assets/voice/three-v2.mp3",
+    two: "assets/voice/two-v2.mp3",
+    one: "assets/voice/one-v2.mp3",
+    "start-ride": "assets/voice/start-ride-v2.mp3",
+    "start-raging": "assets/voice/start-raging-v2.mp3",
+    "start-calf": "assets/voice/start-calf-v2.mp3",
+    "start-race": "assets/voice/start-race-v2.mp3",
+    yeehaw: "assets/voice/yeehaw-v2.mp3",
+    ole: "assets/voice/ole-v2.mp3",
+    legendary: "assets/voice/legendary-v2.mp3"
   };
   const announcer = new Audio();
   announcer.preload = "auto";
   announcer.playsInline = true;
   let activeVoiceCue = null;
+  let musicMixFrame = 0;
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
   let difficultyId = DIFFICULTIES[localStorage.getItem("grei-rodeo-difficulty")] ? localStorage.getItem("grei-rodeo-difficulty") : "standard";
@@ -297,7 +298,7 @@
       this.track.pause();
       this.track.currentTime = 0;
       this.track.loop = true;
-      this.track.volume = activeVoiceCue ? .30 : .58;
+      this.track.volume = activeVoiceCue ? .18 : .58;
       this.track.play().then(() => {
         this.unlocked = true;
       }).catch(() => {
@@ -314,7 +315,10 @@
       this.track.muted = !this.enabled;
       if (!this.enabled) stopVoiceCue();
       audioStatus.textContent = this.enabled ? audioLabel() : "Music and game sounds muted";
-      if (this.enabled && running && !paused) this.resume();
+      if (this.enabled && running && !paused) {
+        setMusicMix(activeVoiceCue ? .18 : .58, 90);
+        this.resume();
+      }
     }
 
     tone(frequency, duration = .08, type = "sine", volume = .055, delay = 0) {
@@ -350,6 +354,43 @@
       const weight = Math.max(.18, Math.min(1, strength));
       this.tone(72, .095, "sine", .025 + weight * .035);
       this.tone(116, .065, "triangle", .012 + weight * .018, .012);
+    }
+    noise(duration = .28, volume = .035, frequency = 1200) {
+      if (!this.enabled) return;
+      const audioContext = this.ensureContext();
+      if (!audioContext) return;
+      const length = Math.max(1, Math.floor(audioContext.sampleRate * duration));
+      const buffer = audioContext.createBuffer(1, length, audioContext.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let index = 0; index < length; index++) {
+        const fade = Math.pow(1 - index / length, .7);
+        data[index] = (Math.random() * 2 - 1) * fade;
+      }
+      const source = audioContext.createBufferSource();
+      const filter = audioContext.createBiquadFilter();
+      const gain = audioContext.createGain();
+      const now = audioContext.currentTime;
+      source.buffer = buffer;
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(frequency, now);
+      filter.Q.setValueAtTime(.7, now);
+      gain.gain.setValueAtTime(.0001, now);
+      gain.gain.exponentialRampToValueAtTime(volume, now + .025);
+      gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
+      source.connect(filter).connect(gain).connect(audioContext.destination);
+      source.start(now);
+      source.stop(now + duration + .02);
+    }
+    whoosh(strength = .7) {
+      const weight = Math.max(.25, Math.min(1.2, strength));
+      this.noise(.22 + weight * .12, .022 + weight * .025, 1150 + weight * 850);
+      this.tone(180 + weight * 85, .16, "sine", .018 + weight * .012);
+    }
+    crowd(level = 1) {
+      const weight = Math.max(1, Math.min(5, level));
+      this.noise(.42 + weight * .07, .016 + weight * .007, 520 + weight * 90);
+      this.tone(NOTES.E4, .18, "triangle", .018 + weight * .004);
+      this.tone(NOTES.B4, .24, "sine", .014 + weight * .003, .06);
     }
     miss() { this.tone(NOTES.B3, .13, "sawtooth", .035); this.tone(NOTES.E3, .18, "triangle", .04, .07); }
   }
@@ -628,21 +669,38 @@
     announcer.pause();
     try { announcer.currentTime = 0; } catch {}
     activeVoiceCue = null;
-    if (running && audio.enabled) music.volume = .58;
+    stage.classList.remove("voice-active");
+    if (running && audio.enabled) setMusicMix(.58, 220);
   }
 
-  function playVoiceCue(id, volume = .88) {
+  function setMusicMix(target, duration = 140) {
+    cancelAnimationFrame(musicMixFrame);
+    const from = music.volume;
+    const startedAt = performance.now();
+    const change = target - from;
+    const updateMix = now => {
+      const progress = Math.min(1, (now - startedAt) / Math.max(1, duration));
+      const eased = 1 - Math.pow(1 - progress, 3);
+      music.volume = Math.max(0, Math.min(1, from + change * eased));
+      if (progress < 1) musicMixFrame = requestAnimationFrame(updateMix);
+    };
+    musicMixFrame = requestAnimationFrame(updateMix);
+  }
+
+  function playVoiceCue(id, volume = 1) {
     if (!audio.enabled || !VOICE_CUE_FILES[id]) return;
     stopVoiceCue();
     activeVoiceCue = id;
     announcer.src = VOICE_CUE_FILES[id];
-    announcer.volume = volume;
+    announcer.volume = Math.max(.9, Math.min(1, volume));
     announcer.muted = false;
-    if (running) music.volume = .30;
+    stage.classList.add("voice-active");
+    if (running) setMusicMix(.18, 90);
     const finishCue = () => {
       if (activeVoiceCue !== id) return;
       activeVoiceCue = null;
-      if (running && audio.enabled) music.volume = .58;
+      stage.classList.remove("voice-active");
+      if (running && audio.enabled) setMusicMix(.58, 240);
     };
     announcer.onended = finishCue;
     announcer.onerror = finishCue;
@@ -677,9 +735,23 @@
 
   function streakCheer() { return STREAK_CHEERS[state.combo] || ""; }
 
+  function updateHudStat(element, value) {
+    const nextValue = String(value);
+    if (element.textContent === nextValue) return;
+    element.textContent = nextValue;
+    if (!running) return;
+    const stat = element.closest(".stat");
+    stat?.classList.remove("stat-pop");
+    void stat?.offsetWidth;
+    stat?.classList.add("stat-pop");
+    clearTimeout(element.statPopTimer);
+    element.statPopTimer = setTimeout(() => stat?.classList.remove("stat-pop"), 320);
+  }
+
   function hud() {
-    scoreEl.textContent = state.score;
-    comboEl.textContent = state.combo;
+    updateHudStat(scoreEl, state.score);
+    updateHudStat(comboEl, state.combo);
+    comboEl.closest(".stat")?.classList.toggle("streak-hot", state.combo >= 5);
     if (modeId === "race") {
       const remaining = Math.max(0, Math.ceil(race.duration - state.elapsed));
       timeEl.textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
@@ -696,6 +768,7 @@
     stage.style.setProperty("--multiplier-next-color", nextColor);
     stage.dataset.scoreMultiplier = String(multiplier);
     stage.dataset.multiplierTier = String(tierIndex);
+    stage.classList.toggle("streak-live", state.combo >= 5);
 
     if (modeId !== "race") {
       const nextMultiplier = SCORE_MULTIPLIERS[Math.min(tierIndex + 1, SCORE_MULTIPLIERS.length - 1)];
@@ -857,7 +930,8 @@
     stage.classList.add("multiplier-up");
     setTimeout(() => stage.classList.remove("multiplier-up"), 760);
     audio.celebrate(Math.max(1, tier));
-    playVoiceCue(multiplier >= 10 ? "legendary" : "yeehaw", multiplier >= 10 ? .96 : .86);
+    audio.crowd(Math.max(1, tier));
+    playVoiceCue(multiplier >= 10 ? "legendary" : "yeehaw", 1);
     haptic(celebration.haptic);
     if (modeId === "ride") {
       bullKick = 1.7 + tier * .12;
@@ -900,6 +974,7 @@
         const multiplierCopy = outcome.scoreMultiplier > 1 ? ` · ×${outcome.scoreMultiplier}` : "";
         setFeedback(outcome.kind === "perfect" ? `${cheer}PERFECT +${outcome.points}${multiplierCopy}` : `SMOOTH +${outcome.points}${multiplierCopy}`, cheer ? 900 : 560, { big: Boolean(milestone), color: state.multiplierColor() });
         outcome.kind === "perfect" ? audio.perfect() : audio.good();
+        if (milestone) audio.crowd(Math.min(5, 1 + Math.floor(state.combo / 5)));
         haptic(outcome.kind === "perfect" ? [22, 18, 36] : 18);
       }
       burst(outcome.kind === "perfect" ? "#ffc857" : "#ff625f", outcome.kind === "perfect" ? 26 : 15);
@@ -1068,6 +1143,7 @@
     jumpButton?.classList.remove("ready");
     jumpButton?.setAttribute("aria-disabled", "true");
     setFeedback(`${JUMP_STYLE.label}!`, 430, { color: JUMP_STYLE.color });
+    audio.whoosh(.82);
     audio.good();
     haptic([22, 14, 34], { strength: .46 });
     burst("#d7b8ad", 9, player.x, player.y + 5);
@@ -1094,7 +1170,8 @@
       const streak = cheer ? `${cheer}  ` : "";
       setFeedback(`${streak}${title} +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer || closeCall ? 920 : 620, { big: outcome.kind === "razor" || Boolean(cheer), color: state.multiplierColor() });
       closeCall ? audio.perfect() : audio.good();
-      if (closeCall) playVoiceCue("ole", .9);
+      if (cheer) audio.crowd(Math.min(5, 1 + Math.floor(state.combo / 5)));
+      if (closeCall) playVoiceCue("ole", 1);
     }
     haptic(outcome.kind === "razor" ? [45, 24, 70] : closeCall ? [32, 22, 45] : 22);
     burst(state.multiplierColor(), outcome.kind === "razor" ? 42 : closeCall ? 30 : 18, dodge.player.x, dodge.player.y - 35);
@@ -1334,6 +1411,7 @@
       setFeedback(`${streakCallout} +${streakBonus} · ×${state.modeMultiplier()}${streakHeat ? ` · +${streakHeat} HEAT` : ""}`, 920, { big: state.combo >= 8, color: state.multiplierColor() });
       burst(state.multiplierColor(), 22 + Math.min(28, state.combo), 480, 280);
       audio.perfect();
+      audio.crowd(Math.min(5, 1 + Math.floor(state.combo / 5)));
     }
     burst(perfect ? "#ffc857" : "#ffad86", perfect ? 7 : 3, 480, 300);
     lassoButton.classList.toggle("ready", state.heat >= 100);
@@ -1356,6 +1434,7 @@
     setFeedback(`FULL HEAT BOOST! +${boostPoints} · ×${state.modeMultiplier()}`, 900, { big: state.modeMultiplier() >= 4, color: state.multiplierColor() });
     burst("#ffc857", 38, 480, 270);
     flashes.push({ x: 480, y: 270, life: .45 });
+    audio.whoosh(1.15);
     audio.perfect();
     haptic([55, 22, 85]);
   }
@@ -1472,6 +1551,7 @@
     chase.lasso.targetY = chase.cow.y;
     lassoButton.classList.add("active");
     setTimeout(() => lassoButton.classList.remove("active"), 170);
+    audio.whoosh(.52);
     audio.rope();
     haptic(22);
 
@@ -1496,6 +1576,7 @@
       const action = quickCatch ? "QUICK CALF CATCH" : "ROPE 'EM";
       setFeedback(`${cheer ? `${cheer}  ` : ""}${action} +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer ? 880 : 700, { big: Boolean(cheer), color: state.multiplierColor() });
       quickCatch ? audio.perfect() : audio.good();
+      if (cheer) audio.crowd(Math.min(5, 1 + Math.floor(state.combo / 5)));
     }
     burst(state.multiplierColor(), quickCatch ? 30 : 22, chase.cow.x, chase.cow.y - 34);
     haptic(quickCatch ? [38, 22, 60] : [28, 20, 38]);
@@ -1650,7 +1731,7 @@
         ? "Hear the count. Feel the pulse."
         : modeId === "ride" ? "Stay smooth and keep riding." : modeId === "matador" ? "Face the Raging Bull." : modeId === "catch" ? "Track down the Rolling Calf." : "Tap to gallop. Fill Heat. Hit Boost.";
       audio.countdown(count);
-      playVoiceCue(voiceLine, count < 3 ? .82 : .94);
+      playVoiceCue(voiceLine, count < 3 ? .96 : 1);
       haptic(count < 3 ? 28 : [45, 20, 80]);
       count++;
       if (count < cards.length) setTimeout(tick, SONG_BEAT_SECONDS * 1000);

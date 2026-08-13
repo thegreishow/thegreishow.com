@@ -16,8 +16,9 @@
   <link rel="preload" href="assets/horseback-rider-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/race-gallop-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/runaway-cow-animation-v2.webp" as="image" type="image/webp">
+  <link rel="preload" href="assets/ride-fall-animation-v2.png" as="image" type="image/png">
   <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
-  <link rel="stylesheet" href="assets/game.css?v=20260812d">
+  <link rel="stylesheet" href="assets/game.css?v=20260813a">
 </head>
 <body>
 <script src="../../engine/game-shell.js?v=20260811f"></script>
@@ -32,7 +33,7 @@
     </nav>
     <div class="stats" aria-live="polite">
       <div class="stat"><b id="score">0</b><span>Score</span></div>
-      <div class="stat"><b id="combo">0×</b><span>Combo</span></div>
+      <div class="stat"><b id="combo">0</b><span>Streak</span></div>
       <div class="stat"><b id="time">0</b><span>Time</span></div>
     </div>
   </header>
@@ -106,10 +107,11 @@
     <button class="control" data-action="down" aria-label="Lean back"><span>↓</span><small>Back</small></button>
     <button class="control" data-action="right" aria-label="Lean right"><span>→</span><small>Right</small></button>
     <button class="control lasso-control" id="lassoButton" aria-label="Throw lasso" hidden><span>◎</span><small>Lasso</small></button>
+    <button class="control jump-control" id="jumpButton" aria-label="Jump over the bull" hidden><span>↥</span><small>Jump</small></button>
   </section>
   <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
 </main>
 <audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
-<script src="assets/game.js?v=20260812d"></script>
+<script src="assets/game.js?v=20260813a"></script>
 </body>
 </html>

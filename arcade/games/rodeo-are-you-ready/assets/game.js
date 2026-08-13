@@ -43,13 +43,13 @@
     },
     matador: {
       steps: [
-        "Use the joystick to move the matadora around the center of the ring.",
-        "Watch the charge line, then move clear before the bull launches.",
-        "Close calls score more and build Heat faster, but clipping the bull costs Nerve."
+        "Use the joystick to move, then tap Jump as the bull reaches you to clear a charge.",
+        "Stay close to the horns without getting clipped: close and razor dodges earn the biggest rewards.",
+        "Chain clean dodges for longer streaks, OLÉ celebrations, and the ×2 to ×10 multiplier ladder."
       ],
       meters: [
         ["Nerve", "Your survival meter. Bull hits drain it; the run ends at zero."],
-        ["Heat", "At full Heat, every clean dodge is worth 2× until a hit cools it down."]
+        ["Heat", "Fill five tougher bars through clean, close, and jumping dodges. A hit drops one multiplier tier."]
       ]
     },
     catch: {
@@ -60,7 +60,7 @@
       ],
       meters: [
         ["Grit", "Your chase stamina. Escaped cows drain it; the run ends at zero."],
-        ["Heat", "At full Heat, each successful catch is worth 2× until an escape cools it down."]
+        ["Heat", "Precise and quick catches fill five tougher bars from ×2 through ×10. An escape drops one tier."]
       ]
     },
     race: {
@@ -71,7 +71,8 @@
       ],
       meters: [
         ["Gallop", "Your current speed rhythm. It rises with well-timed taps and slowly fades."],
-        ["Heat", "Your boost charge. Fill it, then spend it with the Boost button."]
+        ["Heat", "Your boost charge. Fill it, then spend it with the Boost button."],
+        ["Multiplier", "Perfect gallops and overtakes climb a separate ×2 to ×10 scoring ladder."]
       ]
     }
   };
@@ -160,6 +161,7 @@
   const joystickLabel = document.getElementById("joystickLabel");
   const controlButtons = [...document.querySelectorAll("[data-action]")];
   const lassoButton = document.getElementById("lassoButton");
+  const jumpButton = document.getElementById("jumpButton");
   const gameMenuButton = document.getElementById("gameMenuButton");
   const music = document.getElementById("music");
   const arenaVideo = document.getElementById("arenaVideo");
@@ -171,6 +173,8 @@
   rideSprite.src = "assets/ride-sprite.webp";
   const rideAnimation = new Image();
   rideAnimation.src = "assets/ride-animation-v2.webp";
+  const rideFallAnimation = new Image();
+  rideFallAnimation.src = "assets/ride-fall-animation-v2.png";
   const matadorSprites = new Image();
   matadorSprites.src = "assets/matador-sprites.webp";
   const matadoraAnimation = new Image();
@@ -187,6 +191,7 @@
   runawayCowAnimation.src = "assets/runaway-cow-animation-v2.webp";
   const ANIMATION_FRAMES = 4;
   const RIDE_ANIMATION_FRAMES = 8;
+  const RIDE_FALL_FRAMES = 6;
   const DODGE_ANIMATION_FRAMES = 8;
   const CHASE_ANIMATION_FRAMES = 8;
   const RACE_GALLOP_FRAMES = 8;
@@ -194,11 +199,18 @@
   const RIDE_RECOVERY_MS = { easy: 4000, standard: 3500 };
   const RIDE_WRONG_DAMAGE = { easy: 10, standard: 14 };
   const RIDE_MISSED_DAMAGE = { easy: 8, standard: 11 };
-  const RIDE_MULTIPLIERS = [1, 2, 4, 6, 8, 10];
+  const SCORE_MULTIPLIERS = [1, 2, 4, 6, 8, 10];
+  const MULTIPLIER_COLORS = ["#fff6ec", "#59d8ff", "#66e38f", "#ffc857", "#ff7a59", "#e785ff"];
+  const SKILL_TARGETS = {
+    matador: [3, 5, 7, 9, 12],
+    catch: [3, 5, 7, 9, 12],
+    race: [6, 8, 10, 12, 16]
+  };
   const RIDE_HEAT_TARGETS = [56, 76, 104, 138, 180];
   const RIDE_DIRECTION_FRAMES = { left: 3, up: 2, down: 4, right: 5 };
   const RIDE_IDLE_FRAMES = [0, 1, 6, 7];
   const RIDE_CHEERS = ["YEEHAW!", "WOO!", "RIDE IT!", "LET'S GO!", "GIDDY UP!"];
+  const STREAK_CHEERS = { 3: "WARMING UP!", 5: "ON FIRE!", 8: "CROWD ROARING!", 12: "UNTOUCHABLE!", 16: "RODEO ROYALTY!", 20: "LEGENDARY!", 25: "CAPE MASTER!", 30: "ARENA ICON!", 40: "ALL-TIME GREAT!" };
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
   let difficultyId = DIFFICULTIES[localStorage.getItem("grei-rodeo-difficulty")] ? localStorage.getItem("grei-rodeo-difficulty") : "standard";
@@ -307,6 +319,9 @@
       this.rideHeat = 0;
       this.rideTier = 0;
       this.bestRideMultiplier = 1;
+      this.skillProgress = 0;
+      this.skillTier = 0;
+      this.bestMultiplier = 1;
       this.balance = 100;
       this.lives = RIDE_LIVES[difficultyId];
       this.perfects = 0;
@@ -333,7 +348,55 @@
       this.answered = false;
     }
 
-    rideMultiplier() { return RIDE_MULTIPLIERS[this.rideTier]; }
+    rideMultiplier() { return SCORE_MULTIPLIERS[this.rideTier]; }
+
+    modeMultiplier() { return modeId === "ride" ? this.rideMultiplier() : SCORE_MULTIPLIERS[this.skillTier]; }
+
+    multiplierColor(tier = modeId === "ride" ? this.rideTier : this.skillTier) {
+      return MULTIPLIER_COLORS[Math.max(0, Math.min(MULTIPLIER_COLORS.length - 1, tier))];
+    }
+
+    skillTarget() {
+      const targets = SKILL_TARGETS[modeId] || SKILL_TARGETS.matador;
+      return targets[Math.min(this.skillTier, targets.length - 1)];
+    }
+
+    syncSkillHeat() {
+      if (modeId === "race") return;
+      this.heat = this.skillTier >= SCORE_MULTIPLIERS.length - 1
+        ? 100
+        : Math.min(100, this.skillProgress / this.skillTarget() * 100);
+    }
+
+    addSkillProgress(amount) {
+      if (this.skillTier >= SCORE_MULTIPLIERS.length - 1) return null;
+      this.skillProgress += amount;
+      const target = this.skillTarget();
+      if (this.skillProgress < target) { this.syncSkillHeat(); return null; }
+      this.skillProgress -= target;
+      this.skillTier++;
+      this.bestMultiplier = Math.max(this.bestMultiplier, this.modeMultiplier());
+      if (this.skillTier >= SCORE_MULTIPLIERS.length - 1) this.skillProgress = 0;
+      this.syncSkillHeat();
+      return this.modeMultiplier();
+    }
+
+    coolSkillProgress(portion = .35) {
+      if (this.skillTier >= SCORE_MULTIPLIERS.length - 1) {
+        this.skillTier--;
+        this.skillProgress = this.skillTarget() * .55;
+      } else {
+        this.skillProgress = Math.max(0, this.skillProgress - this.skillTarget() * portion);
+      }
+      this.syncSkillHeat();
+    }
+
+    dropSkillTier() {
+      if (this.skillTier > 0) this.skillTier--;
+      this.skillProgress = 0;
+      this.syncSkillHeat();
+      return this.modeMultiplier();
+    }
 
     rideHeatTarget() { return RIDE_HEAT_TARGETS[Math.min(this.rideTier, RIDE_HEAT_TARGETS.length - 1)]; }
 
@@ -351,6 +414,7 @@
       this.rideHeat -= target;
       this.rideTier++;
       this.bestRideMultiplier = Math.max(this.bestRideMultiplier, this.rideMultiplier());
+      this.bestMultiplier = Math.max(this.bestMultiplier, this.rideMultiplier());
       if (this.rideTier >= RIDE_HEAT_TARGETS.length) this.rideHeat = 0;
       this.syncRideHeat();
       return this.rideMultiplier();
@@ -392,17 +456,21 @@
       return { kind: perfect ? "perfect" : "good", points, scoreMultiplier, heatUpgrade };
     }
 
-    scoreDodge(closeCall) {
+    scoreDodge(minDistance, jumped = false) {
       this.combo++;
       this.bestCombo = Math.max(this.bestCombo, this.combo);
       this.dodges++;
+      const razor = minDistance < 58;
+      const closeCall = minDistance < 88;
       if (closeCall) this.closeCalls++;
-      const multiplier = Math.min(3, 1 + Math.floor(this.combo / 5) * .2);
-      const points = Math.round((closeCall ? 300 : 180) * multiplier * (this.heat >= 100 ? 2 : 1));
+      const scoreMultiplier = this.modeMultiplier();
+      const base = razor ? 420 : closeCall ? 300 : 180;
+      const jumpBonus = jumped ? 1.22 : 1;
+      const points = Math.round(base * jumpBonus * scoreMultiplier);
       this.score += points;
-      this.heat = Math.min(100, this.heat + (closeCall ? 15 : 9));
+      const multiplierUpgrade = this.addSkillProgress((razor ? 3 : closeCall ? 2 : 1) + (jumped ? 1 : 0));
       this.balance = Math.min(100, this.balance + 2);
-      return { kind: closeCall ? "perfect" : "good", points };
+      return { kind: razor ? "razor" : closeCall ? "close" : "clear", points, scoreMultiplier, multiplierUpgrade, jumped };
     }
 
     scoreCatch(quickCatch, distance) {
@@ -411,28 +479,30 @@
       this.catches++;
       if (quickCatch) this.quickCatches++;
       const precision = Math.max(0, 1 - distance / difficulty().lassoRange);
-      const multiplier = Math.min(3, 1 + Math.floor(this.combo / 4) * .2);
-      const points = Math.round((quickCatch ? 360 : 220) * (1 + precision * .35) * multiplier * (this.heat >= 100 ? 2 : 1));
+      const scoreMultiplier = this.modeMultiplier();
+      const points = Math.round((quickCatch ? 360 : 220) * (1 + precision * .35) * scoreMultiplier);
       this.score += points;
-      this.heat = Math.min(100, this.heat + (quickCatch ? 16 : 10));
+      const multiplierUpgrade = this.addSkillProgress(quickCatch ? 2.5 : precision > .62 ? 2 : 1);
       this.balance = Math.min(100, this.balance + 3);
-      return { kind: quickCatch ? "perfect" : "good", points };
+      return { kind: quickCatch ? "perfect" : "good", points, scoreMultiplier, multiplierUpgrade };
     }
 
     scoreOvertake() {
       this.combo++;
       this.bestCombo = Math.max(this.bestCombo, this.combo);
       this.overtakes++;
-      const points = Math.round(240 * Math.min(2.5, 1 + this.combo * .12));
+      const scoreMultiplier = this.modeMultiplier();
+      const points = Math.round(240 * scoreMultiplier);
       this.score += points;
-      this.heat = Math.min(100, this.heat + 12);
-      return points;
+      const multiplierUpgrade = this.addSkillProgress(1.5);
+      return { points, scoreMultiplier, multiplierUpgrade };
     }
 
     takeHit(damage = 18) {
       this.combo = 0;
       if (modeId === "ride") this.coolRideHeat();
-      else this.heat = Math.max(0, this.heat - 18);
+      else if (modeId === "matador" || modeId === "catch") this.dropSkillTier();
+      else this.coolSkillProgress(.5);
       this.balance = Math.max(0, this.balance - damage);
       this.misses++;
       return { kind: "miss", points: 0 };
@@ -444,8 +514,9 @@
   const heldDirections = new Set();
   const joystick = { active: false, id: null, x: 0, y: 0 };
   const dodge = {
-    player: { x: 480, y: 350, vx: 0, vy: 0 },
-    bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false }
+    player: { x: 480, y: 350, vx: 0, vy: 0, jumpHeight: 0, jumpVelocity: 0, airborne: false, landedAt: 0 },
+    bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false, jumped: false, jumpFlashed: false },
+    ole: { startedAt: 0, until: 0, level: 0 }
   };
   const chase = {
     player: { x: 330, y: 390, vx: 0, vy: 0, facing: 1 },
@@ -476,6 +547,8 @@
   let startedAt = 0;
   let feedback = "";
   let feedbackUntil = 0;
+  let feedbackBig = false;
+  let feedbackColor = "#ffc857";
   let bullKick = 0;
   let bullDirection = "up";
   let riderLean = 0;
@@ -495,14 +568,18 @@
     return 0;
   }
 
-  function setFeedback(text, duration = 480) {
+  function setFeedback(text, duration = 480, options = {}) {
     feedback = text;
     feedbackUntil = performance.now() + duration;
+    feedbackBig = Boolean(options.big);
+    feedbackColor = options.color || (text.includes("PERFECT") || text.includes("OLÉ") ? "#ffc857" : "#fff6ec");
   }
+
+  function streakCheer() { return STREAK_CHEERS[state.combo] || ""; }
 
   function hud() {
     scoreEl.textContent = state.score;
-    comboEl.textContent = `${state.combo}×`;
+    comboEl.textContent = state.combo;
     if (modeId === "race") {
       const remaining = Math.max(0, Math.ceil(race.duration - state.elapsed));
       timeEl.textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
@@ -510,34 +587,44 @@
       timeEl.textContent = Math.max(0, Math.floor(state.elapsed));
     }
     heatEl.style.width = `${state.heat}%`;
-    const heatReady = state.heat >= 100;
-    if (modeId === "ride") {
-      const multiplier = state.rideMultiplier();
-      const maxHeat = state.rideTier >= RIDE_HEAT_TARGETS.length;
-      const nextMultiplier = RIDE_MULTIPLIERS[Math.min(state.rideTier + 1, RIDE_MULTIPLIERS.length - 1)];
-      const heatUse = maxHeat ? "Maximum ×10 scoring" : `Next: ×${nextMultiplier}`;
+    const multiplier = state.modeMultiplier();
+    const tierIndex = modeId === "ride" ? state.rideTier : state.skillTier;
+    const maxMultiplier = tierIndex >= SCORE_MULTIPLIERS.length - 1;
+    const multiplierColor = state.multiplierColor(tierIndex);
+    const nextColor = state.multiplierColor(Math.min(tierIndex + 1, SCORE_MULTIPLIERS.length - 1));
+    stage.style.setProperty("--multiplier-color", multiplierColor);
+    stage.style.setProperty("--multiplier-next-color", nextColor);
+    stage.dataset.scoreMultiplier = String(multiplier);
+    stage.dataset.multiplierTier = String(tierIndex);
+
+    if (modeId !== "race") {
+      const nextMultiplier = SCORE_MULTIPLIERS[Math.min(tierIndex + 1, SCORE_MULTIPLIERS.length - 1)];
+      const meterUse = maxMultiplier ? "Maximum ×10 scoring" : `Next: ×${nextMultiplier}`;
       heatLabel.textContent = multiplier > 1 ? `Heat ×${multiplier}` : "Heat";
-      heatPurpose.textContent = heatUse;
-      heatValue.textContent = maxHeat ? "MAX" : `${Math.round(state.heat)}%`;
-      heatMeter.setAttribute("aria-label", `Heat multiplier ×${multiplier}. ${heatUse}. Current bar ${Math.round(state.heat)} percent.`);
+      heatPurpose.textContent = meterUse;
+      heatValue.textContent = maxMultiplier ? "MAX" : `${Math.round(state.heat)}%`;
+      heatMeter.setAttribute("aria-label", `Heat multiplier ×${multiplier}. ${meterUse}. Current bar ${Math.round(state.heat)} percent.`);
       [...heatTiers.children].forEach((tier, index) => {
-        tier.classList.toggle("unlocked", index < state.rideTier);
-        tier.classList.toggle("current", !maxHeat && index === state.rideTier);
+        tier.style.setProperty("--tier-color", MULTIPLIER_COLORS[index + 1]);
+        tier.classList.toggle("unlocked", index < tierIndex);
+        tier.classList.toggle("current", !maxMultiplier && index === tierIndex);
       });
-      stage.classList.toggle("heat", state.rideTier > 0);
+      stage.classList.toggle("heat", tierIndex > 0);
+    } else {
+      const boostReady = state.heat >= 100;
+      heatLabel.textContent = boostReady ? "Boost" : "Heat";
+      heatPurpose.textContent = boostReady ? "Boost ready" : "Fills boost";
+      heatValue.textContent = `${Math.round(state.heat)}%`;
+      heatMeter.setAttribute("aria-label", `Boost charge: ${Math.round(state.heat)} percent. ${boostReady ? "Boost ready." : "Fill to activate boost."}`);
+      [...heatTiers.children].forEach(tier => tier.classList.remove("unlocked", "current"));
+      stage.classList.toggle("heat", boostReady);
+    }
+
+    if (modeId === "ride") {
       stage.dataset.lives = String(state.lives);
       stage.dataset.rideMultiplier = String(multiplier);
-      stage.dataset.rideTier = String(state.rideTier);
+      stage.dataset.rideTier = String(tierIndex);
     } else {
-      const heatUse = modeId === "race"
-        ? heatReady ? "Boost ready" : "Fills boost"
-        : heatReady ? "2× score active" : "Full = 2× score";
-      heatLabel.textContent = modeId === "race" && heatReady ? "Boost" : "Heat";
-      heatPurpose.textContent = heatUse;
-      heatValue.textContent = `${Math.round(state.heat)}%`;
-      heatMeter.setAttribute("aria-label", `${modeId === "race" ? "Boost charge" : "Heat"}: ${Math.round(state.heat)} percent. ${heatUse}.`);
-      [...heatTiers.children].forEach(tier => tier.classList.remove("unlocked", "current"));
-      stage.classList.toggle("heat", state.heat >= 100);
       delete stage.dataset.lives;
       delete stage.dataset.rideMultiplier;
       delete stage.dataset.rideTier;
@@ -602,11 +689,12 @@
     controlHint.textContent = modeId === "ride"
       ? "Arrow keys or W A S D · Match the glowing direction · Space pauses"
       : modeId === "matador"
-        ? "Use the joystick to dodge · Arrow keys also work · Space pauses"
+        ? "Joystick to dodge · Tap Jump or press J to clear a charge · Space pauses"
         : modeId === "catch"
           ? "Use the joystick to chase · Throw when Lasso turns gold · Space pauses"
           : "Tap Up/W to gallop · Left/Right to pass · Enter/Z or Boost at full Heat";
     lassoButton.hidden = modeId !== "catch" && modeId !== "race";
+    jumpButton.hidden = modeId !== "matador";
     const specialIcon = lassoButton.querySelector("span");
     const specialLabel = lassoButton.querySelector("small");
     if (specialIcon) specialIcon.textContent = modeId === "race" ? "⚡" : "◎";
@@ -614,6 +702,7 @@
     lassoButton.setAttribute("aria-label", modeId === "race" ? "Activate boost when Heat is full" : "Throw lasso");
     const usesJoystick = modeId === "matador" || modeId === "catch";
     controls.classList.toggle("catch-controls", modeId === "catch" || modeId === "race");
+    controls.classList.toggle("jump-controls", modeId === "matador");
     controls.classList.toggle("joystick-controls", usesJoystick);
     joystickWrap.hidden = !usesJoystick;
     joystickLabel.textContent = modeId === "catch" ? "Chase" : "Move";
@@ -651,6 +740,21 @@
     }
   }
 
+  function celebrateMultiplier(multiplier, x = 480, y = 270) {
+    const tier = SCORE_MULTIPLIERS.indexOf(multiplier);
+    const color = MULTIPLIER_COLORS[Math.max(0, tier)];
+    const cheer = RIDE_CHEERS[Math.max(0, tier - 1) % RIDE_CHEERS.length];
+    setFeedback(`${cheer}  ×${multiplier} MULTIPLIER!`, 1650, { big: true, color });
+    burst(color, 62, x, y);
+    burst(tier % 2 ? "#ffc857" : "#ff625f", 30, x, y - 38);
+    flashes.push({ x: x - 100, y: y - 34, life: .55 }, { x: x + 100, y: y - 34, life: .55 });
+    stage.classList.remove("multiplier-up");
+    void stage.offsetWidth;
+    stage.classList.add("multiplier-up");
+    setTimeout(() => stage.classList.remove("multiplier-up"), 760);
+    audio.celebrate(Math.max(1, tier));
+  }
+
   function respondRide(action) {
     const now = performance.now();
     if (!running || paused || counting || modeId !== "ride" || rideRecoveryUntil > now) return;
@@ -673,22 +777,16 @@
       riderLean = { left: -1, right: 1, up: 0, down: 0 }[action] || 0;
       riderPitch = { up: -1, down: 1 }[action] || 0;
       if (outcome.heatUpgrade) {
-        const cheer = RIDE_CHEERS[(state.rideTier - 1) % RIDE_CHEERS.length];
-        setFeedback(`${cheer}  HEAT ×${outcome.heatUpgrade}!`, 1600);
-        burst("#ffc857", 58, 480, 280);
-        burst("#ff625f", 34, 480, 230);
-        flashes.push({ x: 370, y: 245, life: .55 }, { x: 590, y: 245, life: .55 });
-        stage.classList.remove("multiplier-up");
-        void stage.offsetWidth;
-        stage.classList.add("multiplier-up");
-        setTimeout(() => stage.classList.remove("multiplier-up"), 760);
-        audio.celebrate(state.rideTier);
+        celebrateMultiplier(outcome.heatUpgrade, 480, 280);
       } else {
-        const cheer = outcome.kind === "perfect" && state.combo > 0 && state.combo % 4 === 0
-          ? `${RIDE_CHEERS[(state.combo / 4 - 1) % RIDE_CHEERS.length]}  `
-          : "";
+        const milestone = streakCheer();
+        const cheer = milestone
+          ? `${milestone}  `
+          : outcome.kind === "perfect" && state.combo > 0 && state.combo % 4 === 0
+            ? `${RIDE_CHEERS[(state.combo / 4 - 1) % RIDE_CHEERS.length]}  `
+            : "";
         const multiplierCopy = outcome.scoreMultiplier > 1 ? ` · ×${outcome.scoreMultiplier}` : "";
-        setFeedback(outcome.kind === "perfect" ? `${cheer}PERFECT +${outcome.points}${multiplierCopy}` : `SMOOTH +${outcome.points}${multiplierCopy}`, cheer ? 900 : 560);
+        setFeedback(outcome.kind === "perfect" ? `${cheer}PERFECT +${outcome.points}${multiplierCopy}` : `SMOOTH +${outcome.points}${multiplierCopy}`, cheer ? 900 : 560, { big: Boolean(milestone), color: state.multiplierColor() });
         outcome.kind === "perfect" ? audio.perfect() : audio.good();
       }
       burst(outcome.kind === "perfect" ? "#ffc857" : "#ff625f", outcome.kind === "perfect" ? 26 : 15);
@@ -764,6 +862,13 @@
     dodge.player.y = 350;
     dodge.player.vx = 0;
     dodge.player.vy = 0;
+    dodge.player.jumpHeight = 0;
+    dodge.player.jumpVelocity = 0;
+    dodge.player.airborne = false;
+    dodge.player.landedAt = 0;
+    dodge.ole.until = 0;
+    if (jumpButton) jumpButton.classList.remove("ready", "active");
+    delete stage.dataset.jump;
     resetJoystick();
     spawnBull(true);
   }
@@ -784,6 +889,8 @@
     dodge.bull.maxTravel = 0;
     dodge.bull.minDistance = 999;
     dodge.bull.hit = false;
+    dodge.bull.jumped = false;
+    dodge.bull.jumpFlashed = false;
     if (running && modeId === "matador") audio.warning();
   }
 
@@ -797,12 +904,38 @@
     }
   }
 
+  function jumpMatadora() {
+    const player = dodge.player;
+    if (!running || paused || counting || modeId !== "matador" || player.airborne) return;
+    player.airborne = true;
+    player.jumpHeight = 1;
+    player.jumpVelocity = difficultyId === "easy" ? 545 : 515;
+    stage.dataset.jump = "airborne";
+    jumpButton?.classList.remove("ready");
+    setFeedback("JUMP!", 280, { color: "#59d8ff" });
+    audio.good();
+    burst("#d7b8ad", 9, player.x, player.y + 5);
+  }
+
   function resolveDodge() {
-    const closeCall = dodge.bull.minDistance < 78;
-    const outcome = state.scoreDodge(closeCall);
-    setFeedback(closeCall ? `OLÉ! +${outcome.points}` : `CLEAR +${outcome.points}`, 620);
-    burst(closeCall ? "#ffc857" : "#ff625f", closeCall ? 28 : 18, dodge.player.x, dodge.player.y - 35);
-    closeCall ? audio.perfect() : audio.good();
+    const outcome = state.scoreDodge(dodge.bull.minDistance, dodge.bull.jumped);
+    const closeCall = outcome.kind === "close" || outcome.kind === "razor";
+    if (closeCall) {
+      dodge.ole = { startedAt: performance.now(), until: performance.now() + (outcome.kind === "razor" ? 1180 : 880), level: outcome.kind === "razor" ? 2 : 1 };
+      stage.dataset.ole = outcome.kind;
+      setTimeout(() => { if (performance.now() >= dodge.ole.until) delete stage.dataset.ole; }, 1200);
+    }
+    if (outcome.multiplierUpgrade) {
+      celebrateMultiplier(outcome.multiplierUpgrade, dodge.player.x, dodge.player.y - 40);
+    } else {
+      const cheer = streakCheer();
+      const title = outcome.kind === "razor" ? "RAZOR OLÉ!" : outcome.kind === "close" ? "OLÉ!" : outcome.jumped ? "AIRBORNE CLEAR!" : "CLEAR!";
+      const streak = cheer ? `${cheer}  ` : "";
+      setFeedback(`${streak}${title} +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer || closeCall ? 920 : 620, { big: outcome.kind === "razor" || Boolean(cheer), color: state.multiplierColor() });
+      closeCall ? audio.perfect() : audio.good();
+    }
+    burst(state.multiplierColor(), outcome.kind === "razor" ? 42 : closeCall ? 30 : 18, dodge.player.x, dodge.player.y - 35);
+    hud();
   }
 
   function updateMatador(dt) {
@@ -818,6 +951,21 @@
     dodge.player.x += dodge.player.vx * dt;
     dodge.player.y += dodge.player.vy * dt;
     constrainPlayer();
+    if (dodge.player.airborne) {
+      dodge.player.jumpVelocity -= 1220 * dt;
+      dodge.player.jumpHeight += dodge.player.jumpVelocity * dt;
+      if (dodge.player.jumpHeight <= 0) {
+        dodge.player.jumpHeight = 0;
+        dodge.player.jumpVelocity = 0;
+        dodge.player.airborne = false;
+        dodge.player.landedAt = performance.now();
+        stage.dataset.jump = "landed";
+        setTimeout(() => { if (!dodge.player.airborne) delete stage.dataset.jump; }, 240);
+        burst("#d7b8ad", 12, dodge.player.x, dodge.player.y + 7);
+        audio.good();
+      }
+    }
+    jumpButton?.classList.toggle("ready", !dodge.player.airborne && dodge.bull.phase === "charge");
     stage.dataset.playerX = String(Math.round(dodge.player.x));
     stage.dataset.playerY = String(Math.round(dodge.player.y));
 
@@ -849,7 +997,17 @@
       const playerDistance = Math.hypot(bull.x - dodge.player.x, bull.y - dodge.player.y);
       bull.minDistance = Math.min(bull.minDistance, playerDistance);
 
-      if (playerDistance < 42 && !bull.hit) {
+      if (playerDistance < 56 && dodge.player.airborne && dodge.player.jumpHeight > 36) {
+        bull.jumped = true;
+        if (!bull.jumpFlashed) {
+          bull.jumpFlashed = true;
+          stage.dataset.jump = "cleared";
+          setFeedback("HORN CLEAR!", 360, { color: "#59d8ff" });
+          flashes.push({ x: dodge.player.x, y: dodge.player.y - dodge.player.jumpHeight, life: .4 });
+        }
+      }
+
+      if (playerDistance < 42 && !bull.hit && !(dodge.player.airborne && dodge.player.jumpHeight > 32)) {
         bull.hit = true;
         state.hits++;
         state.takeHit(34);
@@ -888,6 +1046,7 @@
     chase.lasso.hit = false;
     resetJoystick();
     lassoButton.classList.remove("ready", "active");
+    jumpButton?.classList.remove("ready", "active");
     spawnCow(true);
   }
 
@@ -955,30 +1114,37 @@
     } else {
       state.combo = 0;
       state.misses++;
+      state.coolSkillProgress(.18);
     }
     if (perfect) state.perfectTaps++;
-    const points = perfect ? 75 : good ? 40 : 8;
+    const scoreMultiplier = state.modeMultiplier();
+    const points = (perfect ? 75 : good ? 40 : 8) * scoreMultiplier;
     const heatGain = perfect ? 10 : good ? 4 : 0;
     const awardedHeat = race.player.boostTimer > 0 ? 0 : heatGain;
     state.score += points;
+    const multiplierUpgrade = perfect || good ? state.addSkillProgress(perfect ? 1.25 : .65) : null;
     state.heat = Math.min(100, state.heat + awardedHeat);
     state.balance = race.player.cadence;
     race.player.lastGrade = grade;
     race.player.gradeUntil = now + 520;
     stage.dataset.timing = grade.toLowerCase();
-    if (perfect || good) {
-      setFeedback(`${grade} +${points}${awardedHeat ? ` · +${awardedHeat} HEAT` : ""}`, perfect ? 520 : 380);
+    if (multiplierUpgrade) {
+      celebrateMultiplier(multiplierUpgrade, 480, 280);
+    } else if (perfect || good) {
+      setFeedback(`${grade} +${points} · ×${scoreMultiplier}${awardedHeat ? ` · +${awardedHeat} HEAT` : ""}`, perfect ? 520 : 380, { color: state.multiplierColor() });
       audio.good();
     } else {
       setFeedback(`${grade} · FIND THE BEAT`, 350);
       audio.warning();
     }
-    if (state.combo > 0 && state.combo % 8 === 0) {
-      state.score += 250;
-      const streakHeat = race.player.boostTimer > 0 ? 0 : 15;
+    const streakCallout = streakCheer();
+    if (streakCallout && !multiplierUpgrade) {
+      const streakBonus = state.combo * 40 * state.modeMultiplier();
+      state.score += streakBonus;
+      const streakHeat = race.player.boostTimer > 0 ? 0 : Math.min(24, 8 + state.combo);
       state.heat = Math.min(100, state.heat + streakHeat);
-      setFeedback(`8-TAP HOT STREAK!${streakHeat ? " +15 HEAT" : ""}`, 760);
-      burst("#ffc857", 24, 480, 280);
+      setFeedback(`${streakCallout} +${streakBonus} · ×${state.modeMultiplier()}${streakHeat ? ` · +${streakHeat} HEAT` : ""}`, 920, { big: state.combo >= 8, color: state.multiplierColor() });
+      burst(state.multiplierColor(), 22 + Math.min(28, state.combo), 480, 280);
       audio.perfect();
     }
     burst(perfect ? "#ffc857" : "#ffad86", perfect ? 7 : 3, 480, 300);
@@ -995,10 +1161,11 @@
     state.heat = 0;
     race.player.boostTimer = 4.5;
     state.boosts++;
-    state.score += 500;
+    const boostPoints = 500 * state.modeMultiplier();
+    state.score += boostPoints;
     lassoButton.classList.remove("ready");
     lassoButton.classList.add("active");
-    setFeedback("FULL HEAT BOOST! +500", 900);
+    setFeedback(`FULL HEAT BOOST! +${boostPoints} · ×${state.modeMultiplier()}`, 900, { big: state.modeMultiplier() >= 4, color: state.multiplierColor() });
     burst("#ffc857", 38, 480, 270);
     flashes.push({ x: 480, y: 270, life: .45 });
     audio.perfect();
@@ -1048,11 +1215,15 @@
 
     const place = racePlace();
     if (place < player.lastPlace && player.overtakeCooldown <= 0) {
-      const points = state.scoreOvertake();
+      const outcome = state.scoreOvertake();
       player.overtakeCooldown = .7;
-      setFeedback(`OVERTAKE +${points}`, 560);
-      burst("#ffc857", 18, 480, 250);
-      audio.good();
+      if (outcome.multiplierUpgrade) celebrateMultiplier(outcome.multiplierUpgrade, 480, 250);
+      else {
+        const cheer = streakCheer();
+        setFeedback(`${cheer ? `${cheer}  ` : ""}OVERTAKE +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer ? 820 : 560, { color: state.multiplierColor() });
+        audio.good();
+      }
+      burst(state.multiplierColor(), 18, 480, 250);
     }
     player.lastPlace = place;
     state.racePlace = place;
@@ -1068,7 +1239,7 @@
 
     if (state.elapsed >= race.duration) {
       state.raceWon = place === 1;
-      state.score += [0, 3000, 1800, 1000, 500][place];
+      state.score += [0, 3000, 1800, 1000, 500][place] * state.modeMultiplier();
       state.heat = Math.min(100, state.heat + (place === 1 ? 30 : 12));
       finish();
     }
@@ -1124,9 +1295,16 @@
     stage.dataset.catches = String(state.catches);
     chase.cow.phase = "caught";
     chase.cow.timer = .52;
-    setFeedback(quickCatch ? `QUICK CATCH +${outcome.points}` : `ROPE 'EM +${outcome.points}`, 700);
-    burst(quickCatch ? "#ffc857" : "#ffad86", quickCatch ? 30 : 22, chase.cow.x, chase.cow.y - 34);
-    quickCatch ? audio.perfect() : audio.good();
+    if (outcome.multiplierUpgrade) {
+      celebrateMultiplier(outcome.multiplierUpgrade, chase.cow.x, chase.cow.y - 34);
+    } else {
+      const cheer = streakCheer();
+      const action = quickCatch ? "QUICK CATCH" : "ROPE 'EM";
+      setFeedback(`${cheer ? `${cheer}  ` : ""}${action} +${outcome.points} · ×${outcome.scoreMultiplier}`, cheer ? 880 : 700, { big: Boolean(cheer), color: state.multiplierColor() });
+      quickCatch ? audio.perfect() : audio.good();
+    }
+    burst(state.multiplierColor(), quickCatch ? 30 : 22, chase.cow.x, chase.cow.y - 34);
+    hud();
   }
 
   function cowEscaped() {
@@ -1299,11 +1477,14 @@
     heldDirections.clear();
     resetJoystick();
     lassoButton.classList.remove("ready", "active");
+    jumpButton?.classList.remove("ready", "active");
     stage.classList.remove("playing");
     document.body.classList.remove("grei-game-playing");
     stage.dataset.direction = "";
     delete stage.dataset.recovering;
     delete stage.dataset.rideMove;
+    delete stage.dataset.jump;
+    delete stage.dataset.ole;
     directionAnnounce.textContent = "";
     audio.stop();
     best = Math.max(best, state.score);
@@ -1332,10 +1513,10 @@
         : modeId === "catch"
           ? state.catches >= 25 ? "Lasso Royalty" : state.catches >= 15 ? "Ranch Boss" : state.catches >= 8 ? "Cow Catcher" : state.catches >= 3 ? "Rope Ready" : "Greenhorn"
           : state.racePlace === 1 ? "Track Royalty" : state.racePlace === 2 ? "Photo Finish" : state.racePlace === 3 ? "Podium Rider" : "Trail Runner";
-    const middleValue = modeId === "ride" ? `${state.bestCombo}×` : modeId === "matador" ? state.dodges : modeId === "catch" ? state.catches : `#${state.racePlace}`;
-    const middleLabel = modeId === "ride" ? "Best combo" : modeId === "matador" ? "Dodges" : modeId === "catch" ? "Catches" : "Finish";
-    const lastValue = modeId === "ride" ? `×${state.bestRideMultiplier}` : modeId === "matador" ? state.closeCalls : modeId === "catch" ? state.quickCatches : state.boosts;
-    const lastLabel = modeId === "ride" ? "Peak Heat" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Boosts";
+    const middleValue = modeId === "race" ? `#${state.racePlace}` : state.bestCombo;
+    const middleLabel = modeId === "race" ? "Finish" : "Best streak";
+    const lastValue = `×${state.bestMultiplier}`;
+    const lastLabel = "Peak multiplier";
     results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} · Best ${best}</p>`;
     updateSelectionUI();
     submit();
@@ -1349,6 +1530,7 @@
     heldDirections.clear();
     resetJoystick();
     lassoButton.classList.remove("ready", "active");
+    jumpButton?.classList.remove("ready", "active");
     stage.classList.remove("playing", "shake", "heat");
     document.body.classList.remove("grei-game-playing");
     stage.dataset.direction = "";
@@ -1541,7 +1723,81 @@
     return Math.floor(now / 1000 * fps + phase) % frameCount;
   }
 
+  function drawDetailedRideTransition(now) {
+    if (rideTransition.phase !== "fall" || now >= rideTransition.until || !rideFallAnimation.complete || !rideFallAnimation.naturalWidth) return false;
+    const falling = now < rideTransition.fallUntil;
+    const waiting = !falling && now < rideTransition.remountAt;
+    let frame = 0;
+    let x = 480;
+    let y = 408;
+    let rotation = 0;
+    let scale = 1;
+    let alpha = 1;
+
+    if (falling) {
+      const progress = Math.min(1, (now - rideTransition.startedAt) / Math.max(1, rideTransition.fallUntil - rideTransition.startedAt));
+      frame = Math.min(3, Math.floor(progress * 4));
+      x = 480 + progress * 176;
+      y = 398 - Math.sin(progress * Math.PI) * 126 + progress * 28;
+      rotation = progress < .52 ? progress * .34 : .18 - (progress - .52) * .34;
+      scale = 1 - progress * .08;
+      stage.dataset.rideAnimation = ["thrown", "tumble", "brace", "roll"][frame];
+
+      if (progress < .22 && rideAnimation.complete && rideAnimation.naturalWidth) {
+        ctx.save();
+        ctx.globalAlpha = 1 - progress / .22;
+        ctx.translate(480 - progress * 34, 405);
+        ctx.rotate(-progress * .16);
+        spriteFrame(rideAnimation, RIDE_DIRECTION_FRAMES.down, -195, -390, 390, 390, RIDE_ANIMATION_FRAMES);
+        ctx.restore();
+      }
+    } else if (waiting) {
+      const waitSpan = Math.max(1, rideTransition.remountAt - rideTransition.fallUntil);
+      const progress = Math.min(1, (now - rideTransition.fallUntil) / waitSpan);
+      frame = progress < .36 ? 3 : 4;
+      x = 650 - Math.min(1, progress * 1.3) * 38;
+      y = frame === 3 ? 428 : 413;
+      scale = .92;
+      stage.dataset.rideAnimation = frame === 3 ? "down" : "recovering";
+    } else {
+      const progress = Math.min(1, (now - rideTransition.remountAt) / Math.max(1, rideTransition.until - rideTransition.remountAt));
+      const eased = 1 - Math.pow(1 - progress, 3);
+      frame = progress < .52 ? 4 : 5;
+      x = 612 - eased * 132;
+      y = 412 - Math.sin(progress * Math.PI) * 24;
+      scale = .92 + eased * .08;
+      alpha = progress > .76 ? 1 - (progress - .76) / .24 : 1;
+      stage.dataset.rideAnimation = progress < .52 ? "stand" : "remount";
+
+      if (progress > .64 && rideAnimation.complete && rideAnimation.naturalWidth) {
+        const mountedAlpha = Math.min(1, (progress - .64) / .36);
+        ctx.save();
+        ctx.globalAlpha = mountedAlpha;
+        ctx.translate(480, 405);
+        ctx.scale(.9 + mountedAlpha * .1, .9 + mountedAlpha * .1);
+        spriteFrame(rideAnimation, RIDE_IDLE_FRAMES[0], -195, -390, 390, 390, RIDE_ANIMATION_FRAMES);
+        ctx.restore();
+      }
+    }
+
+    ctx.save();
+    ctx.fillStyle = `rgba(0,0,0,${.3 * alpha})`;
+    ctx.beginPath();
+    ctx.ellipse(x, 430, (frame === 3 ? 76 : 50) * scale, 12 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.scale(scale, scale);
+    ctx.globalAlpha = Math.max(0, alpha);
+    ctx.shadowColor = "rgba(255,98,95,.38)";
+    ctx.shadowBlur = 14;
+    spriteFrame(rideFallAnimation, frame, -136, -246, 272, 272, RIDE_FALL_FRAMES);
+    ctx.restore();
+    return true;
+  }
+
   function drawRide(now) {
+    if (drawDetailedRideTransition(now)) return;
     const t = now / 1000;
     const reactionActive = now < rideReaction.until && rideTransition.phase === "mounted";
     const reactionDuration = Math.max(1, rideReaction.until - rideReaction.startedAt);
@@ -1693,7 +1949,7 @@
     ctx.translate(700, 270);
     ctx.scale(pulse, pulse);
     ctx.fillStyle = "rgba(34,13,14,.9)";
-    ctx.shadowColor = state.rideTier > 0 ? "#ffc857" : "#ff625f";
+    ctx.shadowColor = state.rideTier > 0 ? state.multiplierColor() : "#ff625f";
     ctx.shadowBlur = 28;
     ctx.beginPath();
     ctx.arc(0, 0, 55, 0, Math.PI * 2);
@@ -1704,7 +1960,7 @@
     ctx.beginPath();
     ctx.arc(0, 0, 61, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.strokeStyle = state.rideTier > 0 ? "#ffc857" : "#ff625f";
+    ctx.strokeStyle = state.rideTier > 0 ? state.multiplierColor() : "#ff625f";
     ctx.lineCap = "round";
     ctx.beginPath();
     ctx.arc(0, 0, 61, -Math.PI / 2, -Math.PI / 2 + remaining * Math.PI * 2);
@@ -1720,17 +1976,43 @@
     ctx.restore();
   }
 
-  function drawMatadora() {
+  function drawMatadora(now = performance.now()) {
     const player = dodge.player;
     ctx.save();
     ctx.translate(player.x, player.y);
-    ctx.rotate(player.vx / 265 * .055);
-    ctx.fillStyle = "rgba(0,0,0,.32)";
+    const jumpRatio = Math.min(1, player.jumpHeight / 64);
+    ctx.fillStyle = `rgba(0,0,0,${.32 - jumpRatio * .17})`;
     ctx.beginPath();
-    ctx.ellipse(0, 10, 42, 12, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 10, 42 - jumpRatio * 13, 12 - jumpRatio * 4, 0, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(player.x, player.y - player.jumpHeight);
+    const justLanded = now - player.landedAt < 220;
+    const oleActive = now < dodge.ole.until;
+    const oleProgress = oleActive ? Math.min(1, (now - dodge.ole.startedAt) / Math.max(1, dodge.ole.until - dodge.ole.startedAt)) : 0;
+    ctx.rotate(player.vx / 265 * .055 + (player.airborne ? player.vx / 265 * .08 : 0) + (oleActive ? Math.sin(oleProgress * Math.PI * 2) * .055 : 0));
+    if (justLanded) {
+      const landing = Math.max(0, 1 - (now - player.landedAt) / 220);
+      ctx.scale(1 + landing * .07, 1 - landing * .09);
+    }
+    if (oleActive) {
+      const sweep = oleProgress * Math.PI * 1.7;
+      for (let trail = 0; trail < 3; trail++) {
+        ctx.strokeStyle = `rgba(255,98,95,${.34 - trail * .08})`;
+        ctx.lineWidth = 16 - trail * 4;
+        ctx.beginPath();
+        ctx.arc(-8, -62, 56 + trail * 9, Math.PI * .6 + sweep - trail * .12, Math.PI * 1.45 + sweep - trail * .12);
+        ctx.stroke();
+      }
+    }
     const moving = Math.hypot(player.vx, player.vy) > 18;
-    const matadoraFrame = moving ? cycleFrame(performance.now(), 18, 0, DODGE_ANIMATION_FRAMES) : 0;
+    const matadoraFrame = player.airborne
+      ? player.jumpVelocity > 110 ? 2 : player.jumpVelocity > -115 ? 3 : 4
+      : justLanded ? 5
+        : oleActive ? (dodge.ole.level > 1 && oleProgress > .52 ? 7 : 6)
+          : moving ? cycleFrame(now, 18, 0, DODGE_ANIMATION_FRAMES) : 0;
     if (spriteFrame(matadoraAnimation, matadoraFrame, -72, -154, 144, 192, DODGE_ANIMATION_FRAMES)) {
       // Animated character strip.
     } else if (matadorSprites.complete && matadorSprites.naturalWidth) {
@@ -1749,6 +2031,31 @@
       ctx.closePath();
       ctx.fill();
     }
+    ctx.restore();
+  }
+
+  function drawOleFlourish(now) {
+    if (now >= dodge.ole.until) return;
+    const progress = Math.min(1, (now - dodge.ole.startedAt) / Math.max(1, dodge.ole.until - dodge.ole.startedAt));
+    const strength = Math.sin(progress * Math.PI);
+    const color = state.multiplierColor();
+    ctx.save();
+    ctx.translate(dodge.player.x, dodge.player.y - 88);
+    ctx.globalAlpha = strength;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = dodge.ole.level > 1 ? 7 : 4;
+    ctx.setLineDash([18, 10]);
+    ctx.lineDashOffset = -now / 18;
+    ctx.beginPath();
+    ctx.arc(0, 0, 82 + progress * 22, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = color;
+    ctx.textAlign = "center";
+    ctx.font = `italic 900 ${dodge.ole.level > 1 ? 34 : 25}px Impact, sans-serif`;
+    ctx.shadowColor = "rgba(0,0,0,.9)";
+    ctx.shadowBlur = 10;
+    ctx.fillText(dodge.ole.level > 1 ? "¡OLÉ!" : "OLÉ", 0, -88 - progress * 20);
     ctx.restore();
   }
 
@@ -1823,6 +2130,7 @@
       { y: bull.y, draw: drawChargingBull }
     ].sort((a, b) => a.y - b.y);
     entities.forEach(entity => entity.draw());
+    drawOleFlourish(now);
 
     if (bull.phase === "telegraph") {
       ctx.fillStyle = "#ffc857";
@@ -2187,17 +2495,26 @@
 
     ctx.fillStyle = "rgba(8,7,12,.68)";
     ctx.beginPath();
-    ctx.roundRect(810, 18, 132, 39, 10);
+    ctx.roundRect(792, 18, 150, 54, 10);
     ctx.fill();
-    ctx.fillStyle = "#ffc857";
-    ctx.font = modeId === "ride" ? "italic 900 17px Impact, sans-serif" : "900 10px system-ui";
+    const multiplier = state.modeMultiplier();
+    const tierIndex = modeId === "ride" ? state.rideTier : state.skillTier;
+    ctx.fillStyle = state.multiplierColor(tierIndex);
+    ctx.font = "italic 900 18px Impact, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(modeId === "ride" ? `HEAT ×${state.rideMultiplier()}` : difficulty().label.toUpperCase(), 876, modeId === "ride" ? 43 : 42);
+    ctx.shadowColor = state.multiplierColor(tierIndex);
+    ctx.shadowBlur = tierIndex > 0 ? 11 : 0;
+    ctx.fillText(`×${multiplier} SCORE`, 867, 40);
+    ctx.shadowBlur = 0;
+    for (let index = 0; index < 5; index++) {
+      ctx.fillStyle = index < tierIndex ? MULTIPLIER_COLORS[index + 1] : "rgba(255,255,255,.14)";
+      ctx.fillRect(817 + index * 20, 55, 15, 4);
+    }
   }
 
   function drawFeedback(now) {
     if (feedback && now < feedbackUntil) {
-      const multiplierMoment = modeId === "ride" && feedback.includes("HEAT ×");
+      const multiplierMoment = feedbackBig;
       ctx.save();
       if (multiplierMoment) {
         const pulse = 1 + Math.sin(now / 70) * .045;
@@ -2205,13 +2522,13 @@
         ctx.scale(pulse, pulse);
         const banner = ctx.createLinearGradient(-235, 0, 235, 0);
         banner.addColorStop(0, "rgba(45,13,15,0)");
-        banner.addColorStop(.2, "rgba(84,37,29,.9)");
-        banner.addColorStop(.5, "rgba(184,56,43,.96)");
-        banner.addColorStop(.8, "rgba(84,37,29,.9)");
+        banner.addColorStop(.2, "rgba(38,18,28,.9)");
+        banner.addColorStop(.5, "rgba(86,37,68,.96)");
+        banner.addColorStop(.8, "rgba(38,18,28,.9)");
         banner.addColorStop(1, "rgba(45,13,15,0)");
         ctx.fillStyle = banner;
         ctx.fillRect(-250, -36, 500, 72);
-        ctx.strokeStyle = "rgba(255,240,178,.85)";
+        ctx.strokeStyle = feedbackColor;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(-205, -27);
@@ -2220,7 +2537,7 @@
         ctx.lineTo(205, 27);
         ctx.stroke();
       }
-      ctx.fillStyle = feedback.includes("PERFECT") || feedback.includes("OLÉ") || multiplierMoment || feedback.includes("YEEHAW") || feedback.includes("WOO") ? "#ffc857" : "#fff";
+      ctx.fillStyle = feedbackColor;
       ctx.textAlign = "center";
       ctx.font = `italic 900 ${multiplierMoment ? 38 : 24}px Impact, sans-serif`;
       ctx.shadowColor = "rgba(0,0,0,.8)";
@@ -2336,6 +2653,11 @@
       document.querySelector("[data-grei-pause]")?.click();
       return;
     }
+    if (modeId === "matador" && (event.key === "j" || event.key === "J")) {
+      event.preventDefault();
+      if (!event.repeat) jumpMatadora();
+      return;
+    }
     if ((modeId === "catch" || modeId === "race") && (event.key === "Enter" || event.key === "z" || event.key === "Z")) {
       event.preventDefault();
       if (!event.repeat) modeId === "race" ? activateRaceBoost() : throwLasso();
@@ -2399,6 +2721,7 @@
     }, () => heldDirections.delete(action));
   });
   bindGameControl(lassoButton, () => modeId === "race" ? activateRaceBoost() : throwLasso());
+  bindGameControl(jumpButton, jumpMatadora);
 
   addEventListener("grei:pause", event => {
     paused = event.detail.paused;
@@ -2431,7 +2754,7 @@
     keepArenaMoving();
   }
   [
-    arena, rideSprite, rideAnimation, matadorSprites, matadoraAnimation,
+    arena, rideSprite, rideAnimation, rideFallAnimation, matadorSprites, matadoraAnimation,
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation
   ].forEach(image => image.addEventListener("load", () => { if (!running) draw(); }));
 

@@ -10,6 +10,8 @@
   --gold: #ffc857;
   --night: #080609;
   --glass: rgba(27, 9, 14, .88);
+  --multiplier-color: #fff6ec;
+  --multiplier-next-color: #59d8ff;
 }
 
 * { box-sizing: border-box; }
@@ -41,13 +43,14 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .meter-copy strong { display: block; color: var(--gold); font-size: 14px; font-style: italic; line-height: 1; text-transform: uppercase; }
 .meter-copy small { display: block; margin-top: 3px; color: #fff6ec; font: 800 8px/1 system-ui; letter-spacing: .08em; text-transform: uppercase; }
 .heat-tiers { display: none; gap: 3px; margin-top: 5px; }
-.stage[data-mode="ride"] .heat-tiers { display: flex; }
+.stage:not([data-mode="race"]) .heat-tiers { display: flex; }
 .heat-tiers i { width: 14px; height: 4px; border: 1px solid rgba(255,255,255,.35); border-radius: 99px; background: rgba(8,6,9,.5); }
-.heat-tiers i.unlocked { border-color: #fff0b2; background: var(--gold); box-shadow: 0 0 7px rgba(255,200,87,.72); }
-.heat-tiers i.current { border-color: var(--coral); animation: tier-current .55s ease-in-out infinite alternate; }
+.heat-tiers i.unlocked { border-color: var(--tier-color); background: var(--tier-color); box-shadow: 0 0 7px var(--tier-color); }
+.heat-tiers i.current { border-color: var(--tier-color); animation: tier-current .55s ease-in-out infinite alternate; }
 .meter output { color: #fff; font: 900 11px/1 system-ui; text-align: right; text-shadow: 0 2px 5px #000; }
 .track { height: 11px; flex: 1; overflow: hidden; border: 1px solid rgba(255,255,255,.3); border-radius: 99px; background: rgba(3,5,10,.65); box-shadow: inset 0 2px 4px rgba(0,0,0,.5); }
-.fill { width: 0; height: 100%; background: linear-gradient(90deg, var(--coral), var(--gold)); box-shadow: 0 0 18px var(--coral); transition: width .12s; }
+.fill { width: 0; height: 100%; background: linear-gradient(90deg, var(--multiplier-color), var(--multiplier-next-color)); box-shadow: 0 0 18px var(--multiplier-color); transition: width .12s; }
+.stage[data-mode="race"] .fill { background: linear-gradient(90deg, var(--coral), var(--gold)); box-shadow: 0 0 18px var(--coral); }
 .overlay { position: absolute; z-index: 3; inset: 0; display: grid; place-items: center; overflow: auto; padding: 18px; background: linear-gradient(180deg, rgba(6,5,9,.28), rgba(9,5,10,.78)); backdrop-filter: blur(6px); }
 .overlay[hidden] { display: none; }
 .panel { width: min(820px, 100%); margin: auto; padding: clamp(20px, 3vw, 30px); border: 1px solid rgba(255, 200, 87, .45); border-radius: 22px 22px 34px 22px; background: linear-gradient(145deg, rgba(71,31,25,.95), rgba(21,8,13,.97) 62%, rgba(13,33,77,.82)); box-shadow: 0 26px 90px rgba(0,0,0,.65), inset 0 1px rgba(255,255,255,.1); text-align: center; }
@@ -98,6 +101,7 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .controls.joystick-controls { grid-template-columns: minmax(150px, 210px) minmax(120px, 1fr); align-items: center; }
 .controls.joystick-controls .control[data-action] { display: none; }
 .controls.joystick-controls:not(.catch-controls) { grid-template-columns: minmax(150px, 210px); justify-content: center; }
+.controls.joystick-controls.jump-controls { grid-template-columns: minmax(150px, 210px) minmax(120px, 180px); justify-content: center; }
 .joystick-wrap { display: grid; justify-items: center; gap: 4px; min-width: 0; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 .joystick-wrap[hidden] { display: none; }
 .joystick-pad { position: relative; width: 118px; height: 118px; border: 1px solid rgba(255,200,87,.4); border-radius: 50%; background: radial-gradient(circle, rgba(255,98,95,.15), rgba(33,13,16,.94) 68%); box-shadow: inset 0 0 0 10px rgba(255,255,255,.025), 0 10px 30px rgba(0,0,0,.38); cursor: grab; }
@@ -113,6 +117,9 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .lasso-control { border-color: rgba(255,200,87,.65); background: linear-gradient(180deg, #8a531f, #35170e); box-shadow: inset 0 1px rgba(255,255,255,.12), 0 0 24px rgba(255,200,87,.14); }
 .lasso-control span { color: var(--gold); font-size: 29px; }
 .lasso-control.ready { animation: lasso-ready .7s ease-in-out infinite alternate; }
+.jump-control { border-color: rgba(89,216,255,.7); background: linear-gradient(180deg, #174e96, #0d214d); box-shadow: inset 0 1px rgba(255,255,255,.14), 0 0 24px rgba(89,216,255,.15); }
+.jump-control span { color: #59d8ff; font-size: 31px; }
+.jump-control.ready { animation: jump-ready .45s ease-in-out infinite alternate; }
 .hint { text-align: center; color: #ae9189; font: 700 10px/1.3 system-ui; letter-spacing: .08em; text-transform: uppercase; }
 .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 18px 0; }
 .result { padding: 12px 6px; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; background: rgba(255,255,255,.06); }
@@ -122,10 +129,11 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .heat { animation: heat 1s infinite alternate; }
 .multiplier-up { animation: multiplier-pop .72s cubic-bezier(.2,.9,.22,1.3); }
 @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-@keyframes heat { to { box-shadow: 0 0 38px rgba(255,98,95,.48), inset 0 0 25px rgba(255,200,87,.12); } }
-@keyframes multiplier-pop { 45% { border-color: #fff0b2; box-shadow: 0 0 70px rgba(255,200,87,.62), inset 0 0 36px rgba(255,98,95,.24); } }
-@keyframes tier-current { to { border-color: #fff0b2; background: rgba(255,98,95,.82); box-shadow: 0 0 8px rgba(255,98,95,.72); } }
+@keyframes heat { to { box-shadow: 0 0 38px var(--multiplier-color), inset 0 0 25px color-mix(in srgb, var(--multiplier-color) 22%, transparent); } }
+@keyframes multiplier-pop { 45% { border-color: var(--multiplier-color); box-shadow: 0 0 70px color-mix(in srgb, var(--multiplier-color) 72%, transparent), inset 0 0 36px color-mix(in srgb, var(--multiplier-color) 26%, transparent); } }
+@keyframes tier-current { to { border-color: var(--tier-color); background: color-mix(in srgb, var(--tier-color) 82%, transparent); box-shadow: 0 0 8px var(--tier-color); } }
 @keyframes lasso-ready { to { border-color: #fff0b2; box-shadow: inset 0 1px rgba(255,255,255,.2), 0 0 24px rgba(255,200,87,.42); } }
+@keyframes jump-ready { to { border-color: #fff; box-shadow: inset 0 1px rgba(255,255,255,.22), 0 0 28px rgba(89,216,255,.55); transform: translateY(-2px); } }
 
 @media (max-width: 620px) {
   .wrap { padding: 7px; }
@@ -157,6 +165,7 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   .controls, .controls.catch-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
   .controls.joystick-controls, .controls.joystick-controls.catch-controls { grid-template-columns: minmax(132px, 1fr) minmax(132px, 1fr); align-items: center; }
   .controls.joystick-controls:not(.catch-controls) { grid-template-columns: minmax(132px, 1fr); }
+  .controls.joystick-controls.jump-controls { grid-template-columns: minmax(132px, 1fr) minmax(132px, 1fr); }
   .joystick-pad { width: 104px; height: 104px; }
   .joystick-thumb { width: 46px; height: 46px; }
   .control[data-action="up"] { grid-column: 2; grid-row: 1; }
@@ -165,6 +174,7 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   .control[data-action="right"] { grid-column: 3; grid-row: 2; }
   .controls.catch-controls:not(.joystick-controls) .lasso-control { grid-column: 1 / -1; grid-row: 3; min-height: 50px; }
   .controls.joystick-controls.catch-controls .lasso-control { display: block; grid-column: 2; grid-row: 1; min-height: 72px; }
+  .controls.joystick-controls.jump-controls .jump-control { display: block; grid-column: 2; grid-row: 1; min-height: 72px; }
   .control { min-height: 54px; }
   .control small { display: none; }
   .meter { left: 10px; right: 10px; bottom: 9px; grid-template-columns: auto minmax(0, 1fr) 34px; gap: 7px; }
@@ -225,6 +235,7 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls, html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls { grid-template-columns: 1fr 1fr; align-content: center; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.joystick-controls, html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.joystick-controls.catch-controls { grid-template-columns: minmax(116px, 1fr) minmax(116px, 1fr); }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.joystick-controls:not(.catch-controls) { grid-template-columns: minmax(116px, 1fr); }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.joystick-controls.jump-controls { grid-template-columns: minmax(116px, 1fr) minmax(116px, 1fr); }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .joystick-pad { width: 96px; height: 96px; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .control[data-action] { grid-column: auto; grid-row: auto; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls .lasso-control { grid-column: 1 / -1; grid-row: auto; }

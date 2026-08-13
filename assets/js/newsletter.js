@@ -29,7 +29,7 @@
           consent_to_marketing: fields.get('consent') === 'on',
           website: String(fields.get('website') || ''),
           turnstile_token: String(fields.get('turnstile_token') || ''),
-          source: 'homepage-release-list',
+          source: form.dataset.source || 'homepage-release-list',
           referrer: document.referrer || location.href
         })
       });

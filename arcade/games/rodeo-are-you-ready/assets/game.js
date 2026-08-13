@@ -5,7 +5,7 @@
   const GAME_ID = "rodeo-are-you-ready";
   const SONG_BPM = 90;
   const SONG_BEAT_SECONDS = 60 / SONG_BPM;
-  const SONG_DURATION_FALLBACK = 173.136;
+  const SONG_DURATION_FALLBACK = 182.232;
   const MODES = {
     ride: {
       label: "Ride the Riddim",

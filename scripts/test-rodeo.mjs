@@ -17,6 +17,10 @@ assert.match(game, /MODE_ASSETS\[modeId\]\.map\(loadAsset\)/, 'selected event as
 assert.doesNotMatch(html, /rel="preload"[^>]+(?:animation|voice|instrumental)/, 'heavy gameplay assets must not preload');
 assert.match(html, /preload="metadata"[^>]+rodeo-instrumental|id="music" preload="metadata"/, 'music should use metadata loading');
 assert.match(game, /stage\.dataset\.haptics = hardwareFeedback \? "hardware" : "audio-visual"/, 'haptic fallback must be observable');
+assert.match(game, /function spriteEchoes\(/, 'sprite reactions must include directional afterimages');
+assert.match(game, /function dustTrail\(/, 'moving characters must emit arena dust');
+assert.match(game, /function speedStreak\(/, 'charges and boosts must expose speed animation');
+assert.match(game, /if \(reducedMotion \|\| !image\.complete/, 'secondary sprite motion must respect reduced-motion preferences');
 assert.match(game, /NOTES\.E2[\s\S]+NOTES\.B2/, 'impact sound must remain in E major');
 assert.match(game, /class="score-sync"/, 'results must expose online score status');
 assert.match(worker, /WHERE game=\? AND level=\? AND player_hash=\?/, 'personal bests must be scoped by event and difficulty');

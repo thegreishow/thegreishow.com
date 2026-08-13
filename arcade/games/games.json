@@ -4,7 +4,7 @@
     "title": "Rodeo: Are You Ready",
     "creator": "The Grei Show",
     "description": "Four premium rodeo events with voiced countdowns, supported-device haptics, animated remounts, Raging Bull stunt jumps, Rolling Calf rope-downs, and ×2–×10 celebrations.",
-    "version": "1.4",
+    "version": "1.5",
     "type": "native",
     "entry": "arcade/games/rodeo-are-you-ready/index.html",
     "thumbnail": "arcade/assets/thumbnails/rodeo-are-you-ready.webp?v=20260811",

@@ -21,13 +21,13 @@
 import { recordGameLaunch, ARCADE_API_BASE } from './engine/community.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const instructions={
-'rodeo-are-you-ready':['Choose Ride the Riddim, Dodge the Bull, Catch the Cow, or Run the Track, then select Easy or Standard.','Use the joystick in Dodge and Catch. Chase the marked cow until the target turns gold, then throw the Lasso before it escapes.','Every event plays over the moving rodeo arena. Open Menu → How to Play during a run for controls and meter details.'],
+'rodeo-are-you-ready':['Choose Ride the Riddim, Dodge the Bull, Catch the Cow, or Run the Track, then select Easy or Standard.','In Ride, time the direction prompts to climb the tougher Heat bars from ×2 all the way to ×10 scoring. Falls cost a Heat tier before the remount.','Every event plays over the moving rodeo arena. Open Menu → How to Play during a run for controls and meter details.'],
 'dreamweaver-oracle':['Move through the dream and collect story fragments.','Avoid corrupted memories and survive as long as possible.','Use each run to shape a different version of the dream.'],
 'signal-runner':['Move left and right using A/D, arrow keys or the on-screen controls.','Collect blue signals to build your score.','Avoid red static; losing all three lives ends the transmission.'],
 'jamaica-run':['Run across Jamaica and collect coins.','Jump or dodge tropical obstacles using the on-screen controls.','Keep moving to build distance and set a new personal best.']
 };
 const goals={
-'rodeo-are-you-ready':['First Ride — enter any rodeo event','Hot Streak — build an 8× combo','Arena Ready — survive for 90 seconds, dodge 10 charges, or catch 8 cows'],
+'rodeo-are-you-ready':['First Ride — enter any rodeo event','Heat Rider — reach ×4 scoring in Ride the Riddim','Arena Ready — survive for 90 seconds, dodge 10 charges, or catch 8 cows'],
 'dreamweaver-oracle':['First Fragment — complete your first run','Dream Walker — survive a full memory cycle','Dreamweaver — reach a top leaderboard position'],
 'signal-runner':['Clean Signal — collect 10 signals','No Static — survive without losing a life','Transmission Master — score 500+'],
 'jamaica-run':['First Mile — begin your island run','Coin Collector — gather 25 coins','Island Legend — claim a top leaderboard score']

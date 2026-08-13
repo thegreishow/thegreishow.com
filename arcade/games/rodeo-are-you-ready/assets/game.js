@@ -38,7 +38,7 @@
       meters: [
         ["Balance", "Your grip on the bull. Keep it above zero to stay mounted."],
         ["Lives", "Standard starts with five; Easy starts with six."],
-        ["Heat", "At full Heat, every scoring move is worth 2× until a mistake cools it down."]
+        ["Heat", "Fill five tougher bars to unlock ×2, ×4, ×6, ×8, and ×10 scoring. A fall drops one tier."]
       ]
     },
     matador: {
@@ -148,6 +148,7 @@
   const heatMeter = document.getElementById("heatMeter");
   const heatLabel = document.getElementById("heatLabel");
   const heatPurpose = document.getElementById("heatPurpose");
+  const heatTiers = document.getElementById("heatTiers");
   const heatValue = document.getElementById("heatValue");
   const audioStatus = document.getElementById("audioStatus");
   const directionAnnounce = document.getElementById("directionAnnounce");
@@ -193,6 +194,11 @@
   const RIDE_RECOVERY_MS = { easy: 4000, standard: 3500 };
   const RIDE_WRONG_DAMAGE = { easy: 10, standard: 14 };
   const RIDE_MISSED_DAMAGE = { easy: 8, standard: 11 };
+  const RIDE_MULTIPLIERS = [1, 2, 4, 6, 8, 10];
+  const RIDE_HEAT_TARGETS = [56, 76, 104, 138, 180];
+  const RIDE_DIRECTION_FRAMES = { left: 3, up: 2, down: 4, right: 5 };
+  const RIDE_IDLE_FRAMES = [0, 1, 6, 7];
+  const RIDE_CHEERS = ["YEEHAW!", "WOO!", "RIDE IT!", "LET'S GO!", "GIDDY UP!"];
 
   let modeId = MODES[localStorage.getItem("grei-rodeo-mode")] ? localStorage.getItem("grei-rodeo-mode") : "ride";
   let difficultyId = DIFFICULTIES[localStorage.getItem("grei-rodeo-difficulty")] ? localStorage.getItem("grei-rodeo-difficulty") : "standard";
@@ -281,6 +287,12 @@
     rope() { this.tone(NOTES.B4, .08, "triangle", .04); this.tone(NOTES.CS5, .11, "sine", .035, .045); }
     good() { this.tone(NOTES.FS4, .08, "sine", .04); this.tone(NOTES.B4, .09, "sine", .035, .045); }
     perfect() { this.tone(NOTES.E5, .13, "triangle", .055); this.tone(NOTES.GS5, .14, "triangle", .045, .045); this.tone(NOTES.B5, .15, "triangle", .04, .09); }
+    celebrate(level = 1) {
+      const delay = Math.max(.035, .08 - level * .007);
+      [NOTES.E4, NOTES.GS4, NOTES.B4, NOTES.E5, NOTES.GS5, NOTES.B5].slice(0, Math.min(6, level + 2)).forEach((note, index) => {
+        this.tone(note, .15 + index * .01, index % 2 ? "triangle" : "sine", .045, index * delay);
+      });
+    }
     miss() { this.tone(NOTES.B3, .13, "sawtooth", .035); this.tone(NOTES.E3, .18, "triangle", .04, .07); }
   }
 
@@ -292,6 +304,9 @@
       this.combo = 0;
       this.bestCombo = 0;
       this.heat = 0;
+      this.rideHeat = 0;
+      this.rideTier = 0;
+      this.bestRideMultiplier = 1;
       this.balance = 100;
       this.lives = RIDE_LIVES[difficultyId];
       this.perfects = 0;
@@ -318,6 +333,46 @@
       this.answered = false;
     }
 
+    rideMultiplier() { return RIDE_MULTIPLIERS[this.rideTier]; }
+
+    rideHeatTarget() { return RIDE_HEAT_TARGETS[Math.min(this.rideTier, RIDE_HEAT_TARGETS.length - 1)]; }
+
+    syncRideHeat() {
+      this.heat = this.rideTier >= RIDE_HEAT_TARGETS.length
+        ? 100
+        : Math.min(100, this.rideHeat / this.rideHeatTarget() * 100);
+    }
+
+    addRideHeat(amount) {
+      if (this.rideTier >= RIDE_HEAT_TARGETS.length) return null;
+      this.rideHeat += amount;
+      const target = this.rideHeatTarget();
+      if (this.rideHeat < target) { this.syncRideHeat(); return null; }
+      this.rideHeat -= target;
+      this.rideTier++;
+      this.bestRideMultiplier = Math.max(this.bestRideMultiplier, this.rideMultiplier());
+      if (this.rideTier >= RIDE_HEAT_TARGETS.length) this.rideHeat = 0;
+      this.syncRideHeat();
+      return this.rideMultiplier();
+    }
+
+    coolRideHeat(portion = .2) {
+      if (this.rideTier >= RIDE_HEAT_TARGETS.length) {
+        this.rideTier = RIDE_HEAT_TARGETS.length - 1;
+        this.rideHeat = this.rideHeatTarget() * .72;
+      } else {
+        this.rideHeat = Math.max(0, this.rideHeat - this.rideHeatTarget() * portion);
+      }
+      this.syncRideHeat();
+    }
+
+    dropRideTier() {
+      if (this.rideTier > 0) this.rideTier--;
+      this.rideHeat = 0;
+      this.syncRideHeat();
+      return this.rideMultiplier();
+    }
+
     answerRide(action, now) {
       if (!this.prompt || this.answered || this.finished) return null;
       this.answered = true;
@@ -328,12 +383,13 @@
       this.combo++;
       this.bestCombo = Math.max(this.bestCombo, this.combo);
       if (perfect) this.perfects++;
-      const multiplier = Math.min(3, 1 + Math.floor(this.combo / 8) * .25);
-      const points = Math.round((perfect ? 140 : 90) * multiplier * (this.heat >= 100 ? 2 : 1));
+      const comboMultiplier = Math.min(3, 1 + Math.floor(this.combo / 8) * .25);
+      const scoreMultiplier = this.rideMultiplier();
+      const points = Math.round((perfect ? 140 : 90) * comboMultiplier * scoreMultiplier);
       this.score += points;
-      this.heat = Math.min(100, this.heat + (perfect ? 12 : 8));
+      const heatUpgrade = this.addRideHeat(perfect ? 14 : 9);
       this.balance = Math.min(100, this.balance + (difficultyId === "easy" ? 8 : 6));
-      return { kind: perfect ? "perfect" : "good", points };
+      return { kind: perfect ? "perfect" : "good", points, scoreMultiplier, heatUpgrade };
     }
 
     scoreDodge(closeCall) {
@@ -375,7 +431,8 @@
 
     takeHit(damage = 18) {
       this.combo = 0;
-      this.heat = Math.max(0, this.heat - 18);
+      if (modeId === "ride") this.coolRideHeat();
+      else this.heat = Math.max(0, this.heat - 18);
       this.balance = Math.max(0, this.balance - damage);
       this.misses++;
       return { kind: "miss", points: 0 };
@@ -411,6 +468,8 @@
   let counting = false;
   let countdownToken = 0;
   let rideRecoveryUntil = 0;
+  let rideReaction = { direction: "up", startedAt: 0, until: 0 };
+  let rideTransition = { phase: "mounted", startedAt: 0, fallUntil: 0, remountAt: 0, until: 0 };
   let last = 0;
   let nextBeatAt = difficulty().interval;
   let beatIndex = 0;
@@ -452,16 +511,37 @@
     }
     heatEl.style.width = `${state.heat}%`;
     const heatReady = state.heat >= 100;
-    const heatUse = modeId === "race"
-      ? heatReady ? "Boost ready" : "Fills boost"
-      : heatReady ? "2× score active" : "Full = 2× score";
-    heatLabel.textContent = modeId === "race" && heatReady ? "Boost" : "Heat";
-    heatPurpose.textContent = heatUse;
-    heatValue.textContent = `${Math.round(state.heat)}%`;
-    heatMeter.setAttribute("aria-label", `${modeId === "race" ? "Boost charge" : "Heat"}: ${Math.round(state.heat)} percent. ${heatUse}.`);
-    stage.classList.toggle("heat", state.heat >= 100);
-    if (modeId === "ride") stage.dataset.lives = String(state.lives);
-    else delete stage.dataset.lives;
+    if (modeId === "ride") {
+      const multiplier = state.rideMultiplier();
+      const maxHeat = state.rideTier >= RIDE_HEAT_TARGETS.length;
+      const nextMultiplier = RIDE_MULTIPLIERS[Math.min(state.rideTier + 1, RIDE_MULTIPLIERS.length - 1)];
+      const heatUse = maxHeat ? "Maximum ×10 scoring" : `Next: ×${nextMultiplier}`;
+      heatLabel.textContent = multiplier > 1 ? `Heat ×${multiplier}` : "Heat";
+      heatPurpose.textContent = heatUse;
+      heatValue.textContent = maxHeat ? "MAX" : `${Math.round(state.heat)}%`;
+      heatMeter.setAttribute("aria-label", `Heat multiplier ×${multiplier}. ${heatUse}. Current bar ${Math.round(state.heat)} percent.`);
+      [...heatTiers.children].forEach((tier, index) => {
+        tier.classList.toggle("unlocked", index < state.rideTier);
+        tier.classList.toggle("current", !maxHeat && index === state.rideTier);
+      });
+      stage.classList.toggle("heat", state.rideTier > 0);
+      stage.dataset.lives = String(state.lives);
+      stage.dataset.rideMultiplier = String(multiplier);
+      stage.dataset.rideTier = String(state.rideTier);
+    } else {
+      const heatUse = modeId === "race"
+        ? heatReady ? "Boost ready" : "Fills boost"
+        : heatReady ? "2× score active" : "Full = 2× score";
+      heatLabel.textContent = modeId === "race" && heatReady ? "Boost" : "Heat";
+      heatPurpose.textContent = heatUse;
+      heatValue.textContent = `${Math.round(state.heat)}%`;
+      heatMeter.setAttribute("aria-label", `${modeId === "race" ? "Boost charge" : "Heat"}: ${Math.round(state.heat)} percent. ${heatUse}.`);
+      [...heatTiers.children].forEach(tier => tier.classList.remove("unlocked", "current"));
+      stage.classList.toggle("heat", state.heat >= 100);
+      delete stage.dataset.lives;
+      delete stage.dataset.rideMultiplier;
+      delete stage.dataset.rideTier;
+    }
   }
 
   function showSelection() {
@@ -473,6 +553,10 @@
     titleEl.innerHTML = "ARE YOU<br>READY?";
     copyEl.hidden = true;
     rideRecoveryUntil = 0;
+    rideReaction = { direction: "up", startedAt: 0, until: 0 };
+    rideTransition = { phase: "mounted", startedAt: 0, fallUntil: 0, remountAt: 0, until: 0 };
+    stage.dataset.rideAnimation = "mounted";
+    delete stage.dataset.rideMove;
     delete stage.dataset.recovering;
     state.reset();
     resetDodge();
@@ -572,45 +656,85 @@
     if (!running || paused || counting || modeId !== "ride" || rideRecoveryUntil > now) return;
     const outcome = state.answerRide(action, now);
     if (!outcome) return;
+    rideReaction = { direction: action, startedAt: now, until: now + 560 };
+    stage.dataset.rideMove = action;
     const control = document.querySelector(`[data-action="${action}"]`);
     control?.classList.add("active");
-    setTimeout(() => control?.classList.remove("active"), 130);
+    setTimeout(() => {
+      control?.classList.remove("active");
+      if (performance.now() >= rideReaction.until) delete stage.dataset.rideMove;
+    }, 570);
     if (outcome.kind === "miss") {
       setFeedback("WRONG WAY");
       stage.classList.add("shake");
       setTimeout(() => stage.classList.remove("shake"), 250);
       audio.miss();
     } else {
-      setFeedback(outcome.kind === "perfect" ? `PERFECT +${outcome.points}` : `SMOOTH +${outcome.points}`);
       riderLean = { left: -1, right: 1, up: 0, down: 0 }[action] || 0;
       riderPitch = { up: -1, down: 1 }[action] || 0;
+      if (outcome.heatUpgrade) {
+        const cheer = RIDE_CHEERS[(state.rideTier - 1) % RIDE_CHEERS.length];
+        setFeedback(`${cheer}  HEAT ×${outcome.heatUpgrade}!`, 1600);
+        burst("#ffc857", 58, 480, 280);
+        burst("#ff625f", 34, 480, 230);
+        flashes.push({ x: 370, y: 245, life: .55 }, { x: 590, y: 245, life: .55 });
+        stage.classList.remove("multiplier-up");
+        void stage.offsetWidth;
+        stage.classList.add("multiplier-up");
+        setTimeout(() => stage.classList.remove("multiplier-up"), 760);
+        audio.celebrate(state.rideTier);
+      } else {
+        const cheer = outcome.kind === "perfect" && state.combo > 0 && state.combo % 4 === 0
+          ? `${RIDE_CHEERS[(state.combo / 4 - 1) % RIDE_CHEERS.length]}  `
+          : "";
+        const multiplierCopy = outcome.scoreMultiplier > 1 ? ` · ×${outcome.scoreMultiplier}` : "";
+        setFeedback(outcome.kind === "perfect" ? `${cheer}PERFECT +${outcome.points}${multiplierCopy}` : `SMOOTH +${outcome.points}${multiplierCopy}`, cheer ? 900 : 560);
+        outcome.kind === "perfect" ? audio.perfect() : audio.good();
+      }
       burst(outcome.kind === "perfect" ? "#ffc857" : "#ff625f", outcome.kind === "perfect" ? 26 : 15);
-      outcome.kind === "perfect" ? audio.perfect() : audio.good();
     }
     hud();
     if (state.balance <= 0) loseRideLife(now);
   }
 
   function loseRideLife(now = performance.now()) {
+    const previousMultiplier = state.rideMultiplier();
     state.lives = Math.max(0, state.lives - 1);
     state.combo = 0;
     state.prompt = null;
     state.answered = true;
+    const cooledMultiplier = state.dropRideTier();
     stage.dataset.direction = "";
     stage.dataset.lives = String(state.lives);
+    stage.dataset.rideAnimation = "fall";
+    delete stage.dataset.rideMove;
+    rideReaction.until = 0;
+    const tierDrop = previousMultiplier > cooledMultiplier ? ` · ×${previousMultiplier} → ×${cooledMultiplier}` : "";
     if (state.lives <= 0) {
       state.balance = 0;
-      finish();
+      rideRecoveryUntil = now + 980;
+      rideTransition = { phase: "fall", startedAt: now, fallUntil: now + 900, remountAt: Infinity, until: now + 980 };
+      stage.dataset.recovering = "true";
+      setFeedback(`THROWN!${tierDrop}`, 900);
+      burst("#ff625f", 42, 480, 330);
+      audio.miss();
+      setTimeout(() => {
+        if (running && modeId === "ride" && state.lives <= 0) finish();
+      }, 980);
+      hud();
       return;
     }
     const recoveryMs = RIDE_RECOVERY_MS[difficultyId];
     state.balance = 100;
     rideRecoveryUntil = now + recoveryMs;
+    rideTransition = { phase: "fall", startedAt: now, fallUntil: now + 850, remountAt: now + recoveryMs - 1050, until: rideRecoveryUntil };
     nextBeatAt = state.elapsed + recoveryMs / 1000 + difficulty().interval;
     stage.dataset.recovering = "true";
     directionAnnounce.textContent = `${state.lives} rides left. Recovering.`;
-    setFeedback(`SAVED! ${state.lives} RIDES LEFT`, 1200);
-    flashes.push({ x: 690, y: 270, life: .42 });
+    setFeedback(`THROWN! ${state.lives} RIDES LEFT${tierDrop}`, 1300);
+    burst("#ff625f", 38, 480, 330);
+    flashes.push({ x: 480, y: 290, life: .5 });
+    audio.miss();
     hud();
   }
 
@@ -1134,6 +1258,8 @@
     last = performance.now();
     nextBeatAt = difficulty().interval;
     rideRecoveryUntil = 0;
+    rideReaction = { direction: "up", startedAt: 0, until: 0 };
+    rideTransition = { phase: "mounted", startedAt: 0, fallUntil: 0, remountAt: 0, until: 0 };
     beatIndex = 0;
     feedback = "";
     particles = [];
@@ -1141,6 +1267,7 @@
     stage.classList.add("playing");
     document.body.classList.add("grei-game-playing");
     stage.dataset.mode = modeId;
+    stage.dataset.rideAnimation = "mounted";
     stage.dataset.direction = "";
     delete stage.dataset.playerX;
     delete stage.dataset.playerY;
@@ -1154,6 +1281,7 @@
     delete stage.dataset.cadence;
     delete stage.dataset.boost;
     delete stage.dataset.recovering;
+    delete stage.dataset.rideMove;
     overlay.hidden = true;
     directionAnnounce.textContent = "";
     audio.begin();
@@ -1166,6 +1294,7 @@
     running = false;
     countdownToken++;
     rideRecoveryUntil = 0;
+    rideTransition.phase = "mounted";
     state.finished = true;
     heldDirections.clear();
     resetJoystick();
@@ -1174,6 +1303,7 @@
     document.body.classList.remove("grei-game-playing");
     stage.dataset.direction = "";
     delete stage.dataset.recovering;
+    delete stage.dataset.rideMove;
     directionAnnounce.textContent = "";
     audio.stop();
     best = Math.max(best, state.score);
@@ -1204,8 +1334,8 @@
           : state.racePlace === 1 ? "Track Royalty" : state.racePlace === 2 ? "Photo Finish" : state.racePlace === 3 ? "Podium Rider" : "Trail Runner";
     const middleValue = modeId === "ride" ? `${state.bestCombo}×` : modeId === "matador" ? state.dodges : modeId === "catch" ? state.catches : `#${state.racePlace}`;
     const middleLabel = modeId === "ride" ? "Best combo" : modeId === "matador" ? "Dodges" : modeId === "catch" ? "Catches" : "Finish";
-    const lastValue = modeId === "ride" ? state.perfects : modeId === "matador" ? state.closeCalls : modeId === "catch" ? state.quickCatches : state.boosts;
-    const lastLabel = modeId === "ride" ? "Perfects" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Boosts";
+    const lastValue = modeId === "ride" ? `×${state.bestRideMultiplier}` : modeId === "matador" ? state.closeCalls : modeId === "catch" ? state.quickCatches : state.boosts;
+    const lastLabel = modeId === "ride" ? "Peak Heat" : modeId === "matador" ? "Close calls" : modeId === "catch" ? "Quick catches" : "Boosts";
     results.innerHTML = `<div class="result-grid"><div class="result"><b>${state.score}</b><span>Score</span></div><div class="result"><b>${middleValue}</b><span>${middleLabel}</span></div><div class="result"><b>${lastValue}</b><span>${lastLabel}</span></div></div><p><strong>${rank}</strong> · ${Math.floor(state.elapsed)}s · ${difficulty().label} · Best ${best}</p>`;
     updateSelectionUI();
     submit();
@@ -1344,9 +1474,13 @@
       }
       if (rideRecoveryUntil) {
         rideRecoveryUntil = 0;
+        rideTransition = { phase: "mounted", startedAt: 0, fallUntil: 0, remountAt: 0, until: 0 };
+        stage.dataset.rideAnimation = "mounted";
         delete stage.dataset.recovering;
         directionAnnounce.textContent = "Back in the saddle";
-        setFeedback("BACK IN THE SADDLE", 650);
+        setFeedback("YEEHAW! BACK IN THE SADDLE", 900);
+        burst("#ffc857", 24, 480, 285);
+        audio.good();
       }
       while (state.elapsed >= nextBeatAt && running) {
         rideBeat(now);
@@ -1381,8 +1515,9 @@
     shade.addColorStop(1, "rgba(5,4,8,.64)");
     ctx.fillStyle = shade;
     ctx.fillRect(0, 0, 960, 540);
-    if (state.heat >= 100) {
-      ctx.fillStyle = `rgba(255,98,95,${.04 + Math.sin(now / 130) * .018})`;
+    const rideHeatGlow = modeId === "ride" ? state.rideTier / RIDE_HEAT_TARGETS.length : state.heat >= 100 ? 1 : 0;
+    if (rideHeatGlow > 0) {
+      ctx.fillStyle = `rgba(255,98,95,${.022 + rideHeatGlow * .055 + Math.sin(now / 130) * .012})`;
       ctx.fillRect(0, 0, 960, 540);
     }
     flashes.forEach(flash => {
@@ -1408,61 +1543,106 @@
 
   function drawRide(now) {
     const t = now / 1000;
-    const directionalRoll = bullDirection === "left" ? -.08 : bullDirection === "right" ? .08 : 0;
-    const directionalLift = bullDirection === "up" ? -10 : bullDirection === "down" ? 8 : 0;
+    const reactionActive = now < rideReaction.until && rideTransition.phase === "mounted";
+    const reactionDuration = Math.max(1, rideReaction.until - rideReaction.startedAt);
+    const reactionProgress = reactionActive ? Math.min(1, (now - rideReaction.startedAt) / reactionDuration) : 0;
+    const reactionStrength = reactionActive ? Math.sin(reactionProgress * Math.PI) : 0;
+    const direction = reactionActive ? rideReaction.direction : bullDirection;
+    const idleIndex = Math.floor(now / (running ? 235 : 320)) % RIDE_IDLE_FRAMES.length;
+    let frame = reactionActive ? RIDE_DIRECTION_FRAMES[direction] : RIDE_IDLE_FRAMES[idleIndex];
+    let x = reactionActive ? ({ left: -28, right: 28, up: 0, down: 0 }[direction] || 0) * reactionStrength : 0;
+    let y = reactionActive ? ({ up: -24, down: 18, left: 2, right: 2 }[direction] || 0) * reactionStrength : 0;
+    let roll = Math.sin(t * 17) * bullKick * .035 + riderLean * .025;
+    let scale = 1;
+    let alpha = 1;
+    let shadowAlpha = .34;
+    if (reactionActive) roll += ({ left: -.12, right: .12, up: -.035, down: .045 }[direction] || 0) * reactionStrength;
+
+    if (rideTransition.phase === "fall" && now < rideTransition.until) {
+      if (now < rideTransition.fallUntil) {
+        const progress = Math.min(1, (now - rideTransition.startedAt) / Math.max(1, rideTransition.fallUntil - rideTransition.startedAt));
+        frame = progress < .48 ? RIDE_DIRECTION_FRAMES.down : RIDE_DIRECTION_FRAMES.right;
+        x += progress * 205;
+        y += -Math.sin(progress * Math.PI) * 132 + progress * 84;
+        roll += progress * .82;
+        scale = 1 - progress * .13;
+        alpha = 1 - progress * .6;
+        shadowAlpha *= 1 - progress * .7;
+        stage.dataset.rideAnimation = "fall";
+      } else if (now < rideTransition.remountAt) {
+        frame = RIDE_DIRECTION_FRAMES.right;
+        x = 205;
+        y = 84;
+        roll = .82;
+        scale = .87;
+        alpha = .06;
+        shadowAlpha = .08;
+        stage.dataset.rideAnimation = "off";
+      } else {
+        const progress = Math.min(1, (now - rideTransition.remountAt) / Math.max(1, rideTransition.until - rideTransition.remountAt));
+        const eased = 1 - Math.pow(1 - progress, 3);
+        frame = progress < .55 ? RIDE_DIRECTION_FRAMES.up : RIDE_IDLE_FRAMES[0];
+        x = -176 * (1 - eased);
+        y = -112 * (1 - eased) - Math.sin(progress * Math.PI) * 24;
+        roll = -.38 * (1 - eased);
+        scale = .8 + eased * .2;
+        alpha = .3 + eased * .7;
+        shadowAlpha = .12 + eased * .22;
+        stage.dataset.rideAnimation = "remount";
+      }
+    } else {
+      stage.dataset.rideAnimation = reactionActive ? direction : "mounted";
+    }
+
     if (rideAnimation.complete && rideAnimation.naturalWidth) {
       const pivotCanvasX = 480;
-      const pivotCanvasY = 435;
-      const roll = Math.sin(t * 17) * bullKick * .04 + directionalRoll * bullKick + riderLean * .035;
-      const lift = directionalLift * bullKick + riderPitch * 2;
-      const rideFps = running ? difficulty().promptBpm / 7.5 : 4;
-      const frame = cycleFrame(
-        now,
-        rideFps,
-        bullDirection === "down" ? 4 : bullDirection === "up" ? 2 : 0,
-        RIDE_ANIMATION_FRAMES
-      );
+      const pivotCanvasY = 405;
 
-      ctx.fillStyle = "rgba(0,0,0,.34)";
+      ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
       ctx.beginPath();
-      ctx.ellipse(480, 462, 154, 20, 0, 0, Math.PI * 2);
+      ctx.ellipse(480 + x * .2, 433, 154 * scale, 20 * scale, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.save();
       ctx.beginPath();
-      ctx.rect(0, 0, canvas.width, 452);
+      ctx.rect(0, 0, canvas.width, 430);
       ctx.clip();
-      ctx.translate(pivotCanvasX, pivotCanvasY + lift);
+      ctx.globalAlpha = alpha;
+      ctx.translate(pivotCanvasX + x, pivotCanvasY + y + riderPitch * 2);
       ctx.rotate(roll);
-      ctx.shadowColor = state.heat >= 100 ? "rgba(255,200,87,.62)" : "rgba(255,98,95,.30)";
-      ctx.shadowBlur = state.heat >= 100 ? 30 : 13;
+      ctx.scale(scale, scale);
+      const heatStrength = state.rideTier / RIDE_HEAT_TARGETS.length;
+      ctx.shadowColor = heatStrength > 0 ? `rgba(255,200,87,${.32 + heatStrength * .42})` : "rgba(255,98,95,.30)";
+      ctx.shadowBlur = heatStrength > 0 ? 16 + heatStrength * 24 : 13;
       spriteFrame(rideAnimation, frame, -195, -390, 390, 390, RIDE_ANIMATION_FRAMES);
       ctx.restore();
       return;
     }
 
     if (rideSprite.complete && rideSprite.naturalWidth) {
-      const scale = 500 / rideSprite.naturalWidth;
+      const spriteScale = 500 / rideSprite.naturalWidth;
       const pivotX = 610;
       const pivotY = 1078;
       const pivotCanvasX = 480;
-      const pivotCanvasY = 435;
-      const roll = Math.sin(t * 17) * bullKick * .04 + directionalRoll * bullKick + riderLean * .035;
-      const lift = directionalLift * bullKick + riderPitch * 2;
+      const pivotCanvasY = 405;
       ctx.save();
       ctx.beginPath();
-      ctx.rect(0, 0, canvas.width, 452);
+      ctx.rect(0, 0, canvas.width, 430);
       ctx.clip();
-      ctx.translate(pivotCanvasX, pivotCanvasY + lift);
+      ctx.globalAlpha = alpha;
+      ctx.translate(pivotCanvasX + x, pivotCanvasY + y + riderPitch * 2);
       ctx.rotate(roll);
-      ctx.drawImage(rideSprite, -pivotX * scale, -pivotY * scale, rideSprite.naturalWidth * scale, rideSprite.naturalHeight * scale);
+      ctx.scale(scale, scale);
+      ctx.drawImage(rideSprite, -pivotX * spriteScale, -pivotY * spriteScale, rideSprite.naturalWidth * spriteScale, rideSprite.naturalHeight * spriteScale);
       ctx.restore();
       return;
     }
 
     ctx.save();
-    ctx.translate(480, 330);
-    ctx.rotate(directionalRoll * bullKick);
+    ctx.globalAlpha = alpha;
+    ctx.translate(480 + x, 300 + y);
+    ctx.rotate(roll);
+    ctx.scale(scale, scale);
     ctx.fillStyle = "#142a4a";
     ctx.beginPath();
     ctx.ellipse(0, 105, 125, 28, 0, 0, Math.PI * 2);
@@ -1480,6 +1660,7 @@
     if (!running || counting || modeId !== "ride") return;
     if (rideRecoveryUntil > now) {
       const seconds = Math.max(1, Math.ceil((rideRecoveryUntil - now) / 1000));
+      const recoveryLabel = now < rideTransition.fallUntil ? "THROWN" : now >= rideTransition.remountAt ? "MOUNT UP" : "RESET";
       ctx.save();
       ctx.translate(700, 270);
       ctx.fillStyle = "rgba(34,13,14,.92)";
@@ -1501,7 +1682,7 @@
       ctx.fillText(seconds, 0, -3);
       ctx.fillStyle = "#ffc857";
       ctx.font = "900 10px system-ui";
-      ctx.fillText("GET READY", 0, 82);
+      ctx.fillText(recoveryLabel, 0, 82);
       ctx.restore();
       return;
     }
@@ -1512,7 +1693,7 @@
     ctx.translate(700, 270);
     ctx.scale(pulse, pulse);
     ctx.fillStyle = "rgba(34,13,14,.9)";
-    ctx.shadowColor = state.heat >= 100 ? "#ffc857" : "#ff625f";
+    ctx.shadowColor = state.rideTier > 0 ? "#ffc857" : "#ff625f";
     ctx.shadowBlur = 28;
     ctx.beginPath();
     ctx.arc(0, 0, 55, 0, Math.PI * 2);
@@ -1523,7 +1704,7 @@
     ctx.beginPath();
     ctx.arc(0, 0, 61, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.strokeStyle = state.heat >= 100 ? "#ffc857" : "#ff625f";
+    ctx.strokeStyle = state.rideTier > 0 ? "#ffc857" : "#ff625f";
     ctx.lineCap = "round";
     ctx.beginPath();
     ctx.arc(0, 0, 61, -Math.PI / 2, -Math.PI / 2 + remaining * Math.PI * 2);
@@ -2009,20 +2190,51 @@
     ctx.roundRect(810, 18, 132, 39, 10);
     ctx.fill();
     ctx.fillStyle = "#ffc857";
-    ctx.font = "900 10px system-ui";
+    ctx.font = modeId === "ride" ? "italic 900 17px Impact, sans-serif" : "900 10px system-ui";
     ctx.textAlign = "center";
-    ctx.fillText(difficulty().label.toUpperCase(), 876, 42);
+    ctx.fillText(modeId === "ride" ? `HEAT ×${state.rideMultiplier()}` : difficulty().label.toUpperCase(), 876, modeId === "ride" ? 43 : 42);
   }
 
   function drawFeedback(now) {
     if (feedback && now < feedbackUntil) {
-      ctx.fillStyle = feedback.includes("PERFECT") || feedback.includes("OLÉ") ? "#ffc857" : "#fff";
+      const multiplierMoment = modeId === "ride" && feedback.includes("HEAT ×");
+      ctx.save();
+      if (multiplierMoment) {
+        const pulse = 1 + Math.sin(now / 70) * .045;
+        ctx.translate(480, 145);
+        ctx.scale(pulse, pulse);
+        const banner = ctx.createLinearGradient(-235, 0, 235, 0);
+        banner.addColorStop(0, "rgba(45,13,15,0)");
+        banner.addColorStop(.2, "rgba(84,37,29,.9)");
+        banner.addColorStop(.5, "rgba(184,56,43,.96)");
+        banner.addColorStop(.8, "rgba(84,37,29,.9)");
+        banner.addColorStop(1, "rgba(45,13,15,0)");
+        ctx.fillStyle = banner;
+        ctx.fillRect(-250, -36, 500, 72);
+        ctx.strokeStyle = "rgba(255,240,178,.85)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-205, -27);
+        ctx.lineTo(205, -27);
+        ctx.moveTo(-205, 27);
+        ctx.lineTo(205, 27);
+        ctx.stroke();
+      }
+      ctx.fillStyle = feedback.includes("PERFECT") || feedback.includes("OLÉ") || multiplierMoment || feedback.includes("YEEHAW") || feedback.includes("WOO") ? "#ffc857" : "#fff";
       ctx.textAlign = "center";
-      ctx.font = "italic 900 24px Impact, sans-serif";
+      ctx.font = `italic 900 ${multiplierMoment ? 38 : 24}px Impact, sans-serif`;
       ctx.shadowColor = "rgba(0,0,0,.8)";
-      ctx.shadowBlur = 8;
-      ctx.fillText(feedback, 480, modeId === "ride" ? 220 : 150);
-      ctx.shadowBlur = 0;
+      ctx.shadowBlur = multiplierMoment ? 16 : 8;
+      ctx.lineWidth = multiplierMoment ? 5 : 3;
+      ctx.strokeStyle = "rgba(75,22,18,.9)";
+      if (multiplierMoment) {
+        ctx.strokeText(feedback, 0, 12, 470);
+        ctx.fillText(feedback, 0, 12, 470);
+      } else {
+        ctx.strokeText(feedback, 480, modeId === "ride" ? 205 : 150, 760);
+        ctx.fillText(feedback, 480, modeId === "ride" ? 205 : 150, 760);
+      }
+      ctx.restore();
     }
   }
 

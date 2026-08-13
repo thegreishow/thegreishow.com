@@ -17,7 +17,7 @@
   <link rel="preload" href="assets/race-gallop-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/runaway-cow-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
-  <link rel="stylesheet" href="assets/game.css?v=20260812c">
+  <link rel="stylesheet" href="assets/game.css?v=20260812d">
 </head>
 <body>
 <script src="../../engine/game-shell.js?v=20260811f"></script>
@@ -43,8 +43,12 @@
     </video>
     <canvas id="game" width="960" height="540"></canvas>
     <p class="sr-only" id="directionAnnounce" aria-live="assertive"></p>
-    <div class="meter" id="heatMeter" aria-label="Heat: full meter activates double score">
-      <span class="meter-copy"><strong id="heatLabel">Heat</strong><small id="heatPurpose">Full = 2× score</small></span>
+    <div class="meter" id="heatMeter" aria-label="Heat: fill each bar to raise the score multiplier">
+      <span class="meter-copy">
+        <strong id="heatLabel">Heat</strong>
+        <small id="heatPurpose">Next: ×2</small>
+        <span class="heat-tiers" id="heatTiers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      </span>
       <div class="track"><div class="fill" id="heat"></div></div>
       <output id="heatValue" aria-live="off">0%</output>
     </div>
@@ -106,6 +110,6 @@
   <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
 </main>
 <audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
-<script src="assets/game.js?v=20260812c"></script>
+<script src="assets/game.js?v=20260812d"></script>
 </body>
 </html>

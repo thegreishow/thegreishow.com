@@ -37,9 +37,14 @@ button { font: inherit; }
 .arena-video.is-live { opacity: 1; }
 canvas { position: relative; z-index: 1; display: block; width: 100%; height: 100%; min-height: 57vh; background: transparent; touch-action: none; }
 .meter { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 14px; display: grid; grid-template-columns: auto minmax(0, 1fr) 38px; align-items: center; gap: 9px; pointer-events: none; }
-.meter-copy { min-width: 112px; text-align: left; text-shadow: 0 2px 5px #000; }
+.meter-copy { min-width: 126px; text-align: left; text-shadow: 0 2px 5px #000; }
 .meter-copy strong { display: block; color: var(--gold); font-size: 14px; font-style: italic; line-height: 1; text-transform: uppercase; }
 .meter-copy small { display: block; margin-top: 3px; color: #fff6ec; font: 800 8px/1 system-ui; letter-spacing: .08em; text-transform: uppercase; }
+.heat-tiers { display: none; gap: 3px; margin-top: 5px; }
+.stage[data-mode="ride"] .heat-tiers { display: flex; }
+.heat-tiers i { width: 14px; height: 4px; border: 1px solid rgba(255,255,255,.35); border-radius: 99px; background: rgba(8,6,9,.5); }
+.heat-tiers i.unlocked { border-color: #fff0b2; background: var(--gold); box-shadow: 0 0 7px rgba(255,200,87,.72); }
+.heat-tiers i.current { border-color: var(--coral); animation: tier-current .55s ease-in-out infinite alternate; }
 .meter output { color: #fff; font: 900 11px/1 system-ui; text-align: right; text-shadow: 0 2px 5px #000; }
 .track { height: 11px; flex: 1; overflow: hidden; border: 1px solid rgba(255,255,255,.3); border-radius: 99px; background: rgba(3,5,10,.65); box-shadow: inset 0 2px 4px rgba(0,0,0,.5); }
 .fill { width: 0; height: 100%; background: linear-gradient(90deg, var(--coral), var(--gold)); box-shadow: 0 0 18px var(--coral); transition: width .12s; }
@@ -115,8 +120,11 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .result span { color: var(--muted); font: 800 8px/1 system-ui; letter-spacing: .1em; text-transform: uppercase; }
 .shake { animation: shake .25s; }
 .heat { animation: heat 1s infinite alternate; }
+.multiplier-up { animation: multiplier-pop .72s cubic-bezier(.2,.9,.22,1.3); }
 @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 @keyframes heat { to { box-shadow: 0 0 38px rgba(255,98,95,.48), inset 0 0 25px rgba(255,200,87,.12); } }
+@keyframes multiplier-pop { 45% { border-color: #fff0b2; box-shadow: 0 0 70px rgba(255,200,87,.62), inset 0 0 36px rgba(255,98,95,.24); } }
+@keyframes tier-current { to { border-color: #fff0b2; background: rgba(255,98,95,.82); box-shadow: 0 0 8px rgba(255,98,95,.72); } }
 @keyframes lasso-ready { to { border-color: #fff0b2; box-shadow: inset 0 1px rgba(255,255,255,.2), 0 0 24px rgba(255,200,87,.42); } }
 
 @media (max-width: 620px) {
@@ -160,9 +168,11 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   .control { min-height: 54px; }
   .control small { display: none; }
   .meter { left: 10px; right: 10px; bottom: 9px; grid-template-columns: auto minmax(0, 1fr) 34px; gap: 7px; }
-  .meter-copy { min-width: 96px; }
+  .meter-copy { min-width: 105px; }
   .meter-copy strong { font-size: 12px; }
   .meter-copy small { font-size: 7px; letter-spacing: .04em; }
+  .heat-tiers { gap: 2px; margin-top: 4px; }
+  .heat-tiers i { width: 11px; height: 3px; }
 }
 
 @media (orientation: landscape) and (max-height: 670px) {

@@ -34,6 +34,7 @@ button { font: inherit; }
 .stat span { display: block; margin-top: 3px; color: var(--muted); font: 800 8px/1 system-ui; letter-spacing: .12em; text-transform: uppercase; }
 .stage { position: relative; isolation: isolate; min-height: 57vh; overflow: hidden; border: 1px solid rgba(255, 200, 87, .35); border-radius: 18px; background: #1a0b12 url("rodeo-arena.webp") center/cover no-repeat; box-shadow: 0 20px 80px rgba(0,0,0,.55), inset 0 0 0 1px rgba(23,78,150,.2); }
 .arena-video { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; background: #1a0b12 url("rodeo-arena.webp") center/cover no-repeat; filter: saturate(1.04) contrast(1.03); pointer-events: none; }
+.arena-video.is-live { opacity: 1; }
 canvas { position: relative; z-index: 1; display: block; width: 100%; height: 100%; min-height: 57vh; background: transparent; touch-action: none; }
 .meter { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 14px; display: grid; grid-template-columns: auto minmax(0, 1fr) 38px; align-items: center; gap: 9px; pointer-events: none; }
 .meter-copy { min-width: 112px; text-align: left; text-shadow: 0 2px 5px #000; }
@@ -89,6 +90,17 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 .grei-pause-screen [data-rodeo-back] { width: 100%; min-height: 46px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; background: rgba(255,255,255,.08); color: #fff; font: italic 900 13px/1 system-ui; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; }
 .controls { position: relative; z-index: 4; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .controls.catch-controls { grid-template-columns: repeat(5, 1fr); }
+.controls.joystick-controls { grid-template-columns: minmax(150px, 210px) minmax(120px, 1fr); align-items: center; }
+.controls.joystick-controls .control[data-action] { display: none; }
+.controls.joystick-controls:not(.catch-controls) { grid-template-columns: minmax(150px, 210px); justify-content: center; }
+.joystick-wrap { display: grid; justify-items: center; gap: 4px; min-width: 0; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.joystick-wrap[hidden] { display: none; }
+.joystick-pad { position: relative; width: 118px; height: 118px; border: 1px solid rgba(255,200,87,.4); border-radius: 50%; background: radial-gradient(circle, rgba(255,98,95,.15), rgba(33,13,16,.94) 68%); box-shadow: inset 0 0 0 10px rgba(255,255,255,.025), 0 10px 30px rgba(0,0,0,.38); cursor: grab; }
+.joystick-pad:active { cursor: grabbing; }
+.joystick-ring { position: absolute; inset: 21px; border: 1px dashed rgba(255,246,236,.22); border-radius: 50%; }
+.joystick-thumb { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; border: 2px solid rgba(255,255,255,.68); border-radius: 50%; background: linear-gradient(145deg, #ff7a6b, #b52f2b 62%, #68201d); box-shadow: inset 0 1px rgba(255,255,255,.35), 0 6px 16px rgba(0,0,0,.45), 0 0 18px rgba(255,98,95,.22); transform: translate(-50%, -50%); transition: box-shadow .12s; pointer-events: none; }
+.joystick-wrap.active .joystick-thumb { box-shadow: inset 0 1px rgba(255,255,255,.4), 0 8px 20px rgba(0,0,0,.48), 0 0 25px rgba(255,200,87,.32); }
+.joystick-wrap > small { color: #d7b8ad; font: 900 8px/1 system-ui; letter-spacing: .14em; text-transform: uppercase; }
 .control { min-height: 64px; border: 1px solid rgba(255,200,87,.22); border-radius: 14px 14px 20px 14px; background: linear-gradient(180deg, #54251d, #210d10); color: #fff; box-shadow: inset 0 1px rgba(255,255,255,.08), 0 5px 18px rgba(0,0,0,.25); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
 .control span { display: block; font-size: 25px; line-height: 1; }
 .control small { display: block; margin-top: 5px; color: #caaea5; font: 800 8px/1 system-ui; letter-spacing: .1em; text-transform: uppercase; }
@@ -134,13 +146,17 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   .difficulty { min-height: 46px; padding: 7px 8px; }
   .btn { min-height: 46px; font-size: 15px; }
   .stage:not(.playing) + .controls, .stage:not(.playing) ~ .hint { display: none; }
-  .stage.playing + .controls.finger-controls { display: none; }
   .controls, .controls.catch-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .controls.joystick-controls, .controls.joystick-controls.catch-controls { grid-template-columns: minmax(132px, 1fr) minmax(132px, 1fr); align-items: center; }
+  .controls.joystick-controls:not(.catch-controls) { grid-template-columns: minmax(132px, 1fr); }
+  .joystick-pad { width: 104px; height: 104px; }
+  .joystick-thumb { width: 46px; height: 46px; }
   .control[data-action="up"] { grid-column: 2; grid-row: 1; }
   .control[data-action="left"] { grid-column: 1; grid-row: 2; }
   .control[data-action="down"] { grid-column: 2; grid-row: 2; }
   .control[data-action="right"] { grid-column: 3; grid-row: 2; }
-  .controls.catch-controls .lasso-control { grid-column: 1 / -1; grid-row: 3; min-height: 50px; }
+  .controls.catch-controls:not(.joystick-controls) .lasso-control { grid-column: 1 / -1; grid-row: 3; min-height: 50px; }
+  .controls.joystick-controls.catch-controls .lasso-control { display: block; grid-column: 2; grid-row: 1; min-height: 72px; }
   .control { min-height: 54px; }
   .control small { display: none; }
   .meter { left: 10px; right: 10px; bottom: 9px; grid-template-columns: auto minmax(0, 1fr) 34px; gap: 7px; }
@@ -183,7 +199,6 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage:not(.playing) { align-self: stretch; height: 100% !important; max-height: none !important; aspect-ratio: auto; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage canvas { width: 100% !important; height: 100% !important; min-height: 0 !important; aspect-ratio: 16 / 9; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls { grid-area: controls; align-self: end; width: 100%; padding-bottom: max(0px, env(safe-area-inset-bottom)); }
-  html body.grei-game-rodeo-are-you-ready.grei-immersive.grei-game-playing .controls.finger-controls { display: none; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .control { min-height: 52px; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .hint { display: none; }
 }
@@ -198,6 +213,9 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap { grid-template-columns: minmax(0, 1fr) minmax(150px, 24vw) !important; grid-template-rows: auto minmax(0, 1fr) !important; grid-template-areas: "hud hud" "stage controls" !important; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .wrap .stage { width: auto !important; height: 100% !important; max-height: calc(var(--grei-viewport-height, 100dvh) - 55px) !important; justify-self: center; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls, html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls { grid-template-columns: 1fr 1fr; align-content: center; }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.joystick-controls, html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.joystick-controls.catch-controls { grid-template-columns: minmax(116px, 1fr) minmax(116px, 1fr); }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.joystick-controls:not(.catch-controls) { grid-template-columns: minmax(116px, 1fr); }
+  html body.grei-game-rodeo-are-you-ready.grei-immersive .joystick-pad { width: 96px; height: 96px; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .control[data-action] { grid-column: auto; grid-row: auto; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive .controls.catch-controls .lasso-control { grid-column: 1 / -1; grid-row: auto; }
   html body.grei-game-rodeo-are-you-ready.grei-immersive:not(.grei-game-playing) .wrap { grid-template-columns: minmax(0, 1fr) !important; grid-template-areas: "hud" "stage" !important; }
@@ -206,6 +224,5 @@ canvas { position: relative; z-index: 1; display: block; width: 100%; height: 10
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .arena-video { display: none; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }

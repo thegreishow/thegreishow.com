@@ -17,7 +17,7 @@
   <link rel="preload" href="assets/race-gallop-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/runaway-cow-animation-v2.webp" as="image" type="image/webp">
   <link rel="preload" href="assets/rodeo-instrumental.mp3" as="audio" type="audio/mpeg">
-  <link rel="stylesheet" href="assets/game.css?v=20260812b">
+  <link rel="stylesheet" href="assets/game.css?v=20260812c">
 </head>
 <body>
 <script src="../../engine/game-shell.js?v=20260811f"></script>
@@ -38,7 +38,7 @@
   </header>
 
   <section class="stage" id="stage" aria-label="Rodeo game playfield">
-    <video class="arena-video" id="arenaVideo" muted loop autoplay playsinline preload="metadata" poster="assets/rodeo-arena.webp" aria-hidden="true">
+    <video class="arena-video" id="arenaVideo" muted loop autoplay playsinline preload="auto" poster="assets/rodeo-arena.webp" aria-hidden="true">
       <source src="assets/exec-cb0ec69b-a278-437a-977e-973194b4cf70.mp4" type="video/mp4">
     </video>
     <canvas id="game" width="960" height="540"></canvas>
@@ -90,6 +90,13 @@
   </section>
 
   <section class="controls" id="controls" aria-label="Game controls">
+    <div class="joystick-wrap" id="joystickWrap" hidden>
+      <div class="joystick-pad" id="joystickPad" role="group" aria-label="Movement joystick" tabindex="0">
+        <span class="joystick-ring"></span>
+        <span class="joystick-thumb" id="joystickThumb"></span>
+      </div>
+      <small id="joystickLabel">Move</small>
+    </div>
     <button class="control" data-action="left" aria-label="Lean left"><span>←</span><small>Left</small></button>
     <button class="control" data-action="up" aria-label="Lean forward"><span>↑</span><small>Forward</small></button>
     <button class="control" data-action="down" aria-label="Lean back"><span>↓</span><small>Back</small></button>
@@ -99,6 +106,6 @@
   <div class="hint" id="controlHint">Arrow keys or W A S D · Match the glowing direction · Space pauses</div>
 </main>
 <audio id="music" preload="metadata" loop src="assets/rodeo-instrumental.mp3"></audio>
-<script src="assets/game.js?v=20260812b"></script>
+<script src="assets/game.js?v=20260812c"></script>
 </body>
 </html>

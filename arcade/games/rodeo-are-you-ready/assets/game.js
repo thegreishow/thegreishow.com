@@ -43,7 +43,7 @@
     },
     matador: {
       steps: [
-        "On phone, drag anywhere inside the arena and the matadora follows your finger.",
+        "Use the joystick to move the matadora around the center of the ring.",
         "Watch the charge line, then move clear before the bull launches.",
         "Close calls score more and build Heat faster, but clipping the bull costs Nerve."
       ],
@@ -54,8 +54,8 @@
     },
     catch: {
       steps: [
-        "Steer the horse to close the gap with the runaway cow.",
-        "When the Lasso button glows, throw it before the cow escapes.",
+        "Use the joystick to chase the marked cow and close the distance.",
+        "When the target ring turns gold and Lasso lights up, throw before the cow escapes.",
         "Fast, accurate catches score more and raise Heat faster."
       ],
       meters: [
@@ -85,9 +85,9 @@
       telegraph: .95,
       recovery: .56,
       cowSpeed: 148,
-      cowTimer: 9,
-      lassoRange: 300,
-      lassoCooldown: .72,
+      cowTimer: 12,
+      lassoRange: 230,
+      lassoCooldown: .58,
       escapeDamage: 27,
       raceSpeed: 184,
       rivalSpeed: 152,
@@ -102,9 +102,9 @@
       telegraph: .58,
       recovery: .34,
       cowSpeed: 205,
-      cowTimer: 6.8,
-      lassoRange: 178,
-      lassoCooldown: .95,
+      cowTimer: 9,
+      lassoRange: 190,
+      lassoCooldown: .78,
       escapeDamage: 34,
       raceSpeed: 208,
       rivalSpeed: 175,
@@ -153,12 +153,15 @@
   const directionAnnounce = document.getElementById("directionAnnounce");
   const controlHint = document.getElementById("controlHint");
   const controls = document.getElementById("controls");
+  const joystickWrap = document.getElementById("joystickWrap");
+  const joystickPad = document.getElementById("joystickPad");
+  const joystickThumb = document.getElementById("joystickThumb");
+  const joystickLabel = document.getElementById("joystickLabel");
   const controlButtons = [...document.querySelectorAll("[data-action]")];
   const lassoButton = document.getElementById("lassoButton");
   const gameMenuButton = document.getElementById("gameMenuButton");
   const music = document.getElementById("music");
   const arenaVideo = document.getElementById("arenaVideo");
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let arenaVideoFailed = false;
 
   const arena = new Image();
@@ -382,10 +385,10 @@
   const audio = new AudioDirector(music);
   const state = new GameState();
   const heldDirections = new Set();
+  const joystick = { active: false, id: null, x: 0, y: 0 };
   const dodge = {
-    player: { x: 480, y: 405, vx: 0, vy: 0 },
-    pointer: { active: false, id: null, x: 480, y: 405 },
-    bull: { x: 480, y: 188, targetX: 480, targetY: 405, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false }
+    player: { x: 480, y: 350, vx: 0, vy: 0 },
+    bull: { x: 480, y: 178, targetX: 480, targetY: 350, angle: Math.PI / 2, phase: "telegraph", timer: 0, speed: 0, vx: 0, vy: 0, travel: 0, maxTravel: 0, minDistance: 999, hit: false }
   };
   const chase = {
     player: { x: 330, y: 390, vx: 0, vy: 0, facing: 1 },
@@ -515,9 +518,9 @@
     controlHint.textContent = modeId === "ride"
       ? "Arrow keys or W A S D · Match the glowing direction · Space pauses"
       : modeId === "matador"
-        ? "Drag inside the arena to move · Arrow keys also work · Space pauses"
+        ? "Use the joystick to dodge · Arrow keys also work · Space pauses"
         : modeId === "catch"
-          ? "Hold arrows or W A S D · Enter, Z, or Lasso to throw · Space pauses"
+          ? "Use the joystick to chase · Throw when Lasso turns gold · Space pauses"
           : "Tap Up/W to gallop · Left/Right to pass · Enter/Z or Boost at full Heat";
     lassoButton.hidden = modeId !== "catch" && modeId !== "race";
     const specialIcon = lassoButton.querySelector("span");
@@ -525,8 +528,11 @@
     if (specialIcon) specialIcon.textContent = modeId === "race" ? "⚡" : "◎";
     if (specialLabel) specialLabel.textContent = modeId === "race" ? "Boost" : "Lasso";
     lassoButton.setAttribute("aria-label", modeId === "race" ? "Activate boost when Heat is full" : "Throw lasso");
+    const usesJoystick = modeId === "matador" || modeId === "catch";
     controls.classList.toggle("catch-controls", modeId === "catch" || modeId === "race");
-    controls.classList.toggle("finger-controls", modeId === "matador");
+    controls.classList.toggle("joystick-controls", usesJoystick);
+    joystickWrap.hidden = !usesJoystick;
+    joystickLabel.textContent = modeId === "catch" ? "Chase" : "Move";
     controls.setAttribute("aria-label", modeId === "ride" ? "Ride controls" : modeId === "matador" ? "Matador controls" : modeId === "catch" ? "Horseback chase controls" : "Horse racing controls");
     hud();
   }
@@ -631,13 +637,10 @@
 
   function resetDodge() {
     dodge.player.x = 480;
-    dodge.player.y = 405;
+    dodge.player.y = 350;
     dodge.player.vx = 0;
     dodge.player.vy = 0;
-    dodge.pointer.active = false;
-    dodge.pointer.id = null;
-    dodge.pointer.x = dodge.player.x;
-    dodge.pointer.y = dodge.player.y;
+    resetJoystick();
     spawnBull(true);
   }
 
@@ -679,27 +682,20 @@
   }
 
   function updateMatador(dt) {
-    if (dodge.pointer.active) {
-      const previousX = dodge.player.x;
-      const previousY = dodge.player.y;
-      const follow = Math.min(1, dt * 22);
-      dodge.player.x += (dodge.pointer.x - dodge.player.x) * follow;
-      dodge.player.y += (dodge.pointer.y - dodge.player.y) * follow;
-      dodge.player.vx = (dodge.player.x - previousX) / Math.max(dt, .001);
-      dodge.player.vy = (dodge.player.y - previousY) / Math.max(dt, .001);
-    } else {
-      let moveX = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
-      let moveY = (heldDirections.has("down") ? 1 : 0) - (heldDirections.has("up") ? 1 : 0);
-      const moveLength = Math.hypot(moveX, moveY) || 1;
-      moveX /= moveLength;
-      moveY /= moveLength;
-      const playerSpeed = difficultyId === "easy" ? 285 : 265;
-      dodge.player.vx = moveX * playerSpeed;
-      dodge.player.vy = moveY * playerSpeed;
-      dodge.player.x += dodge.player.vx * dt;
-      dodge.player.y += dodge.player.vy * dt;
-    }
+    const keyboardX = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
+    const keyboardY = (heldDirections.has("down") ? 1 : 0) - (heldDirections.has("up") ? 1 : 0);
+    let moveX = joystick.active ? joystick.x : keyboardX;
+    let moveY = joystick.active ? joystick.y : keyboardY;
+    const moveLength = Math.hypot(moveX, moveY);
+    if (moveLength > 1) { moveX /= moveLength; moveY /= moveLength; }
+    const playerSpeed = difficultyId === "easy" ? 310 : 288;
+    dodge.player.vx += (moveX * playerSpeed - dodge.player.vx) * Math.min(1, dt * 14);
+    dodge.player.vy += (moveY * playerSpeed - dodge.player.vy) * Math.min(1, dt * 14);
+    dodge.player.x += dodge.player.vx * dt;
+    dodge.player.y += dodge.player.vy * dt;
     constrainPlayer();
+    stage.dataset.playerX = String(Math.round(dodge.player.x));
+    stage.dataset.playerY = String(Math.round(dodge.player.y));
 
     const bull = dodge.bull;
     if (bull.phase === "telegraph") {
@@ -757,8 +753,8 @@
   }
 
   function resetChase() {
-    chase.player.x = 330;
-    chase.player.y = 390;
+    chase.player.x = 480;
+    chase.player.y = 392;
     chase.player.vx = 0;
     chase.player.vy = 0;
     chase.player.facing = 1;
@@ -766,6 +762,7 @@
     chase.lasso.timer = 0;
     chase.lasso.cooldown = 0;
     chase.lasso.hit = false;
+    resetJoystick();
     lassoButton.classList.remove("ready", "active");
     spawnCow(true);
   }
@@ -954,8 +951,8 @@
   }
 
   function spawnCow(first = false) {
-    const angle = first ? -.12 : Math.random() * Math.PI * 2;
-    const radius = first ? .30 : .42 + Math.random() * .28;
+    const angle = first ? -.85 : Math.random() * Math.PI * 2;
+    const radius = first ? .90 : .68 + Math.random() * .22;
     chase.cow.x = 480 + Math.cos(angle) * 285 * radius;
     chase.cow.y = 350 + Math.sin(angle) * 132 * radius;
     chase.cow.angle = Math.atan2(chase.cow.y - chase.player.y, chase.cow.x - chase.player.x);
@@ -993,8 +990,8 @@
     audio.rope();
 
     if (!inRange) {
-      setFeedback("JUST MISSED", 520);
-      state.heat = Math.max(0, state.heat - 3);
+      const gap = Math.max(0, Math.round(distance - difficulty().lassoRange));
+      setFeedback(`GET ${gap} CLOSER`, 620);
       return;
     }
 
@@ -1025,14 +1022,15 @@
   }
 
   function updateCatch(dt) {
-    let moveX = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
-    let moveY = (heldDirections.has("down") ? 1 : 0) - (heldDirections.has("up") ? 1 : 0);
-    const moveLength = Math.hypot(moveX, moveY) || 1;
-    moveX /= moveLength;
-    moveY /= moveLength;
-    const riderSpeed = difficultyId === "easy" ? 274 : 252;
-    chase.player.vx = moveX * riderSpeed;
-    chase.player.vy = moveY * riderSpeed;
+    const keyboardX = (heldDirections.has("right") ? 1 : 0) - (heldDirections.has("left") ? 1 : 0);
+    const keyboardY = (heldDirections.has("down") ? 1 : 0) - (heldDirections.has("up") ? 1 : 0);
+    let moveX = joystick.active ? joystick.x : keyboardX;
+    let moveY = joystick.active ? joystick.y : keyboardY;
+    const moveLength = Math.hypot(moveX, moveY);
+    if (moveLength > 1) { moveX /= moveLength; moveY /= moveLength; }
+    const riderSpeed = difficultyId === "easy" ? 304 : 286;
+    chase.player.vx += (moveX * riderSpeed - chase.player.vx) * Math.min(1, dt * 11);
+    chase.player.vy += (moveY * riderSpeed - chase.player.vy) * Math.min(1, dt * 11);
     if (Math.abs(moveX) > .05) chase.player.facing = moveX > 0 ? 1 : -1;
     chase.player.x += chase.player.vx * dt;
     chase.player.y += chase.player.vy * dt;
@@ -1066,8 +1064,10 @@
     const fleeAngle = Math.atan2(cow.y - chase.player.y, cow.x - chase.player.x) + cow.wander;
     const turnDelta = Math.atan2(Math.sin(fleeAngle - cow.angle), Math.cos(fleeAngle - cow.angle));
     cow.angle += turnDelta * Math.min(1, dt * (difficultyId === "easy" ? 2.1 : 2.8));
-    const chaseRamp = 1 + Math.min(.24, state.elapsed / 150 * .24);
-    cow.speed = difficulty().cowSpeed * chaseRamp;
+    const chaseRamp = 1 + Math.min(.16, state.elapsed / 180 * .16);
+    const playerGap = Math.hypot(cow.x - chase.player.x, cow.y - chase.player.y);
+    const pressureSlowdown = playerGap < difficulty().lassoRange * 1.35 ? .72 : .86;
+    cow.speed = difficulty().cowSpeed * chaseRamp * pressureSlowdown;
     cow.x += Math.cos(cow.angle) * cow.speed * dt;
     cow.y += Math.sin(cow.angle) * cow.speed * .72 * dt;
     if (constrainChaseEntity(cow, 304, 139)) {
@@ -1084,6 +1084,7 @@
     stage.dataset.cowX = String(Math.round(cow.x));
     stage.dataset.cowY = String(Math.round(cow.y));
     stage.dataset.lassoReady = String(ready);
+    stage.dataset.catchDistance = String(Math.round(distance));
     stage.dataset.catches = String(state.catches);
     stage.dataset.escapes = String(state.escapes);
   }
@@ -1092,7 +1093,7 @@
     if (counting || running) return;
     const token = ++countdownToken;
     document.querySelector("[data-grei-discovery]")?.remove();
-    if (!reduceMotion && !arenaVideoFailed) arenaVideo?.play().catch(() => {});
+    if (!arenaVideoFailed) arenaVideo?.play().catch(() => {});
     audio.unlock();
     modePicker.hidden = true;
     difficultyPicker.hidden = true;
@@ -1167,6 +1168,7 @@
     rideRecoveryUntil = 0;
     state.finished = true;
     heldDirections.clear();
+    resetJoystick();
     lassoButton.classList.remove("ready", "active");
     stage.classList.remove("playing");
     document.body.classList.remove("grei-game-playing");
@@ -1215,6 +1217,7 @@
     counting = false;
     rideRecoveryUntil = 0;
     heldDirections.clear();
+    resetJoystick();
     lassoButton.classList.remove("ready", "active");
     stage.classList.remove("playing", "shake", "heat");
     document.body.classList.remove("grei-game-playing");
@@ -1361,7 +1364,7 @@
   }
 
   function drawArena(now) {
-    const animatedArenaReady = !reduceMotion && !arenaVideoFailed && arenaVideo?.readyState >= 2;
+    const animatedArenaReady = !arenaVideoFailed && arenaVideo?.readyState >= 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!animatedArenaReady && arena.complete && arena.naturalWidth) ctx.drawImage(arena, 0, 0, canvas.width, canvas.height);
     else if (!animatedArenaReady) {
@@ -1613,20 +1616,6 @@
     ctx.stroke();
     ctx.restore();
 
-    if (dodge.pointer.active) {
-      ctx.save();
-      ctx.strokeStyle = "rgba(255,246,236,.72)";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(dodge.pointer.x, dodge.pointer.y, 17 + Math.sin(now / 90) * 2, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.fillStyle = "rgba(255,200,87,.85)";
-      ctx.beginPath();
-      ctx.arc(dodge.pointer.x, dodge.pointer.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
     const bull = dodge.bull;
     if (bull.phase === "telegraph") {
       const urgency = 1 - Math.max(0, bull.timer / difficulty().telegraph);
@@ -1737,6 +1726,20 @@
     const distance = Math.hypot(cow.x - player.x, cow.y - player.y);
     const ready = cow.phase === "run" && distance <= difficulty().lassoRange && chase.lasso.cooldown <= 0;
 
+    if (cow.phase === "run") {
+      const rangeProgress = Math.max(0, Math.min(1, 1 - (distance - difficulty().lassoRange) / 230));
+      ctx.save();
+      ctx.setLineDash([7, 9]);
+      ctx.strokeStyle = ready ? "rgba(255,200,87,.78)" : `rgba(255,246,236,${.12 + rangeProgress * .28})`;
+      ctx.lineWidth = ready ? 4 : 2;
+      ctx.beginPath();
+      ctx.moveTo(player.x, player.y - 36);
+      ctx.lineTo(cow.x, cow.y - 18);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
     if (ready && !chase.lasso.active) {
       const pulse = 1 + Math.sin(now / 95) * .08;
       ctx.save();
@@ -1754,7 +1757,7 @@
       ctx.font = "italic 900 13px Impact, sans-serif";
       ctx.shadowColor = "#000";
       ctx.shadowBlur = 5;
-      ctx.fillText("IN RANGE · THROW!", 0, -47);
+      ctx.fillText("LOCKED · LASSO!", 0, -47);
       ctx.restore();
     }
 
@@ -1807,6 +1810,8 @@
     drawLasso(now);
 
     const remaining = chase.cow.phase === "run" ? Math.max(0, chase.cow.timer / difficulty().cowTimer) : 1;
+    const catchDistance = Math.hypot(chase.cow.x - chase.player.x, chase.cow.y - chase.player.y);
+    const catchReady = chase.cow.phase === "run" && catchDistance <= difficulty().lassoRange && chase.lasso.cooldown <= 0;
     ctx.fillStyle = "rgba(8,7,12,.72)";
     ctx.beginPath();
     ctx.roundRect(366, 71, 228, 45, 12);
@@ -1814,7 +1819,7 @@
     ctx.fillStyle = "#ffc857";
     ctx.textAlign = "center";
     ctx.font = "italic 900 12px Impact, sans-serif";
-    ctx.fillText(chase.cow.phase === "caught" ? "CAUGHT!" : "BREAKAWAY", 480, 87);
+    ctx.fillText(chase.cow.phase === "caught" ? "CAUGHT!" : catchReady ? "LOCKED · THROW LASSO" : `CHASE · ${Math.round(catchDistance)} AWAY`, 480, 87);
     ctx.fillStyle = "rgba(255,255,255,.15)";
     ctx.fillRect(389, 96, 182, 7);
     ctx.fillStyle = remaining > .35 ? "#ffc857" : "#ff625f";
@@ -2063,33 +2068,55 @@
   modeButtons.forEach(button => button.addEventListener("click", () => chooseMode(button.dataset.mode)));
   difficultyButtons.forEach(button => button.addEventListener("click", () => chooseDifficulty(button.dataset.difficulty)));
 
-  function updateDodgePointer(event) {
-    const rect = canvas.getBoundingClientRect();
-    dodge.pointer.x = (event.clientX - rect.left) * canvas.width / rect.width;
-    dodge.pointer.y = (event.clientY - rect.top) * canvas.height / rect.height;
+  function resetJoystick() {
+    joystick.active = false;
+    joystick.id = null;
+    joystick.x = 0;
+    joystick.y = 0;
+    joystickWrap?.classList.remove("active");
+    if (joystickThumb) joystickThumb.style.transform = "translate(-50%, -50%)";
   }
 
-  canvas.addEventListener("pointerdown", event => {
-    if (!running || paused || counting || modeId !== "matador") return;
+  function updateJoystick(event) {
+    const rect = joystickPad.getBoundingClientRect();
+    const radius = rect.width * .31;
+    let x = event.clientX - (rect.left + rect.width / 2);
+    let y = event.clientY - (rect.top + rect.height / 2);
+    const distance = Math.hypot(x, y);
+    if (distance > radius) { x = x / distance * radius; y = y / distance * radius; }
+    const normalizedX = x / radius;
+    const normalizedY = y / radius;
+    const magnitude = Math.hypot(normalizedX, normalizedY);
+    const deadZone = .12;
+    const power = magnitude <= deadZone ? 0 : Math.min(1, (magnitude - deadZone) / (1 - deadZone));
+    joystick.x = magnitude ? normalizedX / magnitude * power : 0;
+    joystick.y = magnitude ? normalizedY / magnitude * power : 0;
+    joystickThumb.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    stage.dataset.lastInput = "joystick";
+    stage.dataset.joystickX = joystick.x.toFixed(2);
+    stage.dataset.joystickY = joystick.y.toFixed(2);
+  }
+
+  joystickPad.addEventListener("pointerdown", event => {
+    if (!running || paused || counting || (modeId !== "matador" && modeId !== "catch")) return;
     if (event.cancelable) event.preventDefault();
-    dodge.pointer.active = true;
-    dodge.pointer.id = event.pointerId;
-    updateDodgePointer(event);
-    canvas.setPointerCapture?.(event.pointerId);
-    stage.dataset.lastInput = "arena-drag";
+    joystick.active = true;
+    joystick.id = event.pointerId;
+    joystickWrap.classList.add("active");
+    joystickPad.setPointerCapture?.(event.pointerId);
+    updateJoystick(event);
   });
-  canvas.addEventListener("pointermove", event => {
-    if (!dodge.pointer.active || dodge.pointer.id !== event.pointerId) return;
+  joystickPad.addEventListener("pointermove", event => {
+    if (!joystick.active || joystick.id !== event.pointerId) return;
     if (event.cancelable) event.preventDefault();
-    updateDodgePointer(event);
+    updateJoystick(event);
   });
-  const releaseDodgePointer = event => {
-    if (dodge.pointer.id !== event.pointerId) return;
-    dodge.pointer.active = false;
-    dodge.pointer.id = null;
+  const releaseJoystick = event => {
+    if (joystick.id !== event.pointerId) return;
+    resetJoystick();
   };
-  canvas.addEventListener("pointerup", releaseDodgePointer);
-  canvas.addEventListener("pointercancel", releaseDodgePointer);
+  joystickPad.addEventListener("pointerup", releaseJoystick);
+  joystickPad.addEventListener("pointercancel", releaseJoystick);
 
   addEventListener("keydown", event => {
     if (event.key === "Escape" && running && !event.repeat) {
@@ -2166,8 +2193,7 @@
     gameMenuButton?.setAttribute("aria-expanded", String(paused));
     if (paused) {
       heldDirections.clear();
-      dodge.pointer.active = false;
-      dodge.pointer.id = null;
+      resetJoystick();
       audio.pause();
     } else if (running) {
       last = performance.now();
@@ -2179,9 +2205,14 @@
   music.addEventListener("error", () => {
     audioStatus.textContent = "Music unavailable · game sounds still work";
   });
-  if (reduceMotion) arenaVideo?.pause();
-  arenaVideo?.addEventListener("loadeddata", () => { if (!running) draw(); });
-  arenaVideo?.addEventListener("error", () => { arenaVideoFailed = true; stage.classList.add("video-fallback"); if (!running) draw(); });
+  const keepArenaMoving = () => {
+    if (!arenaVideoFailed && arenaVideo?.paused) arenaVideo.play().catch(() => {});
+  };
+  arenaVideo?.addEventListener("loadeddata", () => { arenaVideo.classList.add("is-live"); keepArenaMoving(); if (!running) draw(); });
+  arenaVideo?.addEventListener("playing", () => { arenaVideo.classList.add("is-live"); stage.dataset.background = "mp4"; });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) keepArenaMoving(); });
+  addEventListener("pointerdown", keepArenaMoving, { once: true });
+  arenaVideo?.addEventListener("error", () => { arenaVideoFailed = true; stage.classList.add("video-fallback"); stage.dataset.background = "poster"; if (!running) draw(); });
   [
     arena, rideSprite, rideAnimation, matadorSprites, matadoraAnimation,
     chargingBullAnimation, catchCowSprites, horsebackRiderAnimation, raceGallopAnimation, runawayCowAnimation

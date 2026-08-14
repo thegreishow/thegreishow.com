@@ -1111,7 +1111,7 @@
   overflow: hidden;
   border: 0;
   border-radius: 0;
-  background: #070b11;
+  background: #070b11 url('../img/home-bg.webp') center 22% / cover no-repeat;
   box-shadow: 0 32px 90px rgba(0, 0, 0, 0.3);
 }
 

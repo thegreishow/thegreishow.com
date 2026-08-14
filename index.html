@@ -207,23 +207,26 @@
 
   <main class="home">
     <section class="hero" aria-labelledby="home-title">
+      <video class="home-hero-video" id="home-hero-video" autoplay muted loop playsinline preload="auto" poster="https://drive.google.com/thumbnail?id=1R6HGjhGqyeTGkaU_GEAxLlT8aRAf5x3F&amp;sz=w1600" aria-label="Rodeo promotional visual">
+        <source src="/api/media?id=1GtHsgqPKi99uUC-bohE7clyxporo4YMN&amp;filename=Rodeo-Promo&amp;type=video" type="video/mp4">
+      </video>
+      <button class="home-hero-sound" id="home-hero-sound" type="button" aria-label="Turn Rodeo promo video sound on">Sound on</button>
       <div class="hero-copy">
-        <p class="hero-kicker">Independent artist &middot; Kingston, Jamaica</p>
+        <p class="hero-kicker">Unreleased preview &middot; Kingston, Jamaica</p>
         <h1 id="home-title" class="hero-title">The Grei Show</h1>
-        <p class="hero-lead">Music, stories, and worlds without limits.</p>
+        <p class="hero-lead">Enter Rodeo—an unreleased song transformed into a visual world and a four-event arcade experience.</p>
 
         <div class="hero-actions">
-          <button class="home-button primary open-platforms-trigger" type="button" aria-label="Choose your platform" data-track="choose_platform" data-track-label="Hero - Choose platform"><span class="cta-full">Choose your platform</span><span class="cta-short" aria-hidden="true">Listen</span></button>
-          <a class="home-button internal" href="#explore" aria-label="Explore the work" data-track="explore" data-track-label="Hero - Explore"><span class="cta-full">Explore the work</span><span class="cta-short" aria-hidden="true">Explore</span></a>
-          <a class="home-button primary visuals-cta" href="visuals.html" aria-label="View visuals" data-track="hero_visuals" data-track-label="Hero - Visuals"><span class="cta-full">View visuals</span><span class="cta-short" aria-hidden="true">Visuals</span></a>
+          <a class="home-button primary" href="/promo/rodeo/" data-track="hero_rodeo_promo" data-track-label="Hero - Rodeo preview"><span class="cta-full">Explore Rodeo</span><span class="cta-short" aria-hidden="true">Rodeo</span></a>
+          <a class="home-button" href="/arcade/games/rodeo" data-track="hero_rodeo_game" data-track-label="Hero - Play Rodeo"><span class="cta-full">Play the game</span><span class="cta-short" aria-hidden="true">Play</span></a>
+          <button class="home-button open-platforms-trigger" type="button" aria-label="Choose your music platform" data-track="choose_platform" data-track-label="Hero - Choose platform"><span class="cta-full">Hear more music</span><span class="cta-short" aria-hidden="true">Music</span></button>
         </div>
       </div>
 
-      <a class="hero-visual" href="/promo/no-drama/" aria-label="Open the No Drama promo page">
-        <div class="hero-visual-frame">
-          <img src="assets/img/no-drama.webp" alt="No Drama by The Grei Show" width="1200" height="1200" decoding="async">
-        </div>
-        <span class="hero-visual-caption"><span>Latest release</span><strong>No Drama</strong></span>
+      <a class="home-hero-badge" href="/promo/rodeo/" aria-label="Open the Rodeo unreleased preview">
+        <span>Now entering</span>
+        <strong>Rodeo</strong>
+        <em>Unreleased demo &middot; Watch the visual &#8599;</em>
       </a>
     </section>
 
@@ -261,11 +264,11 @@
         </a>
 
         <a class="portal-card" href="arcade.html" data-track="explore_arcade" data-track-label="Portal - Arcade">
-          <img src="arcade/assets/thumbnails/signal-runner.svg" alt="Grei Arcade games" width="640" height="360" loading="lazy" decoding="async">
+          <img src="arcade/assets/thumbnails/rodeo-are-you-ready.webp?v=20260811" alt="Rodeo: Are You Ready in Grei Arcade" width="1280" height="720" loading="lazy" decoding="async">
           <span class="portal-card__body">
-            <span class="card-kicker">Play</span>
+            <span class="card-kicker">Featured game &middot; Rodeo</span>
             <h3>Grei Arcade</h3>
-            <span class="portal-link">Start a game</span>
+            <span class="portal-link">Ride into Rodeo</span>
           </span>
         </a>
       </div>
@@ -454,6 +457,19 @@
   <script src="assets/js/newsletter.js?v=20260727-2"></script>
   <script>
     (function () {
+      const heroVideo = document.getElementById('home-hero-video');
+      const heroSound = document.getElementById('home-hero-sound');
+      if (heroVideo && heroSound) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) heroVideo.pause();
+        heroSound.addEventListener('click', function () {
+          const turningOn = heroVideo.muted;
+          heroVideo.muted = !turningOn;
+          heroSound.textContent = turningOn ? 'Sound off' : 'Sound on';
+          heroSound.setAttribute('aria-label', turningOn ? 'Mute Rodeo promo video' : 'Turn Rodeo promo video sound on');
+          heroVideo.play().catch(function () {});
+        });
+      }
+
       const modal = document.getElementById('stream-modal');
       const openButtons = document.querySelectorAll('#open-platforms, .open-platforms-trigger');
       if (!modal || !openButtons.length) return;

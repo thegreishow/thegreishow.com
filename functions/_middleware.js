@@ -1,5 +1,6 @@
 export async function onRequest(context){
   const path=new URL(context.request.url).pathname;
+  if(/^\/arcade\/games\/rodeo\/?$/.test(path))return Response.redirect(new URL('/arcade/games/rodeo-are-you-ready/',context.request.url),301);
   const isStaticPromo=/^\/promo\/rodeo\/?$/.test(path);
   const isPromoDetail=!isStaticPromo&&/^\/promo\/[^/]+\/?$/.test(path);
   const upstream=isPromoDetail?await context.next('/promo/index.html'):await context.next();

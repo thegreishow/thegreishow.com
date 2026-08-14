@@ -61,6 +61,11 @@ export async function onRequestGet({request}){
   }
 }
 
+export async function onRequestHead(context){
+  const response=await onRequestGet(context);
+  return new Response(null,{status:response.status,statusText:response.statusText,headers:response.headers});
+}
+
 async function findRelease(origin,slug){
   const candidates=slugCandidates(slug);
   let remoteRelease=null;

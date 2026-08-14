@@ -270,7 +270,7 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 28px;
-  background: #070b11;
+  background: #070b11 url('https://drive.google.com/thumbnail?id=1R6HGjhGqyeTGkaU_GEAxLlT8aRAf5x3F&sz=w1600') 58% center / cover no-repeat;
   box-shadow: 0 34px 100px rgba(0, 0, 0, 0.38);
 }
 
@@ -1139,7 +1139,17 @@
   display: block;
   object-fit: cover;
   object-position: center center;
+  opacity: 0;
   pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.hero.video-ready .home-hero-video {
+  opacity: 1;
+}
+
+.hero.video-fallback .home-hero-video {
+  display: none;
 }
 
 .home-hero-sound {

@@ -220,15 +220,11 @@
       </div>
 
       <div class="hero-visual">
-        <a class="hero-visual-link" href="/promo/rodeo/" aria-label="Open the Rodeo unreleased preview">
-          <div class="hero-visual-frame">
-            <video class="home-hero-video" id="home-hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture poster="https://drive.google.com/thumbnail?id=1R6HGjhGqyeTGkaU_GEAxLlT8aRAf5x3F&amp;sz=w1600" aria-label="Rodeo promotional visual">
-              <source src="/api/media?id=1GtHsgqPKi99uUC-bohE7clyxporo4YMN&amp;filename=Rodeo-Promo&amp;type=video" type="video/mp4">
-            </video>
-          </div>
-          <span class="hero-visual-caption"><span>Unreleased preview</span><strong>Rodeo</strong></span>
-        </a>
-        <button class="home-hero-sound" id="home-hero-sound" type="button" aria-label="Turn Rodeo promo video sound on">Sound on</button>
+        <div class="hero-visual-frame">
+          <video class="home-hero-video" id="home-hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture poster="https://drive.google.com/thumbnail?id=1R6HGjhGqyeTGkaU_GEAxLlT8aRAf5x3F&amp;sz=w1600" aria-label="Rodeo promotional visual">
+            <source src="/api/media?id=1GtHsgqPKi99uUC-bohE7clyxporo4YMN&amp;filename=Rodeo-Promo&amp;type=video" type="video/mp4">
+          </video>
+        </div>
       </div>
     </section>
 
@@ -460,59 +456,32 @@
   <script>
     (function () {
       const heroVideo = document.getElementById('home-hero-video');
-      const heroSound = document.getElementById('home-hero-sound');
-      if (heroVideo && heroSound) {
+      if (heroVideo) {
         const hero = heroVideo.closest('.hero-visual');
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const markReady = function () {
           hero.classList.add('video-ready');
           hero.classList.remove('video-fallback');
         };
-        const showPlayFallback = function () {
-          hero.classList.add('video-paused');
-          heroSound.textContent = 'Play visual';
-          heroSound.setAttribute('aria-label', 'Play the Rodeo header video');
-        };
         const playVideo = function () {
           heroVideo.muted = true;
-          return heroVideo.play().then(function () {
-            hero.classList.remove('video-paused');
-            heroSound.textContent = 'Sound on';
-            heroSound.setAttribute('aria-label', 'Turn Rodeo promo video sound on');
-          }).catch(showPlayFallback);
+          heroVideo.loop = true;
+          return heroVideo.play().catch(function () {});
         };
 
         heroVideo.addEventListener('loadeddata', markReady, { once: true });
         heroVideo.addEventListener('canplay', markReady, { once: true });
-        heroVideo.addEventListener('playing', function () { hero.classList.remove('video-paused'); });
         heroVideo.addEventListener('error', function () {
           hero.classList.add('video-fallback');
-          heroSound.hidden = true;
         });
         if (heroVideo.readyState >= 2) markReady();
-
-        if (reducedMotion) {
-          heroVideo.pause();
-          showPlayFallback();
-        } else {
-          playVideo();
-        }
-
-        heroSound.addEventListener('click', function () {
-          if (heroVideo.paused) {
-            playVideo();
-            return;
-          }
-          const turningOn = heroVideo.muted;
-          heroVideo.muted = !turningOn;
-          heroSound.textContent = turningOn ? 'Sound off' : 'Sound on';
-          heroSound.setAttribute('aria-label', turningOn ? 'Mute Rodeo promo video' : 'Turn Rodeo promo video sound on');
-          heroVideo.play().catch(function () {});
+        playVideo();
+        heroVideo.addEventListener('pause', function () {
+          if (!document.hidden) window.requestAnimationFrame(playVideo);
         });
-
         document.addEventListener('visibilitychange', function () {
-          if (!document.hidden && !reducedMotion && heroVideo.paused) playVideo();
+          if (!document.hidden) playVideo();
         });
+        window.addEventListener('pageshow', playVideo);
       }
 
       const modal = document.getElementById('stream-modal');

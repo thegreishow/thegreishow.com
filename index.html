@@ -27,7 +27,7 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/theme.css">
-  <link rel="stylesheet" href="assets/css/home.css?v=20260814b">
+  <link rel="stylesheet" href="assets/css/home.css?v=20260814c">
 
   <script type="application/ld+json">
     {
@@ -207,27 +207,29 @@
 
   <main class="home">
     <section class="hero" aria-labelledby="home-title">
-      <video class="home-hero-video" id="home-hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture poster="https://drive.google.com/thumbnail?id=1R6HGjhGqyeTGkaU_GEAxLlT8aRAf5x3F&amp;sz=w1600" aria-label="Rodeo promotional visual">
-        <source src="/api/media?id=1GtHsgqPKi99uUC-bohE7clyxporo4YMN&amp;filename=Rodeo-Promo&amp;type=video" type="video/mp4">
-      </video>
-      <button class="home-hero-sound" id="home-hero-sound" type="button" aria-label="Turn Rodeo promo video sound on">Sound on</button>
       <div class="hero-copy">
-        <p class="hero-kicker">Unreleased preview &middot; Kingston, Jamaica</p>
+        <p class="hero-kicker">Independent artist &middot; Kingston, Jamaica</p>
         <h1 id="home-title" class="hero-title">The Grei Show</h1>
-        <p class="hero-lead">Enter Rodeo—an unreleased song transformed into a visual world and a four-event arcade experience.</p>
+        <p class="hero-lead">Music, stories, and worlds without limits.</p>
 
         <div class="hero-actions">
-          <a class="home-button primary" href="/promo/rodeo/" data-track="hero_rodeo_promo" data-track-label="Hero - Rodeo preview"><span class="cta-full">Explore Rodeo</span><span class="cta-short" aria-hidden="true">Rodeo</span></a>
-          <a class="home-button" href="/arcade/games/rodeo" data-track="hero_rodeo_game" data-track-label="Hero - Play Rodeo"><span class="cta-full">Play the game</span><span class="cta-short" aria-hidden="true">Play</span></a>
-          <button class="home-button open-platforms-trigger" type="button" aria-label="Choose your music platform" data-track="choose_platform" data-track-label="Hero - Choose platform"><span class="cta-full">Hear more music</span><span class="cta-short" aria-hidden="true">Music</span></button>
+          <button class="home-button primary open-platforms-trigger" type="button" aria-label="Choose your platform" data-track="choose_platform" data-track-label="Hero - Choose platform"><span class="cta-full">Choose your platform</span><span class="cta-short" aria-hidden="true">Listen</span></button>
+          <a class="home-button internal" href="#explore" aria-label="Explore the work" data-track="explore" data-track-label="Hero - Explore"><span class="cta-full">Explore the work</span><span class="cta-short" aria-hidden="true">Explore</span></a>
+          <a class="home-button primary visuals-cta" href="visuals.html" aria-label="View visuals" data-track="hero_visuals" data-track-label="Hero - Visuals"><span class="cta-full">View visuals</span><span class="cta-short" aria-hidden="true">Visuals</span></a>
         </div>
       </div>
 
-      <a class="home-hero-badge" href="/promo/rodeo/" aria-label="Open the Rodeo unreleased preview">
-        <span>Now entering</span>
-        <strong>Rodeo</strong>
-        <em>Unreleased demo &middot; Watch the visual &#8599;</em>
-      </a>
+      <div class="hero-visual">
+        <a class="hero-visual-link" href="/promo/rodeo/" aria-label="Open the Rodeo unreleased preview">
+          <div class="hero-visual-frame">
+            <video class="home-hero-video" id="home-hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture poster="https://drive.google.com/thumbnail?id=1R6HGjhGqyeTGkaU_GEAxLlT8aRAf5x3F&amp;sz=w1600" aria-label="Rodeo promotional visual">
+              <source src="/api/media?id=1GtHsgqPKi99uUC-bohE7clyxporo4YMN&amp;filename=Rodeo-Promo&amp;type=video" type="video/mp4">
+            </video>
+          </div>
+          <span class="hero-visual-caption"><span>Unreleased preview</span><strong>Rodeo</strong></span>
+        </a>
+        <button class="home-hero-sound" id="home-hero-sound" type="button" aria-label="Turn Rodeo promo video sound on">Sound on</button>
+      </div>
     </section>
 
     <div class="signal-strip" aria-label="The Grei Show universe">
@@ -460,7 +462,7 @@
       const heroVideo = document.getElementById('home-hero-video');
       const heroSound = document.getElementById('home-hero-sound');
       if (heroVideo && heroSound) {
-        const hero = heroVideo.closest('.hero');
+        const hero = heroVideo.closest('.hero-visual');
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const markReady = function () {
           hero.classList.add('video-ready');

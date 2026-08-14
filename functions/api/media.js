@@ -16,7 +16,7 @@ export async function onRequestGet({request}){
     if(directId){
       if(!/^[A-Za-z0-9_-]{10,200}$/.test(directId))return json({error:'Invalid media id'},400);
       source=`https://drive.usercontent.google.com/download?id=${encodeURIComponent(directId)}&export=download&confirm=t`;
-      filename=safeName(url.searchParams.get('filename')||'wheel-it-records-audio')+(type==='artwork'?'.jpg':'.mp3');
+      filename=safeName(url.searchParams.get('filename')||'wheel-it-records-media')+(type==='artwork'?'.jpg':type==='video'?'.mp4':'.mp3');
     }else{
       if(!slug)return json({error:'Missing release slug'},400);
       const release=await findRelease(url.origin,slug);
@@ -45,7 +45,7 @@ export async function onRequestGet({request}){
     if(!upstream.ok&&upstream.status!==206)return json({error:'Media unavailable'},upstream.status);
 
     const upstreamType=(upstream.headers.get('content-type')||'').split(';')[0].toLowerCase();
-    const usableType=type==='artwork'?upstreamType.startsWith('image/'):upstreamType.startsWith('audio/');
+    const usableType=type==='artwork'?upstreamType.startsWith('image/'):type==='video'?upstreamType.startsWith('video/'):upstreamType.startsWith('audio/');
     const responseHeaders=new Headers();
     responseHeaders.set('Content-Type',usableType?upstreamType:contentTypeFor(filename,type));
     responseHeaders.set('Accept-Ranges',upstream.headers.get('accept-ranges')||'bytes');
@@ -84,4 +84,4 @@ function toDirectUrl(url){const value=String(url||'');const match=value.match(/[
 function safeName(value){return String(value||'release').normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'release'}
 function extensionFromUrl(url){const m=String(url||'').match(/\.(mp3|wav|flac|m4a|aac|ogg|jpg|jpeg|png|webp)(?:[?#]|$)/i);return m?`.${m[1].toLowerCase()}`:''}
 function filenameForContentType(filename,type){const extensions={'audio/mpeg':'.mp3','audio/wav':'.wav','audio/x-wav':'.wav','audio/flac':'.flac','audio/mp4':'.m4a','audio/aac':'.aac','audio/ogg':'.ogg','image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp'},extension=extensions[String(type||'').toLowerCase()];return extension?String(filename).replace(/\.(?:mp3|wav|flac|m4a|aac|ogg|jpe?g|png|webp)$/i,'')+extension:filename}
-function contentTypeFor(filename,type){if(type==='artwork')return filename.endsWith('.png')?'image/png':filename.endsWith('.webp')?'image/webp':'image/jpeg';if(filename.endsWith('.wav'))return'audio/wav';if(filename.endsWith('.flac'))return'audio/flac';if(filename.endsWith('.m4a'))return'audio/mp4';if(filename.endsWith('.aac'))return'audio/aac';if(filename.endsWith('.ogg'))return'audio/ogg';return'audio/mpeg'}
+function contentTypeFor(filename,type){if(type==='artwork')return filename.endsWith('.png')?'image/png':filename.endsWith('.webp')?'image/webp':'image/jpeg';if(type==='video'||filename.endsWith('.mp4'))return'video/mp4';if(filename.endsWith('.wav'))return'audio/wav';if(filename.endsWith('.flac'))return'audio/flac';if(filename.endsWith('.m4a'))return'audio/mp4';if(filename.endsWith('.aac'))return'audio/aac';if(filename.endsWith('.ogg'))return'audio/ogg';return'audio/mpeg'}

@@ -79,7 +79,7 @@
     .modal-platforms { display:grid; gap:10px; }
     .modal-platforms a { display:flex; align-items:center; justify-content:space-between; gap:15px; min-height:56px; padding:0 18px; border:1px solid rgba(255,255,255,0.12); border-radius:12px; color:#fff; background:rgba(255,255,255,0.045); text-decoration:none; font-weight:800; }
     .modal-platforms a:hover { background:rgba(255,255,255,0.09); border-color:rgba(216,255,99,0.35); }
-    .portal-label { margin:0 0 16px; }
+    .portal-label { margin:0 0 16px; color:rgba(255,255,255,.55); }
     .portal-title--astral { white-space:nowrap; letter-spacing:-0.04em; font-size:clamp(1.1rem,3.8vw,1.7rem); }
     @media (max-width:680px) { .songstats-row{gap:8px;padding:14px 10px}.songstats-row .stat-value{font-size:1.15rem} }
   </style>
@@ -113,7 +113,7 @@
       <p class="section-kicker portal-label">Choose your portal</p>
       <div class="portal-grid">
         <a class="portal-card" href="music.html" data-track="explore_music" data-track-label="Portal - Music">
-          <img id="audio-universe-art" src="assets/img/no-drama.webp" alt="A Love Alone by The Grei Show artwork" width="1200" height="1200" loading="lazy" decoding="async">
+          <img id="audio-universe-art" src="https://drive.google.com/thumbnail?id=10dsD1gYOYFoe-5HwvD6OLrhmtm6Df_wO&sz=w1600" alt="A Love Alone by The Grei Show artwork" width="1200" height="1200" loading="lazy" decoding="async">
           <span class="portal-card__body">
             <span class="card-kicker">Listen</span>
             <h3>Audio Universe</h3>
@@ -276,14 +276,6 @@
         heroVideo.addEventListener('pause', function () { if (!document.hidden) window.requestAnimationFrame(playVideo); });
         document.addEventListener('visibilitychange', function () { if (!document.hidden) playVideo(); });
         window.addEventListener('pageshow', playVideo);
-      }
-
-      const audioUniverseArt = document.getElementById('audio-universe-art');
-      if (audioUniverseArt) {
-        fetch('/api/artwork?term=' + encodeURIComponent('The Grei Show A Love Alone'))
-          .then(function (response) { return response.ok ? response.json() : null; })
-          .then(function (data) { if (data && data.artwork) audioUniverseArt.src = data.artwork; })
-          .catch(function () {});
       }
 
       const modal = document.getElementById('stream-modal');

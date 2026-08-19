@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   validate:
@@ -15,4 +16,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node scripts/validate-site.mjs
+      - name: Validate repository
+        id: validation
+        continue-on-error: true
+        run: |
+          node scripts/validate-site.mjs > site-validation.txt 2>&1
+          result=$?
+          cat site-validation.txt
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+      - name: Publish validation failure
+        if: steps.validation.outputs.result != '0' && github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          {
+            echo "## Site validation failure"
+            echo
+            echo '```text'
+            cat site-validation.txt
+            echo '```'
+          } > site-validation-comment.md
+          gh pr comment "$PR_NUMBER" --repo "${{ github.repository }}" --body-file site-validation-comment.md
+      - name: Enforce validation
+        if: steps.validation.outputs.result != '0'
+        run: exit 1

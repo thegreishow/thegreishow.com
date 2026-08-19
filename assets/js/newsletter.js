@@ -1,4 +1,13 @@
 (function () {
+  const styleId = 'newsletter-live-upgrade-styles';
+  if (!document.getElementById(styleId)) {
+    const stylesheet = document.createElement('link');
+    stylesheet.id = styleId;
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = '/assets/css/newsletter-live-upgrade.css';
+    document.head.appendChild(stylesheet);
+  }
+
   const form = document.getElementById('release-list-form');
   const status = document.getElementById('release-list-status');
   if (!form || !status) return;

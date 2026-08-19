@@ -1,0 +1,121 @@
+.legacy-promo-player-section {
+  padding: 34px 0 8px;
+}
+
+.legacy-promo-player {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--home-lime, #d8ff63) 13%, transparent), transparent 36%),
+    rgba(6, 10, 17, 0.78);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(22px);
+}
+
+.legacy-promo-play {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #07100a;
+  background: var(--home-lime, #d8ff63);
+  box-shadow: 0 12px 34px color-mix(in srgb, var(--home-lime, #d8ff63) 20%, transparent);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 950;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.legacy-promo-play:hover,
+.legacy-promo-play:focus-visible {
+  outline: none;
+  filter: brightness(1.05);
+  transform: scale(1.045);
+}
+
+.legacy-promo-player-copy {
+  min-width: 0;
+}
+
+.legacy-promo-player-copy strong,
+.legacy-promo-player-copy small {
+  display: block;
+}
+
+.legacy-promo-player-copy strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: 1.03rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legacy-promo-player-copy small {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.47);
+  font-size: 0.79rem;
+}
+
+.legacy-promo-status {
+  min-height: 1em;
+  margin-top: 5px;
+  color: color-mix(in srgb, var(--home-lime, #d8ff63) 82%, white);
+  font-size: 0.72rem;
+}
+
+.legacy-promo-progress {
+  width: 100%;
+  height: 4px;
+  margin-top: 11px;
+  appearance: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  cursor: pointer;
+}
+
+.legacy-promo-progress::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  appearance: none;
+  border-radius: 50%;
+  background: var(--home-lime, #d8ff63);
+}
+
+.legacy-promo-download {
+  white-space: nowrap;
+}
+
+.legacy-promo-download::after {
+  content: '\2193';
+}
+
+@media (max-width: 700px) {
+  .legacy-promo-player {
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .legacy-promo-play {
+    width: 52px;
+    height: 52px;
+  }
+
+  .legacy-promo-download {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legacy-promo-play {
+    transition: none !important;
+  }
+}
